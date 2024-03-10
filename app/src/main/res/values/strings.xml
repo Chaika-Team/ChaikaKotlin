@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Chaika</string>
+    <string name="hint_product_search">Поиск по названию</string>
+
+</resources>
