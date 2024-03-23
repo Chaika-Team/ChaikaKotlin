@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity"
-    android:background="@color/bg">
+    android:background="@color/bg"
+    tools:context=".activities.mainActivity.MainActivity">
 
-
-    <EditText
-        android:id="@+id/editTextText"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-
-        android:ems="10"
-        android:hint="@string/hint_product_search"
-        android:inputType="text"
-        android:background="@color/text_main"
-        android:minHeight="48dp"
-        android:drawablePadding="10dp"
-        android:drawableEnd="@drawable/search_img"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ProductsList"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="30dp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/searchTrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="10dp"
+            android:paddingVertical="@dimen/text_size_small"
+            android:hint="Поиск поездки"
+            android:inputType="text"
+            android:textColor="@color/hint"
+            android:textColorHint="@color/hint"
+            android:paddingStart="@dimen/text_size_small"
+            android:background="@drawable/shape_circle_corner"
+            android:backgroundTint="@color/bg_lighter_2"
+            android:drawablePadding="10dp"
+            android:drawableEnd="@drawable/search_img" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tripsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addTripFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@string/add_trip"
+        app:srcCompat="@drawable/plus_img"
+        android:backgroundTint="@color/floating_btn"
+
+        app:fabSize="normal"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

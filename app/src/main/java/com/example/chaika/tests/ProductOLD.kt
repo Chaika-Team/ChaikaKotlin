@@ -1,6 +1,6 @@
-package com.example.chaika
+package com.example.chaika.tests
 
-data class Product(
+data class ProductOLD(
     val name: String,
     val quantity: Int,
     val soldCount: Int,

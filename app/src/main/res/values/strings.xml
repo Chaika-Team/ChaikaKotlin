@@ -2,4 +2,11 @@
     <string name="app_name">Chaika</string>
     <string name="hint_product_search">Поиск по названию</string>
 
+
+    <string name="add_trip">Добавить поездку</string>
+    <string name="edit_text_trip_search">Добавить поездку</string>
+    <string name="edit_text_trip_hint_dialog">Укажите название</string>
+    <string name="create">Добавить</string>
+    <string name="rename">Изменить</string>
+
 </resources>

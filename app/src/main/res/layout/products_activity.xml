@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -10,63 +9,59 @@
     android:paddingBottom="20dp"
     android:background="@drawable/shape_circle_corner">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <TextView
+        android:id="@+id/product_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Продукт"
+        android:gravity="center"
+        android:textColor="@color/text_main"
+        android:textSize="32sp" />
 
-        <TextView
-            android:id="@+id/product_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="Продукт"
-            android:layout_gravity="center"
-            android:textColor="@color/text_main"
-            android:textSize="32sp" />
+    <TextView
+        android:id="@+id/product_quantity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="10"
+        android:textColor="@color/text_main"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/product_soldCount"
+        app:layout_constraintTop_toBottomOf="@+id/product_title"
+        app:drawableStartCompat="@drawable/add_cart"
+        android:drawablePadding="8dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/product_soldCount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="5"
+        android:textColor="@color/text_main"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/product_quantity"
+        app:layout_constraintEnd_toStartOf="@+id/product_price"
+        app:layout_constraintTop_toBottomOf="@+id/product_title"
+        app:drawableStartCompat="@drawable/sold_cart"
+        android:drawablePadding="8dp"/>
 
+    <TextView
+        android:id="@+id/product_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="100"
+        android:textColor="@color/text_main"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/product_soldCount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_title"
+        app:drawableStartCompat="@drawable/price_img"
+        android:drawablePadding="8dp"/>
 
-            <TextView
-                android:id="@+id/product_quantity"
-                android:layout_width="35sp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="10"
-                android:textColor="@color/text_main"
-                android:textSize="24sp"
-                android:drawableStart="@drawable/add_cart"
-                android:drawablePadding="-40dp"
-                tools:ignore="RtlHardcoded" />
-
-            <TextView
-                android:id="@+id/product_soldCount"
-                android:layout_width="35sp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="5"
-                android:textColor="@color/text_main"
-                android:textSize="24sp"
-                android:drawablePadding="-40dp"
-                android:drawableStart="@drawable/sold_cart" />
-
-            <TextView
-                android:id="@+id/product_price"
-                android:layout_width="35sp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="100"
-                android:textColor="@color/text_main"
-                android:textSize="24sp"
-                android:drawableStart="@drawable/price_img"
-                android:drawablePadding="-40dp"/>
-        </LinearLayout>
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
