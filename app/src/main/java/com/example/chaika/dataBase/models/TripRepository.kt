@@ -1,4 +1,4 @@
-package com.example.chaika.activities.mainActivity
+package com.example.chaika.dataBase.models
 
 import androidx.lifecycle.LiveData
 import com.example.chaika.dataBase.dao.TripDao

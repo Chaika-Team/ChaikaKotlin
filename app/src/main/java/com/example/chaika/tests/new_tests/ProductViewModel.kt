@@ -1,4 +1,4 @@
-package com.example.chaika.activities.productActivity
+package com.example.chaika.tests.new_tests
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

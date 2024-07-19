@@ -26,14 +26,15 @@
         </activity>
 
         <activity
-            android:name=".activities.productActivity.ProductTableActivity"
+            android:name=".tests.new_tests.ProductTableActivity"
             android:exported="false" >
-
         </activity>
 
         <activity
             android:name=".tests.TestProductListActivity"
             android:exported="false" >
+
+
         </activity>
     </application>
 

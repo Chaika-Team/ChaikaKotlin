@@ -15,6 +15,8 @@ import com.example.chaika.MyApp
 import com.example.chaika.R
 import com.example.chaika.databinding.ActivityMainBinding
 import com.example.chaika.dataBase.entities.Trip
+import com.example.chaika.services.TripViewModel
+import com.example.chaika.services.TripViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,9 +33,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Настройка отображения списка поездок
         setupRecyclerView()
+        // Установка обработчиков событий адаптера
         setupTripAdapterListener()
 
+        // Фильтрация списка поездок в зависимости от ввода в поле поиска
         binding.searchTrip.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
                 // Не используется
@@ -48,12 +53,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        // Обработка нажатия кнопки добавления новой поездки
         binding.addTripFab.setOnClickListener {
             showAddRenameTripDialog() // вызов диалога для создания новой поездки
         }
-
     }
 
+    // Настройка RecyclerView и подписка на LiveData с поездками
     private fun setupRecyclerView() {
         binding.tripsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.tripsRecyclerView.adapter = tripAdapter
@@ -62,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Установка слушателей для адаптера
     private fun setupTripAdapterListener() {
         tripAdapter.listener = object : TripAdapter.OnTripListener {
             override fun onDeleteTrip(trip: Trip) {
@@ -74,9 +81,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Диалог для добавления или переименования поездки
     private fun showAddRenameTripDialog(tripToRename: Trip? = null) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_trip, null)
-        val tripNameEditText = dialogView.findViewById<EditText>(R.id.etTripName)
+        val tripNameEditText = dialogView.findViewById<EditText>(R.id.setTripName)
         tripNameEditText.setText(tripToRename?.name)
 
         val alertDialog = AlertDialog.Builder(this)
@@ -108,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Получение текущей даты для новых поездок
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date())
