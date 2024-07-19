@@ -8,12 +8,13 @@ import com.example.chaika.dataBase.entities.Action
 
 @Dao
 interface ActionDao {
-    @Query("SELECT * FROM actions")
-    fun getAllActions(): LiveData<List<Action>>
 
     @Insert
-    suspend fun insertAction(action: Action)
+    suspend fun insert(action: Action)
 
-    // TODO: Здесь будут необходимые методы
+    @Query("SELECT * FROM actions WHERE trip_id = :tripId")
+    fun getActionsByTripId(tripId: Int): LiveData<List<Action>>
+
+// TODO: Здесь будут необходимые методы
 
 }

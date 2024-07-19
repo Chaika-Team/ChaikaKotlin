@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_marginVertical="5dp"
+    android:layout_marginHorizontal="10dp"
+    android:background="@drawable/shape_circle_corner"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewProductName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="@dimen/text_size_large"
+        android:text="Продукт"
+        android:paddingVertical="5dp"
+        android:textColor="@color/text_main"
+        android:textAppearance="?attr/textAppearanceListItem" />
+
+    <TextView
+        android:id="@+id/textViewProductAdded"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Added: 0"
+        android:paddingVertical="5dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/text_main"
+        android:textSize="@dimen/text_size_large"  />
+
+    <TextView
+        android:id="@+id/textViewProductBoughtCash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bought (Cash): 0"
+        android:paddingVertical="5dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/text_main"
+        android:textSize="@dimen/text_size_large" />
+
+    <TextView
+        android:id="@+id/textViewProductBoughtCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bought (Card): 0"
+        android:paddingVertical="5dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/text_main"
+        android:textSize="@dimen/text_size_large" />
+
+</LinearLayout>

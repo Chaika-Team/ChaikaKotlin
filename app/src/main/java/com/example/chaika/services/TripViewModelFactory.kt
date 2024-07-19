@@ -1,7 +1,8 @@
-package com.example.chaika.activities.mainActivity
+package com.example.chaika.services
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.chaika.dataBase.models.TripRepository
 
 class TripViewModelFactory(private val repository: TripRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

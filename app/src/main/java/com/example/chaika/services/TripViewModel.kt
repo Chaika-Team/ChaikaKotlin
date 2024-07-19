@@ -1,9 +1,10 @@
-package com.example.chaika.activities.mainActivity
+package com.example.chaika.services
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chaika.dataBase.entities.Trip
+import com.example.chaika.dataBase.models.TripRepository
 import kotlinx.coroutines.launch
 
 class TripViewModel(private val repository: TripRepository) : ViewModel() {
