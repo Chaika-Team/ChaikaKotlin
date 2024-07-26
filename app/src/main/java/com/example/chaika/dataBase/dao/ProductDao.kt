@@ -15,7 +15,7 @@ interface ProductDao {
 
 
 
-    @Query("SELECT * FROM products")
+    @Query("SELECT * FROM products ORDER BY title ASC")
     suspend fun getAllProducts(): List<Product>
 
     @Query("SELECT COUNT(*) FROM products")

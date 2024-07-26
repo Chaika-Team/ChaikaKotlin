@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupTripAdapterListener() {
         tripAdapter.listener = object : TripAdapter.OnTripListener {
             override fun onDeleteTrip(trip: Trip) {
-                tripViewModel.deleteTrip(trip)
+                tripViewModel.deleteTripAndActions(trip)
                 Toast.makeText(this@MainActivity, "Поездка удалена", Toast.LENGTH_SHORT).show()
             }
             override fun onRenameTrip(trip: Trip) {

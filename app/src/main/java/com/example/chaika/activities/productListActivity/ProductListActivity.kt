@@ -1,11 +1,15 @@
 package com.example.chaika.activities.productListActivity
 
-import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,8 +43,8 @@ class ProductListActivity : AppCompatActivity() {
         adapter = ProductListAdapter(emptyList()) { product ->
             showQuantityDialog(product)
         }
-        binding.productListRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.productListRecyclerView.adapter = adapter
+        binding.productsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.productsRecyclerView.adapter = adapter
 
         productViewModel.allProducts.observe(this, Observer { products ->
             Log.d("ProductListActivity", "All Products: $products")
@@ -50,40 +54,53 @@ class ProductListActivity : AppCompatActivity() {
         // Инициализируем продукты и загружаем их
         productViewModel.initializeProducts()
         productViewModel.loadAllProducts()
+
+        // Добавляем слушатель для поля поиска
+        binding.searchProduct.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                // Not used
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                // Not used
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                adapter.filter.filter(s.toString())
+            }
+        })
     }
 
     private fun showQuantityDialog(product: Product) {
-        // Создаем билдер для диалога
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Введите количество")
-
         // Инфлейтим кастомный лейаут
-        val view = layoutInflater.inflate(R.layout.dialog_enter_product_quantity, null)
-        val editTextQuantity = view.findViewById<EditText>(R.id.editTextQuantity)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_enter_product_quantity, null)
+        val editTextQuantity = dialogView.findViewById<EditText>(R.id.editTextQuantity)
 
-        builder.setView(view)
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .show()
 
-        builder.setPositiveButton("Подтвердить") { dialog, _ ->
-            // Получаем количество из поля ввода
-            val quantity = editTextQuantity.text.toString().toIntOrNull() ?: 1
-            // Используем CoroutineScope для выполнения операции вставки
-            CoroutineScope(Dispatchers.IO).launch {
-                (application as MyApp).actionRepository.addAction(
-                    tripId = tripId,
-                    productId = product.id,
-                    operationId = 1, // Assuming 1 means "added"
-                    count = quantity
-                )
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.btnAdd).setOnClickListener {
+            val quantity = editTextQuantity.text.toString().toIntOrNull() ?: 0
+            if (quantity in 1..99) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    (application as MyApp).actionRepository.addAction(
+                        tripId = tripId,
+                        productId = product.id,
+                        operationId = 1, // Assuming 1 means "added"
+                        count = quantity
+                    )
+                }
+                alertDialog.dismiss()
+            } else {
+                Toast.makeText(this@ProductListActivity, "Введите корректное количество", Toast.LENGTH_SHORT).show()
             }
-
-            dialog.dismiss()
         }
-
-        builder.setNegativeButton("Отмена") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        // Показываем диалог
-        builder.create().show()
     }
 }

@@ -1,28 +1,27 @@
+// TripAdapter.kt
 package com.example.chaika.activities.mainActivity
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.animation.ValueAnimator
-import android.content.Intent
-import android.view.View
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.core.animation.doOnEnd
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chaika.databinding.TripItemBinding
 import com.example.chaika.dataBase.entities.Trip
 import java.util.Locale
 import com.example.chaika.activities.productTableActivity.ProductTableActivity
+import android.content.Intent
+import com.example.chaika.utils.expand
+import com.example.chaika.utils.collapse
 
 class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterable {
 
     private var trips: List<Trip> = listOf()
     private var allTrips: List<Trip> = listOf()
 
-    // Обновление списка поездок и уведомление RecyclerView об изменении данных
     fun setTrips(trips: List<Trip>) {
         this.trips = trips
-        this.allTrips = ArrayList(trips) // Сохраняем полный список поездок для фильтрации
+        this.allTrips = ArrayList(trips)
         notifyDataSetChanged()
     }
 
@@ -33,13 +32,11 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterab
         fun onRenameTrip(trip: Trip)
     }
 
-    // Создание новых ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
         val binding = TripItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TripViewHolder(binding)
     }
 
-    // Привязка данных к ViewHolder
     override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
         val trip = trips[position]
         holder.bind(trip, listener)
@@ -47,7 +44,6 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterab
 
     override fun getItemCount() = trips.size
 
-    // Реализация метода getFilter для поддержки фильтрации
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
@@ -64,6 +60,7 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterab
                 results.values = filteredList
                 return results
             }
+
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 trips = results?.values as List<Trip>
@@ -78,17 +75,14 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterab
             binding.tripNameTextView.text = trip.name
             binding.tripDateTextView.text = trip.date
 
-
-            // Обработка клика по элементу, раскрывает или скрывает дополнительные действия
             itemView.setOnClickListener {
                 if (binding.expandableSection.visibility == ViewGroup.VISIBLE) {
-                    animateCollapse(binding.expandableSection)
+                    binding.expandableSection.collapse()
                 } else {
-                    animateExpand(binding.expandableSection)
+                    binding.expandableSection.expand()
                 }
             }
 
-            // Обработчики для кнопок переименования и удаления
             binding.renameText.setOnClickListener {
                 listener?.onRenameTrip(trip)
             }
@@ -103,42 +97,6 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterab
                 intent.putExtra("TRIP_ID", trip.id)
                 context.startActivity(intent)
             }
-
-        }
-
-        // Анимация разворачивания секции
-        private fun animateExpand(view: ViewGroup) {
-            view.visibility = ViewGroup.VISIBLE
-            val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec((view.parent as View).width, View.MeasureSpec.EXACTLY)
-            val wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            view.measure(matchParentMeasureSpec, wrapContentMeasureSpec)
-            val targetHeight = view.measuredHeight
-
-            val animation = ValueAnimator.ofInt(0, targetHeight).apply {
-                addUpdateListener { valueAnimator ->
-                    val layoutParams = view.layoutParams
-                    layoutParams.height = valueAnimator.animatedValue as Int
-                    view.layoutParams = layoutParams
-                }
-                duration = 200L
-            }
-            animation.start()
-        }
-
-        // Анимация сворачивания секции
-        private fun animateCollapse(view: ViewGroup) {
-            val initialHeight = view.measuredHeight
-
-            val animation = ValueAnimator.ofInt(initialHeight, 0).apply {
-                addUpdateListener { valueAnimator ->
-                    val layoutParams = view.layoutParams
-                    layoutParams.height = valueAnimator.animatedValue as Int
-                    view.layoutParams = layoutParams
-                }
-                duration = 200L
-                doOnEnd { view.visibility = ViewGroup.GONE }
-            }
-            animation.start()
         }
     }
 }

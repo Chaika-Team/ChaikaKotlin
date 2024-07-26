@@ -12,18 +12,8 @@ import kotlinx.coroutines.launch
 
 class ProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    private val _productsInTrip = MutableLiveData<List<ProductInTrip>>()
-    val productsInTrip: LiveData<List<ProductInTrip>> get() = _productsInTrip
-
     private val _allProducts = MutableLiveData<List<Product>>()
     val allProducts: LiveData<List<Product>> get() = _allProducts
-
-    fun loadProductsByTrip(tripId: Int) {
-        viewModelScope.launch {
-            val productList = productRepository.getProductsByTrip(tripId)
-            _productsInTrip.value = productList
-        }
-    }
 
     fun loadAllProducts() {
         viewModelScope.launch {

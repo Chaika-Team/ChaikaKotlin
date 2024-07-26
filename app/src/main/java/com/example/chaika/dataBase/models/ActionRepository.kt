@@ -26,4 +26,12 @@ class ActionRepository(private val actionDao: ActionDao) {
         actionDao.insert(action)
     }
 
+    suspend fun deleteActionsByTripId(tripId: Int) {
+        actionDao.deleteActionsByTripId(tripId)
+    }
+
+    suspend fun deleteActionsForProductInTrip(productId: Int, tripId: Int) {
+        actionDao.deleteActionsForProductInTrip(productId, tripId)
+    }
+
 }

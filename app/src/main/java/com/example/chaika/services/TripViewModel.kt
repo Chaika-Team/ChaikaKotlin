@@ -19,6 +19,10 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
         repository.deleteTrip(trip)
     }
 
+    fun deleteTripAndActions(trip: Trip) = viewModelScope.launch {
+        repository.deleteTripAndActions(trip)
+    }
+
     fun updateTrip(trip: Trip) = viewModelScope.launch {
         repository.updateTrip(trip)
     }

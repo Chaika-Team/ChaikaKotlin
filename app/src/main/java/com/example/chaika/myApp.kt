@@ -15,8 +15,8 @@ class MyApp : Application() {
 
     // Используем ленивую инициализацию для базы данных и репозиториев.
     val database by lazy { AppDatabase.getInstance(this, applicationScope) }
-    val tripRepository by lazy { TripRepository(database.tripDao()) }
     val productRepository by lazy { ProductRepository(database.productDao()) }
+    val tripRepository by lazy { TripRepository(database.tripDao(), actionRepository) }
     val actionRepository by lazy { ActionRepository(database.actionDao()) }
 
     override fun onCreate() {

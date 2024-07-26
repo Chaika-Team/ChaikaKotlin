@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="30dp"
+    android:orientation="vertical"
+    android:background="@drawable/shape_circle_corner"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Продажа: "
+        android:textColor="@color/text_main"
+        android:paddingVertical="5dp"
+        android:textSize="@dimen/text_size_large"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textViewQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Количество: "
+            android:textColor="@color/text_main"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="20dp"
+            android:textSize="@dimen/text_size_large"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/editTextQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/shape_circle_corner"
+            android:backgroundTint="@color/bg_lighter_2"
+            android:hint="Количество"
+            android:text="1"
+            android:textColor="@color/text_main"
+            android:paddingStart="20dp"
+            android:minHeight="48dp"
+            android:paddingVertical="10dp"
+            android:textColorHint="@color/hint"
+            android:inputType="number" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/text_main"
+        android:layout_marginVertical="8dp"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="5dp">
+
+        <RadioButton
+            android:id="@+id/RbBuyByCash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="12dp"
+
+            android:text="Наличные"
+            android:textSize="@dimen/text_size_large"
+            android:textColor="@color/text_main"/>
+
+        <RadioButton
+            android:id="@+id/RbBuyByCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="12dp"
+
+            android:text="Терминал"
+            android:textSize="@dimen/text_size_large"
+            android:textColor="@color/text_main"/>
+    </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/text_main"
+        android:layout_marginVertical="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Добавить"
+            android:textColor="@color/text_main"
+            android:textSize="@dimen/text_size_large"
+            android:paddingBottom="10dp"
+            android:backgroundTint="@color/floating_btn"/>
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main"
+            android:textSize="@dimen/text_size_large"
+            android:backgroundTint="@color/bg_lighter"
+            android:paddingBottom="10dp"
+            android:text="Отмена" />
+    </LinearLayout>
+</LinearLayout>

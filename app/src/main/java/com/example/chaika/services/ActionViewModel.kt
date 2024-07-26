@@ -18,4 +18,10 @@ class ActionViewModel(private val repository: ActionRepository) : ViewModel() {
             repository.insert(action)
         }
     }
+
+    fun deleteActionsByTripId(tripId: Int) {
+        viewModelScope.launch {
+            repository.deleteActionsByTripId(tripId)
+        }
+    }
 }
