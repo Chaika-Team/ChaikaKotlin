@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.chaika.activities.productTableActivity.ProductInTrip
+import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.dataBase.entities.Product
 
 @Dao
@@ -22,14 +22,16 @@ interface ProductDao {
     suspend fun getProductCount(): Int
 
     @Query("""
-        SELECT products.id, products.title, products.price,
-            SUM(CASE WHEN actions.operation_id = 1 THEN actions.count ELSE 0 END) as added,
-            SUM(CASE WHEN actions.operation_id = 2 THEN actions.count ELSE 0 END) as boughtCash,
-            SUM(CASE WHEN actions.operation_id = 3 THEN actions.count ELSE 0 END) as boughtCard
-        FROM products
-        INNER JOIN actions ON products.id = actions.product_id
-        WHERE actions.trip_id = :tripId
-        GROUP BY products.id, products.title, products.price
-    """)
+    SELECT products.id, products.title, products.price,
+        SUM(CASE WHEN actions.operation_id = 1 THEN actions.count ELSE 0 END) as added,
+        SUM(CASE WHEN actions.operation_id = 2 THEN actions.count ELSE 0 END) as boughtCash,
+        SUM(CASE WHEN actions.operation_id = 3 THEN actions.count ELSE 0 END) as boughtCard,
+        SUM(CASE WHEN actions.operation_id = 4 THEN actions.count ELSE 0 END) as replenished
+    FROM products
+    INNER JOIN actions ON products.id = actions.product_id
+    WHERE actions.trip_id = :tripId
+    GROUP BY products.id, products.title, products.price
+""")
     suspend fun getProductsByTrip(tripId: Int): List<ProductInTrip>
+
 }

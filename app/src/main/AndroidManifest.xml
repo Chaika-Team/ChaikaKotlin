@@ -33,12 +33,6 @@
             android:name=".activities.productListActivity.ProductListActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".tests.TestProductListActivity"
-            android:exported="false" >
-
-
-        </activity>
     </application>
 
 </manifest>

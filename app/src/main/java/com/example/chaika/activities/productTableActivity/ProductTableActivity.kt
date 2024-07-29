@@ -10,16 +10,14 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chaika.MyApp
 import com.example.chaika.activities.productListActivity.ProductListActivity
+import com.example.chaika.adapters.ProductTableAdapter
 import com.example.chaika.databinding.ActivityProductTableBinding
 import com.example.chaika.services.ProductTableViewModel
 import com.example.chaika.services.ProductTableViewModelFactory
-import com.example.chaika.services.ProductViewModel
-import com.example.chaika.services.ProductViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.chaika.utils.ProductInTrip
+import com.example.chaika.utils.dialogs.ReplenishAddProductDialog
+import com.example.chaika.utils.dialogs.SellProductDialog
 
-// ProductTableActivity.kt
 class ProductTableActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProductTableBinding
@@ -44,10 +42,10 @@ class ProductTableActivity : AppCompatActivity() {
         adapter = ProductTableAdapter(
             emptyList(),
             onSellClicked = { product ->
-                // Обработчик для "Продать"
+                showSellProductDialog(product.id)
             },
             onBuyMoreClicked = { product ->
-                // Обработчик для "Добор"
+                showReplenishProductDialog(product)
             },
             onDeleteClicked = { product ->
                 productTableViewModel.deleteActionsForProductInTrip(product.id, tripId)
@@ -81,6 +79,18 @@ class ProductTableActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_ADD_PRODUCT && resultCode == Activity.RESULT_OK) {
             productTableViewModel.loadProductsByTrip(tripId)
         }
+    }
+
+    private fun showSellProductDialog(productId: Int) {
+        SellProductDialog(this) { operationId, quantity ->
+            productTableViewModel.addAction(tripId, productId, operationId, quantity)
+        }.show()
+    }
+
+    private fun showReplenishProductDialog(product: ProductInTrip) {
+        ReplenishAddProductDialog(this, product) { quantity ->
+            productTableViewModel.addAction(tripId, product.id, 4, quantity)
+        }.show()
     }
 
     companion object {

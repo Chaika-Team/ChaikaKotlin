@@ -1,10 +1,11 @@
-package com.example.chaika.activities.productTableActivity
+package com.example.chaika.utils
 
 data class ProductInTrip(
     val id: Int,
     val title: String,
-    val price: Int,
+    val price: Double,
     val added: Int,
     val boughtCash: Int,
-    val boughtCard: Int
+    val boughtCard: Int,
+    val replenished: Int
 )

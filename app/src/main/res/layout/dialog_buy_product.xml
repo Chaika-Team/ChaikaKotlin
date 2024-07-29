@@ -7,7 +7,6 @@
     android:background="@drawable/shape_circle_corner"
     android:padding="10dp">
 
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
@@ -16,7 +15,7 @@
         android:textColor="@color/text_main"
         android:paddingVertical="5dp"
         android:textSize="@dimen/text_size_large"
-        android:gravity="center"/>
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,7 +32,7 @@
             android:paddingVertical="5dp"
             android:paddingHorizontal="20dp"
             android:textSize="@dimen/text_size_large"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <EditText
             android:id="@+id/editTextQuantity"
@@ -57,11 +56,12 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/text_main"
-        android:layout_marginVertical="8dp"/>
+        android:layout_marginVertical="8dp" />
 
     <RadioGroup
+        android:id="@+id/radioGroupPayment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingVertical="5dp">
@@ -72,10 +72,9 @@
             android:layout_height="wrap_content"
             android:paddingVertical="5dp"
             android:paddingHorizontal="12dp"
-
             android:text="Наличные"
             android:textSize="@dimen/text_size_large"
-            android:textColor="@color/text_main"/>
+            android:textColor="@color/text_main" />
 
         <RadioButton
             android:id="@+id/RbBuyByCard"
@@ -83,17 +82,16 @@
             android:layout_height="wrap_content"
             android:paddingVertical="5dp"
             android:paddingHorizontal="12dp"
-
             android:text="Терминал"
             android:textSize="@dimen/text_size_large"
-            android:textColor="@color/text_main"/>
+            android:textColor="@color/text_main" />
     </RadioGroup>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/text_main"
-        android:layout_marginVertical="8dp"/>
+        android:layout_marginVertical="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -109,7 +107,7 @@
             android:textColor="@color/text_main"
             android:textSize="@dimen/text_size_large"
             android:paddingBottom="10dp"
-            android:backgroundTint="@color/floating_btn"/>
+            android:backgroundTint="@color/floating_btn" />
 
         <Button
             android:id="@+id/btnCancel"

@@ -1,5 +1,5 @@
 // TripAdapter.kt
-package com.example.chaika.activities.mainActivity
+package com.example.chaika.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

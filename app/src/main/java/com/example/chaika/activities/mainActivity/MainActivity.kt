@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chaika.MyApp
 import com.example.chaika.R
+import com.example.chaika.adapters.TripAdapter
 import com.example.chaika.databinding.ActivityMainBinding
 import com.example.chaika.dataBase.entities.Trip
 import com.example.chaika.services.TripViewModel

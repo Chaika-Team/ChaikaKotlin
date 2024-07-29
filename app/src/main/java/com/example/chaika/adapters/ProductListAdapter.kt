@@ -1,4 +1,4 @@
-package com.example.chaika.activities.productListActivity
+package com.example.chaika.adapters
 
 import android.util.Log
 import android.view.LayoutInflater

@@ -1,9 +1,10 @@
 // ProductTableAdapter.kt
-package com.example.chaika.activities.productTableActivity
+package com.example.chaika.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.databinding.ItemProductTableBinding
 import com.example.chaika.utils.expand
 import com.example.chaika.utils.collapse
@@ -45,7 +46,12 @@ class ProductTableAdapter(
         fun bind(item: ProductInTrip) {
             binding.textViewProductName.text = item.title
             binding.textViewProductPrice.text = "${item.price}р"
-            binding.textViewProductAdded.text = "Добавлено: ${item.added}"
+            val addedText = if (item.replenished > 0) {
+                "Добавлено: ${item.added} + ${item.replenished}"
+            } else {
+                "Добавлено: ${item.added}"
+            }
+            binding.textViewProductAdded.text = addedText
             binding.textViewProductBoughtCash.text = "Продано наличными: ${item.boughtCash}"
             binding.textViewProductBoughtCard.text = "Продано картой: ${item.boughtCard}"
         }

@@ -1,6 +1,6 @@
 package com.example.chaika.dataBase.models
 
-import com.example.chaika.activities.productTableActivity.ProductInTrip
+import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.dataBase.dao.ProductDao
 import com.example.chaika.dataBase.entities.Product
 
