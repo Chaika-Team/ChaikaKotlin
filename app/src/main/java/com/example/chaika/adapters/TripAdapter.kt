@@ -1,18 +1,18 @@
-// TripAdapter.kt
 package com.example.chaika.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chaika.databinding.TripItemBinding
-import com.example.chaika.dataBase.entities.Trip
-import java.util.Locale
 import com.example.chaika.activities.productTableActivity.ProductTableActivity
-import android.content.Intent
-import com.example.chaika.utils.expand
+import com.example.chaika.dataBase.entities.Trip
+import com.example.chaika.databinding.TripItemBinding
+import com.example.chaika.utils.GenericFilter
 import com.example.chaika.utils.collapse
+import com.example.chaika.utils.expand
+import java.util.Locale
 
 class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterable {
 
@@ -45,28 +45,15 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>(), Filterab
     override fun getItemCount() = trips.size
 
     override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filteredList = if (constraint.isNullOrBlank()) {
-                    allTrips
-                } else {
-                    val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim()
-                    allTrips.filter {
-                        it.name.lowercase(Locale.getDefault()).contains(filterPattern)
-                    }
-                }
-
-                val results = FilterResults()
-                results.values = filteredList
-                return results
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                trips = results?.values as List<Trip>
+        return GenericFilter(
+            originalList = allTrips,
+            filterCriteria = { trip, query -> trip.name.lowercase(Locale.getDefault()).contains(query) },
+            onFiltered = { filteredList ->
+                trips = filteredList
                 notifyDataSetChanged()
-            }
-        }
+            },
+            clazz = Trip::class.java
+        )
     }
 
     class TripViewHolder(private val binding: TripItemBinding) : RecyclerView.ViewHolder(binding.root) {

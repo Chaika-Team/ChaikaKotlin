@@ -9,4 +9,9 @@
     <string name="create">Добавить</string>
     <string name="rename">Изменить</string>
 
+    <!-- Диалог AddRenameTripDialog -->
+    <string name="enter_trip_name">Введите название поездки</string>
+    <string name="trip_added">Поездка добавлена</string>
+    <string name="error_performing_operation">Ошибка при выполнении операции: %1$s</string>
+
 </resources>
