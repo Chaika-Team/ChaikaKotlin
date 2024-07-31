@@ -5,23 +5,51 @@ on:
     branches:
       - master
 
-
 jobs:
   build:
-    name: Build and analyze
+    name: Build, test, and analyze
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: sonarsource/sonarqube-scan-action@master
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis relevance
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run unit tests
+        run: ./gradlew test
+
+      - name: Run SonarQube scan
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
+      
+      # Uncomment the following lines if you wish to fail your job when the Quality Gate is red
+      # - name: Check the Quality Gate status
+      #   uses: sonarsource/sonarqube-quality-gate-action@master
       #   timeout-minutes: 5
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
