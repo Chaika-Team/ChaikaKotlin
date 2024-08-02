@@ -3,7 +3,6 @@ package com.example.chaika.activities.productTableActivity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -37,7 +36,6 @@ class ProductTableActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         tripId = intent.getIntExtra("TRIP_ID", 0)
-        Log.d("ProductTableActivity", "Trip ID: $tripId")
 
         adapter = ProductTableAdapter(
             emptyList(),
@@ -56,7 +54,6 @@ class ProductTableActivity : AppCompatActivity() {
         binding.productTableRecyclerView.adapter = adapter
 
         productTableViewModel.productsInTrip.observe(this, Observer { products ->
-            Log.d("ProductTableActivity", "Products in trip: $products")
             adapter.updateProducts(products)
         })
 

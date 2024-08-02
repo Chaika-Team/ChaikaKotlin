@@ -17,6 +17,16 @@ class ProductListViewModel(
     private val _allProducts = MutableLiveData<List<Product>>()
     val allProducts: LiveData<List<Product>> = _allProducts
 
+    private val _filteredProducts = MutableLiveData<List<Product>>(emptyList())
+    val filteredProducts: LiveData<List<Product>> = _filteredProducts
+
+    init {
+        // Подписка на изменения в allProducts
+        allProducts.observeForever { products ->
+            _filteredProducts.value = products ?: emptyList()
+        }
+    }
+
     fun initializeProducts() {
         viewModelScope.launch {
             val productCount = productRepository.getProductCount()
@@ -43,6 +53,17 @@ class ProductListViewModel(
     fun addAction(tripId: Int, productId: Int, operationId: Int, count: Int) {
         viewModelScope.launch {
             actionRepository.addAction(tripId, productId, operationId, count)
+        }
+    }
+
+    fun filterProducts(query: String) {
+        val allProductsList = allProducts.value ?: emptyList()
+        _filteredProducts.value = if (query.isEmpty()) {
+            allProductsList
+        } else {
+            allProductsList.filter { product ->
+                product.title.lowercase().contains(query.lowercase())
+            }
         }
     }
 }
