@@ -25,9 +25,14 @@ class ProductListViewModel(
         allProducts.observeForever { products ->
             _filteredProducts.value = products ?: emptyList()
         }
+
+        // Инициализация продуктов и загрузка всех продуктов
+        initializeProducts()
+        loadAllProducts()
     }
 
-    fun initializeProducts() {
+    // Текущие предзаполнение создано для тестирования
+    private fun initializeProducts() {
         viewModelScope.launch {
             val productCount = productRepository.getProductCount()
             if (productCount == 0) {
@@ -43,7 +48,7 @@ class ProductListViewModel(
         }
     }
 
-    fun loadAllProducts() {
+    private fun loadAllProducts() {
         viewModelScope.launch {
             val products = productRepository.getAllProducts()
             _allProducts.postValue(products)

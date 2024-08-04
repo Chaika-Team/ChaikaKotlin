@@ -35,7 +35,7 @@ class ProductListAdapter(
             binding.productTitleTextView.text = product.title
             binding.productPriceTextView.text = product.price.toString()
 
-            itemView.setOnClickListener {
+            binding.root.setOnClickListener {
                 Log.d("ProductViewHolder", "Product clicked: ${product.title} with ID: ${product.id}")
                 onProductSelected(product)
             }

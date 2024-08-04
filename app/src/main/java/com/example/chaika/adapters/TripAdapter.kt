@@ -1,10 +1,8 @@
 package com.example.chaika.adapters
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chaika.activities.productTableActivity.ProductTableActivity
 import com.example.chaika.dataBase.entities.Trip
 import com.example.chaika.databinding.TripItemBinding
 import com.example.chaika.utils.collapse
@@ -39,7 +37,7 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
             binding.tripNameTextView.text = trip.name
             binding.tripDateTextView.text = trip.date
 
-            itemView.setOnClickListener {
+            binding.root.setOnClickListener {
                 if (binding.expandableSection.visibility == ViewGroup.VISIBLE) {
                     binding.expandableSection.collapse()
                 } else {

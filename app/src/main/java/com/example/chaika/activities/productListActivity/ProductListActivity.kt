@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chaika.MyApp
 import com.example.chaika.adapters.ProductListAdapter
@@ -40,10 +39,6 @@ class ProductListActivity : AppCompatActivity() {
 
         // Фильтрация списка продуктов в зависимости от ввода в поле поиска
         setupSearchProductTextWatcher()
-
-        // Инициализируем продукты и загружаем их
-        productListViewModel.initializeProducts()
-        productListViewModel.loadAllProducts()
     }
 
     private fun setupSearchProductTextWatcher() {
@@ -59,9 +54,9 @@ class ProductListActivity : AppCompatActivity() {
         }
         binding.productsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.productsRecyclerView.adapter = adapter
-        productListViewModel.filteredProducts.observe(this, Observer { products ->
-            adapter.updateProducts(products)
-        })
+        productListViewModel.filteredProducts.observe(this) { products ->
+            products?.let { adapter.updateProducts(it) }
+        }
     }
 
     private fun showQuantityDialog(product: Product) {
