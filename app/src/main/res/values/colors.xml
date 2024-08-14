@@ -4,7 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="bg">#201E28</color>
     <color name="bg_lighter">#34323C</color>
+    <color name="bg_lighter_2">#464451</color>
     <color name="text_main">#FFEBDD</color>
     <color name="hint">#6C6C6C</color>
+    <color name="floating_btn">#DF8317</color>
+    <color name="danger">#D8472D</color>
 
 </resources>

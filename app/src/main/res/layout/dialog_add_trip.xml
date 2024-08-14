@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="30dp"
+    android:orientation="vertical"
+    android:background="@drawable/shape_circle_corner"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Дайте название вашей поездке"
+        android:textColor="@color/text_main"
+        android:paddingVertical="5dp"
+        android:textSize="@dimen/text_size_large"
+        android:gravity="center"/>
+
+    <EditText
+        android:id="@+id/setTripName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/shape_circle_corner"
+        android:backgroundTint="@color/bg_lighter_2"
+        android:hint="@string/edit_text_trip_hint_dialog"
+        android:textColor="@color/text_main"
+        android:paddingStart="20dp"
+        android:minHeight="48dp"
+        android:paddingVertical="10dp"
+        android:textColorHint="@color/hint" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Создать"
+            android:textColor="@color/text_main"
+            android:textSize="@dimen/text_size_large"
+            android:paddingBottom="10dp"
+            android:backgroundTint="@color/floating_btn"/>
+
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main"
+            android:textSize="@dimen/text_size_large"
+            android:backgroundTint="@color/bg_lighter"
+            android:paddingBottom="10dp"
+            android:text="Отмена" />
+
+
+    </LinearLayout>
+</LinearLayout>
