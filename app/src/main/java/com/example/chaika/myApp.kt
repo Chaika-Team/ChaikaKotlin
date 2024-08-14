@@ -5,9 +5,11 @@ import com.example.chaika.dataBase.AppDatabase
 import com.example.chaika.dataBase.models.TripRepository
 import com.example.chaika.dataBase.models.ProductRepository
 import com.example.chaika.dataBase.models.ActionRepository
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
+@HiltAndroidApp
 class MyApp : Application() {
 
     // Создаем CoroutineScope для жизненного цикла приложения.
@@ -16,7 +18,7 @@ class MyApp : Application() {
     // Используем ленивую инициализацию для базы данных и репозиториев.
     val database by lazy { AppDatabase.getInstance(this, applicationScope) }
     val productRepository by lazy { ProductRepository(database.productDao()) }
-    val tripRepository by lazy { TripRepository(database.tripDao(), actionRepository) }
+    val tripRepository by lazy { TripRepository(database.tripDao()) }
     val actionRepository by lazy { ActionRepository(database.actionDao()) }
 
     override fun onCreate() {

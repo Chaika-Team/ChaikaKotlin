@@ -4,6 +4,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("kotlin-kapt") // для использования Kapt
+    id("com.google.dagger.hilt.android") // добавляем плагин Hilt здесь
 }
 
 android {
@@ -41,7 +43,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    
+
 }
 
 dependencies {
@@ -99,4 +101,7 @@ dependencies {
     // Lifecycle components
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.48")
 }

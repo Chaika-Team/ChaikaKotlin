@@ -1,14 +1,14 @@
 package com.example.chaika.dataBase.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.chaika.dataBase.entities.Trip
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TripDao {
 
     @Query("SELECT * FROM trips ORDER BY id DESC")
-    fun getAllTrips(): LiveData<List<Trip>>
+    fun getAllTrips(): Flow<List<Trip>> // Используем Flow вместо LiveData
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrip(trip: Trip): Long // Возвращает ID вставленной поездки
@@ -20,7 +20,7 @@ interface TripDao {
     suspend fun deleteTrip(trip: Trip)
 
     @Query("SELECT * FROM trips WHERE id = :tripId")
-    fun getTrip(tripId: Int): LiveData<Trip>
+    fun getTrip(tripId: Int): Flow<Trip> // Здесь тоже можно использовать Flow
 
     // Дополнительные методы по необходимости...
 }

@@ -1,13 +1,15 @@
 package com.example.chaika.dataBase.models
 
-import androidx.lifecycle.LiveData
 import com.example.chaika.dataBase.dao.TripDao
 import com.example.chaika.dataBase.entities.Trip
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 
+class TripRepository(private val tripDao: TripDao) {
 
-class TripRepository(private val tripDao: TripDao, private val actionRepository: ActionRepository) {
+    fun getAllTrips(): Flow<List<Trip>> {
+        return tripDao.getAllTrips()
+    }
+
     suspend fun insertTrip(trip: Trip) {
         tripDao.insertTrip(trip)
     }
@@ -16,16 +18,11 @@ class TripRepository(private val tripDao: TripDao, private val actionRepository:
         tripDao.deleteTrip(trip)
     }
 
-    suspend fun updateTrip(trip: Trip){
+//    suspend fun deleteTripAndActions(trip: Trip) {
+//        tripDao.deleteTripAndActions(trip)
+//    }
+
+    suspend fun updateTrip(trip: Trip) {
         tripDao.updateTrip(trip)
     }
-
-    suspend fun deleteTripAndActions(trip: Trip) {
-        withContext(Dispatchers.IO) {
-            actionRepository.deleteActionsByTripId(trip.id)
-            tripDao.deleteTrip(trip)
-        }
-    }
-
-    fun getAllTrips(): LiveData<List<Trip>> = tripDao.getAllTrips()
 }
