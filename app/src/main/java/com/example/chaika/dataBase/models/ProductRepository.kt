@@ -3,6 +3,7 @@ package com.example.chaika.dataBase.models
 import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.dataBase.dao.ProductDao
 import com.example.chaika.dataBase.entities.Product
+import kotlinx.coroutines.flow.Flow
 
 class ProductRepository(private val productDao: ProductDao) {
 
@@ -10,7 +11,7 @@ class ProductRepository(private val productDao: ProductDao) {
         return productDao.getProductsByTrip(tripId)
     }
 
-    suspend fun getAllProducts(): List<Product> {
+    suspend fun getAllProducts(): Flow<List<Product>> {
         return productDao.getAllProducts()
     }
 

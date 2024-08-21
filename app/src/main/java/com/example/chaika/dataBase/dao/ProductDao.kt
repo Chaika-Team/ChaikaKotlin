@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.dataBase.entities.Product
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
@@ -13,10 +14,8 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(products: List<Product>)
 
-
-
     @Query("SELECT * FROM products ORDER BY title ASC")
-    suspend fun getAllProducts(): List<Product>
+    fun getAllProducts(): Flow<List<Product>>
 
     @Query("SELECT COUNT(*) FROM products")
     suspend fun getProductCount(): Int

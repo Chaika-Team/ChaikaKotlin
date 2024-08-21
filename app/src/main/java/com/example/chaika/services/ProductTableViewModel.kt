@@ -4,35 +4,40 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chaika.usecases.AddProductActionUseCase
+import com.example.chaika.usecases.DeleteActionsForProductInTripUseCase
+import com.example.chaika.usecases.GetProductsByTripUseCase
 import com.example.chaika.utils.ProductInTrip
-import com.example.chaika.dataBase.models.ActionRepository
-import com.example.chaika.dataBase.models.ProductRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductTableViewModel(
-    private val productRepository: ProductRepository,
-    private val actionRepository: ActionRepository
+@HiltViewModel
+class ProductTableViewModel @Inject constructor(
+    private val getProductsByTripUseCase: GetProductsByTripUseCase,
+    private val deleteActionsForProductInTripUseCase: DeleteActionsForProductInTripUseCase,
+    private val addProductActionUseCase: AddProductActionUseCase
 ) : ViewModel() {
 
     val productsInTrip: LiveData<List<ProductInTrip>> = MutableLiveData()
 
     fun loadProductsByTrip(tripId: Int) {
         viewModelScope.launch {
-            val products = productRepository.getProductsByTrip(tripId)
+            val products = getProductsByTripUseCase.execute(tripId)
             (productsInTrip as MutableLiveData).postValue(products)
         }
     }
 
     fun deleteActionsForProductInTrip(productId: Int, tripId: Int) {
         viewModelScope.launch {
-            actionRepository.deleteActionsForProductInTrip(productId, tripId)
+            deleteActionsForProductInTripUseCase.execute(productId, tripId)
             loadProductsByTrip(tripId)
         }
     }
 
     fun addAction(tripId: Int, productId: Int, operationId: Int, count: Int) {
         viewModelScope.launch {
-            actionRepository.addAction(tripId, productId, operationId, count)
+            addProductActionUseCase.execute(tripId, productId, operationId, count)
             loadProductsByTrip(tripId)
         }
     }

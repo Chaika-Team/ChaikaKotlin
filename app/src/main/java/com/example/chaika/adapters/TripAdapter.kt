@@ -8,16 +8,14 @@ import com.example.chaika.databinding.TripItemBinding
 import com.example.chaika.utils.collapse
 import com.example.chaika.utils.expand
 
-class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
+class TripAdapter(private val listener: TripListener) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     private var trips: List<Trip> = listOf()
 
-    fun setTrips(trips: List<Trip>) {
-        this.trips = trips
-        notifyDataSetChanged()
+    fun setTrips(newTrips: List<Trip>) {
+        trips = newTrips
+        notifyDataSetChanged() // Простое обновление списка
     }
-
-    lateinit var listener: TripListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
         val binding = TripItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -29,7 +27,7 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
         holder.bind(trip, listener)
     }
 
-    override fun getItemCount() = trips.size
+    override fun getItemCount(): Int = trips.size
 
     class TripViewHolder(private val binding: TripItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -37,13 +35,7 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
             binding.tripNameTextView.text = trip.name
             binding.tripDateTextView.text = trip.date
 
-            binding.root.setOnClickListener {
-                if (binding.expandableSection.visibility == ViewGroup.VISIBLE) {
-                    binding.expandableSection.collapse()
-                } else {
-                    binding.expandableSection.expand()
-                }
-            }
+            setupExpandableSection()
 
             binding.renameText.setOnClickListener {
                 listener.onRenameTrip(trip)
@@ -55,6 +47,16 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
             binding.productsText.setOnClickListener {
                 listener.onOpenProducts(trip.id)
+            }
+        }
+
+        private fun setupExpandableSection() {
+            binding.root.setOnClickListener {
+                if (binding.expandableSection.visibility == ViewGroup.VISIBLE) {
+                    binding.expandableSection.collapse()
+                } else {
+                    binding.expandableSection.expand()
+                }
             }
         }
     }

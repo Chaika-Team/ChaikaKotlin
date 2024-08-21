@@ -4,26 +4,24 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.chaika.MyApp
 import com.example.chaika.adapters.ProductListAdapter
 import com.example.chaika.dataBase.entities.Product
 import com.example.chaika.databinding.ActivityProductListBinding
 import com.example.chaika.services.ProductListViewModel
-import com.example.chaika.services.ProductListViewModelFactory
 import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.utils.dialogs.ReplenishAddProductDialog
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ProductListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProductListBinding
-    private lateinit var adapter: ProductListAdapter
-    private val productListViewModel: ProductListViewModel by viewModels {
-        ProductListViewModelFactory(
-            (application as MyApp).productRepository,
-            (application as MyApp).actionRepository
-        )
-    }
+    private lateinit var productListAdapter: ProductListAdapter
+    private val productListViewModel: ProductListViewModel by viewModels()
 
     private var tripId: Int = 0
 
@@ -32,12 +30,9 @@ class ProductListActivity : AppCompatActivity() {
         binding = ActivityProductListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        tripId = intent.getIntExtra("TRIP_ID", 0) // Получаем tripId из intent
+        tripId = intent.getIntExtra("TRIP_ID", 0)
 
-        // Настройка отображения списка продуктов
         setupRecyclerView()
-
-        // Фильтрация списка продуктов в зависимости от ввода в поле поиска
         setupSearchProductTextWatcher()
     }
 
@@ -47,15 +42,16 @@ class ProductListActivity : AppCompatActivity() {
         }
     }
 
-    // Настройка RecyclerView и подписка на LiveData с продуктами
     private fun setupRecyclerView() {
-        adapter = ProductListAdapter(emptyList()) { product ->
+        productListAdapter = ProductListAdapter(emptyList()) { product ->
             showQuantityDialog(product)
         }
         binding.productsRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.productsRecyclerView.adapter = adapter
-        productListViewModel.filteredProducts.observe(this) { products ->
-            products?.let { adapter.updateProducts(it) }
+        binding.productsRecyclerView.adapter = productListAdapter
+        lifecycleScope.launch {
+            productListViewModel.filteredProducts.collect { products ->
+                productListAdapter.setProducts(products)
+            }
         }
     }
 
@@ -65,7 +61,6 @@ class ProductListActivity : AppCompatActivity() {
         }.show()
     }
 
-    // Дополнительная функция для преобразования Product в ProductInTrip
     private fun Product.toProductInTrip(): ProductInTrip {
         return ProductInTrip(id, title, price, 0, 0, 0, 0)
     }

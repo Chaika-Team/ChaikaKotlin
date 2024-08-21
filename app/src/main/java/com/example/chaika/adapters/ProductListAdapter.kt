@@ -12,7 +12,7 @@ class ProductListAdapter(
     private val onProductSelected: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductListAdapter.ProductViewHolder>() {
 
-    fun updateProducts(newProducts: List<Product>) {
+    fun setProducts(newProducts: List<Product>) {
         products = newProducts
         notifyDataSetChanged()
     }
