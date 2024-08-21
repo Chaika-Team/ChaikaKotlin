@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Chaika"
         tools:targetApi="31" >
         <activity
-            android:name=".activities.mainActivity.MainActivity"
+            android:name=".ui.activities.mainActivity.MainActivity"
             android:exported="true" >
 
             <intent-filter>
@@ -26,11 +26,11 @@
         </activity>
 
         <activity
-            android:name=".activities.productTableActivity.ProductTableActivity"
+            android:name=".ui.activities.productTableActivity.ProductTableActivity"
             android:exported="false" />
 
         <activity
-            android:name=".activities.productListActivity.ProductListActivity"
+            android:name=".ui.activities.productListActivity.ProductListActivity"
             android:exported="false" />
 
     </application>

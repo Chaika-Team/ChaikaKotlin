@@ -1,10 +1,10 @@
 package com.example.chaika
 
 import android.app.Application
-import com.example.chaika.dataBase.AppDatabase
-import com.example.chaika.dataBase.models.TripRepository
-import com.example.chaika.dataBase.models.ProductRepository
-import com.example.chaika.dataBase.models.ActionRepository
+import com.example.chaika.data.room.AppDatabase
+import com.example.chaika.data.room.repo.TripRepository
+import com.example.chaika.data.room.repo.ProductRepository
+import com.example.chaika.data.room.repo.ActionRepository
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
