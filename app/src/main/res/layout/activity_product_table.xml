@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg"
     android:orientation="vertical"
-    tools:context=".activities.productTableActivity.ProductTableActivity">
+    tools:context=".ui.activities.productTableActivity.ProductTableActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productTableRecyclerView"

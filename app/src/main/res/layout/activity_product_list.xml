@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
-    tools:context=".activities.productListActivity.ProductListActivity">
+    tools:context=".ui.activities.productListActivity.ProductListActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
