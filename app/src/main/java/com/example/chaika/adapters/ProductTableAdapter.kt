@@ -4,18 +4,19 @@ package com.example.chaika.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.databinding.ItemProductTableBinding
-import com.example.chaika.utils.expand
+import com.example.chaika.services.ProductTableViewModel
+import com.example.chaika.utils.ProductInTrip
 import com.example.chaika.utils.collapse
+import com.example.chaika.utils.dialogs.ReplenishAddProductDialog
+import com.example.chaika.utils.dialogs.SellProductDialog
+import com.example.chaika.utils.expand
 
-// ProductTableAdapter.kt
 class ProductTableAdapter(
-    private var products: List<ProductInTrip>,
-    private val onSellClicked: (ProductInTrip) -> Unit,
-    private val onBuyMoreClicked: (ProductInTrip) -> Unit,
-    private val onDeleteClicked: (ProductInTrip) -> Unit
+    private val listener: ProductTableListener
 ) : RecyclerView.Adapter<ProductTableAdapter.ProductTableViewHolder>() {
+
+    private var products: List<ProductInTrip> = listOf()
 
     inner class ProductTableViewHolder(private val binding: ItemProductTableBinding) : RecyclerView.ViewHolder(binding.root) {
         private var isExpanded: Boolean = false
@@ -31,15 +32,15 @@ class ProductTableAdapter(
             }
 
             binding.sellText.setOnClickListener {
-                onSellClicked(products[adapterPosition])
+                listener.onSellProduct(products[adapterPosition])
             }
 
             binding.buyMoreText.setOnClickListener {
-                onBuyMoreClicked(products[adapterPosition])
+                listener.onReplenishProduct(products[adapterPosition])
             }
 
             binding.deleteText.setOnClickListener {
-                onDeleteClicked(products[adapterPosition])
+                listener.onDeleteProduct(products[adapterPosition])
             }
         }
 
@@ -68,8 +69,15 @@ class ProductTableAdapter(
 
     override fun getItemCount(): Int = products.size
 
-    fun updateProducts(newProducts: List<ProductInTrip>) {
+    fun setProducts(newProducts: List<ProductInTrip>) {
         products = newProducts
         notifyDataSetChanged()
     }
+}
+
+// Интерфейс ProductTableListener
+interface ProductTableListener {
+    fun onSellProduct(product: ProductInTrip)
+    fun onReplenishProduct(product: ProductInTrip)
+    fun onDeleteProduct(product: ProductInTrip)
 }

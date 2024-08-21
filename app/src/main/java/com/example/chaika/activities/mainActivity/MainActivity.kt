@@ -18,16 +18,18 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var tripAdapter: TripAdapter
 
     // Инжекция ViewModel с использованием Hilt
     private val tripViewModel: TripViewModel by viewModels()
-
-    private val tripAdapter = TripAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Инициализация адаптера после того, как ViewModel доступен
+        tripAdapter = TripAdapter(TripListenerImpl(this, tripViewModel))
 
         // Настройка отображения списка поездок
         setupRecyclerView()
@@ -37,9 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         // Обработка нажатия кнопки добавления новой поездки
         setupAddTripButton()
-
-        // Назначаем слушателя адаптеру
-        tripAdapter.listener = TripListenerImpl(this, tripViewModel)
     }
 
     private fun setupSearchTripTextWatcher() {

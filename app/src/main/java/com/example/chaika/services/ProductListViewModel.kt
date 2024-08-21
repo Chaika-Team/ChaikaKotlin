@@ -1,74 +1,64 @@
 package com.example.chaika.services
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chaika.dataBase.entities.Product
-import com.example.chaika.dataBase.models.ActionRepository
-import com.example.chaika.dataBase.models.ProductRepository
+import com.example.chaika.usecases.AddProductActionUseCase
+import com.example.chaika.usecases.FilterProductsUseCase
+import com.example.chaika.usecases.GetAllProductsUseCase
+import com.example.chaika.usecases.InsertProductsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductListViewModel(
-    private val productRepository: ProductRepository,
-    private val actionRepository: ActionRepository
+@HiltViewModel
+class ProductListViewModel @Inject constructor(
+    private val getAllProductsUseCase: GetAllProductsUseCase,
+    private val insertProductsUseCase: InsertProductsUseCase,
+    private val addProductActionUseCase: AddProductActionUseCase,
+    private val filterProductsUseCase: FilterProductsUseCase
 ) : ViewModel() {
 
-    private val _allProducts = MutableLiveData<List<Product>>()
-    val allProducts: LiveData<List<Product>> = _allProducts
-
-    private val _filteredProducts = MutableLiveData<List<Product>>(emptyList())
-    val filteredProducts: LiveData<List<Product>> = _filteredProducts
+    private val _allProducts = MutableStateFlow<List<Product>>(emptyList())
+    private val _filteredProducts = MutableStateFlow<List<Product>>(emptyList())
+    val filteredProducts: StateFlow<List<Product>> = _filteredProducts.asStateFlow()
 
     init {
-        // Подписка на изменения в allProducts
-        allProducts.observeForever { products ->
-            _filteredProducts.value = products ?: emptyList()
-        }
-
-        // Инициализация продуктов и загрузка всех продуктов
-        initializeProducts()
-        loadAllProducts()
-    }
-
-    // Текущие предзаполнение создано для тестирования
-    private fun initializeProducts() {
         viewModelScope.launch {
-            val productCount = productRepository.getProductCount()
-            if (productCount == 0) {
-                val initialProducts = listOf(
-                    Product(id = 1, title = "Круассаны", price = 110.0),
-                    Product(id = 2, title = "Фисташки", price = 55.0),
-                    Product(id = 3, title = "Кофе Жокей", price = 30.0),
-                    Product(id = 4, title = "Чай чёрный", price = 25.0),
-                    Product(id = 5, title = "Сахар", price = 10.0)
-                )
-                productRepository.insertAll(initialProducts)
+            initializeProducts()
+            getAllProductsUseCase.execute().collect { products ->
+                _allProducts.value = products
+                _filteredProducts.value = products
             }
         }
     }
 
-    private fun loadAllProducts() {
-        viewModelScope.launch {
-            val products = productRepository.getAllProducts()
-            _allProducts.postValue(products)
-        }
-    }
-
-    fun addAction(tripId: Int, productId: Int, operationId: Int, count: Int) {
-        viewModelScope.launch {
-            actionRepository.addAction(tripId, productId, operationId, count)
-        }
+    fun addAction(tripId: Int, productId: Int, operationId: Int, count: Int) = viewModelScope.launch {
+        addProductActionUseCase.execute(tripId, productId, operationId, count)
     }
 
     fun filterProducts(query: String) {
-        val allProductsList = allProducts.value ?: emptyList()
-        _filteredProducts.value = if (query.isEmpty()) {
-            allProductsList
+        if (query.isEmpty()) {
+            _filteredProducts.value = _allProducts.value
         } else {
-            allProductsList.filter { product ->
-                product.title.lowercase().contains(query.lowercase())
-            }
+            _filteredProducts.value = filterProductsUseCase.execute(_allProducts.value, query)
+        }
+    }
+
+    private fun initializeProducts() = viewModelScope.launch {
+        val productCount = _allProducts.value.size
+        if (productCount == 0) {
+            val initialProducts = listOf(
+                Product(id = 1, title = "Круассаны", price = 110.0),
+                Product(id = 2, title = "Фисташки", price = 55.0),
+                Product(id = 3, title = "Кофе Жокей", price = 30.0),
+                Product(id = 4, title = "Чай чёрный", price = 25.0),
+                Product(id = 5, title = "Сахар", price = 10.0)
+            )
+            insertProductsUseCase.execute(initialProducts)
         }
     }
 }

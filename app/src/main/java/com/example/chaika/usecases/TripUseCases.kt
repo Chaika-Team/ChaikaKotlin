@@ -4,20 +4,25 @@ import com.example.chaika.dataBase.entities.Trip
 import com.example.chaika.dataBase.models.ActionRepository
 import com.example.chaika.dataBase.models.TripRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class GetAllTripsUseCase(private val repository: TripRepository) {
+class GetAllTripsUseCase @Inject constructor(
+    private val repository: TripRepository
+) {
     fun execute(): Flow<List<Trip>> {
         return repository.getAllTrips()
     }
 }
 
-class InsertTripUseCase(private val repository: TripRepository) {
+class InsertTripUseCase @Inject constructor(
+    private val repository: TripRepository
+) {
     suspend fun execute(trip: Trip) {
         repository.insertTrip(trip)
     }
 }
 
-class DeleteTripAndActionsUseCase(
+class DeleteTripAndActionsUseCase @Inject constructor(
     private val tripRepository: TripRepository,
     private val actionRepository: ActionRepository
 ) {
@@ -29,13 +34,15 @@ class DeleteTripAndActionsUseCase(
     }
 }
 
-class UpdateTripUseCase(private val repository: TripRepository) {
+class UpdateTripUseCase @Inject constructor(
+    private val repository: TripRepository
+) {
     suspend fun execute(trip: Trip) {
         repository.updateTrip(trip)
     }
 }
 
-class FilterTripsUseCase {
+class FilterTripsUseCase @Inject constructor() {
     fun execute(allTrips: List<Trip>, query: String): List<Trip> {
         return if (query.isEmpty()) {
             allTrips
