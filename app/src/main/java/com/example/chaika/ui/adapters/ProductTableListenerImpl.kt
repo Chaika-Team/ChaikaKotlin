@@ -3,7 +3,7 @@ package com.example.chaika.ui.adapters
 
 import android.content.Context
 import com.example.chaika.ui.view_models.ProductTableViewModel
-import com.example.chaika.models.ProductInTrip
+import com.example.chaika.domain.models.old.ProductInTrip
 import com.example.chaika.ui.dialogs.ReplenishAddProductDialog
 import com.example.chaika.ui.dialogs.SellProductDialog
 

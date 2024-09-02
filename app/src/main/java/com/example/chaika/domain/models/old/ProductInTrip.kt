@@ -1,4 +1,4 @@
-package com.example.chaika.models
+package com.example.chaika.domain.models.old
 
 data class ProductInTrip(
     val id: Int,

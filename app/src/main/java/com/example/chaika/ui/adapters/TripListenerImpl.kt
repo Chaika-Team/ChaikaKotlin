@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.example.chaika.ui.activities.productTableActivity.ProductTableActivity
-import com.example.chaika.data.room.entities.Trip
+import com.example.chaika.domain.models.old.Trip
 import com.example.chaika.ui.view_models.TripViewModel
 import com.example.chaika.ui.dialogs.AddRenameTripDialog
 

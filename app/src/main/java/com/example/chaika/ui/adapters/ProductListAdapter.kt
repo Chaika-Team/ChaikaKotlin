@@ -4,7 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chaika.data.room.entities.Product
+import com.example.chaika.data.room.entities.old.Product
 import com.example.chaika.databinding.ListProductItemBinding
 
 class ProductListAdapter(

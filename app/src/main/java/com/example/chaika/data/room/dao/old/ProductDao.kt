@@ -1,11 +1,11 @@
-package com.example.chaika.data.room.dao
+package com.example.chaika.data.room.dao.old
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.chaika.models.ProductInTrip
-import com.example.chaika.data.room.entities.Product
+import com.example.chaika.domain.models.old.ProductInTrip
+import com.example.chaika.data.room.entities.old.Product
 import kotlinx.coroutines.flow.Flow
 
 @Dao

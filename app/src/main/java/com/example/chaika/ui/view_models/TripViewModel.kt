@@ -2,13 +2,12 @@ package com.example.chaika.ui.view_models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chaika.data.room.entities.Trip
-import com.example.chaika.domain.usecases.DeleteTripAndActionsUseCase
-import com.example.chaika.domain.usecases.FilterTripsUseCase
-import com.example.chaika.domain.usecases.GetAllTripsUseCase
-import com.example.chaika.domain.usecases.InsertTripUseCase
-import com.example.chaika.domain.usecases.UpdateTripUseCase
-import com.example.chaika.usecases.*
+import com.example.chaika.domain.models.old.Trip
+import com.example.chaika.domain.usecases.old.DeleteTripAndActionsUseCase
+import com.example.chaika.domain.usecases.old.FilterTripsUseCase
+import com.example.chaika.domain.usecases.old.GetAllTripsUseCase
+import com.example.chaika.domain.usecases.old.InsertTripUseCase
+import com.example.chaika.domain.usecases.old.UpdateTripUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +24,7 @@ class TripViewModel @Inject constructor(
     private val filterTripsUseCase: FilterTripsUseCase
 ) : ViewModel() {
 
-    private val _allTrips = MutableStateFlow<List<Trip>>(emptyList())
+    private val _allTrips = MutableStateFlow<List<Trip>>(emptyList()) // Доменная модель
     private val _filteredTrips = MutableStateFlow<List<Trip>>(emptyList())
     val filteredTrips: StateFlow<List<Trip>> = _filteredTrips.asStateFlow()
 
@@ -52,10 +51,8 @@ class TripViewModel @Inject constructor(
 
     fun filterTrips(query: String) {
         if (query.isEmpty()) {
-            // Если запрос пустой, возвращаем весь список
             _filteredTrips.value = _allTrips.value
         } else {
-            // Если есть запрос, фильтруем список
             _filteredTrips.value = filterTripsUseCase.execute(_allTrips.value, query)
         }
     }

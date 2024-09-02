@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chaika.databinding.ItemProductTableBinding
-import com.example.chaika.models.ProductInTrip
+import com.example.chaika.domain.models.old.ProductInTrip
 import com.example.chaika.ui.animations.collapse
 import com.example.chaika.ui.animations.expand
 

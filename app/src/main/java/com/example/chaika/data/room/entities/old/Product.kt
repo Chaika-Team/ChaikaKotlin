@@ -1,4 +1,4 @@
-package com.example.chaika.data.room.entities
+package com.example.chaika.data.room.entities.old
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -7,10 +7,10 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chaika.ui.adapters.ProductListAdapter
-import com.example.chaika.data.room.entities.Product
+import com.example.chaika.data.room.entities.old.Product
 import com.example.chaika.databinding.ActivityProductListBinding
 import com.example.chaika.ui.view_models.ProductListViewModel
-import com.example.chaika.models.ProductInTrip
+import com.example.chaika.domain.models.old.ProductInTrip
 import com.example.chaika.ui.dialogs.ReplenishAddProductDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
