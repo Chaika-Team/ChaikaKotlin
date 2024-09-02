@@ -2,11 +2,11 @@ package com.example.chaika.ui.view_models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chaika.data.room.entities.Product
-import com.example.chaika.domain.usecases.AddProductActionUseCase
-import com.example.chaika.domain.usecases.FilterProductsUseCase
-import com.example.chaika.domain.usecases.GetAllProductsUseCase
-import com.example.chaika.domain.usecases.InsertProductsUseCase
+import com.example.chaika.data.room.entities.old.Product
+import com.example.chaika.domain.usecases.old.AddProductActionUseCase
+import com.example.chaika.domain.usecases.old.FilterProductsUseCase
+import com.example.chaika.domain.usecases.old.GetAllProductsUseCase
+import com.example.chaika.domain.usecases.old.InsertProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

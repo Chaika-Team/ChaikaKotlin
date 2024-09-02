@@ -1,8 +1,8 @@
-package com.example.chaika.domain.usecases
+package com.example.chaika.domain.usecases.old
 
-import com.example.chaika.data.room.entities.Trip
-import com.example.chaika.data.room.repo.ActionRepository
-import com.example.chaika.data.room.repo.TripRepository
+import com.example.chaika.domain.models.old.Trip
+import com.example.chaika.data.room.repo.old.ActionRepository
+import com.example.chaika.data.room.repo.old.TripRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -27,9 +27,7 @@ class DeleteTripAndActionsUseCase @Inject constructor(
     private val actionRepository: ActionRepository
 ) {
     suspend fun execute(trip: Trip) {
-        // Сначала удаляем все записи в таблице Actions, связанные с данной поездкой
         actionRepository.deleteActionsByTripId(trip.id)
-        // Затем удаляем саму поездку
         tripRepository.deleteTrip(trip)
     }
 }

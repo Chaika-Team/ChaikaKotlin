@@ -3,7 +3,7 @@ package com.example.chaika.activities.productTableActivity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chaika.data.room.entities.Action
+import com.example.chaika.data.room.entities.old.Action
 import com.example.chaika.databinding.ItemActionBinding
 
 class ActionAdapter(

@@ -1,9 +1,9 @@
-package com.example.chaika.domain.usecases
+package com.example.chaika.domain.usecases.old
 
-import com.example.chaika.data.room.entities.Product
-import com.example.chaika.data.room.repo.ActionRepository
-import com.example.chaika.data.room.repo.ProductRepository
-import com.example.chaika.models.ProductInTrip
+import com.example.chaika.data.room.entities.old.Product
+import com.example.chaika.data.room.repo.old.ActionRepository
+import com.example.chaika.data.room.repo.old.ProductRepository
+import com.example.chaika.domain.models.old.ProductInTrip
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

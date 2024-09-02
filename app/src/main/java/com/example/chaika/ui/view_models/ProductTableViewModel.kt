@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chaika.domain.usecases.AddProductActionUseCase
-import com.example.chaika.domain.usecases.DeleteActionsForProductInTripUseCase
-import com.example.chaika.domain.usecases.GetProductsByTripUseCase
-import com.example.chaika.models.ProductInTrip
+import com.example.chaika.domain.usecases.old.AddProductActionUseCase
+import com.example.chaika.domain.usecases.old.DeleteActionsForProductInTripUseCase
+import com.example.chaika.domain.usecases.old.GetProductsByTripUseCase
+import com.example.chaika.domain.models.old.ProductInTrip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

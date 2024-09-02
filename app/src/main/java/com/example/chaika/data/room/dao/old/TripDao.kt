@@ -1,7 +1,7 @@
-package com.example.chaika.data.room.dao
+package com.example.chaika.data.room.dao.old
 
 import androidx.room.*
-import com.example.chaika.data.room.entities.Trip
+import com.example.chaika.data.room.entities.old.Trip
 import kotlinx.coroutines.flow.Flow
 
 @Dao

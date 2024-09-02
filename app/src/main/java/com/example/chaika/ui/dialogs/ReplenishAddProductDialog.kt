@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.chaika.databinding.DialogEnterProductQuantityBinding
-import com.example.chaika.models.ProductInTrip
+import com.example.chaika.domain.models.old.ProductInTrip
 
 class ReplenishAddProductDialog(
     private val context: Context,

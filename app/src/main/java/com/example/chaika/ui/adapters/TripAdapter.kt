@@ -3,7 +3,7 @@ package com.example.chaika.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chaika.data.room.entities.Trip
+import com.example.chaika.domain.models.old.Trip
 import com.example.chaika.databinding.TripItemBinding
 import com.example.chaika.ui.animations.collapse
 import com.example.chaika.ui.animations.expand
@@ -14,7 +14,7 @@ class TripAdapter(private val listener: TripListener) : RecyclerView.Adapter<Tri
 
     fun setTrips(newTrips: List<Trip>) {
         trips = newTrips
-        notifyDataSetChanged() // Простое обновление списка
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
@@ -61,6 +61,7 @@ class TripAdapter(private val listener: TripListener) : RecyclerView.Adapter<Tri
         }
     }
 }
+
 
 interface TripListener {
     fun onDeleteTrip(trip: Trip)

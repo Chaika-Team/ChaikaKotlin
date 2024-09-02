@@ -1,8 +1,8 @@
-package com.example.chaika.data.room.repo
+package com.example.chaika.data.room.repo.old
 
 import androidx.lifecycle.LiveData
-import com.example.chaika.data.room.dao.ActionDao
-import com.example.chaika.data.room.entities.Action
+import com.example.chaika.data.room.dao.old.ActionDao
+import com.example.chaika.data.room.entities.old.Action
 
 class ActionRepository(private val actionDao: ActionDao) {
 

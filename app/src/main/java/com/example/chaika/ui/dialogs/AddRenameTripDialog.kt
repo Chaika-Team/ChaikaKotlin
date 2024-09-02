@@ -8,7 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.chaika.R
-import com.example.chaika.data.room.entities.Trip
+import com.example.chaika.domain.models.old.Trip
 import com.example.chaika.ui.view_models.TripViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +72,7 @@ class AddRenameTripDialog(
         }
     }
 
+    // TODO: Перенести отсюда к хуям собачим в рум
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date())
