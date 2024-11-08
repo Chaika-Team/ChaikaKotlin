@@ -10,4 +10,10 @@
     <color name="floating_btn">#DF8317</color>
     <color name="danger">#D8472D</color>
 
+    <color name="dark_gray">#3D3D3D</color>
+    <color name="light_gray">#787878</color>
+    <color name="light_gray2">#F0F0F0</color>
+    <color name="light_pink">#FFF1EE</color>
+    <color name="orange">#F24822</color>
+    <color name="transperent">#00000000</color>
 </resources>

@@ -7,12 +7,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.chaika.data.room.entities.ProductInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductInfoDao {
 
     @Query("SELECT * FROM product_info")
-    suspend fun getAllProducts(): List<ProductInfo>
+    fun getAllProducts(): Flow<List<ProductInfo>>
 
     @Query("SELECT * FROM product_info WHERE id = :productId LIMIT 1")
     suspend fun getProductById(productId: Int): ProductInfo?

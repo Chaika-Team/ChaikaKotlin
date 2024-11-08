@@ -8,8 +8,16 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "cart_items",
     foreignKeys = [
-        ForeignKey(entity = CartOperation::class, parentColumns = ["id"], childColumns = ["cart_operation_id"]),
-        ForeignKey(entity = ProductInfo::class, parentColumns = ["id"], childColumns = ["product_id"])
+        ForeignKey(
+            entity = CartOperation::class,
+            parentColumns = ["id"],
+            childColumns = ["cart_operation_id"]
+        ),
+        ForeignKey(
+            entity = ProductInfo::class,
+            parentColumns = ["id"],
+            childColumns = ["product_id"]
+        )
     ]
 )
 data class CartItem(
