@@ -1,7 +1,7 @@
 package com.example.chaika.data.room.mappers
 
+import com.example.chaika.domain.models.ProductInfoDomain
 import com.example.chaika.data.room.entities.ProductInfo as ProductInfoEntity
-import com.example.chaika.domain.models.ProductInfo as ProductInfoDomain
 
 fun ProductInfoEntity.toDomain(): ProductInfoDomain {
     return ProductInfoDomain(

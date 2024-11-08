@@ -7,12 +7,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.chaika.data.room.entities.Conductor
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ConductorDao {
 
     @Query("SELECT * FROM conductors")
-    suspend fun getAllConductors(): List<Conductor>
+    fun getAllConductors(): Flow<List<Conductor>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConductor(conductor: Conductor)

@@ -1,27 +1,30 @@
 package com.example.chaika.data.room.mappers
 
-import com.example.chaika.data.room.entities.CartItem as CartItemEntity
-import com.example.chaika.domain.models.CartItem as CartItemDomain
-import com.example.chaika.domain.models.ProductInfo as ProductInfoDomain
-import com.example.chaika.data.room.entities.ProductInfo as ProductInfoEntity
-import com.example.chaika.domain.models.OperationType
+import com.example.chaika.data.room.entities.CartItem
+import com.example.chaika.data.room.entities.ProductInfo
+import com.example.chaika.domain.models.CartItemDomain
+import com.example.chaika.domain.models.OperationTypeDomain
 
-fun CartItemEntity.toDomain(productInfoEntity: ProductInfoEntity): CartItemDomain {
+fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain {
     return CartItemDomain(
-        product = productInfoEntity.toDomain(),
+        product = productInfo.toDomain(),
         quantity = this.impact
     )
 }
 
-fun CartItemDomain.toEntity(cartOperationId: Int, operationType: OperationType): CartItemEntity {
+fun CartItemDomain.toEntity(
+    cartOperationId: Int,
+    operationTypeDomain: OperationTypeDomain
+): CartItem {
     // Преобразуем quantity в отрицательное значение при необходимости
-    val impact = if (operationType == OperationType.BROUGHT_CASH || operationType == OperationType.BROUGHT_CART) {
-        -this.quantity
-    } else {
-        this.quantity
-    }
+    val impact =
+        if (operationTypeDomain == OperationTypeDomain.SOLD_CASH || operationTypeDomain == OperationTypeDomain.SOLD_CART) {
+            -this.quantity
+        } else {
+            this.quantity
+        }
 
-    return CartItemEntity(
+    return CartItem(
         cartOperationId = cartOperationId, // Используем cartOperationId вместо cartId
         productId = this.product.id,
         impact = impact

@@ -1,18 +1,19 @@
 package com.example.chaika.data.room.mappers
 
-import com.example.chaika.data.room.entities.CartOperation as CartOperationEntity
-import com.example.chaika.domain.models.CartOperation as CartOperationDomain
-import com.example.chaika.domain.models.OperationType
+import com.example.chaika.data.room.entities.CartOperation
+import com.example.chaika.domain.models.CartOperationDomain
+import com.example.chaika.domain.models.OperationTypeDomain
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 // Преобразование Int в OperationType с использованием ordinal
-fun Int.toOperationType(): OperationType {
-    return OperationType.entries[this]
+fun Int.toOperationType(): OperationTypeDomain {
+    return OperationTypeDomain.entries.getOrNull(this)
+        ?: throw IllegalArgumentException("Unknown OperationType for index $this")
 }
 
 // Преобразование OperationType в Int с использованием ordinal
-fun OperationType.toInt(): Int {
+fun OperationTypeDomain.toInt(): Int {
     return this.ordinal
 }
 
@@ -22,17 +23,17 @@ fun getCurrentTime(): String {
     return dateFormat.format(System.currentTimeMillis())
 }
 
-fun CartOperationEntity.toDomain(): CartOperationDomain {
+fun CartOperation.toDomain(): CartOperationDomain {
     return CartOperationDomain(
-        operationType = this.operationType.toOperationType(),
+        operationTypeDomain = this.operationType.toOperationType(),
         conductorId = this.conductorId
     )
 }
 
-fun CartOperationDomain.toEntity(): CartOperationEntity {
-    return CartOperationEntity(
+fun CartOperationDomain.toEntity(): CartOperation {
+    return CartOperation(
         id = 0, // Система автоматически назначит ID
-        operationType = this.operationType.toInt(), // Используем ordinal для преобразования в Int
+        operationType = this.operationTypeDomain.toInt(), // Используем ordinal для преобразования в Int
         operationTime = getCurrentTime(), // Установка текущих даты и времени
         conductorId = this.conductorId
     )

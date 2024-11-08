@@ -1,9 +1,9 @@
 package com.example.chaika.data.room.mappers
 
-import com.example.chaika.data.room.entities.Conductor as ConductorEntity
-import com.example.chaika.domain.models.Conductor as ConductorDomain
+import com.example.chaika.data.room.entities.Conductor
+import com.example.chaika.domain.models.ConductorDomain
 
-fun ConductorEntity.toDomain(): ConductorDomain {
+fun Conductor.toDomain(): ConductorDomain {
     return ConductorDomain(
         id = this.id,
         name = this.name,
@@ -11,8 +11,8 @@ fun ConductorEntity.toDomain(): ConductorDomain {
     )
 }
 
-fun ConductorDomain.toEntity(): ConductorEntity {
-    return ConductorEntity(
+fun ConductorDomain.toEntity(): Conductor {
+    return Conductor(
         id = this.id,
         name = this.name,
         image = this.image
