@@ -1,4 +1,4 @@
-package com.example.chaika.data.inMemory
+package com.example.chaika.data.local
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,7 +12,7 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
-class InMemoryImageRepository @Inject constructor(
+class LocalImageRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     suspend fun saveImageFromUrl(imageUrl: String, fileName: String): String? {

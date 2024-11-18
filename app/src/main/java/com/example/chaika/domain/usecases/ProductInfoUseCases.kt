@@ -1,7 +1,7 @@
 package com.example.chaika.domain.usecases
 
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
-import com.example.chaika.data.inMemory.InMemoryImageRepository
+import com.example.chaika.data.local.LocalImageRepository
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
 import com.example.chaika.domain.models.ProductInfoDomain
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +37,7 @@ class DeleteProductUseCase @Inject constructor(
 class AddProductInfoUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface,
     private val productInfoDataSource: ProductInfoDataSourceInterface,
-    private val inMemoryImageRepository: InMemoryImageRepository
+    private val localImageRepository: LocalImageRepository
 ) {
     suspend operator fun invoke() {
         // Получаем список товаров с сервера (или из fake data source)
@@ -46,7 +46,7 @@ class AddProductInfoUseCase @Inject constructor(
         // Сохраняем каждый товар в базе данных
         productInfoList.forEach { productInfo ->
             // Загружаем изображение и сохраняем его во внутренней памяти
-            val imagePath = inMemoryImageRepository.saveImageFromUrl(
+            val imagePath = localImageRepository.saveImageFromUrl(
                 productInfo.image,
                 "${productInfo.name}.jpg"
             )

@@ -16,7 +16,6 @@ interface CartItemDao {
 
     @Query("SELECT * FROM cart_items WHERE cart_operation_id = :cartOperationId")
     fun getCartItemsByCartOpId(cartOperationId: Int): Flow<List<CartItem>>
-
     @Delete
     suspend fun delete(cartItem: CartItem)
 }

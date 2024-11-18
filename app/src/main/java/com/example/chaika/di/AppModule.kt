@@ -6,12 +6,13 @@ import com.example.chaika.data.data_source.FakeProductInfoDataSource
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
-import com.example.chaika.data.inMemory.InMemoryImageRepository
+import com.example.chaika.data.local.LocalImageRepository
 import com.example.chaika.data.room.AppDatabase
 import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
+import com.example.chaika.data.room.dao.FastReportViewDao
 import com.example.chaika.data.room.repo.*
 import com.example.chaika.domain.usecases.*
 import dagger.Module
@@ -78,21 +79,27 @@ object AppModule {
         return appDatabase.productInfoDao()
     }
 
+    @Provides
+    fun provideReportViewDao(appDatabase: AppDatabase): FastReportViewDao {
+        return appDatabase.fastReportViewDao()
+    }
+
     // Repositories
 
     @Provides
     @Singleton
-    fun provideInMemoryCartRepository(inMemoryCartRepository: InMemoryCartRepository): InMemoryCartRepositoryInterface {
-        return inMemoryCartRepository
+    fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface {
+        return InMemoryCartRepository()
     }
+
 
     // Image Repository
     @Provides
     @Singleton
     fun provideInMemoryImageRepository(
         @ApplicationContext context: Context
-    ): InMemoryImageRepository {
-        return InMemoryImageRepository(context)
+    ): LocalImageRepository {
+        return LocalImageRepository(context)
     }
 
     @Provides
@@ -152,13 +159,25 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAddProductUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): AddProductUseCase {
-        return AddProductUseCase(roomProductInfoRepositoryInterface)
+    fun provideAddProductInfoUseCase(
+        productInfoRepository: RoomProductInfoRepositoryInterface,
+        productInfoDataSource: ProductInfoDataSourceInterface,
+        imageRepository: LocalImageRepository
+    ): AddProductInfoUseCase {
+        return AddProductInfoUseCase(productInfoRepository, productInfoDataSource, imageRepository)
     }
+
 
     @Provides
     @Singleton
     fun provideDeleteProductUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): DeleteProductUseCase {
         return DeleteProductUseCase(roomProductInfoRepositoryInterface)
+    }
+
+    // Report Use Cases
+    @Provides
+    @Singleton
+    fun provideGetReportDataUseCase(reportRepository: RoomReportRepositoryInterface): GetReportDataUseCase {
+        return GetReportDataUseCase(reportRepository)
     }
 }

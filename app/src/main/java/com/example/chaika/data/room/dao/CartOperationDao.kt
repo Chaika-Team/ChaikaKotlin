@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.chaika.data.room.entities.CartOperation
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CartOperationDao {
@@ -15,6 +16,9 @@ interface CartOperationDao {
 
     @Query("SELECT * FROM cart_operations WHERE id = :id")
     suspend fun getById(id: Int): CartOperation?
+
+    @Query("SELECT * FROM cart_operations")
+    fun getAllOperations(): Flow<List<CartOperation>>
 
     @Delete
     suspend fun delete(cartOperation: CartOperation)
