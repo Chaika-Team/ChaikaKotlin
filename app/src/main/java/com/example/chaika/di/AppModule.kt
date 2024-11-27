@@ -7,12 +7,12 @@ import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
+import com.example.chaika.data.local.LocalTripReportRepository
 import com.example.chaika.data.room.AppDatabase
 import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
-import com.example.chaika.data.room.dao.FastReportViewDao
 import com.example.chaika.data.room.repo.*
 import com.example.chaika.domain.usecases.*
 import dagger.Module
@@ -26,6 +26,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    // Database
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -36,26 +37,6 @@ object AppModule {
             AppDatabase::class.java,
             "app_database"
         ).build()
-    }
-
-    // Тестовое Предзаполнение
-    @Provides
-    @Singleton
-    fun providePrepopulateConductorsUseCase(roomConductorRepositoryInterface: RoomConductorRepositoryInterface): PrepopulateConductorsUseCase {
-        return PrepopulateConductorsUseCase(roomConductorRepositoryInterface)
-    }
-
-    @Provides
-    @Singleton
-    fun providePrepopulateProductsUseCase(productInfoRepositoryInterface: RoomProductInfoRepositoryInterface): PrepopulateProductsUseCase {
-        return PrepopulateProductsUseCase(productInfoRepositoryInterface)
-    }
-
-    // Загрузка товаров с сервера
-    @Provides
-    @Singleton
-    fun provideProductInfoDataSource(): ProductInfoDataSourceInterface {
-        return FakeProductInfoDataSource() // Используем фейковую реализацию
     }
 
     // DAOs
@@ -79,27 +60,22 @@ object AppModule {
         return appDatabase.productInfoDao()
     }
 
-    @Provides
-    fun provideReportViewDao(appDatabase: AppDatabase): FastReportViewDao {
-        return appDatabase.fastReportViewDao()
-    }
-
     // Repositories
-
     @Provides
     @Singleton
-    fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface {
-        return InMemoryCartRepository()
+    fun provideRoomCartOperationRepository(
+        cartOperationDao: CartOperationDao
+    ): RoomCartOperationRepositoryInterface {
+        return RoomCartOperationRepository(cartOperationDao)
     }
 
-
-    // Image Repository
     @Provides
     @Singleton
-    fun provideInMemoryImageRepository(
-        @ApplicationContext context: Context
-    ): LocalImageRepository {
-        return LocalImageRepository(context)
+    fun provideRoomCartItemRepository(
+        cartItemDao: CartItemDao,
+        productInfoDao: ProductInfoDao
+    ): RoomCartItemRepositoryInterface {
+        return RoomCartItemRepository(cartItemDao, productInfoDao)
     }
 
     @Provides
@@ -123,8 +99,36 @@ object AppModule {
         return RoomProductInfoRepository(productInfoDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface {
+        return InMemoryCartRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocalImageRepository(
+        @ApplicationContext context: Context
+    ): LocalImageRepository {
+        return LocalImageRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocalTripReportRepository(
+        @ApplicationContext context: Context
+    ): LocalTripReportRepository {
+        return LocalTripReportRepository(context)
+    }
+
+    // Data Sources
+    @Provides
+    @Singleton
+    fun provideProductInfoDataSource(): ProductInfoDataSourceInterface {
+        return FakeProductInfoDataSource()
+    }
+
     // Use Cases
-    // Cart Use Case
     @Provides
     @Singleton
     fun provideSaveCartWithItemsAndOperationUseCase(
@@ -137,23 +141,27 @@ object AppModule {
         )
     }
 
-    // Conductor Use Cases
     @Provides
     @Singleton
-    fun provideAddConductorUseCase(roomConductorRepositoryInterface: RoomConductorRepositoryInterface): AddConductorUseCase {
+    fun provideAddConductorUseCase(
+        roomConductorRepositoryInterface: RoomConductorRepositoryInterface
+    ): AddConductorUseCase {
         return AddConductorUseCase(roomConductorRepositoryInterface)
     }
 
     @Provides
     @Singleton
-    fun provideDeleteConductorUseCase(roomConductorRepositoryInterface: RoomConductorRepositoryInterface): DeleteConductorUseCase {
+    fun provideDeleteConductorUseCase(
+        roomConductorRepositoryInterface: RoomConductorRepositoryInterface
+    ): DeleteConductorUseCase {
         return DeleteConductorUseCase(roomConductorRepositoryInterface)
     }
 
-    // ProductInfo Use Cases
     @Provides
     @Singleton
-    fun provideGetAllProductsUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): GetAllProductsUseCase {
+    fun provideGetAllProductsUseCase(
+        roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
+    ): GetAllProductsUseCase {
         return GetAllProductsUseCase(roomProductInfoRepositoryInterface)
     }
 
@@ -167,17 +175,28 @@ object AppModule {
         return AddProductInfoUseCase(productInfoRepository, productInfoDataSource, imageRepository)
     }
 
-
     @Provides
     @Singleton
-    fun provideDeleteProductUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): DeleteProductUseCase {
+    fun provideDeleteProductUseCase(
+        roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
+    ): DeleteProductUseCase {
         return DeleteProductUseCase(roomProductInfoRepositoryInterface)
     }
 
-    // Report Use Cases
     @Provides
     @Singleton
-    fun provideGetReportDataUseCase(reportRepository: RoomReportRepositoryInterface): GetReportDataUseCase {
-        return GetReportDataUseCase(reportRepository)
+    fun provideGenerateTripReportUseCase(
+        cartOperationRepository: RoomCartOperationRepositoryInterface,
+        cartItemRepository: RoomCartItemRepositoryInterface,
+        conductorRepository: RoomConductorRepositoryInterface, // Новый параметр
+        tripReportRepository: LocalTripReportRepository
+    ): GenerateTripReportUseCase {
+        return GenerateTripReportUseCase(
+            cartOperationRepository,
+            cartItemRepository,
+            conductorRepository, // Передаём репозиторий для работы с EmployeeID
+            tripReportRepository
+        )
     }
 }
+

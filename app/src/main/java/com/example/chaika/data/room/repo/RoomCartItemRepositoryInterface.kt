@@ -1,8 +1,8 @@
 package com.example.chaika.data.room.repo
 
-import com.example.chaika.domain.models.CartItemDomain
+import com.example.chaika.domain.models.CartItemReport
 import kotlinx.coroutines.flow.Flow
 
 interface RoomCartItemRepositoryInterface {
-    fun getItemsByOperationId(operationId: Int): Flow<List<CartItemDomain>>
+    fun getCartItemReportsByOperationId(operationId: Int): Flow<List<CartItemReport>>
 }

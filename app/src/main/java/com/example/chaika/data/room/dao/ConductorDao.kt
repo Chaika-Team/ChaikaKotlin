@@ -15,6 +15,9 @@ interface ConductorDao {
     @Query("SELECT * FROM conductors")
     fun getAllConductors(): Flow<List<Conductor>>
 
+    @Query("SELECT * FROM conductors WHERE employee_id = :employeeID")
+    suspend fun getConductorByEmployeeID(employeeID: String): Conductor?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConductor(conductor: Conductor)
 

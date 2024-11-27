@@ -3,7 +3,9 @@ package com.example.chaika.data.room.mappers
 import com.example.chaika.data.room.entities.CartItem
 import com.example.chaika.data.room.entities.ProductInfo
 import com.example.chaika.domain.models.CartItemDomain
+import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.OperationTypeDomain
+import kotlin.math.abs
 
 fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain {
     return CartItemDomain(
@@ -28,5 +30,14 @@ fun CartItemDomain.toEntity(
         cartOperationId = cartOperationId, // Используем cartOperationId вместо cartId
         productId = this.product.id,
         impact = impact
+    )
+}
+
+//Репорт-модель для отчётов
+fun CartItem.toReport(productInfo: ProductInfo): CartItemReport {
+    return CartItemReport(
+        productID = this.productId,
+        quantity = this.impact,
+        price = productInfo.price
     )
 }

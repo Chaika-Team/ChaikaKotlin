@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 data class Conductor(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "employee_id") val employeeID: String, // Новый столбец
     @ColumnInfo(name = "image") val image: String
-    //Employer ID STRING
 )

@@ -18,7 +18,7 @@ import com.example.chaika.data.room.entities.FastReportView
 @Database(
     entities = [ProductInfo::class, Conductor::class, CartItem::class, CartOperation::class],
     views = [PackageItemView::class, FastReportView::class],
-    version = 1,
+    version = 1, // Увеличить версию, если используем миграции
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

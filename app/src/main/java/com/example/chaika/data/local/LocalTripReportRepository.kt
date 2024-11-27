@@ -8,9 +8,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
-class LocalTripReportSaver(private val context: Context) {
-
+class LocalTripReportRepository @Inject constructor(
+    private val context: Context
+) {
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()

@@ -1,7 +1,9 @@
 package com.example.chaika.data.room.mappers
 
 import com.example.chaika.data.room.entities.CartOperation
+import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.CartOperationDomain
+import com.example.chaika.domain.models.CartOperationReport
 import com.example.chaika.domain.models.OperationTypeDomain
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -38,3 +40,16 @@ fun CartOperationDomain.toEntity(): CartOperation {
         conductorId = this.conductorId
     )
 }
+
+// Репорт-модель для отчётов
+fun CartOperation.toReport(
+    items: List<CartItemReport>
+): CartOperationReport {
+    return CartOperationReport(
+        employeeID = this.conductorId.toString(), // Временно передаём conductorId, заменим позже
+        operationType = this.operationType,
+        operationTime = this.operationTime,
+        items = items
+    )
+}
+

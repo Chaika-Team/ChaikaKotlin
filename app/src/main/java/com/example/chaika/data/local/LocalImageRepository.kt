@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -13,11 +12,11 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 class LocalImageRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) {
     suspend fun saveImageFromUrl(imageUrl: String, fileName: String): String? {
         return try {
-            // Выполняем загрузку изображения в фоновом потоке
+            // Загрузка изображения
             val bitmap = withContext(Dispatchers.IO) {
                 Glide.with(context)
                     .asBitmap()
@@ -27,30 +26,32 @@ class LocalImageRepository @Inject constructor(
                     .get()
             }
 
-            // Проверка, что Bitmap корректен и не пустой
+            // Проверка bitmap
             if (bitmap == null || bitmap.width <= 0 || bitmap.height <= 0) {
-                Log.e("ImageSaver", "Bitmap is invalid or empty")
+                Log.e("LocalImageRepository", "Invalid bitmap.")
                 return null
-            } else {
-                Log.d(
-                    "ImageSaver",
-                    "Bitmap loaded successfully: width=${bitmap.width}, height=${bitmap.height}"
-                )
             }
 
-            // Сохраняем Bitmap во внутреннюю память
-            val file = File(context.filesDir, fileName)
-            val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
+            // Директория для изображений продуктов
+            val imageDir = File(context.filesDir, "images/products")
+            if (!imageDir.exists()) {
+                imageDir.mkdirs()
+            }
 
-            Log.d("ImageSaver", "Image saved successfully: ${file.absolutePath}")
-            file.absolutePath // Возвращаем путь к сохранённому изображению
+            // Сохранение файла
+            val file = File(imageDir, fileName)
+            withContext(Dispatchers.IO) {
+                FileOutputStream(file).use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                }
+            }
+
+            Log.d("LocalImageRepository", "Image saved: ${file.absolutePath}")
+            file.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("ImageSaver", "Failed to save image: ${e.message}")
-            null // Возвращаем null, если произошла ошибка
+            Log.e("LocalImageRepository", "Failed to save image: ${e.message}")
+            null
         }
     }
 }
