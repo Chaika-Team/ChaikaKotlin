@@ -5,7 +5,7 @@ import com.example.chaika.data.room.entities.ProductInfo
 import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.OperationTypeDomain
-import kotlin.math.abs
+
 
 fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain {
     return CartItemDomain(

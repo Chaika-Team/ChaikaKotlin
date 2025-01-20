@@ -5,6 +5,14 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
+/**
+ * Сущность элемента корзины.
+ *
+ * @param id Уникальный идентификатор элемента корзины.
+ * @param cartOperationId Идентификатор операции корзины, с которой связан элемент.
+ * @param productId Идентификатор продукта.
+ * @param impact Количество единиц продукта (может быть отрицательным для продаж).
+ */
 @Entity(
     tableName = "cart_items",
     foreignKeys = [
@@ -22,7 +30,7 @@ import androidx.room.PrimaryKey
 )
 data class CartItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "cart_operation_id") val cartOperationId: Int, // Связываем с CartOperation
+    @ColumnInfo(name = "cart_operation_id") val cartOperationId: Int,
     @ColumnInfo(name = "product_id") val productId: Int,
-    @ColumnInfo(name = "impact") val impact: Int // количество, может быть отрицательным
+    @ColumnInfo(name = "impact") val impact: Int
 )

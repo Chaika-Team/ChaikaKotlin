@@ -47,8 +47,9 @@ class AddProductInfoUseCase @Inject constructor(
         productInfoList.forEach { productInfo ->
             // Загружаем изображение и сохраняем его во внутренней памяти
             val imagePath = localImageRepository.saveImageFromUrl(
-                productInfo.image,
-                "${productInfo.name}.jpg"
+                imageUrl = productInfo.image,
+                fileName = "${productInfo.name}.jpg",
+                subDir = "products"
             )
 
             // Создаём новый объект с путём к изображению
@@ -56,41 +57,6 @@ class AddProductInfoUseCase @Inject constructor(
 
             // Сохраняем товар в базе данных
             productInfoRepository.insertProduct(productWithImagePath)
-        }
-    }
-}
-
-
-//Тестовый юзкейс для предзаполнения БД товарами
-class PrepopulateProductsUseCase @Inject constructor(
-    private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
-) {
-    suspend operator fun invoke() {
-        val products = listOf(
-            ProductInfoDomain(
-                id = 1,
-                name = "Чай чёрный",
-                description = "Классический чёрный чай",
-                image = "black_tea.jpeg",
-                price = 75.0
-            ),
-            ProductInfoDomain(
-                id = 2,
-                name = "Чай зелёный",
-                description = "Зелёный чай с жасмином",
-                image = "green_tea.png",
-                price = 80.0
-            ),
-            ProductInfoDomain(
-                id = 3,
-                name = "Яблочный сок",
-                description = "Свежий яблочный сок",
-                image = "apple_juice.png",
-                price = 90.0
-            )
-        )
-        products.forEach { product ->
-            roomProductInfoRepositoryInterface.insertProduct(product)
         }
     }
 }

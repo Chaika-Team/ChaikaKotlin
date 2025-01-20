@@ -3,6 +3,12 @@ package com.example.chaika.data.room.entities
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 
+/**
+ * Представление для текущего количества товаров у проводника.
+ *
+ * @param productId Идентификатор продукта.
+ * @param currentQuantity Текущее количество единиц продукта.
+ */
 @DatabaseView(
     viewName = "package_items",
     value = """

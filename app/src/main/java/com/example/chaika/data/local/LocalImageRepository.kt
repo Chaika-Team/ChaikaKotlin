@@ -14,7 +14,15 @@ import javax.inject.Inject
 class LocalImageRepository @Inject constructor(
     private val context: Context
 ) {
-    suspend fun saveImageFromUrl(imageUrl: String, fileName: String): String? {
+
+    /**
+     * Сохраняет изображение из URL в локальную директорию.
+     * @param imageUrl URL изображения для загрузки.
+     * @param fileName Имя файла.
+     * @param subDir Поддиректория (например, "products" или "conductors").
+     * @return Абсолютный путь сохранённого файла или null в случае ошибки.
+     */
+    suspend fun saveImageFromUrl(imageUrl: String, fileName: String, subDir: String): String? {
         return try {
             // Загрузка изображения
             val bitmap = withContext(Dispatchers.IO) {
@@ -32,8 +40,8 @@ class LocalImageRepository @Inject constructor(
                 return null
             }
 
-            // Директория для изображений продуктов
-            val imageDir = File(context.filesDir, "images/products")
+            // Определяем путь к директории
+            val imageDir = File(context.filesDir, "images/$subDir")
             if (!imageDir.exists()) {
                 imageDir.mkdirs()
             }

@@ -3,6 +3,17 @@ package com.example.chaika.data.room.entities
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 
+/**
+ * Представление для быстрого отчёта о продажах.
+ *
+ * @param productName Название продукта.
+ * @param productPrice Цена продукта.
+ * @param addedQuantity Количество добавленных единиц продукта.
+ * @param replenishedQuantity Количество пополненных единиц продукта.
+ * @param soldCashQuantity Количество проданных за наличные единиц продукта.
+ * @param soldCartQuantity Количество проданных по карте единиц продукта.
+ * @param revenue Выручка от продаж за наличные.
+ */
 @DatabaseView(
     viewName = "fast_report_view",
     value = """

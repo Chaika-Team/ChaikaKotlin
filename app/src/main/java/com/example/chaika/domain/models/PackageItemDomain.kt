@@ -1,6 +1,12 @@
 package com.example.chaika.domain.models
 
+/**
+ * Доменная модель элемента пакета (списка товаров у проводника).
+ *
+ * @param productInfoDomain Информация о продукте, представленная ProductInfoDomain.
+ * @param currentQuantity Текущее количество товара у проводника.
+ */
 data class PackageItemDomain(
-    val productInfoDomain: ProductInfoDomain,  // Информация о продукте
-    val currentQuantity: Int       // Текущее количество у проводника
+    val productInfoDomain: ProductInfoDomain,
+    val currentQuantity: Int
 )

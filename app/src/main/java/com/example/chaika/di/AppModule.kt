@@ -2,7 +2,7 @@ package com.example.chaika.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.chaika.data.data_source.FakeProductInfoDataSource
+import com.example.chaika.data.data_source.apiService.AuthApiService
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
@@ -14,19 +14,24 @@ import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.repo.*
+import com.example.chaika.data.crypto.KeyStoreCryptoManager
+import com.example.chaika.data.crypto.KeyStoreCryptoManagerInterface
+import com.example.chaika.data.data_source.FakeProductInfoDataSource
 import com.example.chaika.domain.usecases.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Database
+    // ================== Database ==================
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -39,7 +44,7 @@ object AppModule {
         ).build()
     }
 
-    // DAOs
+    // ================== DAOs ==================
     @Provides
     fun provideCartItemDao(appDatabase: AppDatabase): CartItemDao {
         return appDatabase.cartItemDao()
@@ -60,7 +65,7 @@ object AppModule {
         return appDatabase.productInfoDao()
     }
 
-    // Repositories
+    // ================== Repositories ==================
     @Provides
     @Singleton
     fun provideRoomCartOperationRepository(
@@ -121,14 +126,26 @@ object AppModule {
         return LocalTripReportRepository(context)
     }
 
-    // Data Sources
+    // ================== Data Sources ==================
     @Provides
     @Singleton
     fun provideProductInfoDataSource(): ProductInfoDataSourceInterface {
         return FakeProductInfoDataSource()
     }
 
-    // Use Cases
+    // Retrofit: AuthApiService
+    @Provides
+    @Singleton
+    fun provideAuthApiService(): AuthApiService {
+        return Retrofit.Builder()
+            .baseUrl("https://example.com/api/") // Replace with actual base URL
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(AuthApiService::class.java)
+    }
+
+    // ================== Use Cases ==================
+    // Cart Use Case
     @Provides
     @Singleton
     fun provideSaveCartWithItemsAndOperationUseCase(
@@ -141,20 +158,44 @@ object AppModule {
         )
     }
 
+    // Conductor Use Cases
     @Provides
     @Singleton
-    fun provideAddConductorUseCase(
-        roomConductorRepositoryInterface: RoomConductorRepositoryInterface
-    ): AddConductorUseCase {
-        return AddConductorUseCase(roomConductorRepositoryInterface)
+    fun provideFetchConductorFromServerUseCase(
+        authApiService: AuthApiService
+    ): FetchConductorFromServerUseCase {
+        return FetchConductorFromServerUseCase(authApiService)
     }
 
     @Provides
     @Singleton
-    fun provideDeleteConductorUseCase(
-        roomConductorRepositoryInterface: RoomConductorRepositoryInterface
-    ): DeleteConductorUseCase {
-        return DeleteConductorUseCase(roomConductorRepositoryInterface)
+    fun provideEncryptConductorTokenUseCase(
+        cryptoManager: KeyStoreCryptoManagerInterface
+    ): EncryptConductorTokenUseCase {
+        return EncryptConductorTokenUseCase(cryptoManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveConductorLocallyUseCase(
+        conductorRepository: RoomConductorRepositoryInterface,
+        imageRepository: LocalImageRepository
+    ): SaveConductorLocallyUseCase {
+        return SaveConductorLocallyUseCase(conductorRepository, imageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthorizeConductorUseCase(
+        fetchConductorFromServerUseCase: FetchConductorFromServerUseCase,
+        encryptConductorTokenUseCase: EncryptConductorTokenUseCase,
+        saveConductorLocallyUseCase: SaveConductorLocallyUseCase
+    ): AuthorizeConductorUseCase {
+        return AuthorizeConductorUseCase(
+            fetchConductorFromServerUseCase,
+            encryptConductorTokenUseCase,
+            saveConductorLocallyUseCase
+        )
     }
 
     @Provides
@@ -188,15 +229,14 @@ object AppModule {
     fun provideGenerateTripReportUseCase(
         cartOperationRepository: RoomCartOperationRepositoryInterface,
         cartItemRepository: RoomCartItemRepositoryInterface,
-        conductorRepository: RoomConductorRepositoryInterface, // Новый параметр
+        conductorRepository: RoomConductorRepositoryInterface,
         tripReportRepository: LocalTripReportRepository
     ): GenerateTripReportUseCase {
         return GenerateTripReportUseCase(
             cartOperationRepository,
             cartItemRepository,
-            conductorRepository, // Передаём репозиторий для работы с EmployeeID
+            conductorRepository,
             tripReportRepository
         )
     }
 }
-
