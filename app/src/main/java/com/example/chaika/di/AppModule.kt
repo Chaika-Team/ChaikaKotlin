@@ -1,5 +1,6 @@
 package com.example.chaika.di
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.example.chaika.data.data_source.apiService.AuthApiService
@@ -17,6 +18,8 @@ import com.example.chaika.data.room.repo.*
 import com.example.chaika.data.crypto.KeyStoreCryptoManager
 import com.example.chaika.data.crypto.KeyStoreCryptoManagerInterface
 import com.example.chaika.data.data_source.FakeProductInfoDataSource
+import com.example.chaika.data.data_source.auth.AuthService
+import com.example.chaika.data.data_source.auth.AuthStateManager
 import com.example.chaika.domain.usecases.*
 import dagger.Module
 import dagger.Provides
@@ -133,15 +136,35 @@ object AppModule {
         return FakeProductInfoDataSource()
     }
 
-    // Retrofit: AuthApiService
+    // ================== Retrofit: AuthApiService ==================
     @Provides
     @Singleton
     fun provideAuthApiService(): AuthApiService {
         return Retrofit.Builder()
-            .baseUrl("https://example.com/api/") // Replace with actual base URL
+            .baseUrl("https://example.com/api/v1/") // Replace with actual base URL
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(AuthApiService::class.java)
+    }
+
+    // ================== AppAuth Services ==================
+    @Provides
+    @Singleton
+    fun provideAuthService(@ApplicationContext context: Context): AuthService {
+        return AuthService(context.applicationContext as Application)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthStateManager(@ApplicationContext context: Context): AuthStateManager {
+        return AuthStateManager.getInstance(context.applicationContext as Application)
+    }
+
+    // ================== Crypto Services ==================
+    @Provides
+    @Singleton
+    fun provideKeyStoreCryptoManager(): KeyStoreCryptoManagerInterface {
+        return KeyStoreCryptoManager()
     }
 
     // ================== Use Cases ==================
@@ -238,5 +261,31 @@ object AppModule {
             conductorRepository,
             tripReportRepository
         )
+    }
+
+    // ================== Use Cases for Authorization ==================
+    @Provides
+    @Singleton
+    fun provideStartAuthorizationUseCase(
+        authService: AuthService
+    ): StartAuthorizationUseCase {
+        return StartAuthorizationUseCase(authService)
+    }
+
+    @Provides
+    @Singleton
+    fun providePerformAuthorizationUseCase(
+        authService: AuthService,
+        authStateManager: AuthStateManager
+    ): PerformAuthorizationUseCase {
+        return PerformAuthorizationUseCase(authService, authStateManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLogoutUseCase(
+        authStateManager: AuthStateManager
+    ): LogoutUseCase {
+        return LogoutUseCase(authStateManager)
     }
 }

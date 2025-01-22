@@ -17,15 +17,28 @@
         android:theme="@style/Theme.Chaika"
         tools:targetApi="31">
 
+        <!-- Main Activity -->
         <activity
             android:name=".ui.activities.MainActivity"
+            android:launchMode="singleTop"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Intent-filter для обработки redirect_uri -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Укажите redirect_uri, который вы настроили в ZITADEL -->
+                <data
+                    android:scheme="${appAuthRedirectScheme}"
+                    android:host="oauth2redirect" />
+            </intent-filter>
         </activity>
 
     </application>

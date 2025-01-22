@@ -5,6 +5,7 @@ import com.example.chaika.data.room.mappers.toDomain
 import com.example.chaika.data.room.mappers.toEntity
 import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -26,6 +27,14 @@ class RoomConductorRepository @Inject constructor(
     override suspend fun getConductorByEmployeeID(employeeID: String): ConductorDomain? {
         return conductorDao.getConductorByEmployeeID(employeeID)?.toDomain()
     }
+
+    override suspend fun getEmployeeIDByConductorId(conductorId: Int): String {
+        return conductorDao.getAllConductors()
+            .first()
+            .find { it.id == conductorId }?.employeeID
+            ?: throw IllegalArgumentException("Conductor not found for id: $conductorId")
+    }
+
 
     override suspend fun insertConductor(conductorDomain: ConductorDomain) {
         conductorDao.insertConductor(conductorDomain.toEntity())

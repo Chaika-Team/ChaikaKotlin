@@ -1,0 +1,23 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/authFragment">
+
+    <!-- Фрагмент авторизации -->
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="com.example.chaika.ui.fragments.AuthFragment"
+        android:label="Авторизация"
+        tools:layout="@layout/fragment_auth">
+        <action
+            android:id="@+id/action_authFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+
+    <!-- Главный фрагмент -->
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.chaika.ui.fragments.MainFragment"
+        android:label="Главный экран"
+        tools:layout="@layout/fragment_main" />
+</navigation>
