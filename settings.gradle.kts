@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Chaika"
+rootProject.name = "ChaikaKotlin"
 include(":app")
  
