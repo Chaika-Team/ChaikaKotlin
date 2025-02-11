@@ -18,6 +18,5 @@ data class Conductor(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "employee_id") val employeeID: String,
-    @ColumnInfo(name = "image") val image: String,
-    @ColumnInfo(name = "token") val token: String
+    @ColumnInfo(name = "image") val image: String
 )

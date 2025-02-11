@@ -13,6 +13,5 @@ data class ConductorDomain(
     val id: Int,
     val name: String,
     val employeeID: String,
-    val image: String,
-    val token: String
+    val image: String
 )

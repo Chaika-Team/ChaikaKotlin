@@ -1,82 +1,66 @@
 package com.example.chaika.domain.usecases
 
 import android.content.Intent
-import com.example.chaika.data.data_source.auth.AuthService
-import com.example.chaika.data.data_source.auth.AuthStateManager
+import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
+import com.example.chaika.auth.OAuthManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import net.openid.appauth.AuthState
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
- * Юзкейс для выполнения авторизации пользователя.
- *
- * @param authService Сервис для работы с AppAuth.
- * @param authStateManager Менеджер состояния авторизации.
- */
-class PerformAuthorizationUseCase @Inject constructor(
-    private val authService: AuthService,
-    private val authStateManager: AuthStateManager
-) {
-
-    /**
-     * Выполняет процесс авторизации.
-     *
-     * @param intent Intent с данными авторизации.
-     * @return Access Token, если авторизация успешна.
-     * @throws Exception в случае ошибки авторизации.
-     */
-    suspend operator fun invoke(intent: Intent): String = withContext(Dispatchers.IO) {
-        var accessToken: String? = null
-
-        // Обработка ответа авторизации
-        authService.handleAuthorizationResponse(intent) { authState, exception ->
-            if (authState != null) {
-                accessToken = authState.accessToken
-                authStateManager.saveState(authState) // Сохраняем состояние авторизации
-            } else {
-                throw exception ?: Exception("Не удалось выполнить авторизацию")
-            }
-        }
-
-        // Проверяем, был ли успешно получен токен
-        accessToken ?: throw Exception("Токен доступа не найден")
-    }
-}
-
-/**
- * Юзкейс для запуска процесса авторизации.
- *
- * @param authService Сервис для работы с AppAuth.
+ * Use case для запуска авторизации.
+ * Возвращает Intent, который необходимо передать в ActivityResultLauncher.
  */
 class StartAuthorizationUseCase @Inject constructor(
-    private val authService: AuthService
+    private val oAuthManager: OAuthManager
 ) {
-
-    /**
-     * Запускает процесс авторизации через AuthService.
-     */
-    operator fun invoke() {
-        authService.startAuthorization()
+    operator fun invoke(): Intent {
+        return oAuthManager.createAuthIntent()
     }
 }
 
 /**
- * Юзкейс для выполнения выхода из аккаунта.
- *
- * @param authStateManager Менеджер состояния авторизации.
+ * Use case для обработки ответа авторизации.
+ * Принимает Intent, полученный в результате авторизации, и возвращает access token.
+ */
+class HandleAuthorizationResponseUseCase @Inject constructor(
+    private val oAuthManager: OAuthManager
+) {
+    suspend operator fun invoke(intent: Intent): String = suspendCancellableCoroutine { cont ->
+        oAuthManager.handleAuthorizationResponse(intent) { token ->
+            if (token.isNotEmpty()) {
+                cont.resume(token)
+            } else {
+                cont.resumeWithException(Exception("Получен пустой токен"))
+            }
+        }
+        // При отмене корутины можно добавить обработку отмены, если необходимо.
+    }
+}
+
+/**
+ * Use case для получения сохранённого access token.
+ * Он обращается к менеджеру токенов и возвращает токен, если он сохранён.
+ */
+class GetAccessTokenUseCase @Inject constructor(
+    private val tokenManager: EncryptedTokenManagerInterface
+) {
+    suspend operator fun invoke(): String? = withContext(Dispatchers.IO) {
+        tokenManager.getToken()
+    }
+}
+
+/**
+ * Use case для выхода из аккаунта (logout).
+ * Он очищает сохранённый токен через менеджер токенов.
  */
 class LogoutUseCase @Inject constructor(
-    private val authStateManager: AuthStateManager
+    private val tokenManager: EncryptedTokenManagerInterface
 ) {
-
-    /**
-     * Выполняет процесс выхода из аккаунта.
-     *
-     * @throws Exception в случае ошибки.
-     */
     suspend operator fun invoke() = withContext(Dispatchers.IO) {
-        // Очищаем состояние авторизации
-        authStateManager.clearState()
+        tokenManager.clearToken()
     }
 }

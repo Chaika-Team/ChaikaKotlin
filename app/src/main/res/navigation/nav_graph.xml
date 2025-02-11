@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,6 +10,10 @@
         android:name="com.example.chaika.ui.fragments.AuthFragment"
         android:label="Авторизация"
         tools:layout="@layout/fragment_auth">
+        <!-- Deep link для обработки redirect URI с отключенным singleTop -->
+        <deepLink
+            app:uri="com.example.chaika://oauth2redirect"
+            app:launchSingleTop="false" />
         <action
             android:id="@+id/action_authFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
@@ -19,5 +24,9 @@
         android:id="@+id/mainFragment"
         android:name="com.example.chaika.ui.fragments.MainFragment"
         android:label="Главный экран"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_authFragment"
+            app:destination="@id/authFragment" />
+    </fragment>
 </navigation>

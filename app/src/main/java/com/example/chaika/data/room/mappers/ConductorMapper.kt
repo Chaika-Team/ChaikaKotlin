@@ -13,8 +13,7 @@ fun Conductor.toDomain(): ConductorDomain {
         id = this.id,
         name = this.name,
         employeeID = this.employeeID,
-        image = this.image,
-        token = this.token
+        image = this.image
     )
 }
 
@@ -28,7 +27,6 @@ fun ConductorDomain.toEntity(): Conductor {
         id = this.id,
         name = this.name,
         employeeID = this.employeeID,
-        image = this.image,
-        token = this.token
+        image = this.image
     )
 }

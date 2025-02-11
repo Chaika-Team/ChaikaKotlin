@@ -7,47 +7,41 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.example.chaika.R
 import com.example.chaika.databinding.ActivityMainBinding
-import com.example.chaika.ui.fragments.AuthFragment
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * Главная активность приложения.
- */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    companion object {
+        private const val TAG = "ChaikaMainActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MMainActivity", "onCreate called")
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.d("MMainActivity", "ViewBinding и setContentView успешно вызваны")
 
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
-        if (navHostFragment == null) {
-            Log.e("MMainActivity", "NavHostFragment не найден!")
-        } else {
-            Log.d("MMainActivity", "NavHostFragment успешно найден")
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        Log.d(TAG, "onCreate: intent.data = ${intent?.data}")
+
+        intent?.let {
+            navController.handleDeepLink(it)
         }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        Log.d("MMainActivity", "onNewIntent called with intent: $intent")
-
-        // Передаём Intent в AuthFragment через NavController
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
-        val fragment = navHostFragment?.childFragmentManager?.primaryNavigationFragment
-        if (fragment is AuthFragment) {
-            Log.d("MMainActivity", "Passing intent to AuthFragment")
-            fragment.handleIntent(intent)
-        } else {
-            Log.e("MMainActivity", "AuthFragment not found in NavHostFragment")
+        Log.d(TAG, "onNewIntent: intent.data = ${intent?.data}")
+        intent?.let {
+            setIntent(it)
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            navHostFragment.navController.handleDeepLink(it)
         }
     }
 }

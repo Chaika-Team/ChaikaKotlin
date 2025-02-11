@@ -3,12 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tv_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Добро пожаловать!"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/bg_lighter_2"
+        android:text="Выйти из аккаунта"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/tv_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxHeight="200dp"
+        android:text="токен"
+        android:textSize="22sp" />
 </LinearLayout>

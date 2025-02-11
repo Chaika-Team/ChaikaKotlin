@@ -1,10 +1,13 @@
 package com.example.chaika.di
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.example.chaika.data.data_source.apiService.AuthApiService
+import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
+import com.example.chaika.data.crypto.EncryptedTokenManager
+import com.example.chaika.data.data_source.FakeProductInfoDataSource
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
+import com.example.chaika.data.data_source.apiService.AuthApiService
+import com.example.chaika.auth.OAuthManager
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
@@ -15,17 +18,21 @@ import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.repo.*
-import com.example.chaika.data.crypto.KeyStoreCryptoManager
-import com.example.chaika.data.crypto.KeyStoreCryptoManagerInterface
-import com.example.chaika.data.data_source.FakeProductInfoDataSource
-import com.example.chaika.data.data_source.auth.AuthService
-import com.example.chaika.data.data_source.auth.AuthStateManager
-import com.example.chaika.domain.usecases.*
+import com.example.chaika.domain.usecases.AddProductInfoUseCase
+import com.example.chaika.domain.usecases.DeleteProductUseCase
+import com.example.chaika.domain.usecases.FetchConductorFromServerUseCase
+import com.example.chaika.domain.usecases.GenerateTripReportUseCase
+import com.example.chaika.domain.usecases.GetAllProductsUseCase
+import com.example.chaika.domain.usecases.SaveCartWithItemsAndOperationUseCase
+import com.example.chaika.domain.usecases.SaveConductorLocallyUseCase
+import com.example.chaika.domain.usecases.HandleAuthorizationResponseUseCase
+import com.example.chaika.domain.usecases.StartAuthorizationUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.openid.appauth.AuthorizationService
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -37,197 +44,142 @@ object AppModule {
     // ================== Database ==================
     @Provides
     @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext context: Context
-    ): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "app_database"
-        ).build()
-    }
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "app_database").build()
 
     // ================== DAOs ==================
     @Provides
-    fun provideCartItemDao(appDatabase: AppDatabase): CartItemDao {
-        return appDatabase.cartItemDao()
-    }
+    fun provideCartItemDao(appDatabase: AppDatabase): CartItemDao = appDatabase.cartItemDao()
 
     @Provides
-    fun provideCartOperationDao(appDatabase: AppDatabase): CartOperationDao {
-        return appDatabase.cartOperationDao()
-    }
+    fun provideCartOperationDao(appDatabase: AppDatabase): CartOperationDao =
+        appDatabase.cartOperationDao()
 
     @Provides
-    fun provideConductorDao(appDatabase: AppDatabase): ConductorDao {
-        return appDatabase.conductorDao()
-    }
+    fun provideConductorDao(appDatabase: AppDatabase): ConductorDao = appDatabase.conductorDao()
 
     @Provides
-    fun provideProductInfoDao(appDatabase: AppDatabase): ProductInfoDao {
-        return appDatabase.productInfoDao()
-    }
+    fun provideProductInfoDao(appDatabase: AppDatabase): ProductInfoDao =
+        appDatabase.productInfoDao()
 
     // ================== Repositories ==================
     @Provides
     @Singleton
-    fun provideRoomCartOperationRepository(
-        cartOperationDao: CartOperationDao
-    ): RoomCartOperationRepositoryInterface {
-        return RoomCartOperationRepository(cartOperationDao)
-    }
+    fun provideRoomCartOperationRepository(cartOperationDao: CartOperationDao): RoomCartOperationRepositoryInterface =
+        RoomCartOperationRepository(cartOperationDao)
 
     @Provides
     @Singleton
     fun provideRoomCartItemRepository(
         cartItemDao: CartItemDao,
         productInfoDao: ProductInfoDao
-    ): RoomCartItemRepositoryInterface {
-        return RoomCartItemRepository(cartItemDao, productInfoDao)
-    }
+    ): RoomCartItemRepositoryInterface =
+        RoomCartItemRepository(cartItemDao, productInfoDao)
 
     @Provides
     @Singleton
     fun provideRoomCartRepository(
         cartItemDao: CartItemDao,
         cartOperationDao: CartOperationDao
-    ): RoomCartRepositoryInterface {
-        return RoomCartRepository(cartItemDao, cartOperationDao)
-    }
+    ): RoomCartRepositoryInterface =
+        RoomCartRepository(cartItemDao, cartOperationDao)
 
     @Provides
     @Singleton
-    fun provideRoomConductorRepository(conductorDao: ConductorDao): RoomConductorRepositoryInterface {
-        return RoomConductorRepository(conductorDao)
-    }
+    fun provideRoomConductorRepository(conductorDao: ConductorDao): RoomConductorRepositoryInterface =
+        RoomConductorRepository(conductorDao)
 
     @Provides
     @Singleton
-    fun provideRoomProductInfoRepository(productInfoDao: ProductInfoDao): RoomProductInfoRepositoryInterface {
-        return RoomProductInfoRepository(productInfoDao)
-    }
+    fun provideRoomProductInfoRepository(productInfoDao: ProductInfoDao): RoomProductInfoRepositoryInterface =
+        RoomProductInfoRepository(productInfoDao)
 
     @Provides
     @Singleton
-    fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface {
-        return InMemoryCartRepository()
-    }
+    fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface = InMemoryCartRepository()
 
     @Provides
     @Singleton
-    fun provideLocalImageRepository(
-        @ApplicationContext context: Context
-    ): LocalImageRepository {
-        return LocalImageRepository(context)
-    }
+    fun provideLocalImageRepository(@ApplicationContext context: Context): LocalImageRepository =
+        LocalImageRepository(context)
 
     @Provides
     @Singleton
-    fun provideLocalTripReportRepository(
-        @ApplicationContext context: Context
-    ): LocalTripReportRepository {
-        return LocalTripReportRepository(context)
-    }
+    fun provideLocalTripReportRepository(@ApplicationContext context: Context): LocalTripReportRepository =
+        LocalTripReportRepository(context)
 
     // ================== Data Sources ==================
     @Provides
     @Singleton
-    fun provideProductInfoDataSource(): ProductInfoDataSourceInterface {
-        return FakeProductInfoDataSource()
-    }
+    fun provideProductInfoDataSource(): ProductInfoDataSourceInterface = FakeProductInfoDataSource()
 
     // ================== Retrofit: AuthApiService ==================
     @Provides
     @Singleton
-    fun provideAuthApiService(): AuthApiService {
-        return Retrofit.Builder()
-            .baseUrl("https://example.com/api/v1/") // Replace with actual base URL
+    fun provideAuthApiService(): AuthApiService =
+        Retrofit.Builder()
+            .baseUrl("https://example.com/api/v1/") // Замените на реальный URL
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(AuthApiService::class.java)
-    }
 
-    // ================== AppAuth Services ==================
+    // ================== EncryptedTokenManager ==================
     @Provides
     @Singleton
-    fun provideAuthService(@ApplicationContext context: Context): AuthService {
-        return AuthService(context.applicationContext as Application)
-    }
+    fun provideEncryptedTokenManager(@ApplicationContext context: Context): EncryptedTokenManagerInterface =
+        EncryptedTokenManager(context)
+
+    // ================== Authorization (OAuth) ==================
+    @Provides
+    @Singleton
+    fun provideAuthorizationService(@ApplicationContext context: Context): AuthorizationService =
+        AuthorizationService(context)
 
     @Provides
     @Singleton
-    fun provideAuthStateManager(@ApplicationContext context: Context): AuthStateManager {
-        return AuthStateManager.getInstance(context.applicationContext as Application)
-    }
+    fun provideOAuthManager(authorizationService: AuthorizationService): OAuthManager =
+        OAuthManager(authorizationService)
 
-    // ================== Crypto Services ==================
+    // ================== Use Cases for Authorization ==================
     @Provides
     @Singleton
-    fun provideKeyStoreCryptoManager(): KeyStoreCryptoManagerInterface {
-        return KeyStoreCryptoManager()
-    }
+    fun provideStartAuthorizationUseCase(oAuthManager: OAuthManager): StartAuthorizationUseCase =
+        StartAuthorizationUseCase(oAuthManager)
 
-    // ================== Use Cases ==================
-    // Cart Use Case
+    @Provides
+    @Singleton
+    fun provideHandleAuthorizationResponseUseCase(oAuthManager: OAuthManager): HandleAuthorizationResponseUseCase =
+        HandleAuthorizationResponseUseCase(oAuthManager)
+
+    // ================== Other Use Cases ==================
     @Provides
     @Singleton
     fun provideSaveCartWithItemsAndOperationUseCase(
         roomCartRepositoryInterface: RoomCartRepositoryInterface,
         inMemoryCartRepositoryInterface: InMemoryCartRepositoryInterface
-    ): SaveCartWithItemsAndOperationUseCase {
-        return SaveCartWithItemsAndOperationUseCase(
+    ): SaveCartWithItemsAndOperationUseCase =
+        SaveCartWithItemsAndOperationUseCase(
             roomCartRepositoryInterface,
             inMemoryCartRepositoryInterface
         )
-    }
-
-    // Conductor Use Cases
-    @Provides
-    @Singleton
-    fun provideFetchConductorFromServerUseCase(
-        authApiService: AuthApiService
-    ): FetchConductorFromServerUseCase {
-        return FetchConductorFromServerUseCase(authApiService)
-    }
 
     @Provides
     @Singleton
-    fun provideEncryptConductorTokenUseCase(
-        cryptoManager: KeyStoreCryptoManagerInterface
-    ): EncryptConductorTokenUseCase {
-        return EncryptConductorTokenUseCase(cryptoManager)
-    }
+    fun provideFetchConductorFromServerUseCase(authApiService: AuthApiService): FetchConductorFromServerUseCase =
+        FetchConductorFromServerUseCase(authApiService)
 
     @Provides
     @Singleton
     fun provideSaveConductorLocallyUseCase(
         conductorRepository: RoomConductorRepositoryInterface,
         imageRepository: LocalImageRepository
-    ): SaveConductorLocallyUseCase {
-        return SaveConductorLocallyUseCase(conductorRepository, imageRepository)
-    }
+    ): SaveConductorLocallyUseCase =
+        SaveConductorLocallyUseCase(conductorRepository, imageRepository)
 
     @Provides
     @Singleton
-    fun provideAuthorizeConductorUseCase(
-        fetchConductorFromServerUseCase: FetchConductorFromServerUseCase,
-        encryptConductorTokenUseCase: EncryptConductorTokenUseCase,
-        saveConductorLocallyUseCase: SaveConductorLocallyUseCase
-    ): AuthorizeConductorUseCase {
-        return AuthorizeConductorUseCase(
-            fetchConductorFromServerUseCase,
-            encryptConductorTokenUseCase,
-            saveConductorLocallyUseCase
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetAllProductsUseCase(
-        roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
-    ): GetAllProductsUseCase {
-        return GetAllProductsUseCase(roomProductInfoRepositoryInterface)
-    }
+    fun provideGetAllProductsUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): GetAllProductsUseCase =
+        GetAllProductsUseCase(roomProductInfoRepositoryInterface)
 
     @Provides
     @Singleton
@@ -235,17 +187,13 @@ object AppModule {
         productInfoRepository: RoomProductInfoRepositoryInterface,
         productInfoDataSource: ProductInfoDataSourceInterface,
         imageRepository: LocalImageRepository
-    ): AddProductInfoUseCase {
-        return AddProductInfoUseCase(productInfoRepository, productInfoDataSource, imageRepository)
-    }
+    ): AddProductInfoUseCase =
+        AddProductInfoUseCase(productInfoRepository, productInfoDataSource, imageRepository)
 
     @Provides
     @Singleton
-    fun provideDeleteProductUseCase(
-        roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
-    ): DeleteProductUseCase {
-        return DeleteProductUseCase(roomProductInfoRepositoryInterface)
-    }
+    fun provideDeleteProductUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): DeleteProductUseCase =
+        DeleteProductUseCase(roomProductInfoRepositoryInterface)
 
     @Provides
     @Singleton
@@ -254,38 +202,11 @@ object AppModule {
         cartItemRepository: RoomCartItemRepositoryInterface,
         conductorRepository: RoomConductorRepositoryInterface,
         tripReportRepository: LocalTripReportRepository
-    ): GenerateTripReportUseCase {
-        return GenerateTripReportUseCase(
+    ): GenerateTripReportUseCase =
+        GenerateTripReportUseCase(
             cartOperationRepository,
             cartItemRepository,
             conductorRepository,
             tripReportRepository
         )
-    }
-
-    // ================== Use Cases for Authorization ==================
-    @Provides
-    @Singleton
-    fun provideStartAuthorizationUseCase(
-        authService: AuthService
-    ): StartAuthorizationUseCase {
-        return StartAuthorizationUseCase(authService)
-    }
-
-    @Provides
-    @Singleton
-    fun providePerformAuthorizationUseCase(
-        authService: AuthService,
-        authStateManager: AuthStateManager
-    ): PerformAuthorizationUseCase {
-        return PerformAuthorizationUseCase(authService, authStateManager)
-    }
-
-    @Provides
-    @Singleton
-    fun provideLogoutUseCase(
-        authStateManager: AuthStateManager
-    ): LogoutUseCase {
-        return LogoutUseCase(authStateManager)
-    }
 }

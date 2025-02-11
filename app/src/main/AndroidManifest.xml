@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Разрешение на доступ в интернет -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -17,30 +16,34 @@
         android:theme="@style/Theme.Chaika"
         tools:targetApi="31">
 
-        <!-- Main Activity -->
+        <!-- Основное активити с навигационным intent‑фильтром для deep link -->
         <activity
             android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:exported="true">
+            <!-- Для запуска из лаунчера -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <!-- Intent-filter для обработки redirect_uri -->
-            <intent-filter>
+            <!-- Для обработки deep link -->
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- Укажите redirect_uri, который вы настроили в ZITADEL -->
                 <data
-                    android:scheme="${appAuthRedirectScheme}"
+                    android:scheme="com.example.chaika"
                     android:host="oauth2redirect" />
             </intent-filter>
         </activity>
 
-    </application>
+        <!-- Отключаем стандартный получатель Redirect URI, чтобы не было дублирования -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:enabled="false"
+            android:exported="true" />
 
+    </application>
 </manifest>
