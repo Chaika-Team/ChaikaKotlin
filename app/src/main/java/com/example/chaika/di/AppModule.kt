@@ -148,8 +148,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHandleAuthorizationResponseUseCase(oAuthManager: OAuthManager): HandleAuthorizationResponseUseCase =
-        HandleAuthorizationResponseUseCase(oAuthManager)
+    fun provideHandleAuthorizationResponseUseCase(
+        oAuthManager: OAuthManager,
+        tokenManager: EncryptedTokenManagerInterface
+    ): HandleAuthorizationResponseUseCase =
+        HandleAuthorizationResponseUseCase(oAuthManager, tokenManager)
 
     // ================== Other Use Cases ==================
     @Provides

@@ -1,6 +1,5 @@
 package com.example.chaika.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.chaika.R
 import com.example.chaika.databinding.FragmentAuthBinding
 import com.example.chaika.ui.view_models.AuthViewModel
+import com.example.chaika.ui.view_models.DeepLinkViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,7 +26,11 @@ class AuthFragment : Fragment() {
         private const val TAG = "ChaikaAuthFragment"
     }
 
+    // Фрагментский ViewModel для авторизации
     private val authViewModel: AuthViewModel by viewModels()
+
+    // Получаем общий (activity‑scопированный) DeepLinkViewModel
+    private val deepLinkViewModel: DeepLinkViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,25 +43,25 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated: arguments = ${arguments}")
 
-        // При нажатии на кнопку «Войти» запускаем авторизацию.
+        // При нажатии на кнопку «Войти» запускаем авторизацию через OAuth
         binding.loginButton.setOnClickListener {
             Log.d(TAG, "loginButton clicked. Starting authorization.")
             val authIntent = authViewModel.getAuthIntent()
             startActivity(authIntent)
         }
 
-        // Пытаемся извлечь deep link Intent из аргументов.
-        val deepLinkIntent = extractDeepLinkIntent()
-        if (deepLinkIntent != null) {
-            Log.d(TAG, "Deep link Intent found: ${deepLinkIntent.data}")
-            authViewModel.processDeepLink(deepLinkIntent)
-        } else {
-            Log.d(TAG, "No deep link Intent found in arguments")
-        }
+        // Подписываемся на deep link-события из DeepLinkViewModel
+        deepLinkViewModel.deepLinkIntent.observe(viewLifecycleOwner, Observer { intent ->
+            if (intent != null) {
+                Log.d(TAG, "Deep link Intent received: ${intent.data}")
+                authViewModel.processDeepLink(intent)
+                // После обработки очищаем deep link, чтобы не повторять обмен кода на токен
+                deepLinkViewModel.clearDeepLink()
+            }
+        })
 
-        // Наблюдаем за результатом авторизации.
+        // Наблюдаем за полученным access token – при его наличии переходим к MainFragment
         authViewModel.accessToken.observe(viewLifecycleOwner, Observer { token ->
             if (token != null) {
                 Log.d(TAG, "Access Token received: $token")
@@ -67,6 +71,7 @@ class AuthFragment : Fragment() {
             }
         })
 
+        // Наблюдаем за ошибками авторизации
         authViewModel.error.observe(viewLifecycleOwner, Observer { errorMsg ->
             if (errorMsg != null) {
                 Log.e(TAG, "Authorization error: $errorMsg")
@@ -74,19 +79,10 @@ class AuthFragment : Fragment() {
                     requireContext(),
                     "Authorization error: $errorMsg",
                     Toast.LENGTH_SHORT
-                ).show()
+                )
+                    .show()
             }
         })
-    }
-
-    /**
-     * Извлекает deep link Intent из аргументов, переданных NavController.
-     * (Заметьте, что ключ "android-support-nav:controller:deepLinkIntent" используется, хотя он помечен как deprecated,
-     * но в текущей реализации Navigation Component deep link передаёт Intent под этим ключом.)
-     */
-    private fun extractDeepLinkIntent(): Intent? {
-        val args = arguments
-        return args?.get("android-support-nav:controller:deepLinkIntent") as? Intent
     }
 
     override fun onDestroyView() {

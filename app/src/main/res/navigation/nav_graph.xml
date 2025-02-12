@@ -2,7 +2,21 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/authFragment">
+    app:startDestination="@id/authCheckFragment">
+
+    <!-- Фрагмент для проверки наличия токена -->
+    <fragment
+        android:id="@+id/authCheckFragment"
+        android:name="com.example.chaika.ui.fragments.AuthCheckFragment"
+        android:label="Проверка авторизации"
+        tools:layout="@layout/fragment_auth_check">
+        <action
+            android:id="@+id/action_authCheckFragment_to_authFragment"
+            app:destination="@id/authFragment" />
+        <action
+            android:id="@+id/action_authCheckFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 
     <!-- Фрагмент авторизации -->
     <fragment
@@ -10,10 +24,6 @@
         android:name="com.example.chaika.ui.fragments.AuthFragment"
         android:label="Авторизация"
         tools:layout="@layout/fragment_auth">
-        <!-- Deep link для обработки redirect URI с отключенным singleTop -->
-        <deepLink
-            app:uri="com.example.chaika://oauth2redirect"
-            app:launchSingleTop="false" />
         <action
             android:id="@+id/action_authFragment_to_mainFragment"
             app:destination="@id/mainFragment" />

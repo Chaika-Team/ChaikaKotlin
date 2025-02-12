@@ -1,7 +1,6 @@
 package com.example.chaika.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +20,6 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    companion object {
-        private const val TAG = "ChaikaMainFragment"
-    }
-
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
@@ -38,14 +33,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainViewModel.accessToken.observe(viewLifecycleOwner, Observer { token ->
+        mainViewModel.accessToken.observe(viewLifecycleOwner) { token ->
             if (token != null) {
                 binding.tvToken.text = "Access Token: $token"
                 Toast.makeText(requireContext(), "Token received", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "Token not found", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
 
         binding.logoutButton.setOnClickListener {
             mainViewModel.logout()

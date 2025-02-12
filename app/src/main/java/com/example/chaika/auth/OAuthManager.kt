@@ -5,7 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import com.example.chaika.util.PKCEUtil
-import com.example.chaika.auth.AuthConfig
+import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
@@ -18,8 +18,11 @@ class OAuthManager @Inject constructor(
     private val authService: AuthorizationService
 ) {
 
-    var authState: AuthState? = null
-    var codeVerifier: String? = null
+    private var authState: AuthState? = null
+    private var codeVerifier: String? = null
+
+    // Сохраняем последний сформированный запрос
+    private var lastAuthRequest: AuthorizationRequest? = null
 
     /**
      * Создает Intent для запуска авторизации с PKCE.
@@ -27,7 +30,7 @@ class OAuthManager @Inject constructor(
     fun createAuthIntent(): Intent {
         Log.d("OAuthManager", "Starting authentication")
 
-        // Задаем эндпоинты и конфигурацию
+        // Настраиваем конфигурацию эндпоинтов
         val serviceConfig = AuthorizationServiceConfiguration(
             Uri.parse(AuthConfig.AUTH_ENDPOINT),
             Uri.parse(AuthConfig.TOKEN_ENDPOINT)
@@ -42,7 +45,7 @@ class OAuthManager @Inject constructor(
         Log.d("OAuthManager", "codeVerifier: $codeVerifier")
         Log.d("OAuthManager", "codeChallenge: $codeChallenge")
 
-        // Формируем запрос авторизации с PKCE
+        // Формируем запрос авторизации
         val authRequest = AuthorizationRequest.Builder(
             serviceConfig,
             clientId,
@@ -53,25 +56,53 @@ class OAuthManager @Inject constructor(
             .setCodeVerifier(codeVerifier, codeChallenge, "S256")
             .build()
 
+        // Сохраняем запрос для последующего построения ответа вручную
+        lastAuthRequest = authRequest
+
         val customTabsIntent = CustomTabsIntent.Builder().build()
-        // Получаем Intent для авторизации через AppAuth
         return authService.getAuthorizationRequestIntent(authRequest, customTabsIntent)
     }
 
     /**
      * Обрабатывает ответ авторизации и выполняет обмен кода на токен.
      *
+     * Если Intent не содержит extras (что бывает при deep link'ах в Single-Activity),
+     * пытается вручную создать AuthorizationResponse, используя сохранённый AuthorizationRequest.
+     *
      * @param data Intent с результатом авторизации.
      * @param onTokenReceived Callback, передающий полученный access token.
      */
     fun handleAuthorizationResponse(data: Intent, onTokenReceived: (String) -> Unit) {
-        val response = AuthorizationResponse.fromIntent(data)
-        val ex = net.openid.appauth.AuthorizationException.fromIntent(data)
+        // Пытаемся получить ответ стандартным способом
+        var response = AuthorizationResponse.fromIntent(data)
+        var ex = AuthorizationException.fromIntent(data)
+
+        // Если extras отсутствуют, попробуем извлечь данные из URI и создать ответ вручную
+        if (response == null && data.data != null && lastAuthRequest != null) {
+            Log.d("OAuthManager", "No extras in Intent – parsing URI manually: ${data.data}")
+            val uri = data.data!!
+            val code = uri.getQueryParameter("code")
+            val state = uri.getQueryParameter("state")
+            if (code != null && state != null) {
+                // Создаем AuthorizationResponse вручную, используя сохранённый запрос
+                response = AuthorizationResponse.Builder(lastAuthRequest!!)
+                    .setAuthorizationCode(code)
+                    .setState(state)
+                    .setScope(lastAuthRequest!!.scope)
+                    .build()
+                ex = null
+            }
+        }
+
+        Log.d("OAuthManager", "handleAuthorizationResponse: response=$response, exception=$ex")
+
         if (response != null) {
-            Log.d("OAuthManager", "AuthorizationResponse: $response")
             authState = AuthState(response, ex)
             val tokenRequest = response.createTokenExchangeRequest()
-            Log.d("OAuthManager", "TokenExchangeRequest: $tokenRequest")
+            Log.d(
+                "OAuthManager",
+                "TokenExchangeRequest: $tokenRequest, codeVerifier: $codeVerifier"
+            )
             authService.performTokenRequest(tokenRequest) { tokenResponse, exception ->
                 if (tokenResponse != null) {
                     authState?.update(tokenResponse, exception)

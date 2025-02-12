@@ -1,6 +1,7 @@
 package com.example.chaika.ui.view_models
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,27 +24,22 @@ class AuthViewModel @Inject constructor(
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
-    // Флаг для гарантии однократной обработки deep link
-    private var deepLinkProcessed = false
-
-    /** Возвращает Intent для начала авторизации. */
+    /** Возвращает Intent для запуска авторизации. */
     fun getAuthIntent(): Intent = startAuthorizationUseCase()
 
     /**
-     * Обрабатывает deep link, вызывая UseCase обмена кода на токен.
-     * Обработка выполняется только один раз.
+     * Обрабатывает deep link Intent, обменивая код авторизации на access token.
      */
     fun processDeepLink(intent: Intent) {
-        if (!deepLinkProcessed) {
-            deepLinkProcessed = true
-            viewModelScope.launch {
-                try {
-                    val token = handleAuthorizationResponseUseCase(intent)
-                    _accessToken.postValue(token)
-                } catch (e: Exception) {
-                    _error.postValue(e.message ?: "Unknown error")
-                }
+        viewModelScope.launch {
+            try {
+                val token = handleAuthorizationResponseUseCase(intent)
+                _accessToken.postValue(token)
+            } catch (e: Exception) {
+                _error.postValue(e.message ?: "Unknown error")
+                Log.e("AuthViewModel", "Error processing deep link", e)
             }
         }
     }
+
 }

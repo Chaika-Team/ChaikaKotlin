@@ -24,14 +24,18 @@ class StartAuthorizationUseCase @Inject constructor(
 
 /**
  * Use case для обработки ответа авторизации.
- * Принимает Intent, полученный в результате авторизации, и возвращает access token.
+ * Принимает Intent, полученный в результате авторизации, обменивает код на токен,
+ * сохраняет его через tokenManager и возвращает access token.
  */
 class HandleAuthorizationResponseUseCase @Inject constructor(
-    private val oAuthManager: OAuthManager
+    private val oAuthManager: OAuthManager,
+    private val tokenManager: EncryptedTokenManagerInterface
 ) {
     suspend operator fun invoke(intent: Intent): String = suspendCancellableCoroutine { cont ->
         oAuthManager.handleAuthorizationResponse(intent) { token ->
             if (token.isNotEmpty()) {
+                // Сохраняем полученный токен
+                tokenManager.saveToken(token)
                 cont.resume(token)
             } else {
                 cont.resumeWithException(Exception("Получен пустой токен"))
