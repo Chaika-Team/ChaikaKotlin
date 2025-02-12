@@ -91,6 +91,7 @@ dependencies {
     val room_version = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room_version")
+    // TODO: рассмотреть замену на kapt
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
     // To use Kotlin Symbol Processing (KSP)
