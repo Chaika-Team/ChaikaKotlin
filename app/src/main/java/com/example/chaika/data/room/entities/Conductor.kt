@@ -17,6 +17,8 @@ import androidx.room.PrimaryKey
 data class Conductor(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "familyName") val familyName: String,
+    @ColumnInfo(name = "givenName") val givenName: String,
     @ColumnInfo(name = "employee_id") val employeeID: String,
     @ColumnInfo(name = "image") val image: String
 )

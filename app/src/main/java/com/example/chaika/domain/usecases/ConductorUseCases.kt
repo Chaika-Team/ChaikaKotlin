@@ -1,115 +1,74 @@
 package com.example.chaika.domain.usecases
 
-import com.example.chaika.data.data_source.apiService.AuthApiService
-import com.example.chaika.data.data_source.dto.AuthRequestDto
-import com.example.chaika.data.data_source.dto.AuthResponseDto
+import com.example.chaika.data.data_source.apiService.ApiServiceRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
 import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
- * Юзкейсы для работы с проводниками.
- */
-
-/**
- * Юзкейс для получения данных проводника с сервера.
+ * Use case для получения данных проводника по токену.
  *
- * @param authApiService API-сервис для авторизации.
+ * Он обращается к репозиторию, который использует Retrofit для запроса userinfo.
+ * Здесь репозиторий возвращает Result<ConductorDomain>, который мы преобразуем в ConductorDomain
+ * (или выбрасываем ошибку, если запрос неуспешен).
  */
-class FetchConductorFromServerUseCase @Inject constructor(
-    private val authApiService: AuthApiService
+class FetchConductorByTokenUseCase @Inject constructor(
+    private val conductorApiRepository: ApiServiceRepositoryInterface
 ) {
-
-    /**
-     * Отправляет запрос на сервер для проверки учетных данных.
-     *
-     * @param employeeID Табельный номер проводника.
-     * @param password Пароль проводника.
-     * @return Ответ с данными токена и профиля.
-     */
-    suspend operator fun invoke(employeeID: String, password: String): AuthResponseDto {
-        return withContext(Dispatchers.IO) {
-            authApiService.authorize(AuthRequestDto(employeeID, password))
+    suspend operator fun invoke(accessToken: String): ConductorDomain =
+        withContext(Dispatchers.IO) {
+            // Если репозиторий возвращает Result, то можно использовать getOrElse или getOrThrow:
+            conductorApiRepository.fetchUserInfo(accessToken).getOrElse { throw it }
         }
-    }
 }
 
-
 /**
- * Юзкейс для локального сохранения данных проводника.
+ * Use case для локального сохранения данных проводника.
  *
- * @param imageRepository Репозиторий для работы с изображениями.
- * @param conductorRepository Репозиторий для работы с проводниками в локальной базе данных.
+ * Сохраняет изображение через LocalImageRepository, затем обновлённого проводника – через RoomConductorRepositoryInterface.
  */
 class SaveConductorLocallyUseCase @Inject constructor(
     private val conductorRepository: RoomConductorRepositoryInterface,
     private val imageRepository: LocalImageRepository
 ) {
-
     /**
      * Сохраняет данные проводника в локальной базе данных.
      *
      * @param conductorDomain Доменная модель проводника.
-     * @param imageUrl Ссылка на изображение проводника.
-     * @return Локальный путь к сохранённому изображению.
+     * @param imageUrl URL изображения проводника, которое нужно сохранить локально.
+     * @return Обновлённую доменную модель проводника с локальным путем к изображению.
      */
     suspend operator fun invoke(
         conductorDomain: ConductorDomain,
         imageUrl: String
-    ): ConductorDomain {
-        return withContext(Dispatchers.IO) {
-            // Сохраняем изображение локально
-            val imagePath = imageRepository.saveImageFromUrl(
-                imageUrl = imageUrl,
-                fileName = "${conductorDomain.employeeID}.jpg",
-                subDir = "conductors"
-            ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
+    ): ConductorDomain = withContext(Dispatchers.IO) {
+        // Сохраняем изображение локально
+        val imagePath = imageRepository.saveImageFromUrl(
+            imageUrl = imageUrl,
+            fileName = "${conductorDomain.employeeID}.jpg",
+            subDir = "conductors"
+        ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
 
-            // Обновляем доменную модель проводника с локальным путём к изображению
-            val updatedConductor = conductorDomain.copy(image = imagePath)
-
-            // Сохраняем проводника в локальной базе данных
-            conductorRepository.insertConductor(updatedConductor)
-
-            updatedConductor
-        }
+        // Обновляем модель проводника с локальным путём к изображению
+        val updatedConductor = conductorDomain.copy(image = imagePath)
+        // Сохраняем проводника в локальной базе данных
+        conductorRepository.insertConductor(updatedConductor)
+        updatedConductor
     }
 }
 
 /**
- * Юзкейс для авторизации проводника.
- *
- * @param fetchConductorFromServerUseCase Юзкейс для получения данных с сервера.
- * @param saveConductorLocallyUseCase Юзкейс для локального сохранения данных проводника.
- */
-class AuthorizeConductorUseCase @Inject constructor(
-    private val fetchConductorFromServerUseCase: FetchConductorFromServerUseCase,
-    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase
+ * Use Case для получения данных проводника из базы данных SQLite.
+ * Использует RoomConductorRepositoryInterface.
+ **/
+class GetAllConductorsUseCase @Inject constructor(
+    private val conductorRepository: RoomConductorRepositoryInterface
 ) {
-
-    /**
-     * Авторизует проводника, проверяя данные на сервере, шифруя токен и сохраняя данные локально.
-     *
-     * @param employeeID Табельный номер проводника.
-     * @param password Пароль проводника.
-     * @return Доменная модель проводника с сохранёнными данными.
-     */
-    suspend operator fun invoke(employeeID: String, password: String): ConductorDomain {
-        // 1. Получаем данные проводника с сервера
-        val serverResponse = fetchConductorFromServerUseCase(employeeID, password)
-
-        // 2. Создаём доменную модель проводника
-        val conductorDomain = ConductorDomain(
-            id = 0, // ID назначается Room автоматически
-            name = serverResponse.name,
-            employeeID = employeeID,
-            image = "" // Заполняется в следующем шаге
-        )
-
-        // 4. Сохраняем проводника локально, включая изображение
-        return saveConductorLocallyUseCase(conductorDomain, serverResponse.image)
+    operator fun invoke(): Flow<List<ConductorDomain>> {
+        return conductorRepository.getAllConductors()
     }
 }

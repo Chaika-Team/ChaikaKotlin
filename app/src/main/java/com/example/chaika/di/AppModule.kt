@@ -6,8 +6,10 @@ import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.data.crypto.EncryptedTokenManager
 import com.example.chaika.data.data_source.FakeProductInfoDataSource
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
-import com.example.chaika.data.data_source.apiService.AuthApiService
+import com.example.chaika.data.data_source.apiService.ApiService
 import com.example.chaika.auth.OAuthManager
+import com.example.chaika.data.data_source.apiService.ApiServiceRepository
+import com.example.chaika.data.data_source.apiService.ApiServiceRepositoryInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
@@ -20,7 +22,6 @@ import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.repo.*
 import com.example.chaika.domain.usecases.AddProductInfoUseCase
 import com.example.chaika.domain.usecases.DeleteProductUseCase
-import com.example.chaika.domain.usecases.FetchConductorFromServerUseCase
 import com.example.chaika.domain.usecases.GenerateTripReportUseCase
 import com.example.chaika.domain.usecases.GetAllProductsUseCase
 import com.example.chaika.domain.usecases.SaveCartWithItemsAndOperationUseCase
@@ -34,7 +35,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.openid.appauth.AuthorizationService
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -113,15 +114,28 @@ object AppModule {
     @Singleton
     fun provideProductInfoDataSource(): ProductInfoDataSourceInterface = FakeProductInfoDataSource()
 
-    // ================== Retrofit: AuthApiService ==================
+    // ================== Retrofit: ApiService ==================
+    // В AppModule:
     @Provides
     @Singleton
-    fun provideAuthApiService(): AuthApiService =
-        Retrofit.Builder()
-            .baseUrl("https://example.com/api/v1/") // Замените на реальный URL
-            .addConverterFactory(MoshiConverterFactory.create())
+    fun provideRetrofitInstance(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://iam.remystorage.ru/") // или ваш базовый URL
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): ApiService {
+        return retrofit.create(ApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConductorApiRepository(apiService: ApiService): ApiServiceRepositoryInterface {
+        return ApiServiceRepository(apiService)
+    }
 
     // ================== EncryptedTokenManager ==================
     @Provides
@@ -166,10 +180,6 @@ object AppModule {
             inMemoryCartRepositoryInterface
         )
 
-    @Provides
-    @Singleton
-    fun provideFetchConductorFromServerUseCase(authApiService: AuthApiService): FetchConductorFromServerUseCase =
-        FetchConductorFromServerUseCase(authApiService)
 
     @Provides
     @Singleton
