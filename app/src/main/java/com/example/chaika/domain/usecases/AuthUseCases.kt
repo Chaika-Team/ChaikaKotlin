@@ -62,9 +62,11 @@ class GetAccessTokenUseCase @Inject constructor(
  * Он очищает сохранённый токен через менеджер токенов.
  */
 class LogoutUseCase @Inject constructor(
-    private val tokenManager: EncryptedTokenManagerInterface
+    private val tokenManager: EncryptedTokenManagerInterface,
+    private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase
 ) {
     suspend operator fun invoke() = withContext(Dispatchers.IO) {
         tokenManager.clearToken()
+        deleteAllConductorsUseCase()
     }
 }

@@ -35,7 +35,6 @@ class RoomConductorRepository @Inject constructor(
             ?: throw IllegalArgumentException("Conductor not found for id: $conductorId")
     }
 
-
     override suspend fun insertConductor(conductorDomain: ConductorDomain) {
         conductorDao.insertConductor(conductorDomain.toEntity())
     }
@@ -46,5 +45,9 @@ class RoomConductorRepository @Inject constructor(
 
     override suspend fun deleteConductor(conductorDomain: ConductorDomain) {
         conductorDao.deleteConductor(conductorDomain.toEntity())
+    }
+
+    override suspend fun deleteAllConductors() {
+        conductorDao.deleteAllConductors()
     }
 }

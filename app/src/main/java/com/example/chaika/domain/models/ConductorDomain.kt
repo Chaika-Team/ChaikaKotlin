@@ -13,13 +13,10 @@ import com.google.gson.annotations.SerializedName
  * @param image Ссылка или путь к изображению проводника.
  */
 data class ConductorDomain(
-    val id: Int,
+    val id: Int? = null,
     val name: String,
-    @SerializedName("family_name")
     val familyName: String,
-    @SerializedName("given_name")
     val givenName: String,
-    @SerializedName("nickname")
     val employeeID: String,
     val image: String
 )

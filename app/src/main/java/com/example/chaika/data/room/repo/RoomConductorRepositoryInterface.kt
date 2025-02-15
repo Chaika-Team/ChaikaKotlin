@@ -10,5 +10,5 @@ interface RoomConductorRepositoryInterface {
     suspend fun insertConductor(conductorDomain: ConductorDomain)
     suspend fun updateConductor(conductorDomain: ConductorDomain)
     suspend fun deleteConductor(conductorDomain: ConductorDomain)
+    suspend fun deleteAllConductors()
 }
-

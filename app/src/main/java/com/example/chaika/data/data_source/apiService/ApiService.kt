@@ -1,6 +1,6 @@
 package com.example.chaika.data.data_source.apiService
 
-import com.example.chaika.domain.models.ConductorDomain
+import com.example.chaika.data.data_source.dto.ConductorDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -9,9 +9,8 @@ import retrofit2.http.Header
  * API-сервис для авторизации пользователей.
  */
 interface ApiService {
-    @GET("oidc/v2/userinfo")
+    @GET("oidc/v1/userinfo")
     suspend fun getUserInfo(
         @Header("Authorization") token: String
-    ): Response<ConductorDomain>
+    ): Response<ConductorDto>
 }
-

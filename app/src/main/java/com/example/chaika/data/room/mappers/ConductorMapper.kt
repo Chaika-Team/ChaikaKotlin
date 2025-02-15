@@ -26,7 +26,7 @@ fun Conductor.toDomain(): ConductorDomain {
  */
 fun ConductorDomain.toEntity(): Conductor {
     return Conductor(
-        id = this.id,
+        id = this.id ?: 0, // Если id null, используем 0 (Room сгенерирует новый)
         name = this.name,
         familyName = this.familyName,
         givenName = this.givenName,
@@ -34,3 +34,4 @@ fun ConductorDomain.toEntity(): Conductor {
         image = this.image
     )
 }
+

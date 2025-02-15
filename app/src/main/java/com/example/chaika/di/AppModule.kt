@@ -8,8 +8,8 @@ import com.example.chaika.data.data_source.FakeProductInfoDataSource
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
 import com.example.chaika.data.data_source.apiService.ApiService
 import com.example.chaika.auth.OAuthManager
-import com.example.chaika.data.data_source.apiService.ApiServiceRepository
-import com.example.chaika.data.data_source.apiService.ApiServiceRepositoryInterface
+import com.example.chaika.data.data_source.repo.ApiServiceRepository
+import com.example.chaika.data.data_source.repo.ApiServiceRepositoryInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
@@ -21,13 +21,18 @@ import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.repo.*
 import com.example.chaika.domain.usecases.AddProductInfoUseCase
+import com.example.chaika.domain.usecases.AuthorizeAndSaveConductorUseCase
+import com.example.chaika.domain.usecases.DeleteAllConductorsUseCase
 import com.example.chaika.domain.usecases.DeleteProductUseCase
+import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
 import com.example.chaika.domain.usecases.GenerateTripReportUseCase
 import com.example.chaika.domain.usecases.GetAllProductsUseCase
 import com.example.chaika.domain.usecases.SaveCartWithItemsAndOperationUseCase
 import com.example.chaika.domain.usecases.SaveConductorLocallyUseCase
 import com.example.chaika.domain.usecases.HandleAuthorizationResponseUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
+import com.example.chaika.domain.usecases.GetAccessTokenUseCase
+import com.example.chaika.domain.usecases.LogoutUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,13 +47,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // ================== Database ==================
+    // ================== DATABASE & DAOs ==================
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "app_database").build()
 
-    // ================== DAOs ==================
     @Provides
     fun provideCartItemDao(appDatabase: AppDatabase): CartItemDao = appDatabase.cartItemDao()
 
@@ -63,7 +67,7 @@ object AppModule {
     fun provideProductInfoDao(appDatabase: AppDatabase): ProductInfoDao =
         appDatabase.productInfoDao()
 
-    // ================== Repositories ==================
+    // ================== ROOM REPOSITORIES ==================
     @Provides
     @Singleton
     fun provideRoomCartOperationRepository(cartOperationDao: CartOperationDao): RoomCartOperationRepositoryInterface =
@@ -95,6 +99,7 @@ object AppModule {
     fun provideRoomProductInfoRepository(productInfoDao: ProductInfoDao): RoomProductInfoRepositoryInterface =
         RoomProductInfoRepository(productInfoDao)
 
+    // ================== OTHER REPOSITORIES ==================
     @Provides
     @Singleton
     fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface = InMemoryCartRepository()
@@ -109,41 +114,37 @@ object AppModule {
     fun provideLocalTripReportRepository(@ApplicationContext context: Context): LocalTripReportRepository =
         LocalTripReportRepository(context)
 
-    // ================== Data Sources ==================
+    // ================== DATA SOURCES ==================
     @Provides
     @Singleton
     fun provideProductInfoDataSource(): ProductInfoDataSourceInterface = FakeProductInfoDataSource()
 
-    // ================== Retrofit: ApiService ==================
-    // В AppModule:
+    // ================== RETROFIT & NETWORK ==================
     @Provides
     @Singleton
-    fun provideRetrofitInstance(): Retrofit {
-        return Retrofit.Builder()
+    fun provideRetrofitInstance(): Retrofit =
+        Retrofit.Builder()
             .baseUrl("https://iam.remystorage.ru/") // или ваш базовый URL
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
-    }
+    fun provideApiService(retrofit: Retrofit): ApiService =
+        retrofit.create(ApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideConductorApiRepository(apiService: ApiService): ApiServiceRepositoryInterface {
-        return ApiServiceRepository(apiService)
-    }
+    fun provideConductorApiRepository(apiService: ApiService): ApiServiceRepositoryInterface =
+        ApiServiceRepository(apiService)
 
-    // ================== EncryptedTokenManager ==================
+    // ================== ENCRYPTED TOKEN MANAGER ==================
     @Provides
     @Singleton
     fun provideEncryptedTokenManager(@ApplicationContext context: Context): EncryptedTokenManagerInterface =
         EncryptedTokenManager(context)
 
-    // ================== Authorization (OAuth) ==================
+    // ================== AUTHORIZATION (OAUTH) ==================
     @Provides
     @Singleton
     fun provideAuthorizationService(@ApplicationContext context: Context): AuthorizationService =
@@ -154,7 +155,7 @@ object AppModule {
     fun provideOAuthManager(authorizationService: AuthorizationService): OAuthManager =
         OAuthManager(authorizationService)
 
-    // ================== Use Cases for Authorization ==================
+    // ================== USE CASES: AUTHORIZATION ==================
     @Provides
     @Singleton
     fun provideStartAuthorizationUseCase(oAuthManager: OAuthManager): StartAuthorizationUseCase =
@@ -168,7 +169,21 @@ object AppModule {
     ): HandleAuthorizationResponseUseCase =
         HandleAuthorizationResponseUseCase(oAuthManager, tokenManager)
 
-    // ================== Other Use Cases ==================
+    @Provides
+    @Singleton
+    fun provideGetAccessTokenUseCase(tokenManager: EncryptedTokenManagerInterface): GetAccessTokenUseCase =
+        GetAccessTokenUseCase(tokenManager)
+
+    @Provides
+    @Singleton
+    fun provideLogoutUseCase(
+        tokenManager: EncryptedTokenManagerInterface,
+        deleteAllConductorsUseCase: DeleteAllConductorsUseCase
+    ): LogoutUseCase =
+        LogoutUseCase(tokenManager, deleteAllConductorsUseCase)
+
+
+    // ================== USE CASES: OTHER ==================
     @Provides
     @Singleton
     fun provideSaveCartWithItemsAndOperationUseCase(
@@ -180,7 +195,6 @@ object AppModule {
             inMemoryCartRepositoryInterface
         )
 
-
     @Provides
     @Singleton
     fun provideSaveConductorLocallyUseCase(
@@ -191,8 +205,33 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGetAllProductsUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): GetAllProductsUseCase =
+    fun provideFetchConductorByTokenUseCase(
+        conductorApiRepository: ApiServiceRepositoryInterface
+    ): FetchConductorByTokenUseCase =
+        FetchConductorByTokenUseCase(conductorApiRepository)
+
+    @Provides
+    @Singleton
+    fun provideAuthorizeAndSaveConductorUseCase(
+        fetchConductorByTokenUseCase: FetchConductorByTokenUseCase,
+        saveConductorLocallyUseCase: SaveConductorLocallyUseCase
+    ): AuthorizeAndSaveConductorUseCase =
+        AuthorizeAndSaveConductorUseCase(fetchConductorByTokenUseCase, saveConductorLocallyUseCase)
+
+    @Provides
+    @Singleton
+    fun provideGetAllProductsUseCase(
+        roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
+    ): GetAllProductsUseCase =
         GetAllProductsUseCase(roomProductInfoRepositoryInterface)
+
+    @Provides
+    @Singleton
+    fun provideDeleteAllConductorsUseCase(
+        conductorRepository: RoomConductorRepositoryInterface
+    ): DeleteAllConductorsUseCase =
+        DeleteAllConductorsUseCase(conductorRepository)
+
 
     @Provides
     @Singleton
@@ -205,7 +244,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDeleteProductUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): DeleteProductUseCase =
+    fun provideDeleteProductUseCase(
+        roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
+    ): DeleteProductUseCase =
         DeleteProductUseCase(roomProductInfoRepositoryInterface)
 
     @Provides

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/authCheckFragment">
 
-    <!-- Фрагмент для проверки наличия токена -->
+    <!-- Фрагмент для проверки авторизации -->
     <fragment
         android:id="@+id/authCheckFragment"
         android:name="com.example.chaika.ui.fragments.AuthCheckFragment"
@@ -35,8 +35,23 @@
         android:name="com.example.chaika.ui.fragments.MainFragment"
         android:label="Главный экран"
         tools:layout="@layout/fragment_main">
+
         <action
-            android:id="@+id/action_mainFragment_to_authFragment"
+            android:id="@+id/action_mainFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <!-- Фрагмент профиля -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.chaika.ui.fragments.ProfileFragment"
+        android:label="Профиль"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_authFragment"
             app:destination="@id/authFragment" />
     </fragment>
 </navigation>

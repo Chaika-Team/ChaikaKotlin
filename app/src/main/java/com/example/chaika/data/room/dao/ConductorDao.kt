@@ -26,4 +26,8 @@ interface ConductorDao {
 
     @Delete
     suspend fun deleteConductor(conductor: Conductor)
+
+    // Новый метод для удаления всех проводников
+    @Query("DELETE FROM conductors")
+    suspend fun deleteAllConductors()
 }

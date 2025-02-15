@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.chaika.R
 import com.example.chaika.databinding.FragmentAuthBinding
@@ -48,31 +47,34 @@ class AuthFragment : Fragment() {
         binding.loginButton.setOnClickListener {
             Log.d(TAG, "loginButton clicked. Starting authorization.")
             val authIntent = authViewModel.getAuthIntent()
+            Log.d(TAG, "Starting activity with authIntent: $authIntent")
             startActivity(authIntent)
         }
 
         // Подписываемся на deep link-события из DeepLinkViewModel
-        deepLinkViewModel.deepLinkIntent.observe(viewLifecycleOwner, Observer { intent ->
+        deepLinkViewModel.deepLinkIntent.observe(viewLifecycleOwner) { intent ->
             if (intent != null) {
                 Log.d(TAG, "Deep link Intent received: ${intent.data}")
                 authViewModel.processDeepLink(intent)
                 // После обработки очищаем deep link, чтобы не повторять обмен кода на токен
                 deepLinkViewModel.clearDeepLink()
+            } else {
+                Log.d(TAG, "Deep link Intent is null")
             }
-        })
+        }
 
         // Наблюдаем за полученным access token – при его наличии переходим к MainFragment
-        authViewModel.accessToken.observe(viewLifecycleOwner, Observer { token ->
+        authViewModel.accessToken.observe(viewLifecycleOwner) { token ->
             if (token != null) {
                 Log.d(TAG, "Access Token received: $token")
                 Toast.makeText(requireContext(), "Authorization successful", Toast.LENGTH_SHORT)
                     .show()
                 findNavController().navigate(R.id.action_authFragment_to_mainFragment)
             }
-        })
+        }
 
         // Наблюдаем за ошибками авторизации
-        authViewModel.error.observe(viewLifecycleOwner, Observer { errorMsg ->
+        authViewModel.error.observe(viewLifecycleOwner) { errorMsg ->
             if (errorMsg != null) {
                 Log.e(TAG, "Authorization error: $errorMsg")
                 Toast.makeText(
@@ -82,7 +84,7 @@ class AuthFragment : Fragment() {
                 )
                     .show()
             }
-        })
+        }
     }
 
     override fun onDestroyView() {

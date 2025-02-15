@@ -1,6 +1,7 @@
-// ApiServiceRepository.kt
-package com.example.chaika.data.data_source.apiService
+package com.example.chaika.data.data_source.repo
 
+import com.example.chaika.data.data_source.apiService.ApiService
+import com.example.chaika.data.data_source.mappers.toDomain
 import com.example.chaika.domain.models.ConductorDomain
 import javax.inject.Inject
 
@@ -12,8 +13,9 @@ class ApiServiceRepository @Inject constructor(
         return try {
             val response = apiService.getUserInfo("Bearer $accessToken")
             if (response.isSuccessful) {
-                response.body()?.let {
-                    Result.success(it)
+                response.body()?.let { dto ->
+                    // Преобразуем DTO в доменную модель
+                    Result.success(dto.toDomain())
                 } ?: Result.failure(Exception("User info is empty"))
             } else {
                 Result.failure(Exception("Error: ${response.code()} - ${response.message()}"))
