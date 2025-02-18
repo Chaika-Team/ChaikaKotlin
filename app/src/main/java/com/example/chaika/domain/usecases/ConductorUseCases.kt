@@ -1,8 +1,8 @@
 package com.example.chaika.domain.usecases
 
-import android.util.Log
 import com.example.chaika.data.data_source.repo.ApiServiceRepositoryInterface
-import com.example.chaika.data.local.LocalImageRepository
+import com.example.chaika.data.local.ImageSubDir
+import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
 import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.Dispatchers
@@ -34,35 +34,23 @@ class FetchConductorByTokenUseCase @Inject constructor(
  */
 class SaveConductorLocallyUseCase @Inject constructor(
     private val conductorRepository: RoomConductorRepositoryInterface,
-    private val imageRepository: LocalImageRepository
+    private val imageRepository: LocalImageRepositoryInterface
 ) {
-    private val TAG = "SaveConductorLocallyUseCase"
 
     /**
      * Сохраняет данные проводника локально.
      */
     suspend operator fun invoke(conductor: ConductorDomain, imageUrl: String): ConductorDomain =
         withContext(Dispatchers.IO) {
-            // Лог входящих данных
-            Log.d(TAG, "Получен ConductorDomain: $conductor, imageUrl: $imageUrl")
 
-            // Сохраняем изображение и логируем результат
             val imagePath = imageRepository.saveImageFromUrl(
                 imageUrl = imageUrl,
                 fileName = "${conductor.employeeID}.jpg",
-                subDir = "conductors"
+                subDir = ImageSubDir.CONDUCTORS.folder
             ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
 
-            Log.d(TAG, "Изображение сохранено по пути: $imagePath")
-
-            // Обновляем модель проводника с локальным путем к изображению
             val updatedConductor = conductor.copy(image = imagePath)
-            Log.d(TAG, "Обновленный проводник для сохранения: $updatedConductor")
-
-            // Сохраняем в базу
             conductorRepository.insertConductor(updatedConductor)
-            Log.d(TAG, "Данные проводника успешно сохранены в базе: $updatedConductor")
-
             updatedConductor
         }
 }

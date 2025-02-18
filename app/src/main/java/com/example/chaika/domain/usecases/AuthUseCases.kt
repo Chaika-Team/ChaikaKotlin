@@ -3,6 +3,8 @@ package com.example.chaika.domain.usecases
 import android.content.Intent
 import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.auth.OAuthManager
+import com.example.chaika.data.local.ImageSubDir
+import com.example.chaika.data.local.LocalImageRepositoryInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -63,10 +65,12 @@ class GetAccessTokenUseCase @Inject constructor(
  */
 class LogoutUseCase @Inject constructor(
     private val tokenManager: EncryptedTokenManagerInterface,
-    private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase
+    private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
+    private val imageRepository: LocalImageRepositoryInterface
 ) {
     suspend operator fun invoke() = withContext(Dispatchers.IO) {
         tokenManager.clearToken()
         deleteAllConductorsUseCase()
+        imageRepository.deleteImagesInSubDir(ImageSubDir.CONDUCTORS.folder)
     }
 }

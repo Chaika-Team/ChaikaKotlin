@@ -1,7 +1,8 @@
 package com.example.chaika.domain.usecases
 
 import com.example.chaika.data.data_source.ProductInfoDataSourceInterface
-import com.example.chaika.data.local.LocalImageRepository
+import com.example.chaika.data.local.ImageSubDir
+import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
 import com.example.chaika.domain.models.ProductInfoDomain
 import kotlinx.coroutines.flow.Flow
@@ -33,11 +34,10 @@ class DeleteProductUseCase @Inject constructor(
         roomProductInfoRepositoryInterface.deleteProduct(productInfoDomain)
     }
 }
-
 class AddProductInfoUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface,
     private val productInfoDataSource: ProductInfoDataSourceInterface,
-    private val localImageRepository: LocalImageRepository
+    private val localImageRepository: LocalImageRepositoryInterface
 ) {
     suspend operator fun invoke() {
         // Получаем список товаров с сервера (или из fake data source)
@@ -49,7 +49,7 @@ class AddProductInfoUseCase @Inject constructor(
             val imagePath = localImageRepository.saveImageFromUrl(
                 imageUrl = productInfo.image,
                 fileName = "${productInfo.name}.jpg",
-                subDir = "products"
+                subDir = ImageSubDir.PRODUCTS.folder
             )
 
             // Создаём новый объект с путём к изображению

@@ -13,6 +13,7 @@ import com.example.chaika.data.data_source.repo.ApiServiceRepositoryInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
+import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.local.LocalTripReportRepository
 import com.example.chaika.data.room.AppDatabase
 import com.example.chaika.data.room.dao.CartItemDao
@@ -106,7 +107,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocalImageRepository(@ApplicationContext context: Context): LocalImageRepository =
+    fun provideLocalImageRepository(@ApplicationContext context: Context): LocalImageRepositoryInterface =
         LocalImageRepository(context)
 
     @Provides
@@ -124,7 +125,7 @@ object AppModule {
     @Singleton
     fun provideRetrofitInstance(): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://iam.remystorage.ru/") // или ваш базовый URL
+            .baseUrl("https://iam.remystorage.ru/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -178,9 +179,10 @@ object AppModule {
     @Singleton
     fun provideLogoutUseCase(
         tokenManager: EncryptedTokenManagerInterface,
-        deleteAllConductorsUseCase: DeleteAllConductorsUseCase
+        deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
+        imageRepository: LocalImageRepositoryInterface
     ): LogoutUseCase =
-        LogoutUseCase(tokenManager, deleteAllConductorsUseCase)
+        LogoutUseCase(tokenManager, deleteAllConductorsUseCase, imageRepository)
 
 
     // ================== USE CASES: OTHER ==================
@@ -199,7 +201,7 @@ object AppModule {
     @Singleton
     fun provideSaveConductorLocallyUseCase(
         conductorRepository: RoomConductorRepositoryInterface,
-        imageRepository: LocalImageRepository
+        imageRepository: LocalImageRepositoryInterface
     ): SaveConductorLocallyUseCase =
         SaveConductorLocallyUseCase(conductorRepository, imageRepository)
 
@@ -238,7 +240,7 @@ object AppModule {
     fun provideAddProductInfoUseCase(
         productInfoRepository: RoomProductInfoRepositoryInterface,
         productInfoDataSource: ProductInfoDataSourceInterface,
-        imageRepository: LocalImageRepository
+        imageRepository: LocalImageRepositoryInterface
     ): AddProductInfoUseCase =
         AddProductInfoUseCase(productInfoRepository, productInfoDataSource, imageRepository)
 
