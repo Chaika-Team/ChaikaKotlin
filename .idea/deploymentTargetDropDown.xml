@@ -2,8 +2,33 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="app">
+      <entry key="ConductorRepositoryTest">
         <State />
+      </entry>
+      <entry key="ExampleInstrumentedTest">
+        <State />
+      </entry>
+      <entry key="SimpleHiltTest">
+        <State />
+      </entry>
+      <entry key="SimpleTest">
+        <State />
+      </entry>
+      <entry key="app">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\HP\.android\avd\Pixel_3a_API_34_extension_level_7_x86_64.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2025-02-06T18:54:08.706092300Z" />
+        </State>
       </entry>
     </value>
   </component>

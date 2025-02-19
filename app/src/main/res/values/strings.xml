@@ -2,6 +2,9 @@
     <string name="app_name">Chaika</string>
     <string name="hint_product_search">Поиск по названию</string>
 
+    <string name="search">Поиск</string>
+    <string name="product_search">Товар</string>
+    <string name="profile_icon">Профиль</string>
 
     <string name="add_trip">Добавить поездку</string>
     <string name="edit_text_trip_search">Добавить поездку</string>
@@ -13,5 +16,13 @@
     <string name="enter_trip_name">Введите название поездки</string>
     <string name="trip_added">Поездка добавлена</string>
     <string name="error_performing_operation">Ошибка при выполнении операции: %1$s</string>
+
+
+    <string name="add_title">Добавление</string>
+    <string name="cancel">Отмена</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="btn_back">Назад</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
