@@ -14,7 +14,7 @@ pre-push:
   parallel: false
   commands:
     detekt-full:
-      run: cmd /c gradlew.bat detekt
+      run: cmd /c gradlew.bat detekt --info
       stage: push
       description: "Полный анализ кода с Detekt"
 #    ktlint-check:

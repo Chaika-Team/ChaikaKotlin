@@ -4,7 +4,6 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("io.gitlab.arturbosch.detekt")
-    id("org.owasp.dependencycheck")
 }
 
 android {
@@ -148,7 +147,12 @@ dependencies {
 
     // Детекторы кода
     // implementation("com.pinterest:ktlint:0.50.0")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.24.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 // ktlint {
