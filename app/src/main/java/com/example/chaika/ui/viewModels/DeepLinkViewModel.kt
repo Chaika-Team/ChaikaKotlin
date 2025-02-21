@@ -1,4 +1,4 @@
-package com.example.chaika.ui.view_models
+package com.example.chaika.ui.viewModels
 
 import android.content.Intent
 import androidx.lifecycle.LiveData

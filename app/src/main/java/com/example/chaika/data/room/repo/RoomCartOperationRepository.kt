@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class RoomCartOperationRepository @Inject constructor(
-    private val cartOperationDao: CartOperationDao
+    private val cartOperationDao: CartOperationDao,
 ) : RoomCartOperationRepositoryInterface {
 
     override fun getCartOperationReportsWithIds(): Flow<List<Pair<Int, CartOperationReport>>> {
@@ -19,4 +19,3 @@ class RoomCartOperationRepository @Inject constructor(
         }
     }
 }
-

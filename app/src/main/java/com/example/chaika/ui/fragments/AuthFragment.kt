@@ -11,8 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.chaika.R
 import com.example.chaika.databinding.FragmentAuthBinding
-import com.example.chaika.ui.view_models.AuthViewModel
-import com.example.chaika.ui.view_models.DeepLinkViewModel
+import com.example.chaika.ui.viewModels.AuthViewModel
+import com.example.chaika.ui.viewModels.DeepLinkViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,8 +32,9 @@ class AuthFragment : Fragment() {
     private val deepLinkViewModel: DeepLinkViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         Log.d(TAG, "onCreateView")
         _binding = FragmentAuthBinding.inflate(inflater, container, false)
@@ -80,7 +81,7 @@ class AuthFragment : Fragment() {
                 Toast.makeText(
                     requireContext(),
                     "Authorization error: $errorMsg",
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                 )
                     .show()
             }

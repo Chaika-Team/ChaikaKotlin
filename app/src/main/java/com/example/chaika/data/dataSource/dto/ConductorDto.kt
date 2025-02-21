@@ -1,4 +1,4 @@
-package com.example.chaika.data.data_source.dto
+package com.example.chaika.data.dataSource.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -10,7 +10,7 @@ data class ConductorDto(
     @SerializedName("given_name")
     val givenName: String,
     @SerializedName("nickname")
-    val nickname: String,  // с сервера приходит nickname
+    val nickname: String, // с сервера приходит nickname
     @SerializedName("image")
-    val image: String?
+    val image: String?,
 )

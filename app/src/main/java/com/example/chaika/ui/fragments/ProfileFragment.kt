@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.chaika.R
 import com.example.chaika.databinding.FragmentProfileBinding
-import com.example.chaika.ui.view_models.ProfileViewModel
+import com.example.chaika.ui.viewModels.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
@@ -24,8 +24,9 @@ class ProfileFragment : Fragment() {
     private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root

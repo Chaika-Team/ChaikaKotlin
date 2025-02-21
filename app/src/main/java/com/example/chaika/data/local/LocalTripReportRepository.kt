@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class LocalTripReportRepository @Inject constructor(
-    private val context: Context
+    private val context: Context,
 ) {
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

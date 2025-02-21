@@ -15,7 +15,7 @@ fun Conductor.toDomain(): ConductorDomain {
         familyName = this.familyName,
         givenName = this.givenName,
         employeeID = this.employeeID,
-        image = this.image
+        image = this.image,
     )
 }
 
@@ -31,7 +31,6 @@ fun ConductorDomain.toEntity(): Conductor {
         familyName = this.familyName,
         givenName = this.givenName,
         employeeID = this.employeeID,
-        image = this.image
+        image = this.image,
     )
 }
-

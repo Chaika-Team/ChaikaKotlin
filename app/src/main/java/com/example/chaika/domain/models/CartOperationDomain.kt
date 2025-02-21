@@ -8,7 +8,7 @@ package com.example.chaika.domain.models
  */
 data class CartOperationDomain(
     val operationTypeDomain: OperationTypeDomain,
-    val conductorId: Int
+    val conductorId: Int,
 )
 
 /**

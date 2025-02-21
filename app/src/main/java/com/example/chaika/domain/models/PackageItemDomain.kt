@@ -8,5 +8,5 @@ package com.example.chaika.domain.models
  */
 data class PackageItemDomain(
     val productInfoDomain: ProductInfoDomain,
-    val currentQuantity: Int
+    val currentQuantity: Int,
 )

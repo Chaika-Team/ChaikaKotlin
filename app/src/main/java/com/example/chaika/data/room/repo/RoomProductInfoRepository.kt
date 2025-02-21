@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class RoomProductInfoRepository @Inject constructor(
-    private val productInfoDao: ProductInfoDao
+    private val productInfoDao: ProductInfoDao,
 ) : RoomProductInfoRepositoryInterface {
 
     override fun getAllProducts(): Flow<List<ProductInfoDomain>> {

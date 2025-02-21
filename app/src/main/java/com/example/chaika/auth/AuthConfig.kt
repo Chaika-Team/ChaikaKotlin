@@ -1,6 +1,5 @@
 package com.example.chaika.auth
 
-
 /**
  * Конфигурация OAuth 2.0 для авторизации с ZITADEL.
  */
@@ -11,4 +10,3 @@ object AuthConfig {
     const val TOKEN_ENDPOINT = "https://iam.remystorage.ru/oauth/v2/token"
     const val SCOPES = "openid profile email"
 }
-

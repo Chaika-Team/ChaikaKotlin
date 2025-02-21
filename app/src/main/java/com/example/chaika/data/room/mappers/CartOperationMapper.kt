@@ -28,7 +28,7 @@ fun getCurrentTime(): String {
 fun CartOperation.toDomain(): CartOperationDomain {
     return CartOperationDomain(
         operationTypeDomain = this.operationType.toOperationType(),
-        conductorId = this.conductorId
+        conductorId = this.conductorId,
     )
 }
 
@@ -37,19 +37,18 @@ fun CartOperationDomain.toEntity(): CartOperation {
         id = 0, // Система автоматически назначит ID
         operationType = this.operationTypeDomain.toInt(), // Используем ordinal для преобразования в Int
         operationTime = getCurrentTime(), // Установка текущих даты и времени
-        conductorId = this.conductorId
+        conductorId = this.conductorId,
     )
 }
 
 // Репорт-модель для отчётов
 fun CartOperation.toReport(
-    items: List<CartItemReport>
+    items: List<CartItemReport>,
 ): CartOperationReport {
     return CartOperationReport(
         employeeID = this.conductorId.toString(), // Временно передаём conductorId, заменим позже
         operationType = this.operationType,
         operationTime = this.operationTime,
-        items = items
+        items = items,
     )
 }
-

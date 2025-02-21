@@ -12,7 +12,7 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 class LocalImageRepository @Inject constructor(
-    private val context: Context
+    private val context: Context,
 ) : LocalImageRepositoryInterface {
 
     /**
@@ -25,7 +25,7 @@ class LocalImageRepository @Inject constructor(
     override suspend fun saveImageFromUrl(
         imageUrl: String,
         fileName: String,
-        subDir: String
+        subDir: String,
     ): String? {
         return try {
             val bitmap = withContext(Dispatchers.IO) {
@@ -71,34 +71,21 @@ class LocalImageRepository @Inject constructor(
                     val deleted = targetDir.deleteRecursively()
                     Log.d(
                         "LocalImageRepository",
-                        "Deleted images from: ${targetDir.absolutePath}, result: $deleted"
+                        "Deleted images from: ${targetDir.absolutePath}, result: $deleted",
                     )
                 } else {
                     Log.d(
                         "LocalImageRepository",
-                        "Directory does not exist: ${targetDir.absolutePath}"
+                        "Directory does not exist: ${targetDir.absolutePath}",
                     )
                 }
                 true
             } catch (e: Exception) {
                 Log.e(
                     "LocalImageRepository",
-                    "Failed to delete images in subDir '$subDir': ${e.message}"
+                    "Failed to delete images in subDir '$subDir': ${e.message}",
                 )
                 false
             }
         }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-

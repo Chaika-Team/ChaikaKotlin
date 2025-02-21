@@ -1,6 +1,6 @@
 package com.example.chaika.domain.usecases
 
-import com.example.chaika.data.data_source.repo.ApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.repo.ApiServiceRepositoryInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
@@ -18,7 +18,7 @@ import javax.inject.Inject
  * (или выбрасываем ошибку, если запрос неуспешен).
  */
 class FetchConductorByTokenUseCase @Inject constructor(
-    private val conductorApiRepository: ApiServiceRepositoryInterface
+    private val conductorApiRepository: ApiServiceRepositoryInterface,
 ) {
     suspend operator fun invoke(accessToken: String): ConductorDomain =
         withContext(Dispatchers.IO) {
@@ -34,7 +34,7 @@ class FetchConductorByTokenUseCase @Inject constructor(
  */
 class SaveConductorLocallyUseCase @Inject constructor(
     private val conductorRepository: RoomConductorRepositoryInterface,
-    private val imageRepository: LocalImageRepositoryInterface
+    private val imageRepository: LocalImageRepositoryInterface,
 ) {
 
     /**
@@ -42,11 +42,10 @@ class SaveConductorLocallyUseCase @Inject constructor(
      */
     suspend operator fun invoke(conductor: ConductorDomain, imageUrl: String): ConductorDomain =
         withContext(Dispatchers.IO) {
-
             val imagePath = imageRepository.saveImageFromUrl(
                 imageUrl = imageUrl,
                 fileName = "${conductor.employeeID}.jpg",
-                subDir = ImageSubDir.CONDUCTORS.folder
+                subDir = ImageSubDir.CONDUCTORS.folder,
             ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
 
             val updatedConductor = conductor.copy(image = imagePath)
@@ -55,13 +54,12 @@ class SaveConductorLocallyUseCase @Inject constructor(
         }
 }
 
-
 /**
  * Use case вызывает юзкейсы для получения с сервера и сохранения данных проводника.
  */
 class AuthorizeAndSaveConductorUseCase @Inject constructor(
     private val fetchConductorByTokenUseCase: FetchConductorByTokenUseCase,
-    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase
+    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase,
 ) {
     /**
      * Получает данные проводника по токену, затем сохраняет их локально (в том числе сохраняет изображение)
@@ -73,13 +71,12 @@ class AuthorizeAndSaveConductorUseCase @Inject constructor(
     }
 }
 
-
 /**
  * Use Case для получения данных проводника из базы данных SQLite.
  * Использует RoomConductorRepositoryInterface.
  **/
 class GetAllConductorsUseCase @Inject constructor(
-    private val conductorRepository: RoomConductorRepositoryInterface
+    private val conductorRepository: RoomConductorRepositoryInterface,
 ) {
     operator fun invoke(): Flow<List<ConductorDomain>> {
         return conductorRepository.getAllConductors()
@@ -90,7 +87,7 @@ class GetAllConductorsUseCase @Inject constructor(
  * Use Case для удаления данных проводников из базы данных SQLite.
  **/
 class DeleteAllConductorsUseCase @Inject constructor(
-    private val conductorRepository: RoomConductorRepositoryInterface
+    private val conductorRepository: RoomConductorRepositoryInterface,
 ) {
     suspend operator fun invoke() {
         conductorRepository.deleteAllConductors()

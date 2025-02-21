@@ -1,0 +1,35 @@
+pre-commit:
+  parallel: true
+  commands:
+#    ktlint:
+#      run: cmd /c gradlew.bat ktlintFormat
+#      stage: commit
+#      description: "Автоформатирование кода с Ktlint"
+    gradle-wrapper:
+      run: cmd /c gradlew.bat wrapper --warning-mode all
+      stage: commit
+      description: "Проверка корректности Gradle wrapper"
+
+pre-push:
+  parallel: false
+  commands:
+    detekt-full:
+      run: cmd /c gradlew.bat detekt --info
+      stage: push
+      description: "Полный анализ кода с Detekt"
+#    ktlint-check:
+#      run: cmd /c gradlew.bat ktlintCheck --info
+#      stage: push
+#      description: "Проверка стиля кода с Ktlint"
+    android-lint:
+      run: cmd /c gradlew.bat lint
+      stage: push
+      description: "Анализ Android-кода на ошибки"
+#    dependency-check:
+#      run: cmd /c gradlew.bat dependencyCheckAnalyze
+#      stage: push
+#      description: "Проверка зависимостей на уязвимости (OWASP)"
+    gradle-build:
+      run: cmd /c gradlew.bat assembleDebug
+      stage: push
+      description: "Проверка сборки перед пушем"

@@ -2,8 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-    id("kotlin-kapt") // для использования Kapt
-    id("com.google.dagger.hilt.android") // добавляем плагин Hilt здесь
+    id("com.google.dagger.hilt.android")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 android {
@@ -13,12 +13,19 @@ android {
     defaultConfig {
         applicationId = "com.example.chaika"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.0.1-alpha"
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.example.chaika"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    lint {
+        abortOnError = false
+        xmlReport = true
+        htmlReport = true
     }
 
     buildTypes {
@@ -26,7 +33,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -59,7 +66,6 @@ dependencies {
     implementation("net.openid:appauth:0.10.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-
     implementation("com.google.code.gson:gson:2.10")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -69,7 +75,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
-    implementation("com.github.bumptech.glide:compiler:4.12.0")
+    ksp("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.4.0")
     implementation("com.squareup.retrofit2:converter-gson:2.3.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.3.0")
@@ -88,32 +94,32 @@ dependencies {
     testImplementation("org.mockito:mockito-core:4.0.0")
     testImplementation("org.mockito:mockito-inline:4.0.0")
 
-    val room_version = "2.6.1"
+    val roomVersion = "2.6.1"
 
-    implementation("androidx.room:room-runtime:$room_version")
-    // TODO: рассмотреть замену на kapt
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-runtime:$roomVersion")
+
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:2.6.1")
 
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     // optional - RxJava2 support for Room
-    implementation("androidx.room:room-rxjava2:$room_version")
+    implementation("androidx.room:room-rxjava2:$roomVersion")
 
     // optional - RxJava3 support for Room
-    implementation("androidx.room:room-rxjava3:$room_version")
+    implementation("androidx.room:room-rxjava3:$roomVersion")
 
     // optional - Guava support for Room, including Optional and ListenableFuture
-    implementation("androidx.room:room-guava:$room_version")
+    implementation("androidx.room:room-guava:$roomVersion")
 
     // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
+    testImplementation("androidx.room:room-testing:$roomVersion")
 
     // optional - Paging 3 Integration
-    implementation("androidx.room:room-paging:$room_version")
+    implementation("androidx.room:room-paging:$roomVersion")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
@@ -122,22 +128,36 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
 
-    val lifecycle_version = "2.7.0"
+    val lifecycleVersion = "2.7.0"
     // Lifecycle components
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
 
     // Hilt dependencies
     implementation("com.google.dagger:hilt-android:2.48")
-    kapt("com.google.dagger:hilt-compiler:2.48")
+    ksp("com.google.dagger:hilt-compiler:2.48")
 
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
-    kaptAndroidTest("com.google.dagger:hilt-compiler:2.48")
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.48")
 
     // Test dependencies for Hilt
     testImplementation("com.google.dagger:hilt-android-testing:2.48")
-    kaptTest("com.google.dagger:hilt-compiler:2.48")
-
+    kspTest("com.google.dagger:hilt-compiler:2.48")
     testImplementation("io.mockk:mockk:1.12.0")
 
+    // Детекторы кода
+    // implementation("com.pinterest:ktlint:0.50.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// ktlint {
+//    version.set("0.48.0")
+//    android.set(true)
+//    outputToConsole.set(true)
+//    enableExperimentalRules.set(true)
+// }

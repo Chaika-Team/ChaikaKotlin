@@ -25,7 +25,7 @@ class EncryptedTokenManager @Inject constructor(context: Context) : EncryptedTok
                 "encrypted_prefs",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -37,7 +37,7 @@ class EncryptedTokenManager @Inject constructor(context: Context) : EncryptedTok
                 "encrypted_prefs",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.example.chaika.data.data_source.repo
+package com.example.chaika.data.dataSource.repo
 
 import com.example.chaika.domain.models.ConductorDomain
 import kotlin.Result

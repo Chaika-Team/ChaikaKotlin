@@ -6,17 +6,16 @@ import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.OperationTypeDomain
 
-
 fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain {
     return CartItemDomain(
         product = productInfo.toDomain(),
-        quantity = this.impact
+        quantity = this.impact,
     )
 }
 
 fun CartItemDomain.toEntity(
     cartOperationId: Int,
-    operationTypeDomain: OperationTypeDomain
+    operationTypeDomain: OperationTypeDomain,
 ): CartItem {
     // Преобразуем quantity в отрицательное значение при необходимости
     val impact =
@@ -29,15 +28,15 @@ fun CartItemDomain.toEntity(
     return CartItem(
         cartOperationId = cartOperationId, // Используем cartOperationId вместо cartId
         productId = this.product.id,
-        impact = impact
+        impact = impact,
     )
 }
 
-//Репорт-модель для отчётов
+// Репорт-модель для отчётов
 fun CartItem.toReport(productInfo: ProductInfo): CartItemReport {
     return CartItemReport(
         productID = this.productId,
         quantity = this.impact,
-        price = productInfo.price
+        price = productInfo.price,
     )
 }

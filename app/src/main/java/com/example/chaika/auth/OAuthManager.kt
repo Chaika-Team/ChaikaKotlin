@@ -5,17 +5,17 @@ import android.net.Uri
 import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import com.example.chaika.util.PKCEUtil
+import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
-import net.openid.appauth.AuthState
 import net.openid.appauth.ResponseTypeValues
 import javax.inject.Inject
 
 class OAuthManager @Inject constructor(
-    private val authService: AuthorizationService
+    private val authService: AuthorizationService,
 ) {
 
     private var authState: AuthState? = null
@@ -33,7 +33,7 @@ class OAuthManager @Inject constructor(
         // Настраиваем конфигурацию эндпоинтов
         val serviceConfig = AuthorizationServiceConfiguration(
             Uri.parse(AuthConfig.AUTH_ENDPOINT),
-            Uri.parse(AuthConfig.TOKEN_ENDPOINT)
+            Uri.parse(AuthConfig.TOKEN_ENDPOINT),
         )
         val clientId = AuthConfig.CLIENT_ID
         val redirectUri = Uri.parse(AuthConfig.REDIRECT_URI)
@@ -50,7 +50,7 @@ class OAuthManager @Inject constructor(
             serviceConfig,
             clientId,
             ResponseTypeValues.CODE,
-            redirectUri
+            redirectUri,
         )
             .setScope(scope)
             .setCodeVerifier(codeVerifier, codeChallenge, "S256")
@@ -101,7 +101,7 @@ class OAuthManager @Inject constructor(
             val tokenRequest = response.createTokenExchangeRequest()
             Log.d(
                 "OAuthManager",
-                "TokenExchangeRequest: $tokenRequest, codeVerifier: $codeVerifier"
+                "TokenExchangeRequest: $tokenRequest, codeVerifier: $codeVerifier",
             )
             authService.performTokenRequest(tokenRequest) { tokenResponse, exception ->
                 if (tokenResponse != null) {
@@ -120,7 +120,7 @@ class OAuthManager @Inject constructor(
         } else {
             Log.e(
                 "OAuthManager",
-                "Authorization error: ${ex?.errorDescription ?: "Response is null"}"
+                "Authorization error: ${ex?.errorDescription ?: "Response is null"}",
             )
         }
     }

@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.chaika.R
 import com.example.chaika.databinding.FragmentMainBinding
-import com.example.chaika.ui.view_models.MainViewModel
+import com.example.chaika.ui.viewModels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,8 +21,9 @@ class MainFragment : Fragment() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root

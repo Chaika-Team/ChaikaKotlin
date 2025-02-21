@@ -1,7 +1,5 @@
 package com.example.chaika.domain.models
 
-import com.google.gson.annotations.SerializedName
-
 /**
  * Доменная модель проводника.
  *
@@ -18,5 +16,5 @@ data class ConductorDomain(
     val familyName: String,
     val givenName: String,
     val employeeID: String,
-    val image: String
+    val image: String,
 )

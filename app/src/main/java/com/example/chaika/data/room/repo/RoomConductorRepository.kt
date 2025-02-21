@@ -15,7 +15,7 @@ import javax.inject.Inject
  * @param conductorDao DAO для работы с таблицей `conductors`.
  */
 class RoomConductorRepository @Inject constructor(
-    private val conductorDao: ConductorDao
+    private val conductorDao: ConductorDao,
 ) : RoomConductorRepositoryInterface {
 
     override fun getAllConductors(): Flow<List<ConductorDomain>> {

@@ -8,12 +8,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
 class RoomPackageItemRepository @Inject constructor(
     private val packageItemViewDao: PackageItemViewDao,
-    private val productInfoDao: ProductInfoDao
+    private val productInfoDao: ProductInfoDao,
 ) : RoomPackageItemRepositoryInterface {
-
 
     // Получение всех товаров у проводника из представления PackageItemView с использованием Flow
     override fun getAllPackageItems(): Flow<List<PackageItemDomain>> {
@@ -35,5 +33,4 @@ class RoomPackageItemRepository @Inject constructor(
         val productInfoEntity = productInfoDao.getProductById(productId)
         return productInfoEntity?.toDomain()?.let { packageItemView?.toDomain(it) }
     }
-
 }

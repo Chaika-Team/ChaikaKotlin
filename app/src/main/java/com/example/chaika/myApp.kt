@@ -7,4 +7,3 @@ import dagger.hilt.android.HiltAndroidApp
 class MyApp : Application() {
     // Здесь можно добавить дополнительную логику инициализации, если необходимо
 }
-

@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class RoomCartItemRepository @Inject constructor(
     private val cartItemDao: CartItemDao,
-    private val productInfoDao: ProductInfoDao
+    private val productInfoDao: ProductInfoDao,
 ) : RoomCartItemRepositoryInterface {
 
     override fun getCartItemReportsByOperationId(operationId: Int): Flow<List<CartItemReport>> {
