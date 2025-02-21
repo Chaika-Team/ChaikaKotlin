@@ -1,8 +1,8 @@
 package com.example.chaika.domain.usecases
 
 import android.content.Intent
-import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.auth.OAuthManager
+import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import kotlin.coroutines.resumeWithException
  * Возвращает Intent, который необходимо передать в ActivityResultLauncher.
  */
 class StartAuthorizationUseCase @Inject constructor(
-    private val oAuthManager: OAuthManager
+    private val oAuthManager: OAuthManager,
 ) {
     operator fun invoke(): Intent {
         return oAuthManager.createAuthIntent()
@@ -31,7 +31,7 @@ class StartAuthorizationUseCase @Inject constructor(
  */
 class HandleAuthorizationResponseUseCase @Inject constructor(
     private val oAuthManager: OAuthManager,
-    private val tokenManager: EncryptedTokenManagerInterface
+    private val tokenManager: EncryptedTokenManagerInterface,
 ) {
     suspend operator fun invoke(intent: Intent): String = suspendCancellableCoroutine { cont ->
         oAuthManager.handleAuthorizationResponse(intent) { token ->
@@ -52,7 +52,7 @@ class HandleAuthorizationResponseUseCase @Inject constructor(
  * Он обращается к менеджеру токенов и возвращает токен, если он сохранён.
  */
 class GetAccessTokenUseCase @Inject constructor(
-    private val tokenManager: EncryptedTokenManagerInterface
+    private val tokenManager: EncryptedTokenManagerInterface,
 ) {
     suspend operator fun invoke(): String? = withContext(Dispatchers.IO) {
         tokenManager.getToken()
@@ -66,7 +66,7 @@ class GetAccessTokenUseCase @Inject constructor(
 class LogoutUseCase @Inject constructor(
     private val tokenManager: EncryptedTokenManagerInterface,
     private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
-    private val imageRepository: LocalImageRepositoryInterface
+    private val imageRepository: LocalImageRepositoryInterface,
 ) {
     suspend operator fun invoke() = withContext(Dispatchers.IO) {
         tokenManager.clearToken()

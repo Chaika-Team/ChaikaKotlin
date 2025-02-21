@@ -8,6 +8,6 @@ import com.example.chaika.domain.models.ProductInfoDomain
 fun PackageItemView.toDomain(productInfoDomain: ProductInfoDomain): PackageItemDomain {
     return PackageItemDomain(
         productInfoDomain = productInfoDomain,
-        currentQuantity = this.currentQuantity
+        currentQuantity = this.currentQuantity,
     )
 }

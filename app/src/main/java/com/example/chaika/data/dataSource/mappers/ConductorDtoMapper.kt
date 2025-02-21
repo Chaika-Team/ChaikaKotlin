@@ -1,6 +1,6 @@
-package com.example.chaika.data.data_source.mappers
+package com.example.chaika.data.dataSource.mappers
 
-import com.example.chaika.data.data_source.dto.ConductorDto
+import com.example.chaika.data.dataSource.dto.ConductorDto
 import com.example.chaika.domain.models.ConductorDomain
 
 /**
@@ -16,6 +16,6 @@ fun ConductorDto.toDomain(): ConductorDomain {
         givenName = this.givenName,
         employeeID = this.nickname,
         image = this.image
-            ?: "https://i.pinimg.com/736x/5b/d3/e7/5bd3e779f192cb04cf35b859e0d50cbc.jpg"
+            ?: "https://i.pinimg.com/736x/5b/d3/e7/5bd3e779f192cb04cf35b859e0d50cbc.jpg",
     )
 }

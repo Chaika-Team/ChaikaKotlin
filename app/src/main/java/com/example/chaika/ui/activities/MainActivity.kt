@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.example.chaika.R
 import com.example.chaika.databinding.ActivityMainBinding
-import com.example.chaika.ui.view_models.DeepLinkViewModel
+import com.example.chaika.ui.viewModels.DeepLinkViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

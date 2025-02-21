@@ -16,7 +16,7 @@ class GenerateTripReportUseCase @Inject constructor(
     private val cartOperationRepository: RoomCartOperationRepositoryInterface,
     private val cartItemRepository: RoomCartItemRepositoryInterface,
     private val conductorRepository: RoomConductorRepositoryInterface,
-    private val tripReportRepository: LocalTripReportRepository
+    private val tripReportRepository: LocalTripReportRepository,
 ) {
 
     suspend operator fun invoke(): Boolean = withContext(Dispatchers.IO) {
@@ -47,7 +47,7 @@ class GenerateTripReportUseCase @Inject constructor(
                     // Создаём обновлённый CartOperationReport
                     operationReport.copy(
                         employeeID = employeeID,
-                        items = cartItems
+                        items = cartItems,
                     )
                 }
 
@@ -57,7 +57,7 @@ class GenerateTripReportUseCase @Inject constructor(
                 startTime = startTime,
                 endTime = endTime,
                 carriageID = carriageID,
-                carts = cartOperationReports
+                carts = cartOperationReports,
             )
 
             // Сохраняем отчёт

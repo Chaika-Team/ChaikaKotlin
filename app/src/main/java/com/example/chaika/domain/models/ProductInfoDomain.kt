@@ -14,5 +14,5 @@ data class ProductInfoDomain(
     val name: String,
     val description: String,
     val image: String,
-    val price: Double
+    val price: Double,
 )

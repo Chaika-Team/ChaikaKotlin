@@ -18,7 +18,7 @@ data class TripReport(
     @Json(name = "StartTime") val startTime: String,
     @Json(name = "EndTime") val endTime: String,
     @Json(name = "CarriageID") val carriageID: String,
-    @Json(name = "Carts") val carts: List<CartOperationReport>
+    @Json(name = "Carts") val carts: List<CartOperationReport>,
 )
 
 /**
@@ -34,7 +34,7 @@ data class CartOperationReport(
     @Json(name = "EmployeeID") val employeeID: String,
     @Json(name = "OperationType") val operationType: Int,
     @Json(name = "OperationTime") val operationTime: String,
-    @Json(name = "Items") val items: List<CartItemReport>
+    @Json(name = "Items") val items: List<CartItemReport>,
 )
 
 /**
@@ -48,5 +48,5 @@ data class CartOperationReport(
 data class CartItemReport(
     @Json(name = "ProductID") val productID: Int,
     @Json(name = "Quantity") val quantity: Int,
-    @Json(name = "Price") val price: Double
+    @Json(name = "Price") val price: Double,
 )

@@ -1,4 +1,4 @@
-package com.example.chaika.ui.view_models
+package com.example.chaika.ui.viewModels
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

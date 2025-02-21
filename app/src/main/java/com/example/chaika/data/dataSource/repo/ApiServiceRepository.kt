@@ -1,12 +1,12 @@
-package com.example.chaika.data.data_source.repo
+package com.example.chaika.data.dataSource.repo
 
-import com.example.chaika.data.data_source.apiService.ApiService
-import com.example.chaika.data.data_source.mappers.toDomain
+import com.example.chaika.data.dataSource.apiService.ApiService
+import com.example.chaika.data.dataSource.mappers.toDomain
 import com.example.chaika.domain.models.ConductorDomain
 import javax.inject.Inject
 
 class ApiServiceRepository @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
 ) : ApiServiceRepositoryInterface {
 
     override suspend fun fetchUserInfo(accessToken: String): Result<ConductorDomain> {

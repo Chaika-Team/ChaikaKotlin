@@ -1,4 +1,4 @@
-package com.example.chaika.ui.view_models
+package com.example.chaika.ui.viewModels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getAllConductorsUseCase: GetAllConductorsUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
     private val _conductor = MutableLiveData<ConductorDomain?>()

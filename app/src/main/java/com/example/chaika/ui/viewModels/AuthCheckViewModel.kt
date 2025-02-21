@@ -1,4 +1,4 @@
-package com.example.chaika.ui.view_models
+package com.example.chaika.ui.viewModels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthCheckViewModel @Inject constructor(
-    private val getAccessTokenUseCase: GetAccessTokenUseCase
+    private val getAccessTokenUseCase: GetAccessTokenUseCase,
 ) : ViewModel() {
 
     private val _token = MutableLiveData<String?>()

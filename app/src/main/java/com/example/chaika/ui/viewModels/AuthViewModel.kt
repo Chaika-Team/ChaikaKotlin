@@ -1,4 +1,4 @@
-package com.example.chaika.ui.view_models
+package com.example.chaika.ui.viewModels
 
 import android.content.Intent
 import android.util.Log
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
     private val handleAuthorizationResponseUseCase: HandleAuthorizationResponseUseCase,
-    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase
+    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase,
 ) : ViewModel() {
 
     private val _accessToken = MutableLiveData<String>()
@@ -38,14 +38,14 @@ class AuthViewModel @Inject constructor(
             try {
                 Log.d(
                     "AuthViewModel",
-                    "Calling handleAuthorizationResponseUseCase with intent: $intent"
+                    "Calling handleAuthorizationResponseUseCase with intent: $intent",
                 )
                 val token = handleAuthorizationResponseUseCase(intent)
                 Log.d("AuthViewModel", "Received token: $token")
                 _accessToken.postValue(token)
                 Log.d(
                     "AuthViewModel",
-                    "Calling authorizeAndSaveConductorUseCase with token: $token"
+                    "Calling authorizeAndSaveConductorUseCase with token: $token",
                 )
                 val conductor = authorizeAndSaveConductorUseCase(token)
                 Log.d("AuthViewModel", "Conductor data saved: $conductor")

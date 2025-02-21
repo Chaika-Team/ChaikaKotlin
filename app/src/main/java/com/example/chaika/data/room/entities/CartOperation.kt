@@ -3,6 +3,7 @@ package com.example.chaika.data.room.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -19,14 +20,16 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = Conductor::class,
             parentColumns = ["id"],
-            childColumns = ["conductor_id"]
-        )
-    ]
+            childColumns = ["conductor_id"],
+        ),
+    ],
+    indices = [
+        Index(value = ["conductor_id"]),
+    ],
 )
 data class CartOperation(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "operation_type") val operationType: Int,
     @ColumnInfo(name = "operation_time") val operationTime: String,
-    @ColumnInfo(name = "conductor_id") val conductorId: Int
+    @ColumnInfo(name = "conductor_id") val conductorId: Int,
 )
-

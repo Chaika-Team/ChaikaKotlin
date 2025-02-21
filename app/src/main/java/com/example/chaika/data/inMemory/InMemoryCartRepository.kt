@@ -34,7 +34,7 @@ class InMemoryCartRepository @Inject constructor() : InMemoryCartRepositoryInter
     override fun updateItemQuantity(
         itemId: Int,
         newQuantity: Int,
-        availableQuantity: Int
+        availableQuantity: Int,
     ): Boolean {
         val existingItem =
             cart.items.firstOrNull { it.product.id == itemId } // Используем firstOrNull для безопасности

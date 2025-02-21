@@ -9,7 +9,7 @@ fun ProductInfoEntity.toDomain(): ProductInfoDomain {
         name = this.name,
         description = this.description,
         image = this.image,
-        price = this.price
+        price = this.price,
     )
 }
 
@@ -19,6 +19,6 @@ fun ProductInfoDomain.toEntity(): ProductInfoEntity {
         name = this.name,
         description = this.description,
         image = this.image,
-        price = this.price
+        price = this.price,
     )
 }

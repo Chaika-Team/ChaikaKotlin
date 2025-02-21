@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.chaika.R
 import com.example.chaika.databinding.FragmentAuthCheckBinding
-import com.example.chaika.ui.view_models.AuthCheckViewModel
+import com.example.chaika.ui.viewModels.AuthCheckViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,8 +26,9 @@ class AuthCheckFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentAuthCheckBinding.inflate(inflater, container, false)
         return binding.root

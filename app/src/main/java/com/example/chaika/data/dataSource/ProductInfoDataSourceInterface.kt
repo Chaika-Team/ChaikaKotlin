@@ -1,4 +1,4 @@
-package com.example.chaika.data.data_source
+package com.example.chaika.data.dataSource
 
 import com.example.chaika.domain.models.ProductInfoDomain
 

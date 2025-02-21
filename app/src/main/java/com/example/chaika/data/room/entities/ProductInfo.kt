@@ -19,5 +19,5 @@ data class ProductInfo(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "image") val image: String,
-    @ColumnInfo(name = "price") val price: Double
+    @ColumnInfo(name = "price") val price: Double,
 )

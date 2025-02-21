@@ -29,7 +29,7 @@ import androidx.room.DatabaseView
         JOIN cart_operations ON cart_operations.id = cart_items.cart_operation_id
         JOIN product_info ON product_info.id = cart_items.product_id
         GROUP BY product_info.id
-    """
+    """,
 )
 data class FastReportView(
     @ColumnInfo(name = "product_name") val productName: String,
@@ -38,5 +38,5 @@ data class FastReportView(
     @ColumnInfo(name = "replenished_quantity") val replenishedQuantity: Int,
     @ColumnInfo(name = "sold_cash_quantity") val soldCashQuantity: Int,
     @ColumnInfo(name = "sold_cart_quantity") val soldCartQuantity: Int,
-    @ColumnInfo(name = "revenue") val revenue: Double
+    @ColumnInfo(name = "revenue") val revenue: Double,
 )
