@@ -46,7 +46,8 @@ google-services.json
 
 # Listing
 all_files.sh
-all_files.txt### AndroidStudio template
+all_files.txt
+### AndroidStudio template
 # Covers files to be ignored for android development using Android Studio.
 
 # Built application files
