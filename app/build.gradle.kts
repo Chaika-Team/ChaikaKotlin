@@ -55,18 +55,18 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
 
     // Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.8.5")
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.8.5")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.7")
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.8.7")
 
     // AppAuth
     implementation("net.openid:appauth:0.10.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
@@ -76,23 +76,33 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
     ksp("com.github.bumptech.glide:compiler:4.12.0")
-    implementation("com.squareup.retrofit2:retrofit:2.4.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.3.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.3.0")
 
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("androidx.test:core:1.6.1")
     testImplementation("androidx.test:runner:1.6.2")
     testImplementation("androidx.test:rules:1.6.1")
 
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
-    testImplementation("org.mockito:mockito-core:4.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.vintage:junit-vintage-engine:5.9.3")
+
+
+
+    testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.mockito:mockito-inline:4.0.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:4.0.0")
+
 
     val roomVersion = "2.6.1"
 
@@ -148,6 +158,11 @@ dependencies {
     // Детекторы кода
     // implementation("com.pinterest:ktlint:0.50.0")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+    
 }
 java {
     toolchain {
