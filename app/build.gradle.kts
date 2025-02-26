@@ -99,16 +99,14 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.10.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("org.junit.vintage:junit-vintage-engine:5.9.3")
-
-
 
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.mockito:mockito-inline:4.0.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("org.mockito:mockito-junit-jupiter:4.0.0")
-
 
     val roomVersion = "2.6.1"
 
@@ -168,7 +166,6 @@ dependencies {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
-    
 }
 java {
     toolchain {
