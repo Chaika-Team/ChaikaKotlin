@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.48" apply false
     id("org.sonarqube") version "6.0.1.5171"
     id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
+    id("jacoco")
 }
 
 sonar {
