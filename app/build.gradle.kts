@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("io.gitlab.arturbosch.detekt")
+    // id("io.gitlab.arturbosch.detekt")
 }
 
 android {
@@ -163,7 +163,7 @@ dependencies {
 
     // Детекторы кода
     // implementation("com.pinterest:ktlint:0.50.0")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+    // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
 
     tasks.withType<Test> {
         useJUnitPlatform()
