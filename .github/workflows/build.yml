@@ -38,19 +38,22 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and run unit tests
+        run: ./gradlew clean build test jacocoTestReport
+
       - name: Run SonarQube scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build
-        run: ./gradlew build
-
-      - name: Run unit tests
-        run: ./gradlew test
-
-
+        with:
+          args: >
+            -Dsonar.sources=app/src/main
+            -Dsonar.tests=app/src/test
+            -Dsonar.projectKey=ChaikaKotlin
+            -Dsonar.junit.reportPaths=app/build/test-results/
+            -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
+            -Dsonar.exclusions=**/*.mock.kt,**/generated/**
