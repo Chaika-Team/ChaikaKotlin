@@ -33,7 +33,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -74,14 +74,15 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         csv.required.set(false)
     }
 
-    val fileFilter = listOf(
-        "**/R.class",
-        "**/R$*.class",
-        "**/BuildConfig.*",
-        "**/Manifest*.*",
-        "**/*Test*.*",
-        "android/**/*.*"
-    )
+    val fileFilter =
+        listOf(
+            "**/R.class",
+            "**/R$*.class",
+            "**/BuildConfig.*",
+            "**/Manifest*.*",
+            "**/*Test*.*",
+            "android/**/*.*",
+        )
 
     val mainSrc = "$projectDir/src/main/java"
 
@@ -89,14 +90,16 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     classDirectories.setFrom(
         fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
             exclude(fileFilter)
-        }
+        },
     )
-    executionData.setFrom(fileTree(layout.buildDirectory.dir("jacoco")) {
-        include(
-            "testDebugUnitTest.exec",
-            "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
-        )
-    })
+    executionData.setFrom(
+        fileTree(layout.buildDirectory.dir("jacoco")) {
+            include(
+                "testDebugUnitTest.exec",
+                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+            )
+        },
+    )
 }
 
 dependencies {
