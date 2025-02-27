@@ -12,7 +12,7 @@ class ProductInfoMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для маппера ProductInfoEntity.toDomain.
@@ -42,7 +42,7 @@ class ProductInfoMapperTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для маппера ProductInfoDomain.toEntity.

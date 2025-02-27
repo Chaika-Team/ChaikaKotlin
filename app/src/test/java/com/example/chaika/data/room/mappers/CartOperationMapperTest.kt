@@ -17,7 +17,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции Int.toOperationType с валидным индексом.
@@ -34,7 +34,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции Int.toOperationType с некорректным индексом.
@@ -42,7 +42,7 @@ class CartOperationMapperTest {
      */
     @Test
     fun testToOperationType_invalid() {
-        val invalidIndex = OperationTypeDomain.values().size // за границей допустимого диапазона
+        val invalidIndex = OperationTypeDomain.entries.size // за границей допустимого диапазона
         assertThrows(IllegalArgumentException::class.java) {
             invalidIndex.toOperationType()
         }
@@ -51,7 +51,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции OperationTypeDomain.toInt.
@@ -68,7 +68,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции getCurrentTime.
@@ -86,7 +86,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции CartOperation.toDomain.
@@ -112,7 +112,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции CartOperationDomain.toEntity.
@@ -141,7 +141,7 @@ class CartOperationMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции CartOperation.toReport.

@@ -16,7 +16,7 @@ import org.mockito.kotlin.whenever
 /**
  * Техника тест-дизайна: #1 Классы эквивалентности
  *
- * Автор: John Doe
+ * Автор: Кулаков Никита
  *
  * Описание:
  *   - Тест для RoomCartItemRepository: позитивный сценарий, когда DAO возвращает корректный список CartItem и productInfoDao возвращает ProductInfo.
@@ -72,7 +72,7 @@ class RoomCartItemRepositoryTest {
     /**
      * Техника тест-дизайна: #4 Прогнозирование ошибок
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для RoomCartItemRepository: негативный сценарий, когда productInfoDao возвращает null.
@@ -99,7 +99,7 @@ class RoomCartItemRepositoryTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для RoomCartItemRepository: сценарий пустого списка.

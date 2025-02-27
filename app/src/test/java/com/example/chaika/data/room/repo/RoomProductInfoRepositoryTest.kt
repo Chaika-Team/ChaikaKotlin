@@ -21,7 +21,7 @@ class RoomProductInfoRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getAllProducts, проверяется корректное маппирование сущностей в ProductInfoDomain.
@@ -61,7 +61,7 @@ class RoomProductInfoRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для insertProduct, updateProduct и deleteProduct.

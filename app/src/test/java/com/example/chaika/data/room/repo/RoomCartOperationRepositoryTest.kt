@@ -15,7 +15,7 @@ import org.mockito.kotlin.whenever
 /**
  * Техника тест-дизайна: #1 Классы эквивалентности
  *
- * Автор: John Doe
+ * Автор: Кулаков Никита
  *
  * Описание:
  *   - Тест для RoomCartOperationRepository: позитивный сценарий, когда DAO возвращает корректный список операций.
@@ -58,7 +58,7 @@ class RoomCartOperationRepositoryTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для RoomCartOperationRepository: сценарий пустого списка.

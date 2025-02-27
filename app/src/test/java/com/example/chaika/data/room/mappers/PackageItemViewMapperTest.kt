@@ -13,7 +13,7 @@ class PackageItemViewMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для маппера PackageItemView.toDomain.

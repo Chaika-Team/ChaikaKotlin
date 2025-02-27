@@ -23,7 +23,7 @@ class RoomPackageItemRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getAllPackageItems: позитивный сценарий, когда все элементы успешно маппятся.
@@ -73,7 +73,7 @@ class RoomPackageItemRepositoryTest {
     /**
      * Техника тест-дизайна: #4 Прогнозирование ошибок
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getAllPackageItems: негативный сценарий, когда для одного элемента productInfoDao возвращает null.
@@ -100,7 +100,7 @@ class RoomPackageItemRepositoryTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getPackageItemByProductId: если один из DAO возвращает null, результат должен быть null.
@@ -122,7 +122,7 @@ class RoomPackageItemRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getPackageItemByProductId: позитивный сценарий, когда DAO возвращают корректные данные.

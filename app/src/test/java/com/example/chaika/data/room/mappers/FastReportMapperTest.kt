@@ -12,7 +12,7 @@ class FastReportMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для функции FastReportView.toDomain.

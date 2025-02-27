@@ -24,7 +24,7 @@ class RoomConductorRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getAllConductors, проверяется корректное маппирование сущностей в ConductorDomain.
@@ -66,7 +66,7 @@ class RoomConductorRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getConductorByEmployeeID, когда проводник найден.
@@ -97,7 +97,7 @@ class RoomConductorRepositoryTest {
     /**
      * Техника тест-дизайна: #4 Прогнозирование ошибок
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getConductorByEmployeeID, когда проводник не найден.
@@ -118,7 +118,7 @@ class RoomConductorRepositoryTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения / #4 Прогнозирование ошибок
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для getEmployeeIDByConductorId, когда проводник найден и когда нет.
@@ -153,7 +153,7 @@ class RoomConductorRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для insertConductor, updateConductor, deleteConductor и deleteAllConductors.
