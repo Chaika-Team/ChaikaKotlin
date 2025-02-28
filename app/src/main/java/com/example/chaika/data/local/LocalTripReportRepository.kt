@@ -10,34 +10,40 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
-class LocalTripReportRepository @Inject constructor(
-    private val context: Context,
-) {
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
+open class LocalTripReportRepository
+    @Inject
+    constructor(
+        private val context: Context,
+    ) {
+        private val moshi =
+            Moshi
+                .Builder()
+                .add(KotlinJsonAdapterFactory())
+                .build()
 
-    private val adapter = moshi.adapter(TripReport::class.java)
+        private val adapter = moshi.adapter(TripReport::class.java)
 
-    fun saveTripReport(tripReport: TripReport, fileName: String): Boolean {
-        return try {
-            val jsonString = adapter.toJson(tripReport)
+        open fun saveTripReport(
+            tripReport: TripReport,
+            fileName: String,
+        ): Boolean =
+            try {
+                val jsonString = adapter.toJson(tripReport)
 
-            // Создаём директорию для отчётов, если её ещё нет
-            val reportDir = File(context.filesDir, "reports")
-            if (!reportDir.exists()) {
-                reportDir.mkdirs()
+                // Создаём директорию для отчётов, если её ещё нет
+                val reportDir = File(context.filesDir, "reports")
+                if (!reportDir.exists()) {
+                    reportDir.mkdirs()
+                }
+
+                // Сохраняем JSON-файл в папку "reports"
+                val file = File(reportDir, fileName)
+                FileOutputStream(file).use { output ->
+                    output.write(jsonString.toByteArray(StandardCharsets.UTF_8))
+                }
+                true
+            } catch (e: IOException) {
+                e.printStackTrace()
+                false
             }
-
-            // Сохраняем JSON-файл в папку "reports"
-            val file = File(reportDir, fileName)
-            FileOutputStream(file).use { output ->
-                output.write(jsonString.toByteArray(StandardCharsets.UTF_8))
-            }
-            true
-        } catch (e: IOException) {
-            e.printStackTrace()
-            false
-        }
     }
-}
