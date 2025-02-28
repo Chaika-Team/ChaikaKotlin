@@ -25,7 +25,7 @@ class ApiServiceRepositoryTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для ApiServiceRepository.fetchUserInfo в позитивном сценарии.
@@ -67,7 +67,7 @@ class ApiServiceRepositoryTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для ApiServiceRepository.fetchUserInfo: успешный Response, но body() возвращает null.
@@ -96,7 +96,7 @@ class ApiServiceRepositoryTest {
     /**
      * Техника тест-дизайна: #3 Причинно-следственный анализ
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для ApiServiceRepository.fetchUserInfo: неуспешный Response.
@@ -130,7 +130,7 @@ class ApiServiceRepositoryTest {
     /**
      * Техника тест-дизайна: #4 Прогнозирование ошибок
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для ApiServiceRepository.fetchUserInfo: сценарий, когда вызов API выбрасывает непроверяемое исключение (RuntimeException).

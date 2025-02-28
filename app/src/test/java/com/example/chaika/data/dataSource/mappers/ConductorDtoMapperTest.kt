@@ -12,7 +12,7 @@ class ConductorDtoMapperTest {
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для маппера ConductorDto.toDomain, когда все поля заполнены, включая image.
@@ -45,7 +45,7 @@ class ConductorDtoMapperTest {
     /**
      * Техника тест-дизайна: #2 Граничные значения
      *
-     * Автор: John Doe
+     * Автор: Кулаков Никита
      *
      * Описание:
      *   - Тест для маппера ConductorDto.toDomain, когда поле image равно null.
