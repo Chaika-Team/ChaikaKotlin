@@ -13,6 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.example.chaika"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "0.0.1-alpha"
@@ -138,6 +139,7 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.10.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("org.junit.vintage:junit-vintage-engine:5.9.3")
 
@@ -170,7 +172,6 @@ dependencies {
     kspTest("com.google.dagger:hilt-compiler:2.48")
     testImplementation("io.mockk:mockk:1.12.0")
 }
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
