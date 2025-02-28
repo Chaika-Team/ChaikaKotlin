@@ -57,6 +57,10 @@ android {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    extensions.configure(JacocoTaskExtension::class.java) {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
 }
 
 jacoco {
@@ -81,6 +85,8 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/Manifest*.*",
             "**/*Test*.*",
             "android/**/*.*",
+            "**/di/**",
+            "**/Application.*",
         )
 
     val mainSrc = "$projectDir/src/main/java"
