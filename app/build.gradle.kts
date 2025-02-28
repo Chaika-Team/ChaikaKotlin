@@ -46,9 +46,11 @@ android {
     }
 
     testOptions {
-        unitTests {
-            isReturnDefaultValues = true
+        unitTests.all {
+            it.useJUnitPlatform()
         }
+        unitTests.isIncludeAndroidResources = true
+        unitTests.isReturnDefaultValues = true
     }
 
     buildFeatures {
@@ -156,6 +158,7 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:4.0.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("org.mockito:mockito-junit-jupiter:4.0.0")
+    testImplementation("tech.apter.junit5.jupiter:robolectric-extension:0.9.0")
 
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
