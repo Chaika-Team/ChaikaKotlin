@@ -9,15 +9,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 // Преобразование Int в OperationType с использованием ordinal
-fun Int.toOperationType(): OperationTypeDomain {
-    return OperationTypeDomain.entries.getOrNull(this)
+fun Int.toOperationType(): OperationTypeDomain =
+    OperationTypeDomain.entries.getOrNull(this)
         ?: throw IllegalArgumentException("Unknown OperationType for index $this")
-}
 
 // Преобразование OperationType в Int с использованием ordinal
-fun OperationTypeDomain.toInt(): Int {
-    return this.ordinal
-}
+fun OperationTypeDomain.toInt(): Int = this.ordinal
 
 // Утилита для получения текущего времени в формате ISO 8601
 fun getCurrentTime(): String {
@@ -25,30 +22,25 @@ fun getCurrentTime(): String {
     return dateFormat.format(System.currentTimeMillis())
 }
 
-fun CartOperation.toDomain(): CartOperationDomain {
-    return CartOperationDomain(
+fun CartOperation.toDomain(): CartOperationDomain =
+    CartOperationDomain(
         operationTypeDomain = this.operationType.toOperationType(),
         conductorId = this.conductorId,
     )
-}
 
-fun CartOperationDomain.toEntity(): CartOperation {
-    return CartOperation(
+fun CartOperationDomain.toEntity(): CartOperation =
+    CartOperation(
         id = 0, // Система автоматически назначит ID
         operationType = this.operationTypeDomain.toInt(), // Используем ordinal для преобразования в Int
         operationTime = getCurrentTime(), // Установка текущих даты и времени
         conductorId = this.conductorId,
     )
-}
 
 // Репорт-модель для отчётов
-fun CartOperation.toReport(
-    items: List<CartItemReport>,
-): CartOperationReport {
-    return CartOperationReport(
+fun CartOperation.toReport(items: List<CartItemReport>): CartOperationReport =
+    CartOperationReport(
         employeeID = this.conductorId.toString(), // Временно передаём conductorId, заменим позже
         operationType = this.operationType,
         operationTime = this.operationTime,
         items = items,
     )
-}

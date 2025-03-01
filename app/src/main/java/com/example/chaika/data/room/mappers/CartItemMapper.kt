@@ -6,12 +6,11 @@ import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.OperationTypeDomain
 
-fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain {
-    return CartItemDomain(
+fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain =
+    CartItemDomain(
         product = productInfo.toDomain(),
         quantity = this.impact,
     )
-}
 
 fun CartItemDomain.toEntity(
     cartOperationId: Int,
@@ -33,10 +32,9 @@ fun CartItemDomain.toEntity(
 }
 
 // Репорт-модель для отчётов
-fun CartItem.toReport(productInfo: ProductInfo): CartItemReport {
-    return CartItemReport(
+fun CartItem.toReport(productInfo: ProductInfo): CartItemReport =
+    CartItemReport(
         productID = this.productId,
         quantity = this.impact,
         price = productInfo.price,
     )
-}
