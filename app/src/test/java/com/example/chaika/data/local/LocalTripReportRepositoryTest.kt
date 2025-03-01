@@ -19,13 +19,24 @@ class LocalTripReportRepositoryTest {
     @TempDir
     lateinit var tempDir: File
 
-    // Мокаем Context с помощью Mockito-inline
+    /**
+     * Создает мок Context с использованием Mockito-inline для мокирования final-метода getFilesDir().
+     */
     private fun createMockContext(): Context {
         val context: Context = mock()
         whenever(context.filesDir).thenReturn(tempDir)
         return context
     }
 
+    /**
+     * Техника тест-дизайна: #1 Классы эквивалентности
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода saveTripReport: сценарий, когда передан валидный объект TripReport.
+     *   - Ожидается, что отчет будет успешно сериализован и сохранен в файл, а метод вернет true.
+     */
     @Test
     fun `saveTripReport returns true for valid TripReport`() {
         val context = createMockContext()
@@ -60,22 +71,28 @@ class LocalTripReportRepositoryTest {
         val reportFile = File(tempDir, "reports/$fileName")
         assertTrue(reportFile.exists())
         val content = reportFile.readText(StandardCharsets.UTF_8)
+        // Проверяем, что JSON содержит ключи, как указано в аннотациях
         assertTrue(content.contains("\"RouteID\":\"1\""))
         assertTrue(content.contains("\"StartTime\":\"2021-10-01T12:00:00\""))
     }
 
+    /**
+     * Техника тест-дизайна: #5 Прогнозирование ошибок
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода saveTripReport: сценарий, когда при записи файла выбрасывается IOException.
+     *   - Для симуляции ошибки используется MockK для замокирования конструктора FileOutputStream.
+     *   - Ожидается, что метод вернет false.
+     */
     @Test
     fun `saveTripReport returns false when IOException occurs during file writing`() {
         val context = createMockContext()
-        // Мокаем FileOutputStream с использованием MockK (для конструктора final-класса)
-        // Задаем правило: при вызове write(ByteArray) бросаем IOException.
-        // Здесь мы используем MockK, так как Mockito не позволяет замокировать конструктор.
+        // Мокаем FileOutputStream с использованием MockK для final-класса.
         io.mockk.mockkConstructor(FileOutputStream::class)
         io.mockk.every { anyConstructed<FileOutputStream>().write(ofType(ByteArray::class)) } throws
-            IOException(
-                "Simulated IO Exception",
-            )
-
+            IOException("Simulated IO Exception")
         val repository = LocalTripReportRepository(context)
         val tripReport =
             TripReport(

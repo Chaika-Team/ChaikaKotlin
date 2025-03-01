@@ -18,25 +18,28 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.io.File
 
-/**
- * Техника тест-дизайна: комплексный анализ
- *
- * Автор: Кулаков Никита
- *
- * Описание:
- * Тесты для методов saveImageFromUrl и deleteImagesInSubDir класса LocalImageRepository.
- */
 class LocalImageRepositoryTest {
     @TempDir
     lateinit var tempDir: File
 
-    // Создаем мок Context с использованием Mockito-inline (final-метод getFilesDir() мокируется)
+    /**
+     * Создает мок объекта Context с использованием Mockito-inline для мокирования final-метода getFilesDir().
+     */
     private fun createMockContext(): Context {
         val context: Context = mock()
         whenever(context.filesDir).thenReturn(tempDir)
         return context
     }
 
+    /**
+     * Техника тест-дизайна: #1 Классы эквивалентности, #2 Граничные значения
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода saveImageFromUrl: сценарий, когда Bitmap имеет валидные размеры (ширина и высота > 0).
+     *   - Ожидается, что изображение будет сохранено, и метод вернет абсолютный путь к файлу.
+     */
     @Test
     fun `saveImageFromUrl returns file path when bitmap is valid`() =
         runTest {
@@ -44,14 +47,16 @@ class LocalImageRepositoryTest {
             val fakeBitmap: Bitmap = mock()
             whenever(fakeBitmap.width).thenReturn(100)
             whenever(fakeBitmap.height).thenReturn(100)
-            // Все аргументы задаем через eq()/any()
+            // Все аргументы передаются через матчеры: eq() и any()
             whenever(
                 fakeBitmap.compress(
                     eq(Bitmap.CompressFormat.JPEG),
                     eq(100),
                     any(),
                 ),
-            ).thenReturn(true)
+            ).thenReturn(
+                true,
+            )
 
             val fakeBitmapLoader: suspend (Context, String) -> Bitmap? = { _, _ -> fakeBitmap }
             val dispatcher: CoroutineDispatcher = coroutineContext[CoroutineDispatcher]!!
@@ -64,6 +69,15 @@ class LocalImageRepositoryTest {
             assertTrue(savedFile.exists())
         }
 
+    /**
+     * Техника тест-дизайна: #5 Прогнозирование ошибок
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода saveImageFromUrl: сценарий, когда функция загрузки Bitmap возвращает null.
+     *   - Ожидается, что метод корректно обработает ситуацию и вернет null.
+     */
     @Test
     fun `saveImageFromUrl returns null when bitmap is null`() =
         runTest {
@@ -77,6 +91,15 @@ class LocalImageRepositoryTest {
             assertNull(result)
         }
 
+    /**
+     * Техника тест-дизайна: #2 Граничные значения
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода saveImageFromUrl: сценарий, когда Bitmap имеет нулевые размеры (ширина или высота равны 0).
+     *   - Ожидается, что метод не сохранит изображение и вернет null.
+     */
     @Test
     fun `saveImageFromUrl returns null when bitmap has zero dimensions`() =
         runTest {
@@ -94,11 +117,20 @@ class LocalImageRepositoryTest {
             assertNull(result)
         }
 
+    /**
+     * Техника тест-дизайна: #1 Классы эквивалентности
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода deleteImagesInSubDir: сценарий, когда целевая директория существует и содержит файлы.
+     *   - Ожидается, что метод удалит директорию и вернет true.
+     */
     @Test
     fun `deleteImagesInSubDir returns true when directory exists and is deleted`() =
         runTest {
             val context = createMockContext()
-            // Создаем тестовую директорию с файлом.
+            // Создаем тестовую директорию и файл внутри неё.
             val imagesDir = File(tempDir, "images/products")
             imagesDir.mkdirs()
             File(imagesDir, "dummy.txt").writeText("dummy")
@@ -112,6 +144,15 @@ class LocalImageRepositoryTest {
             assertFalse(imagesDir.exists())
         }
 
+    /**
+     * Техника тест-дизайна: #2 Граничные значения
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода deleteImagesInSubDir: сценарий, когда целевая директория не существует.
+     *   - Ожидается, что метод корректно обработает ситуацию и вернет true.
+     */
     @Test
     fun `deleteImagesInSubDir returns true when directory does not exist`() =
         runTest {
@@ -127,11 +168,20 @@ class LocalImageRepositoryTest {
             assertTrue(result)
         }
 
+    /**
+     * Техника тест-дизайна: #5 Прогнозирование ошибок
+     *
+     * Автор: Кулаков Никита
+     *
+     * Описание:
+     *   - Тест для метода deleteImagesInSubDir: сценарий, когда функция удаления (deleteRecursively) выбрасывает исключение.
+     *   - Ожидается, что метод обработает исключение и вернет false.
+     */
     @Test
     fun `deleteImagesInSubDir returns false when exception occurs during deletion`() =
         runTest {
             val context = createMockContext()
-            // Создаем тестовую директорию, чтобы функция удаления была вызвана.
+            // Создаем тестовую директорию "images/faulty" чтобы deleteRecursively была вызвана.
             val faultyDir = File(tempDir, "images/faulty")
             faultyDir.mkdirs()
 
