@@ -46,11 +46,9 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
+        unitTests {
+            isReturnDefaultValues = true
         }
-        unitTests.isIncludeAndroidResources = true
-        unitTests.isReturnDefaultValues = true
     }
 
     buildFeatures {
