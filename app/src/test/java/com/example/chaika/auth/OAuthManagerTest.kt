@@ -6,33 +6,45 @@ import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
-import net.openid.appauth.*
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.TokenRequest
+import net.openid.appauth.TokenResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
+ * Dummy-реализация AuthorizationService для тестирования OAuthManager.
+ *
+ * Переопределяет необходимые методы так, чтобы не выполнялся реальный HTTP-запрос и
+ * возвращались заранее заданные значения.
+ */
+open class DummyAuthorizationService(
+    context: Context
+) : AuthorizationService(context) {
+
+    override fun getAuthorizationRequestIntent(
+        request: AuthorizationRequest,
+        customTabsIntent: CustomTabsIntent
+    ): Intent {
+        // Возвращаем фиктивный Intent с нужным действием.
+        return Intent("dummy_action")
+    }
+
+    // Базовая реализация performTokenRequest не используется,
+    // её переопределяют в тестах.
+}
+
+/**
  * Тесты для OAuthManager.
  *
- * Техники тест-дизайна:
- *   - #1 Классы эквивалентности
- *   - #2 Граничные значения / Прогнозирование ошибок
- *
- * Автор: OwletsFox
- *
- * Описание:
- *   - Метод createAuthIntent() должен возвращать Intent, полученный от authService.getAuthorizationRequestIntent().
- *   - Метод handleAuthorizationResponse() должен корректно обрабатывать deep link-ответ:
- *     извлекать параметры code и state, создавать AuthorizationResponse (если extras отсутствуют) и через вызов
- *     performTokenRequest передавать в callback access token.
+ * Проверяются:
+ * - Корректное создание Intent для авторизации через createAuthIntent().
+ * - Правильная обработка deep link'а в handleAuthorizationResponse() с вызовом performTokenRequest,
+ *   возвращающего access token.
  */
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -43,14 +55,8 @@ class OAuthManagerTest {
     fun createAuthIntent_returnsExpectedIntent() {
         // Arrange:
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val mockAuthService: AuthorizationService = mock()
-        val oauthManager = OAuthManager(mockAuthService)
-
-        val dummyIntent = Intent("dummy_action")
-        // Stub: используем doReturn() для метода getAuthorizationRequestIntent()
-        doReturn(dummyIntent)
-            .`when`(mockAuthService)
-            .getAuthorizationRequestIntent(any<AuthorizationRequest>(), any<CustomTabsIntent>())
+        val dummyAuthService = DummyAuthorizationService(context)
+        val oauthManager = OAuthManager(dummyAuthService)
 
         // Act:
         val resultIntent = oauthManager.createAuthIntent()
@@ -59,45 +65,47 @@ class OAuthManagerTest {
         assertEquals("dummy_action", resultIntent.action)
     }
 
-//    @Test
-//    fun handleAuthorizationResponse_processesDeepLink_andInvokesCallbackWithAccessToken() = runTest {
-//        // Arrange:
-//        val context = ApplicationProvider.getApplicationContext<Context>()
-//        val mockAuthService: AuthorizationService = mock()
-//        val oauthManager = OAuthManager(mockAuthService)
-//
-//        // Stub для getAuthorizationRequestIntent – возвращаем фиктивный Intent.
-//        val dummyIntent = Intent("dummy_action")
-//        doReturn(dummyIntent)
-//            .`when`(mockAuthService)
-//            .getAuthorizationRequestIntent(any<AuthorizationRequest>(), any<CustomTabsIntent>())
-//
-//        // Вызываем createAuthIntent() для установки внутреннего состояния (lastAuthRequest).
-//        oauthManager.createAuthIntent()
-//
-//        // Создаем Intent, имитирующий deep link с URI, содержащим параметры code и state.
-//        val deepLinkUri = Uri.parse("${AuthConfig.REDIRECT_URI}?code=dummy_code&state=dummy_state")
-//        val deepLinkIntent = Intent().apply { data = deepLinkUri }
-//
-//        // Мокаем фиктивный TokenResponse, возвращающий accessToken "dummy_token".
-//        val dummyTokenResponse: TokenResponse = mock()
-//        whenever(dummyTokenResponse.accessToken).thenReturn("dummy_token")
-//
-//        // Stub для performTokenRequest – вызываем callback с dummyTokenResponse.
-//        // Используем doAnswer, чтобы при вызове performTokenRequest сразу вызвать callback.
-//        doAnswer { invocation ->
-//            val callback = invocation.getArgument<(TokenResponse?, AuthorizationException?) -> Unit>(1)
-//            callback(dummyTokenResponse, null)
-//            null
-//        }.`when`(mockAuthService).performTokenRequest(any<TokenRequest>(), any())
-//
-//        // Act:
-//        var capturedToken: String? = null
-//        oauthManager.handleAuthorizationResponse(deepLinkIntent) { token ->
-//            capturedToken = token
-//        }
-//
-//        // Assert:
-//        assertEquals("dummy_token", capturedToken)
-//    }
+    @Test
+    fun handleAuthorizationResponse_processesDeepLink_andInvokesCallbackWithAccessToken() {
+        // Arrange:
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        // Переопределяем DummyAuthorizationService так, чтобы при вызове performTokenRequest
+        // создавался реальный TokenResponse с accessToken = "dummy_token"
+        val dummyAuthService = object : DummyAuthorizationService(context) {
+            override fun getAuthorizationRequestIntent(
+                request: AuthorizationRequest,
+                customTabsIntent: CustomTabsIntent
+            ): Intent {
+                return Intent("dummy_action")
+            }
+
+            override fun performTokenRequest(
+                request: TokenRequest,
+                callback: TokenResponseCallback
+            ) {
+                // Создаём TokenResponse через Builder, используя переданный request
+                val tokenResponse = TokenResponse.Builder(request)
+                    .setAccessToken("dummy_token")
+                    .build()
+                callback.onTokenRequestCompleted(tokenResponse, null)
+            }
+        }
+        val oauthManager = OAuthManager(dummyAuthService)
+
+        // Вызываем createAuthIntent() для установки внутреннего состояния (lastAuthRequest)
+        oauthManager.createAuthIntent()
+
+        // Создаем Intent, имитирующий deep link с URI, содержащим параметры code и state
+        val deepLinkUri = Uri.parse("${AuthConfig.REDIRECT_URI}?code=dummy_code&state=dummy_state")
+        val deepLinkIntent = Intent().apply { data = deepLinkUri }
+
+        // Act:
+        var capturedToken: String? = null
+        oauthManager.handleAuthorizationResponse(deepLinkIntent) { token ->
+            capturedToken = token
+        }
+
+        // Assert:
+        assertEquals("dummy_token", capturedToken)
+    }
 }
