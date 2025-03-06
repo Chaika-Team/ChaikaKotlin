@@ -7,9 +7,12 @@ import com.example.chaika.data.crypto.EncryptedTokenManager
 import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.data.dataSource.FakeProductInfoDataSource
 import com.example.chaika.data.dataSource.ProductInfoDataSourceInterface
-import com.example.chaika.data.dataSource.apiService.ApiService
-import com.example.chaika.data.dataSource.repo.ApiServiceRepository
-import com.example.chaika.data.dataSource.repo.ApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.apiService.ChaikaSoftApiService
+import com.example.chaika.data.dataSource.apiService.RemyApiService
+import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepository
+import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.repo.RemyApiServiceRepository
+import com.example.chaika.data.dataSource.repo.RemyApiServiceRepositoryInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
@@ -30,11 +33,12 @@ import com.example.chaika.data.room.repo.RoomConductorRepository
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
 import com.example.chaika.data.room.repo.RoomProductInfoRepository
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
-import com.example.chaika.domain.usecases.AddProductInfoUseCase
 import com.example.chaika.domain.usecases.AuthorizeAndSaveConductorUseCase
 import com.example.chaika.domain.usecases.DeleteAllConductorsUseCase
 import com.example.chaika.domain.usecases.DeleteProductUseCase
+import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
 import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
+import com.example.chaika.domain.usecases.FetchProductsFromServerUseCase
 import com.example.chaika.domain.usecases.GenerateTripReportUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.GetAllProductsUseCase
@@ -42,6 +46,7 @@ import com.example.chaika.domain.usecases.HandleAuthorizationResponseUseCase
 import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.SaveCartWithItemsAndOperationUseCase
 import com.example.chaika.domain.usecases.SaveConductorLocallyUseCase
+import com.example.chaika.domain.usecases.SaveProductsLocallyUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
 import dagger.Module
 import dagger.Provides
@@ -51,6 +56,7 @@ import dagger.hilt.components.SingletonComponent
 import net.openid.appauth.AuthorizationService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -127,22 +133,54 @@ object AppModule {
     fun provideProductInfoDataSource(): ProductInfoDataSourceInterface = FakeProductInfoDataSource()
 
     // ================== RETROFIT & NETWORK ==================
+    // Retrofit для Remy API
     @Provides
     @Singleton
-    fun provideRetrofitInstance(): Retrofit =
-        Retrofit
-            .Builder()
+    @Named("RemyRetrofit")
+    fun provideRemyRetrofitInstance(): Retrofit =
+        Retrofit.Builder()
             .baseUrl("https://iam.remystorage.ru/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+    // Remy API-сервис
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
+    fun provideRemyApiService(@Named("RemyRetrofit") retrofit: Retrofit): RemyApiService =
+        retrofit.create(RemyApiService::class.java)
 
+    // Remy репозиторий
     @Provides
     @Singleton
-    fun provideConductorApiRepository(apiService: ApiService): ApiServiceRepositoryInterface = ApiServiceRepository(apiService)
+    fun provideRemyApiRepository(remyApiService: RemyApiService): RemyApiServiceRepositoryInterface =
+        RemyApiServiceRepository(remyApiService)
+
+    // Retrofit для ChaikaSoft API
+    @Provides
+    @Singleton
+    @Named("ChaikaSoftRetrofit")
+    fun provideChaikaSoftRetrofitInstance(): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://chaika-soft.ru/") // URL для ChaikaSoft API
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    // Провайдер для ChaikaSoftApiService (интерфейс ChaikaSoft API)
+    @Provides
+    @Singleton
+    @Named("ChaikaSoftApiService")
+    fun provideChaikaSoftApiService(
+        @Named("ChaikaSoftRetrofit") retrofit: Retrofit
+    ): ChaikaSoftApiService =
+        retrofit.create(ChaikaSoftApiService::class.java)
+
+    // Провайдер для репозитория, реализующего ChaikaSoftApiServiceRepositoryInterface
+    @Provides
+    @Singleton
+    fun provideChaikaSoftApiServiceRepository(
+        @Named("ChaikaSoftApiService") apiService: ChaikaSoftApiService
+    ): ChaikaSoftApiServiceRepositoryInterface =
+        ChaikaSoftApiServiceRepository(apiService)
 
     // ================== ENCRYPTED TOKEN MANAGER ==================
     @Provides
@@ -208,8 +246,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFetchConductorByTokenUseCase(conductorApiRepository: ApiServiceRepositoryInterface): FetchConductorByTokenUseCase =
-        FetchConductorByTokenUseCase(conductorApiRepository)
+    fun provideFetchConductorByTokenUseCase(remyApiServiceRepository: RemyApiServiceRepositoryInterface): FetchConductorByTokenUseCase =
+        FetchConductorByTokenUseCase(remyApiServiceRepository)
 
     @Provides
     @Singleton
@@ -230,11 +268,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAddProductInfoUseCase(
+    fun provideFetchProductsFromServerUseCase(
+        repository: ChaikaSoftApiServiceRepositoryInterface
+    ): FetchProductsFromServerUseCase =
+        FetchProductsFromServerUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSaveProductsLocallyUseCase(
         productInfoRepository: RoomProductInfoRepositoryInterface,
-        productInfoDataSource: ProductInfoDataSourceInterface,
-        imageRepository: LocalImageRepositoryInterface,
-    ): AddProductInfoUseCase = AddProductInfoUseCase(productInfoRepository, productInfoDataSource, imageRepository)
+        localImageRepository: LocalImageRepositoryInterface
+    ): SaveProductsLocallyUseCase =
+        SaveProductsLocallyUseCase(productInfoRepository, localImageRepository)
+
+    @Provides
+    @Singleton
+    fun provideFetchAndSaveProductsUseCase(
+        fetchProductsFromServerUseCase: FetchProductsFromServerUseCase,
+        saveProductsLocallyUseCase: SaveProductsLocallyUseCase
+    ): FetchAndSaveProductsUseCase =
+        FetchAndSaveProductsUseCase(fetchProductsFromServerUseCase, saveProductsLocallyUseCase)
 
     @Provides
     @Singleton
