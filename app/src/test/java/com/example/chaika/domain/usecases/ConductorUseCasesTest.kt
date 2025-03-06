@@ -2,7 +2,7 @@
 
 package com.example.chaika.domain.usecases
 
-import com.example.chaika.data.dataSource.repo.ApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.repo.RemyApiServiceRepositoryInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 class ConductorUseCasesTest {
 
     @Mock
-    lateinit var conductorApiRepository: ApiServiceRepositoryInterface
+    lateinit var conductorApiRepository: RemyApiServiceRepositoryInterface
 
     @Mock
     lateinit var conductorRepository: RoomConductorRepositoryInterface

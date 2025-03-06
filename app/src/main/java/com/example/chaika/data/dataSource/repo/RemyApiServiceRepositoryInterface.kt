@@ -3,6 +3,6 @@ package com.example.chaika.data.dataSource.repo
 import com.example.chaika.domain.models.ConductorDomain
 import kotlin.Result
 
-interface ApiServiceRepositoryInterface {
+interface RemyApiServiceRepositoryInterface {
     suspend fun fetchUserInfo(accessToken: String): Result<ConductorDomain>
 }
