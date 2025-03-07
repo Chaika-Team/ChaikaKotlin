@@ -125,7 +125,6 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.11.0")
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     implementation("com.squareup.moshi:moshi:1.13.0")
@@ -167,6 +166,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("androidx.paging:paging-runtime-ktx:3.3.6")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
 
     val lifecycleVersion = "2.7.0"
