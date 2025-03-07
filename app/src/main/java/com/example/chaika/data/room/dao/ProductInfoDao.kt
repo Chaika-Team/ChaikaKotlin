@@ -1,5 +1,6 @@
 package com.example.chaika.data.room.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -14,6 +15,9 @@ interface ProductInfoDao {
 
     @Query("SELECT * FROM product_info")
     fun getAllProducts(): Flow<List<ProductInfo>>
+
+    @Query("SELECT * FROM product_info ORDER BY id ASC")
+    fun getPagedProducts(): PagingSource<Int, ProductInfo>
 
     @Query("SELECT * FROM product_info WHERE id = :productId LIMIT 1")
     suspend fun getProductById(productId: Int): ProductInfo?

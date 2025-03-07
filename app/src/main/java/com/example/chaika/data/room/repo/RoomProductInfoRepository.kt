@@ -1,5 +1,7 @@
 package com.example.chaika.data.room.repo
 
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.mappers.toDomain
 import com.example.chaika.data.room.mappers.toEntity
@@ -30,5 +32,33 @@ class RoomProductInfoRepository @Inject constructor(
 
     override suspend fun deleteProduct(product: ProductInfoDomain) {
         productInfoDao.deleteProduct(product.toEntity())
+    }
+
+    override fun getPagedProducts(): PagingSource<Int, ProductInfoDomain> {
+        val originalSource = productInfoDao.getPagedProducts()
+        return object : PagingSource<Int, ProductInfoDomain>() {
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProductInfoDomain> {
+                return when (val result = originalSource.load(params)) {
+                    is PagingSource.LoadResult.Page -> PagingSource.LoadResult.Page(
+                        data = result.data.map { it.toDomain() },
+                        prevKey = result.prevKey,
+                        nextKey = result.nextKey,
+                        itemsBefore = result.itemsBefore,
+                        itemsAfter = result.itemsAfter
+                    )
+
+                    is PagingSource.LoadResult.Error -> PagingSource.LoadResult.Error(result.throwable)
+                    // Обрабатываем все остальные случаи (например, если будет добавлена новая ветка)
+                    else -> PagingSource.LoadResult.Error(Throwable("Unexpected load result: $result"))
+                }
+            }
+
+            override fun getRefreshKey(state: PagingState<Int, ProductInfoDomain>): Int? {
+                return state.anchorPosition?.let { anchorPosition ->
+                    state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                        ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+                }
+            }
+        }
     }
 }

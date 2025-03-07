@@ -1,5 +1,8 @@
 package com.example.chaika.domain.usecases
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
@@ -11,6 +14,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 // Юзкейс для получения всех товаров из базы данных
+@Deprecated("Используйте GetPagedProductsUseCase, чтобы улучшить оптимизацию")
 class GetAllProductsUseCase @Inject constructor(
     private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface, // Используем интерфейс
 ) {
@@ -19,12 +23,32 @@ class GetAllProductsUseCase @Inject constructor(
     }
 }
 
+/**
+ *
+ * Use case для получения списка товаров с поддержкой бесконечной прокрутки.
+ *
+ * Использует PagingSource, полученный из репозитория.
+ */
+class GetPagedProductsUseCase @Inject constructor(
+    private val repository: RoomProductInfoRepositoryInterface,
+) {
+    operator fun invoke(pageSize: Int = 20): Flow<PagingData<ProductInfoDomain>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = pageSize,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { repository.getPagedProducts() }
+        ).flow
+    }
+}
+
 // Юзкейс для удаления товара из базы данных
 class DeleteProductUseCase @Inject constructor(
-    private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface, // Используем интерфейс
+    private val repository: RoomProductInfoRepositoryInterface, // Используем интерфейс
 ) {
     suspend operator fun invoke(productInfoDomain: ProductInfoDomain) {
-        roomProductInfoRepositoryInterface.deleteProduct(productInfoDomain)
+        repository.deleteProduct(productInfoDomain)
     }
 }
 

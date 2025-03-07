@@ -42,6 +42,7 @@ import com.example.chaika.domain.usecases.FetchProductsFromServerUseCase
 import com.example.chaika.domain.usecases.GenerateTripReportUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.GetAllProductsUseCase
+import com.example.chaika.domain.usecases.GetPagedProductsUseCase
 import com.example.chaika.domain.usecases.HandleAuthorizationResponseUseCase
 import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.SaveCartWithItemsAndOperationUseCase
@@ -258,8 +259,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGetAllProductsUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): GetAllProductsUseCase =
-        GetAllProductsUseCase(roomProductInfoRepositoryInterface)
+    fun provideGetAllProductsUseCase(repository: RoomProductInfoRepositoryInterface): GetAllProductsUseCase =
+        GetAllProductsUseCase(repository)
 
     @Provides
     @Singleton
@@ -291,8 +292,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDeleteProductUseCase(roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface): DeleteProductUseCase =
-        DeleteProductUseCase(roomProductInfoRepositoryInterface)
+    fun provideGetPagedProductsUseCase(
+        productInfoRepository: RoomProductInfoRepositoryInterface
+    ): GetPagedProductsUseCase =
+        GetPagedProductsUseCase(productInfoRepository)
+
+    @Provides
+    @Singleton
+    fun provideDeleteProductUseCase(repository: RoomProductInfoRepositoryInterface): DeleteProductUseCase =
+        DeleteProductUseCase(repository)
 
     @Provides
     @Singleton
