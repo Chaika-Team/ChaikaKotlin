@@ -8,7 +8,7 @@ import retrofit2.http.Header
 /**
  * API-сервис.
  */
-interface RemyApiService {
+interface IAMApiService {
     @GET("oidc/v1/userinfo")
     suspend fun getUserInfo(
         @Header("Authorization") token: String,

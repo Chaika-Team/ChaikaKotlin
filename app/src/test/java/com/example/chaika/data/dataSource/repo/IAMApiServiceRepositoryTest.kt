@@ -1,6 +1,6 @@
 package com.example.chaika.data.dataSource.repo
 
-import com.example.chaika.data.dataSource.apiService.RemyApiService
+import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.dto.ConductorDto
 import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.runBlocking
@@ -17,10 +17,10 @@ import retrofit2.Response
 /**
  * Тесты для ApiServiceRepository.
  */
-class RemyApiServiceRepositoryTest {
+class IAMApiServiceRepositoryTest {
     // Мок ApiService
-    private val remyApiService: RemyApiService = org.mockito.kotlin.mock()
-    private val repository = RemyApiServiceRepository(remyApiService)
+    private val IAMApiService: IAMApiService = org.mockito.kotlin.mock()
+    private val repository = IAMApiServiceRepository(IAMApiService)
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
@@ -44,7 +44,7 @@ class RemyApiServiceRepositoryTest {
                     image = "https://example.com/bob.png",
                 )
             // Мок успешного ответа
-            whenever(remyApiService.getUserInfo(eq("Bearer valid_token"))).thenReturn(
+            whenever(IAMApiService.getUserInfo(eq("Bearer valid_token"))).thenReturn(
                 Response.success(
                     dto,
                 ),
@@ -77,7 +77,7 @@ class RemyApiServiceRepositoryTest {
     fun testFetchUserInfo_emptyBody() =
         runBlocking {
             // Arrange: мок успешного ответа с null телом
-            whenever(remyApiService.getUserInfo(eq("Bearer token_empty"))).thenReturn(
+            whenever(IAMApiService.getUserInfo(eq("Bearer token_empty"))).thenReturn(
                 Response.success(
                     null,
                 ),
@@ -115,7 +115,7 @@ class RemyApiServiceRepositoryTest {
                         "{\"error\": \"Not Found\"}",
                     ),
                 )
-            whenever(remyApiService.getUserInfo(eq("Bearer invalid_token"))).thenReturn(
+            whenever(IAMApiService.getUserInfo(eq("Bearer invalid_token"))).thenReturn(
                 errorResponse
             )
 
@@ -144,7 +144,7 @@ class RemyApiServiceRepositoryTest {
         runBlocking {
             // Arrange: Мокируем исключение при вызове API. Используем RuntimeException вместо Exception.
             val exceptionToThrow = RuntimeException("Network error")
-            whenever(remyApiService.getUserInfo(eq("Bearer exception_token"))).thenThrow(
+            whenever(IAMApiService.getUserInfo(eq("Bearer exception_token"))).thenThrow(
                 exceptionToThrow
             )
 

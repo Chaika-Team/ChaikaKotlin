@@ -8,11 +8,11 @@ import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.data.dataSource.FakeProductInfoDataSource
 import com.example.chaika.data.dataSource.ProductInfoDataSourceInterface
 import com.example.chaika.data.dataSource.apiService.ChaikaSoftApiService
-import com.example.chaika.data.dataSource.apiService.RemyApiService
+import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepository
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
-import com.example.chaika.data.dataSource.repo.RemyApiServiceRepository
-import com.example.chaika.data.dataSource.repo.RemyApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.repo.IAMApiServiceRepository
+import com.example.chaika.data.dataSource.repo.IAMApiServiceRepositoryInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
@@ -134,27 +134,27 @@ object AppModule {
     fun provideProductInfoDataSource(): ProductInfoDataSourceInterface = FakeProductInfoDataSource()
 
     // ================== RETROFIT & NETWORK ==================
-    // Retrofit для Remy API
+    // Retrofit для IAM API
     @Provides
     @Singleton
-    @Named("RemyRetrofit")
-    fun provideRemyRetrofitInstance(): Retrofit =
+    @Named("IAMRetrofit")
+    fun provideIAMRetrofitInstance(): Retrofit =
         Retrofit.Builder()
             .baseUrl("https://iam.remystorage.ru/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-    // Remy API-сервис
+    // IAM API-сервис
     @Provides
     @Singleton
-    fun provideRemyApiService(@Named("RemyRetrofit") retrofit: Retrofit): RemyApiService =
-        retrofit.create(RemyApiService::class.java)
+    fun provideIAMApiService(@Named("IAMRetrofit") retrofit: Retrofit): IAMApiService =
+        retrofit.create(IAMApiService::class.java)
 
-    // Remy репозиторий
+    // IAM репозиторий
     @Provides
     @Singleton
-    fun provideRemyApiRepository(remyApiService: RemyApiService): RemyApiServiceRepositoryInterface =
-        RemyApiServiceRepository(remyApiService)
+    fun provideIAMApiRepository(iamApiService: IAMApiService): IAMApiServiceRepositoryInterface =
+        IAMApiServiceRepository(iamApiService)
 
     // Retrofit для ChaikaSoft API
     @Provides
@@ -247,8 +247,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFetchConductorByTokenUseCase(remyApiServiceRepository: RemyApiServiceRepositoryInterface): FetchConductorByTokenUseCase =
-        FetchConductorByTokenUseCase(remyApiServiceRepository)
+    fun provideFetchConductorByTokenUseCase(iamApiServiceRepository: IAMApiServiceRepositoryInterface): FetchConductorByTokenUseCase =
+        FetchConductorByTokenUseCase(iamApiServiceRepository)
 
     @Provides
     @Singleton

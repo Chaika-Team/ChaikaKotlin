@@ -1,17 +1,17 @@
 package com.example.chaika.data.dataSource.repo
 
-import com.example.chaika.data.dataSource.apiService.RemyApiService
+import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.mappers.toDomain
 import com.example.chaika.domain.models.ConductorDomain
 import javax.inject.Inject
 
-class RemyApiServiceRepository @Inject constructor(
-    private val remyApiService: RemyApiService,
-) : RemyApiServiceRepositoryInterface {
+class IAMApiServiceRepository @Inject constructor(
+    private val iamApiService: IAMApiService,
+) : IAMApiServiceRepositoryInterface {
 
     override suspend fun fetchUserInfo(accessToken: String): Result<ConductorDomain> {
         return try {
-            val response = remyApiService.getUserInfo("Bearer $accessToken")
+            val response = iamApiService.getUserInfo("Bearer $accessToken")
             if (response.isSuccessful) {
                 response.body()?.let { dto ->
                     // Преобразуем DTO в доменную модель
