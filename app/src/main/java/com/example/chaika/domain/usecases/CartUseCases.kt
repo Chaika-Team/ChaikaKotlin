@@ -5,24 +5,26 @@ import com.example.chaika.data.room.repo.RoomCartRepositoryInterface
 import com.example.chaika.domain.models.CartDomain
 import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartOperationDomain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 // Сохранение операций и очистка корзины
 class SaveCartWithItemsAndOperationUseCase @Inject constructor(
-    private val roomCartRepositoryInterface: RoomCartRepositoryInterface, // Репозиторий для работы с базой данных
-    private val inMemoryCartRepositoryInterface: InMemoryCartRepositoryInterface, // Репозиторий для работы с корзиной в памяти
+    private val roomCartRepositoryInterface: RoomCartRepositoryInterface,
+    private val inMemoryCartRepositoryInterface: InMemoryCartRepositoryInterface
 ) {
     suspend operator fun invoke(cartOperationDomain: CartOperationDomain) {
-        // Получаем текущее состояние корзины
-        val cart = CartDomain(inMemoryCartRepositoryInterface.getCartItems())
-
+        // Получаем текущий список товаров из in-memory корзины через Flow
+        val cart =
+            CartDomain(inMemoryCartRepositoryInterface.getCartItems().first().toMutableList())
         // Сохраняем корзину и операцию в базе данных
         roomCartRepositoryInterface.saveCartWithItemsAndOperation(cart, cartOperationDomain)
-
-        // Очищаем корзину в оперативной памяти после завершения операции
+        // Очищаем in-memory корзину после сохранения
         inMemoryCartRepositoryInterface.clearCart()
     }
 }
+
 
 // Добавление товара в корзину
 class AddItemToCartUseCase @Inject constructor(
@@ -60,7 +62,7 @@ class UpdateItemQuantityInCartUseCase @Inject constructor(
 class GetCartItemsUseCase @Inject constructor(
     private val inMemoryCartRepositoryInterface: InMemoryCartRepositoryInterface,
 ) {
-    operator fun invoke(): List<CartItemDomain> {
+    operator fun invoke(): Flow<List<CartItemDomain>> {
         // Возвращаем список товаров в корзине
         return inMemoryCartRepositoryInterface.getCartItems()
     }

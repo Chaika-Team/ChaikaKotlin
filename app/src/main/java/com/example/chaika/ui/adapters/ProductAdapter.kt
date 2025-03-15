@@ -38,10 +38,9 @@ class ProductAdapter :
             binding.tvProductDescription.text = product.description
             binding.tvProductPrice.text = "Цена: ${product.price}"
 
-            // Загружаем изображение товара (если путь указан, можно также добавить placeholder)
             Glide.with(binding.ivProduct.context)
                 .load(File(product.image))
-                .placeholder(R.drawable.delete_img)
+                .placeholder(R.drawable.image_not_found_icon)
                 .into(binding.ivProduct)
         }
     }

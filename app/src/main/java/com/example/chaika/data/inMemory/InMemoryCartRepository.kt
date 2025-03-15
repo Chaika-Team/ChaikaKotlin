@@ -2,63 +2,61 @@ package com.example.chaika.data.inMemory
 
 import com.example.chaika.domain.models.CartDomain
 import com.example.chaika.domain.models.CartItemDomain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class InMemoryCartRepository @Inject constructor() : InMemoryCartRepositoryInterface {
 
-    private val cart = CartDomain(mutableListOf())
+    // Используем MutableStateFlow для хранения списка элементов корзины
+    private val _cartItems = MutableStateFlow<List<CartItemDomain>>(emptyList())
 
-    // Добавление товара в корзину
+    // Возвращаем Flow неизменяемого списка
+    override fun getCartItems(): Flow<List<CartItemDomain>> = _cartItems.asStateFlow()
+
     override fun addItemToCart(item: CartItemDomain): Boolean {
-        val existingItem = cart.items.find { it.product.id == item.product.id }
+        val currentItems = _cartItems.value.toMutableList()
+        val existingItem = currentItems.find { it.product.id == item.product.id }
         return if (existingItem == null) {
-            cart.items.add(item)
-            true // Возвращаем true, если товар добавлен
+            currentItems.add(item)
+            _cartItems.value = currentItems.toList() // Возвращаем неизменяемую копию
+            true
         } else {
-            false // Возвращаем false, если товар уже существует
+            false
         }
     }
 
-    // Удаление товара из корзины
     override fun removeItemFromCart(itemId: Int): Boolean {
-        val existingItem = cart.items.find { it.product.id == itemId }
-        return if (existingItem != null) {
-            cart.items.remove(existingItem)
-            true // Возвращаем true, если товар удалён
-        } else {
-            false // Возвращаем false, если товара не было в корзине
+        val currentItems = _cartItems.value.toMutableList()
+        val removed = currentItems.removeAll { it.product.id == itemId }
+        if (removed) {
+            _cartItems.value = currentItems.toList()
         }
+        return removed
     }
 
-    // Обновление количества товара
     override fun updateItemQuantity(
         itemId: Int,
         newQuantity: Int,
-        availableQuantity: Int,
+        availableQuantity: Int
     ): Boolean {
-        val existingItem =
-            cart.items.firstOrNull { it.product.id == itemId } // Используем firstOrNull для безопасности
-
-        return if (existingItem != null && newQuantity <= availableQuantity) {
-            existingItem.quantity = newQuantity
-            true
-        } else {
-            false // Превышение доступного количества или товар не найден
+        val currentItems = _cartItems.value.toMutableList()
+        val index = currentItems.indexOfFirst { it.product.id == itemId }
+        if (index != -1) {
+            currentItems[index] = currentItems[index].copy(quantity = newQuantity)
+            _cartItems.value = currentItems.toList()
+            return true
         }
+        return false
     }
 
-    // Возвращаем список товаров в корзине
-    override fun getCartItems(): MutableList<CartItemDomain> {
-        return cart.items // Возвращаем копию списка
-    }
-
-    // Очищаем корзину после завершения операции
     override fun clearCart() {
-        cart.items.clear()
+        _cartItems.value = emptyList()
     }
 
-    // Возвращаем текущую корзину
     override fun getCart(): CartDomain {
-        return cart
+        // Возвращаем новую корзину с копией текущих элементов
+        return CartDomain(_cartItems.value.toMutableList())
     }
 }

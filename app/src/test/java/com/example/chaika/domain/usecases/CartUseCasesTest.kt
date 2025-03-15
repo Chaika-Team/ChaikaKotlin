@@ -1,4 +1,4 @@
-@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class)
 
 package com.example.chaika.domain.usecases
 
@@ -9,6 +9,8 @@ import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartOperationDomain
 import com.example.chaika.domain.models.OperationTypeDomain
 import com.example.chaika.domain.models.ProductInfoDomain
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -36,7 +38,7 @@ class CartUseCasesTest {
     private lateinit var getCartItemsUseCase: GetCartItemsUseCase
 
     // Пример доменных объектов для тестов
-    private val dummyCartItems = mutableListOf(
+    private val dummyCartItems = listOf(
         CartItemDomain(
             product = ProductInfoDomain(1, "Product 1", "Desc", "img", 10.0),
             quantity = 2
@@ -62,20 +64,15 @@ class CartUseCasesTest {
     }
 
     /**
-     * Техника тест-дизайна: #1 Классы эквивалентности
-     *
-     * Автор: OwletsFox
-     *
-     * Описание:
-     *   - Тест для SaveCartWithItemsAndOperationUseCase.
-     *   - Проверяется, что:
-     *       • Текущая корзина (CartDomain) получается из in-memory репозитория.
-     *       • Вызывается метод сохранения корзины и операции в room-репозитории.
-     *       • После сохранения вызывается метод очистки in-memory корзины.
+     * Тест для SaveCartWithItemsAndOperationUseCase.
+     * Проверяется, что:
+     * • Получается текущее состояние корзины (CartDomain) из in-memory репозитория.
+     * • Вызывается метод сохранения корзины и операции в room-репозитории.
+     * • После сохранения вызывается метод очистки in-memory корзины.
      */
     @Test
     fun `SaveCartWithItemsAndOperationUseCase saves cart and clears in-memory cart`() = runTest {
-        whenever(inMemoryCartRepo.getCartItems()).thenReturn(dummyCartItems)
+        whenever(inMemoryCartRepo.getCartItems()).thenReturn(flowOf(dummyCartItems))
         saveCartUseCase.invoke(dummyOperation)
         verify(roomCartRepo).saveCartWithItemsAndOperation(
             CartDomain(dummyCartItems),
@@ -85,13 +82,8 @@ class CartUseCasesTest {
     }
 
     /**
-     * Техника тест-дизайна: #1 Классы эквивалентности
-     *
-     * Автор: OwletsFox
-     *
-     * Описание:
-     *   - Тест для AddItemToCartUseCase.
-     *   - Проверяется, что при успешном добавлении товара in-memory репозиторий возвращает true.
+     * Тест для AddItemToCartUseCase.
+     * Проверяется, что при успешном добавлении товара in-memory репозиторий возвращает true.
      */
     @Test
     fun `AddItemToCartUseCase returns true when item added`() {
@@ -102,13 +94,8 @@ class CartUseCasesTest {
     }
 
     /**
-     * Техника тест-дизайна: #1 Классы эквивалентности
-     *
-     * Автор: OwletsFox
-     *
-     * Описание:
-     *   - Тест для RemoveItemFromCartUseCase.
-     *   - Проверяется, что при успешном удалении товара in-memory репозиторий возвращает true.
+     * Тест для RemoveItemFromCartUseCase.
+     * Проверяется, что при успешном удалении товара in-memory репозиторий возвращает true.
      */
     @Test
     fun `RemoveItemFromCartUseCase returns true when item removed`() {
@@ -119,13 +106,8 @@ class CartUseCasesTest {
     }
 
     /**
-     * Техника тест-дизайна: #1 Классы эквивалентности
-     *
-     * Автор: OwletsFox
-     *
-     * Описание:
-     *   - Тест для UpdateItemQuantityInCartUseCase.
-     *   - Проверяется, что обновление количества товара проходит успешно (метод возвращает true).
+     * Тест для UpdateItemQuantityInCartUseCase.
+     * Проверяется, что обновление количества товара проходит успешно.
      */
     @Test
     fun `UpdateItemQuantityInCartUseCase returns true when quantity updated`() {
@@ -144,17 +126,12 @@ class CartUseCasesTest {
     }
 
     /**
-     * Техника тест-дизайна: #1 Классы эквивалентности
-     *
-     * Автор: OwletsFox
-     *
-     * Описание:
-     *   - Тест для GetCartItemsUseCase.
-     *   - Проверяется, что use case возвращает список товаров из in-memory репозитория.
+     * Тест для GetCartItemsUseCase.
+     * Проверяется, что use case возвращает корректный список товаров из in-memory репозитория.
      */
     @Test
-    fun `GetCartItemsUseCase returns list of cart items`() {
-        whenever(inMemoryCartRepo.getCartItems()).thenReturn(dummyCartItems)
+    fun `GetCartItemsUseCase returns list of cart items`() = runTest {
+        whenever(inMemoryCartRepo.getCartItems()).thenReturn(flowOf(dummyCartItems))
         val result = getCartItemsUseCase.invoke()
         assertEquals(dummyCartItems, result)
     }
