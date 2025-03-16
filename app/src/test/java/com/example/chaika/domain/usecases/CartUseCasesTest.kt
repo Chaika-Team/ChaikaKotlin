@@ -10,6 +10,7 @@ import com.example.chaika.domain.models.CartOperationDomain
 import com.example.chaika.domain.models.OperationTypeDomain
 import com.example.chaika.domain.models.ProductInfoDomain
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -132,7 +133,8 @@ class CartUseCasesTest {
     @Test
     fun `GetCartItemsUseCase returns list of cart items`() = runTest {
         whenever(inMemoryCartRepo.getCartItems()).thenReturn(flowOf(dummyCartItems))
-        val result = getCartItemsUseCase.invoke()
+        // Получаем снимок списка из Flow
+        val result = getCartItemsUseCase.invoke().first()
         assertEquals(dummyCartItems, result)
     }
 }
