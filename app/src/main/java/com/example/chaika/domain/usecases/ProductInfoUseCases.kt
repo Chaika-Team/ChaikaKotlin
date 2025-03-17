@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-// Юзкейс для получения всех товаров из базы данных
-@Deprecated("Используйте GetPagedProductsUseCase, чтобы улучшить оптимизацию")
+// Юзкейс для получения всех товаров из базы данных.
+// Используйте GetPagedProductsUseCase, чтобы улучшить оптимизацию
 class GetAllProductsUseCase @Inject constructor(
     private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface, // Используем интерфейс
 ) {
