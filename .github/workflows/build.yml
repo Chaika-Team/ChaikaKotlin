@@ -56,4 +56,4 @@ jobs:
             -Dsonar.projectKey=ChaikaKotlin
             -Dsonar.junit.reportPaths=app/build/test-results/
             -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
-            -Dsonar.exclusions=**/*.mock.kt,**/generated/**
+            -Dsonar.exclusions=**/*.mock.kt,**/generated/**,**/res/**

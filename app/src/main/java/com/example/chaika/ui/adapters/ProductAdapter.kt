@@ -36,13 +36,14 @@ class ProductAdapter :
         fun bind(product: ProductInfoDomain) {
             binding.tvProductName.text = product.name
             binding.tvProductDescription.text = product.description
-            binding.tvProductPrice.text = "Цена: ${product.price}"
-
+            binding.tvProductPrice.text =
+                binding.tvProductPrice.context.getString(R.string.product_price, product.price)
             Glide.with(binding.ivProduct.context)
                 .load(File(product.image))
                 .placeholder(R.drawable.image_not_found_icon)
                 .into(binding.ivProduct)
         }
+
     }
 
     companion object {

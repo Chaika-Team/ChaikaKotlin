@@ -18,6 +18,7 @@
     <string name="error_performing_operation">Ошибка при выполнении операции: %1$s</string>
 
     <string name="employee_id">Таб № %1$s</string>
+    <string name="product_price">Цена: %1$.2f</string>
 
 
     <string name="add_title">Добавление</string>
