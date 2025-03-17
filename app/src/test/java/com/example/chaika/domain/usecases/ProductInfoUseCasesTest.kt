@@ -2,8 +2,6 @@
 
 package com.example.chaika.domain.usecases
 
-import com.example.chaika.data.dataSource.ProductInfoDataSourceInterface
-import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
 import com.example.chaika.domain.models.ProductInfoDomain
@@ -24,10 +22,6 @@ class ProductInfoUseCasesTest {
     @Mock
     lateinit var roomProductInfoRepository: RoomProductInfoRepositoryInterface
 
-    @Mock
-    lateinit var productInfoDataSource: ProductInfoDataSourceInterface
-
-    @Mock
     lateinit var localImageRepository: LocalImageRepositoryInterface
 
     // Dummy объекты для тестов:

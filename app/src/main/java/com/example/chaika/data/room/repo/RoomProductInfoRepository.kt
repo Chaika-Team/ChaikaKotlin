@@ -18,10 +18,6 @@ class RoomProductInfoRepository @Inject constructor(
         return productInfoDao.getAllProducts().map { list -> list.map { it.toDomain() } }
     }
 
-    //    suspend fun getProductById(id: Int): ProductInfo? {
-    //        return productInfoDao.getProductById(id)?.toDomain()
-    //    }
-
     override suspend fun insertProduct(product: ProductInfoDomain) {
         productInfoDao.insertProduct(product.toEntity())
     }

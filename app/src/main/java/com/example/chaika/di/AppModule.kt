@@ -5,8 +5,6 @@ import androidx.room.Room
 import com.example.chaika.auth.OAuthManager
 import com.example.chaika.data.crypto.EncryptedTokenManager
 import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
-import com.example.chaika.data.dataSource.FakeProductInfoDataSource
-import com.example.chaika.data.dataSource.ProductInfoDataSourceInterface
 import com.example.chaika.data.dataSource.apiService.ChaikaSoftApiService
 import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepository
@@ -39,6 +37,7 @@ import com.example.chaika.domain.usecases.DeleteProductUseCase
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
 import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
 import com.example.chaika.domain.usecases.FetchProductsFromServerUseCase
+import com.example.chaika.domain.usecases.FetchTemplatesUseCase
 import com.example.chaika.domain.usecases.GenerateTripReportUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.GetAllProductsUseCase
@@ -127,11 +126,6 @@ object AppModule {
     fun provideLocalTripReportRepository(
         @ApplicationContext context: Context,
     ): LocalTripReportRepository = LocalTripReportRepository(context)
-
-    // ================== DATA SOURCES ==================
-    @Provides
-    @Singleton
-    fun provideProductInfoDataSource(): ProductInfoDataSourceInterface = FakeProductInfoDataSource()
 
     // ================== RETROFIT & NETWORK ==================
     // Retrofit для IAM API
@@ -225,6 +219,14 @@ object AppModule {
         deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
         imageRepository: LocalImageRepositoryInterface,
     ): LogoutUseCase = LogoutUseCase(tokenManager, deleteAllConductorsUseCase, imageRepository)
+
+    // ================== USE CASES: TEMPLATES ==================
+    @Provides
+    @Singleton
+    fun provideFetchTemplatesUseCase(
+        repository: ChaikaSoftApiServiceRepositoryInterface
+    ): FetchTemplatesUseCase = FetchTemplatesUseCase(repository)
+
 
     // ================== USE CASES: OTHER ==================
     @Provides

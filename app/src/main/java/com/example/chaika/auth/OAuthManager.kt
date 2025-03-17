@@ -14,6 +14,9 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import javax.inject.Inject
 
+/**
+ * OAuthManager управляет процессом авторизации с PKCE через AppAuth.
+ */
 class OAuthManager @Inject constructor(
     private val authService: AuthorizationService,
 ) {
@@ -21,7 +24,7 @@ class OAuthManager @Inject constructor(
     private var authState: AuthState? = null
     private var codeVerifier: String? = null
 
-    // Сохраняем последний сформированный запрос
+    // Сохраняем последний сформированный запрос для ручного парсинга URI
     private var lastAuthRequest: AuthorizationRequest? = null
 
     /**
@@ -29,7 +32,6 @@ class OAuthManager @Inject constructor(
      */
     fun createAuthIntent(): Intent {
         Log.d("OAuthManager", "Starting authentication")
-
         // Настраиваем конфигурацию эндпоинтов
         val serviceConfig = AuthorizationServiceConfiguration(
             Uri.parse(AuthConfig.AUTH_ENDPOINT),
@@ -56,7 +58,7 @@ class OAuthManager @Inject constructor(
             .setCodeVerifier(codeVerifier, codeChallenge, "S256")
             .build()
 
-        // Сохраняем запрос для последующего построения ответа вручную
+        // Сохраняем запрос для последующего ручного парсинга
         lastAuthRequest = authRequest
 
         val customTabsIntent = CustomTabsIntent.Builder().build()
@@ -66,7 +68,7 @@ class OAuthManager @Inject constructor(
     /**
      * Обрабатывает ответ авторизации и выполняет обмен кода на токен.
      *
-     * Если Intent не содержит extras (что бывает при deep link'ах в Single-Activity),
+     * Если стандартный способ получения ответа не сработал (extras отсутствуют),
      * пытается вручную создать AuthorizationResponse, используя сохранённый AuthorizationRequest.
      *
      * @param data Intent с результатом авторизации.
@@ -77,21 +79,11 @@ class OAuthManager @Inject constructor(
         var response = AuthorizationResponse.fromIntent(data)
         var ex = AuthorizationException.fromIntent(data)
 
-        // Если extras отсутствуют, попробуем извлечь данные из URI и создать ответ вручную
+        // Если extras отсутствуют, пытаемся создать ответ вручную
         if (response == null && data.data != null && lastAuthRequest != null) {
-            Log.d("OAuthManager", "No extras in Intent – parsing URI manually: ${data.data}")
-            val uri = data.data!!
-            val code = uri.getQueryParameter("code")
-            val state = uri.getQueryParameter("state")
-            if (code != null && state != null) {
-                // Создаем AuthorizationResponse вручную, используя сохранённый запрос
-                response = AuthorizationResponse.Builder(lastAuthRequest!!)
-                    .setAuthorizationCode(code)
-                    .setState(state)
-                    .setScope(lastAuthRequest!!.scope)
-                    .build()
-                ex = null
-            }
+            val (manualResponse, manualError) = parseResponseManually(data)
+            response = manualResponse
+            ex = manualError as? AuthorizationException
         }
 
         Log.d("OAuthManager", "handleAuthorizationResponse: response=$response, exception=$ex")
@@ -101,7 +93,7 @@ class OAuthManager @Inject constructor(
             val tokenRequest = response.createTokenExchangeRequest()
             Log.d(
                 "OAuthManager",
-                "TokenExchangeRequest: $tokenRequest, codeVerifier: $codeVerifier",
+                "TokenExchangeRequest: $tokenRequest, codeVerifier: $codeVerifier"
             )
             authService.performTokenRequest(tokenRequest) { tokenResponse, exception ->
                 if (tokenResponse != null) {
@@ -120,8 +112,31 @@ class OAuthManager @Inject constructor(
         } else {
             Log.e(
                 "OAuthManager",
-                "Authorization error: ${ex?.errorDescription ?: "Response is null"}",
+                "Authorization error: ${ex?.errorDescription ?: "Response is null"}"
             )
+        }
+    }
+
+    /**
+     * Вспомогательный метод для ручного парсинга AuthorizationResponse из URI.
+     *
+     * @param data Intent с данными авторизации.
+     * @return Пара: (AuthorizationResponse?, Throwable?) – если парсинг успешен, Throwable равен null.
+     */
+    private fun parseResponseManually(data: Intent): Pair<AuthorizationResponse?, Throwable?> {
+        Log.d("OAuthManager", "No extras in Intent – parsing URI manually: ${data.data}")
+        val uri = data.data!!
+        val code = uri.getQueryParameter("code")
+        val state = uri.getQueryParameter("state")
+        return if (code != null && state != null) {
+            val manualResponse = AuthorizationResponse.Builder(lastAuthRequest!!)
+                .setAuthorizationCode(code)
+                .setState(state)
+                .setScope(lastAuthRequest!!.scope)
+                .build()
+            manualResponse to null
+        } else {
+            null to Exception("Manual parsing failed")
         }
     }
 }

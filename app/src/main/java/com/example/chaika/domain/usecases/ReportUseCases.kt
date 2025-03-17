@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-// TODO: сохранять время генерации отчёта, записывать уникальный серийник товара вместо локального id
+// Сохранять время генерации отчёта, записывать уникальный серийник товара вместо локального id
 
 class GenerateTripReportUseCase @Inject constructor(
     private val cartOperationRepository: RoomCartOperationRepositoryInterface,

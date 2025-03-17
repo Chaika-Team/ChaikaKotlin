@@ -48,9 +48,9 @@ class ProfileFragment : Fragment() {
                 }
 
                 // Объединяем фамилию и имя
-                binding.tvFullName.text = "${it.name}"
+                binding.tvFullName.text = it.name
                 // Отображаем табельный номер
-                binding.tvEmployeeID.text = "Таб № ${it.employeeID}"
+                binding.tvEmployeeID.text = getString(R.string.employee_id, it.employeeID)
             }
         }
 
