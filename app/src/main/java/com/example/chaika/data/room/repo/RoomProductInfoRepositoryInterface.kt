@@ -11,4 +11,6 @@ interface RoomProductInfoRepositoryInterface {
     suspend fun updateProduct(product: ProductInfoDomain)
     suspend fun deleteProduct(product: ProductInfoDomain)
     fun getPagedProducts(): PagingSource<Int, ProductInfoDomain>
+    suspend fun getProductById(productId: Int): ProductInfoDomain?
+
 }

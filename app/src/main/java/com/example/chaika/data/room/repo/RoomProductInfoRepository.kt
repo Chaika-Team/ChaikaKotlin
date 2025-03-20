@@ -35,7 +35,7 @@ class RoomProductInfoRepository @Inject constructor(
         return object : PagingSource<Int, ProductInfoDomain>() {
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProductInfoDomain> {
                 return when (val result = originalSource.load(params)) {
-                    is PagingSource.LoadResult.Page -> PagingSource.LoadResult.Page(
+                    is LoadResult.Page -> LoadResult.Page(
                         data = result.data.map { it.toDomain() },
                         prevKey = result.prevKey,
                         nextKey = result.nextKey,
@@ -43,9 +43,9 @@ class RoomProductInfoRepository @Inject constructor(
                         itemsAfter = result.itemsAfter
                     )
 
-                    is PagingSource.LoadResult.Error -> PagingSource.LoadResult.Error(result.throwable)
+                    is LoadResult.Error -> LoadResult.Error(result.throwable)
                     // Обрабатываем все остальные случаи (например, если будет добавлена новая ветка)
-                    else -> PagingSource.LoadResult.Error(Throwable("Unexpected load result: $result"))
+                    else -> LoadResult.Error(Throwable("Unexpected load result: $result"))
                 }
             }
 
@@ -57,4 +57,9 @@ class RoomProductInfoRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun getProductById(productId: Int): ProductInfoDomain? {
+        return productInfoDao.getProductById(productId)?.toDomain()
+    }
+
 }

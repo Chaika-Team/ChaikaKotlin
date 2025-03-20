@@ -5,18 +5,21 @@ import com.example.chaika.data.dataSource.dto.TemplateListResponseDto
 import com.example.chaika.domain.models.TemplateContentDomain
 import com.example.chaika.domain.models.TemplateDomain
 
-fun TemplateDto.toDomain(): TemplateDomain =
-    TemplateDomain(
+fun TemplateDto.toDomain(): TemplateDomain {
+    return TemplateDomain(
         id = this.id,
         templateName = this.templateName,
         description = this.description,
-        content = this.content.map { dto ->
+        content = this.content.map { contentDto ->
+            // Преобразуем каждый элемент content
             TemplateContentDomain(
-                productId = dto.productId,
-                quantity = dto.quantity
+                productId = contentDto.productId,
+                quantity = contentDto.quantity
             )
         }
     )
+}
 
-fun TemplateListResponseDto.toDomainList(): List<TemplateDomain> =
-    this.templates.map { it.toDomain() }
+fun List<TemplateDto>.toDomainList(): List<TemplateDomain> =
+    map { it.toDomain() }
+

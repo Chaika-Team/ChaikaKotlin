@@ -8,7 +8,7 @@ import com.example.chaika.domain.models.TemplateDomain
 import javax.inject.Inject
 
 class ChaikaSoftApiServiceRepository @Inject constructor(
-    private val apiService: ChaikaSoftApiService
+    private val apiService: ChaikaSoftApiService,
 ) : ChaikaSoftApiServiceRepositoryInterface {
 
     override suspend fun fetchProducts(limit: Int, offset: Int): List<ProductInfoDomain> {
@@ -20,13 +20,26 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
         }
     }
 
-    // Новый метод для шаблонов
-    override suspend fun fetchTemplates(limit: Int, offset: Int): List<TemplateDomain> {
-        val response = apiService.getTemplates(limit = limit, offset = offset)
+    override suspend fun fetchTemplates(
+        query: String,
+        limit: Int,
+        offset: Int
+    ): List<TemplateDomain> {
+        val response = apiService.getTemplates(query, limit, offset)
         if (response.isSuccessful) {
-            return response.body()?.toDomainList() ?: emptyList()
+            return response.body()?.templates?.toDomainList() ?: emptyList()
         } else {
-            throw Exception("Error ${response.code()} - ${response.message()}")
+            throw Exception("Error fetching templates: ${response.code()} - ${response.message()}")
+        }
+    }
+
+    override suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain {
+        val response = apiService.getTemplateDetail(templateId)
+        if (response.isSuccessful) {
+            return response.body()?.template?.toDomain()
+                ?: throw Exception("Template detail is empty")
+        } else {
+            throw Exception("Error fetching template detail: ${response.code()} - ${response.message()}")
         }
     }
 }

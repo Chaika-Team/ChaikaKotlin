@@ -37,7 +37,7 @@ import com.example.chaika.domain.usecases.DeleteProductUseCase
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
 import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
 import com.example.chaika.domain.usecases.FetchProductsFromServerUseCase
-import com.example.chaika.domain.usecases.FetchTemplatesUseCase
+import com.example.chaika.domain.usecases.GetPagedTemplatesUseCase
 import com.example.chaika.domain.usecases.GenerateTripReportUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.GetAllProductsUseCase
@@ -223,9 +223,10 @@ object AppModule {
     // ================== USE CASES: TEMPLATES ==================
     @Provides
     @Singleton
-    fun provideFetchTemplatesUseCase(
+    fun provideGetPagedTemplatesUseCase(
         repository: ChaikaSoftApiServiceRepositoryInterface
-    ): FetchTemplatesUseCase = FetchTemplatesUseCase(repository)
+    ): GetPagedTemplatesUseCase = GetPagedTemplatesUseCase(repository)
+
 
 
     // ================== USE CASES: OTHER ==================
