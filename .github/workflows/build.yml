@@ -1,16 +1,17 @@
-name: Build
+name: ChaikaPipeline
 
 on:
   push:
     branches:
-      - dev
-      - feature/*
+      - CHK-*
+      - CHOPS-*
+      - fix/*
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   analyze:
-    name: Build, analyze and test
+    name: Build, test and analyze
     runs-on: ubuntu-latest
     
     steps:
@@ -57,3 +58,9 @@ jobs:
             -Dsonar.junit.reportPaths=app/build/test-results/
             -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
             -Dsonar.exclusions=**/*.mock.kt,**/generated/**
+
+      - name: SonarQube QualityGate 
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
