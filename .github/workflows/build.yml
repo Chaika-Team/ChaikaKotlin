@@ -6,8 +6,6 @@ on:
       - CHK-*
       - CHOPS-*
       - fix/*
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   analyze:
