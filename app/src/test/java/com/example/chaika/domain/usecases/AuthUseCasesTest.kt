@@ -7,22 +7,22 @@ import com.example.chaika.auth.OAuthManager
 import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
+import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.verify
-import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.whenever
 
 @ExtendWith(MockitoExtension::class)
 class AuthUseCasesTest {
-
     @Mock
     lateinit var oAuthManager: OAuthManager
 
@@ -61,10 +61,9 @@ class AuthUseCasesTest {
     @Test
     fun `StartAuthorizationUseCase returns correct Intent`() {
         val expectedIntent = Intent("action_test")
-        `when`(oAuthManager.createAuthIntent()).thenReturn(expectedIntent)
+        whenever(oAuthManager.createAuthIntent()).thenReturn(expectedIntent)
 
-        val actualIntent = startAuthorizationUseCase.invoke()
-        assertEquals(expectedIntent, actualIntent)
+        assertEquals(expectedIntent, startAuthorizationUseCase.invoke())
     }
 
     /**
@@ -78,19 +77,19 @@ class AuthUseCasesTest {
      *    и возвращает полученный токен.
      */
     @Test
-    fun `HandleAuthorizationResponseUseCase returns token when valid`() = runTest {
-        val testIntent = Intent("action_test")
-        val validToken = "valid_token"
-        doAnswer { invocation ->
-            val callback = invocation.getArgument<(String) -> Unit>(1)
-            callback(validToken)
-            null
-        }.`when`(oAuthManager).handleAuthorizationResponse(any(), any<(String) -> Unit>())
+    fun `HandleAuthorizationResponseUseCase returns token when valid`() =
+        runTest {
+            val testIntent = Intent("action_test")
+            val validToken = "valid_token"
+            doAnswer { invocation ->
+                invocation.getArgument<(String) -> Unit>(1)(validToken)
+                null
+            }.whenever(oAuthManager).handleAuthorizationResponse(any(), any())
 
-        val resultToken = handleAuthorizationResponseUseCase.invoke(testIntent)
-        verify(tokenManager).saveToken(validToken)
-        assertEquals(validToken, resultToken)
-    }
+            val resultToken = handleAuthorizationResponseUseCase.invoke(testIntent)
+            verify(tokenManager).saveToken(validToken)
+            assertEquals(validToken, resultToken)
+        }
 
     /**
      * Техника тест-дизайна: Прогнозирование ошибок / Классы эквивалентности
@@ -102,20 +101,17 @@ class AuthUseCasesTest {
      *  - Проверяется, что если возвращённый токен пустой, use case выбрасывает исключение с сообщением "Получен пустой токен".
      */
     @Test
-    fun `HandleAuthorizationResponseUseCase throws exception when token is empty`() = runTest {
-        val testIntent = Intent("action_test")
-        val emptyToken = ""
-        doAnswer { invocation ->
-            val callback = invocation.getArgument<(String) -> Unit>(1)
-            callback(emptyToken)
-            null
-        }.`when`(oAuthManager).handleAuthorizationResponse(any(), any<(String) -> Unit>())
+    fun `HandleAuthorizationResponseUseCase throws exception when token is empty`() =
+        runTest {
+            val intent = Intent()
+            doAnswer { invocation ->
+                invocation.getArgument<(String) -> Unit>(1)("")
+                null
+            }.whenever(oAuthManager).handleAuthorizationResponse(any(), any())
 
-        val exception = assertThrows<Exception> {
-            handleAuthorizationResponseUseCase.invoke(testIntent)
+            val ex = assertThrows<Exception> { handleAuthorizationResponseUseCase.invoke(intent) }
+            assertEquals("Получен пустой токен", ex.message)
         }
-        assertEquals("Получен пустой токен", exception.message)
-    }
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
@@ -127,13 +123,11 @@ class AuthUseCasesTest {
      *  - Проверяется, что use case возвращает токен, полученный от tokenManager.
      */
     @Test
-    fun `GetAccessTokenUseCase returns token from tokenManager`() = runTest {
-        val storedToken = "stored_token"
-        `when`(tokenManager.getToken()).thenReturn(storedToken)
-
-        val result = getAccessTokenUseCase.invoke()
-        assertEquals(storedToken, result)
-    }
+    fun `GetAccessTokenUseCase returns token from tokenManager`() =
+        runTest {
+            whenever(tokenManager.getToken()).thenReturn("stored")
+            assertEquals("stored", getAccessTokenUseCase.invoke())
+        }
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
@@ -146,12 +140,69 @@ class AuthUseCasesTest {
      *    удаления всех проводников (deleteAllConductorsUseCase.invoke()) и удаления изображений (deleteImagesInSubDir()).
      */
     @Test
-    fun `LogoutUseCase calls clearToken, deleteAllConductorsUseCase and deleteImagesInSubDir`() =
+    fun `LogoutUseCase calls clearToken, deleteAllConductors and deleteImages`() =
         runTest {
             logoutUseCase.invoke()
-
             verify(tokenManager).clearToken()
             verify(deleteAllConductorsUseCase).invoke()
             verify(imageRepository).deleteImagesInSubDir(ImageSubDir.CONDUCTORS.folder)
+        }
+}
+
+@ExtendWith(MockitoExtension::class)
+class CompleteAuthorizationFlowUseCaseTest {
+    @Mock
+    lateinit var handleUseCase: HandleAuthorizationResponseUseCase
+
+    @Mock
+    lateinit var authorizeUseCase: AuthorizeAndSaveConductorUseCase
+
+    private lateinit var completeFlow: CompleteAuthorizationFlowUseCase
+
+    @BeforeEach
+    fun setUp() {
+        completeFlow = CompleteAuthorizationFlowUseCase(handleUseCase, authorizeUseCase)
+    }
+
+    /** Тест для успешного флоу CompleteAuthorizationFlowUseCase
+     *
+     * Автор: Fascinat0r
+     */
+    @Test
+    fun `CompleteAuthorizationFlowUseCase returns token and conductor`() =
+        runTest {
+            val intent = Intent()
+            val token = "token"
+            val conductor = ConductorDomain(1, "A", "B", "C", "ID", "img")
+
+            whenever(handleUseCase.invoke(intent)).thenReturn(token)
+            whenever(authorizeUseCase.invoke(token)).thenReturn(conductor)
+
+            val (resultToken, resultConductor) = completeFlow.invoke(intent)
+            assertEquals(token, resultToken)
+            assertEquals(conductor, resultConductor)
+        }
+
+    /** Тест: ошибка при получении токена
+     *
+     * Автор: Fascinat0r
+     */
+    @Test
+    fun `CompleteAuthorizationFlowUseCase throws when handle fails`() =
+        runTest {
+            whenever(handleUseCase.invoke(any())).thenThrow(RuntimeException("fail"))
+            assertThrows<RuntimeException> { completeFlow.invoke(Intent()) }
+        }
+
+    /** Тест: ошибка при получении conductor
+     *
+     * Автор: Fascinat0r
+     */
+    @Test
+    fun `CompleteAuthorizationFlowUseCase throws when authorize fails`() =
+        runTest {
+            whenever(handleUseCase.invoke(any())).thenReturn("token")
+            whenever(authorizeUseCase.invoke(any())).thenThrow(RuntimeException("fail"))
+            assertThrows<RuntimeException> { completeFlow.invoke(Intent()) }
         }
 }
