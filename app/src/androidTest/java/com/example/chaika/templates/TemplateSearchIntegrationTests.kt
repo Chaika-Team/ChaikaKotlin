@@ -1,12 +1,14 @@
 package com.example.chaika.templates
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.assertThrows
-import kotlinx.coroutines.test.runTest
 import javax.inject.Inject
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
 import com.example.chaika.domain.models.TemplateDomain
@@ -15,42 +17,49 @@ import com.example.chaika.domain.models.TemplateDomain
 @RunWith(AndroidJUnit4::class)
 class TemplateSearchIntegrationTests {
 
+    // Правило Hilt, которое выполняет инъекцию перед каждым тестом
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
     @Inject
     lateinit var repository: ChaikaSoftApiServiceRepositoryInterface
 
-    // Вызовите HiltAndroidRule.inject() через JUnit4 правило (если необходимо)
-    // Например, если вы используете HiltAndroidRule:
-    // @get:Rule
-    // var hiltRule = HiltAndroidRule(this)
-
-    @Test
-    fun testSuccessfulTemplateSearchWithValidQuery() = runTest {
-        val query = "Kotlin"
-        val templates: List<TemplateDomain> =
-            repository.fetchTemplates(query, limit = 20, offset = 0)
-        assertFalse(templates.isEmpty(), "Expected non-empty template list for query: $query")
+    @Before
+    fun init() {
+        hiltRule.inject()
     }
 
     @Test
-    fun testSuccessfulTemplateSearchWithEmptyQueryReturnsAllTemplates() = runTest {
+    fun testSuccessfulTemplateSearchWithValidQuery() = runBlocking {
+        val query = "СЗ"
+        val templates: List<TemplateDomain> =
+            repository.fetchTemplates(query, limit = 20, offset = 0)
+        assertFalse("Expected non-empty template list for query: $query", templates.isEmpty())
+    }
+
+    @Test
+    fun testSuccessfulTemplateSearchWithEmptyQueryReturnsAllTemplates() = runBlocking {
         val query = ""
         val templates: List<TemplateDomain> =
             repository.fetchTemplates(query, limit = 20, offset = 0)
-        assertFalse(templates.isEmpty(), "Expected non-empty template list for empty query")
+        assertFalse("Expected non-empty template list for empty query", templates.isEmpty())
     }
 
     @Test
-    fun testEmptyTemplateSearchReturnsEmptyList() = runTest {
+    fun testEmptyTemplateSearchReturnsEmptyList() = runBlocking {
         val query = "asldfjalskdfj"
         val templates: List<TemplateDomain> =
             repository.fetchTemplates(query, limit = 20, offset = 0)
-        assertTrue(templates.isEmpty(), "Expected empty template list for query: $query")
+        assertTrue("Expected empty template list for query: $query", templates.isEmpty())
     }
 
     @Test
-    fun testTemplateSearchWhenServiceUnavailableThrowsException() = runTest {
-        assertThrows<Exception> {
+    fun testTemplateSearchWhenServiceUnavailableThrowsException() = runBlocking {
+        try {
             repository.fetchTemplates("trigger_service_down", limit = 20, offset = 0)
+            fail("Expected exception when service is unavailable")
+        } catch (e: Exception) {
+            // Исключение ожидается – тест проходит
         }
     }
 }

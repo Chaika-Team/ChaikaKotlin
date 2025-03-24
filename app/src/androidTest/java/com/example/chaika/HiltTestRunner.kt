@@ -11,7 +11,7 @@ class HiltTestRunner : AndroidJUnitRunner() {
         className: String?,
         context: Context?
     ): Application {
-        // Возвращаем HiltTestApplication вместо вашего основного приложения
+        // Возвращаем HiltTestApplication вместо основного приложения
         return super.newApplication(cl, HiltTestApplication::class.java.name, context)
     }
 }
