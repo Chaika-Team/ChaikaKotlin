@@ -6,7 +6,9 @@ import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInt
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import okhttp3.HttpUrl
 import dagger.hilt.components.SingletonComponent
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
@@ -14,14 +16,17 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ApiModule {
+open class ApiModule {
+
+    protected open fun baseUrl(): HttpUrl = "https://chaika-soft.ru/".toHttpUrl()
+
     @Provides
     @Singleton
     @Named("ChaikaSoftRetrofit")
     fun provideChaikaSoftRetrofit(): Retrofit =
         Retrofit
             .Builder()
-            .baseUrl("https://chaika-soft.ru/")
+            .baseUrl(baseUrl())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

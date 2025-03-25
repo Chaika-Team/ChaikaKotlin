@@ -164,6 +164,10 @@ dependencies {
     // Если нужны параметризованные тесты в androidTest
     androidTestImplementation("org.junit.jupiter:junit-jupiter-params:5.12.0")
 
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
+
+
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.mockito:mockito-inline:4.0.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
