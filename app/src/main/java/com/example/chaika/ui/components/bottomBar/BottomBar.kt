@@ -13,20 +13,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.chaika.R
-import com.example.chaika.ui.components.bottomBar.BottomBarBox
 import com.example.chaika.ui.components.bottomBar.BottomBarIcon
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.ProductTheme
+import androidx.compose.runtime.*
 
 @Composable
 fun BottomBar(navController: NavController) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Surface(
-        color = Color.Transparent, // Make sure parent doesn't interfere
+        color = Color.Transparent,
         modifier = Modifier.shadow(
             elevation = 10.dp,
             shape = RoundedCornerShape(16.dp),
@@ -50,22 +54,22 @@ fun BottomBar(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 BottomBarIcon(
-                    iconRes = R.drawable.ic_train,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
                     selected = currentRoute == Routes.TRIP,
                     onClick = { navController.navigate(Routes.TRIP) }
                 )
                 BottomBarIcon(
-                    iconRes = R.drawable.ic_bag,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_bag),
                     selected = currentRoute == Routes.PRODUCT,
                     onClick = { navController.navigate(Routes.PRODUCT) }
                 )
                 BottomBarIcon(
-                    iconRes = R.drawable.ic_time,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_time),
                     selected = currentRoute == Routes.SCREEN_3,
                     onClick = { navController.navigate(Routes.SCREEN_3) }
                 )
                 BottomBarIcon(
-                    iconRes = R.drawable.ic_profile_bar,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_profile_bar),
                     selected = currentRoute == Routes.PROFILE,
                     onClick = { navController.navigate(Routes.PROFILE) }
                 )
