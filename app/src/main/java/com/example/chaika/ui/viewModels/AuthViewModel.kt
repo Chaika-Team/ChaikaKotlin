@@ -12,9 +12,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
+
 class AuthViewModel
-    @Inject
+
     constructor(
         private val startAuthorizationUseCase: StartAuthorizationUseCase,
         private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
