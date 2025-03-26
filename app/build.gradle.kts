@@ -164,7 +164,7 @@ dependencies {
     // Если нужны параметризованные тесты в androidTest
     androidTestImplementation("org.junit.jupiter:junit-jupiter-params:5.12.0")
 
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
 
 
@@ -184,6 +184,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("androidx.paging:paging-runtime-ktx:3.3.6")
+    
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
 
