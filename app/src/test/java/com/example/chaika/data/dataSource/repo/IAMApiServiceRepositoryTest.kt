@@ -4,8 +4,8 @@ import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.dto.ConductorDto
 import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType
-import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -110,13 +110,10 @@ class IAMApiServiceRepositoryTest {
             val errorResponse =
                 Response.error<ConductorDto>(
                     404,
-                    ResponseBody.create(
-                        MediaType.get("application/json"),
-                        "{\"error\": \"Not Found\"}",
-                    ),
+                    "{\"error\": \"Not Found\"}".toResponseBody("application/json".toMediaType()),
                 )
             whenever(IAMApiService.getUserInfo(eq("Bearer invalid_token"))).thenReturn(
-                errorResponse
+                errorResponse,
             )
 
             // Act
@@ -145,7 +142,7 @@ class IAMApiServiceRepositoryTest {
             // Arrange: Мокируем исключение при вызове API. Используем RuntimeException вместо Exception.
             val exceptionToThrow = RuntimeException("Network error")
             whenever(IAMApiService.getUserInfo(eq("Bearer exception_token"))).thenThrow(
-                exceptionToThrow
+                exceptionToThrow,
             )
 
             // Act: вызываем метод fetchUserInfo
