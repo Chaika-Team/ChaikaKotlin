@@ -56,6 +56,21 @@ class GetTemplatesUseCase @Inject constructor(
 }
 
 /**
+ * Use case для получения детальной информации о шаблоне.
+ *
+ * Вызывает репозиторный метод fetchTemplateDetail для получения шаблона с заполненным content,
+ * что необходимо для корректного применения шаблона к корзине.
+ *
+ * @param repository Репозиторий, реализующий ChaikaSoftApiServiceRepositoryInterface.
+ */
+class GetTemplateDetailUseCase @Inject constructor(
+    private val repository: ChaikaSoftApiServiceRepositoryInterface
+) {
+    suspend operator fun invoke(templateId: Int): TemplateDomain = withContext(Dispatchers.IO) {
+        repository.fetchTemplateDetail(templateId)
+    }
+}
+/**
  * Use case для применения шаблона к корзине.
  *
  * Принимает полный объект шаблона (TemplateDomain) с заполненным content,
