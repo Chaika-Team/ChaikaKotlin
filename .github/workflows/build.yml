@@ -1,16 +1,15 @@
-name: Build
+name: ChaikaPipeline
 
 on:
   push:
     branches:
-      - dev
-      - feature/*
-  pull_request:
-    types: [opened, synchronize, reopened]
+      - CHK-*
+      - CHOPS-*
+      - fix/*
 
 jobs:
   analyze:
-    name: Build, analyze and test
+    name: Build, test and analyze
     runs-on: ubuntu-latest
     
     steps:
@@ -44,6 +43,18 @@ jobs:
       - name: Build and run unit tests
         run: ./gradlew clean build test jacocoTestReport
 
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Integration tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedAndroidTest
+
       - name: Run SonarQube scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
@@ -57,3 +68,9 @@ jobs:
             -Dsonar.junit.reportPaths=app/build/test-results/
             -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
             -Dsonar.exclusions=**/*.mock.kt,**/generated/**,**/res/**
+
+      - name: SonarQube QualityGate 
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
