@@ -1,5 +1,6 @@
 package com.example.chaika.data.dataSource.repo
 
+import android.util.Log
 import com.example.chaika.data.dataSource.apiService.ChaikaSoftApiService
 import com.example.chaika.data.dataSource.mappers.toDomain
 import com.example.chaika.data.dataSource.mappers.toDomainList
@@ -27,11 +28,18 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
     ): List<TemplateDomain> {
         val response = apiService.getTemplates(query, limit, offset)
         if (response.isSuccessful) {
-            return response.body()?.templates?.toDomainList() ?: emptyList()
+            val body = response.body()
+            Log.d("ChaikaSoftApiServiceRepo", "Templates response body: $body")
+            return body?.templates?.toDomainList() ?: emptyList()
         } else {
+            Log.e(
+                "ChaikaSoftApiServiceRepo",
+                "Error fetching templates: ${response.code()} - ${response.message()}"
+            )
             throw Exception("Error fetching templates: ${response.code()} - ${response.message()}")
         }
     }
+
 
     override suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain {
         val response = apiService.getTemplateDetail(templateId)

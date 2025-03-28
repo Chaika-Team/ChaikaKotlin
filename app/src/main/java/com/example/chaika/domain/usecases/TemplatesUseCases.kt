@@ -1,5 +1,6 @@
 package com.example.chaika.domain.usecases
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -24,6 +25,7 @@ class GetPagedTemplatesUseCase @Inject constructor(
     private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
     operator fun invoke(query: String = "", pageSize: Int = 20): Flow<PagingData<TemplateDomain>> {
+        Log.d("GetPagedTemplatesUC", "We into usecase")
         return Pager(
             config = PagingConfig(
                 pageSize = pageSize,
@@ -31,6 +33,25 @@ class GetPagedTemplatesUseCase @Inject constructor(
             ),
             pagingSourceFactory = { TemplatePagingSource(repository, query) }
         ).flow
+    }
+}
+
+
+/**
+ * Use case для получения всех шаблонов без пагинации.
+ *
+ * Этот юзкейс напрямую вызывает метод репозитория, чтобы получить все доступные шаблоны.
+ */
+class GetTemplatesUseCase @Inject constructor(
+    private val repository: ChaikaSoftApiServiceRepositoryInterface
+) {
+    suspend operator fun invoke(
+        query: String = "",
+        limit: Int = 100,
+        offset: Int = 0
+    ): List<TemplateDomain> {
+        // Используем большой limit для получения всех шаблонов
+        return repository.fetchTemplates(query, limit, offset)
     }
 }
 

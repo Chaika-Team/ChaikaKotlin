@@ -12,7 +12,5 @@ import testUtils.MockServer
     replaces = [ApiModule::class]
 )
 class AndroidTestApiModule : ApiModule() {
-    override fun baseUrl(): HttpUrl {
-        return MockServer.server.url("/")
-    }
+    override fun baseUrl(): HttpUrl = MockServer.server.url("/")
 }
