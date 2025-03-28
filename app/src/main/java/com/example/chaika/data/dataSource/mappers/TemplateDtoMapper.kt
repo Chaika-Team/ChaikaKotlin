@@ -1,7 +1,6 @@
 package com.example.chaika.data.dataSource.mappers
 
 import com.example.chaika.data.dataSource.dto.TemplateDto
-import com.example.chaika.data.dataSource.dto.TemplateListResponseDto
 import com.example.chaika.domain.models.TemplateContentDomain
 import com.example.chaika.domain.models.TemplateDomain
 
