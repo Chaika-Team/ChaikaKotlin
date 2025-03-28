@@ -184,7 +184,9 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("androidx.paging:paging-runtime-ktx:3.3.6")
-    
+    androidTestImplementation("androidx.paging:paging-testing:3.3.6")
+
+
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
 
