@@ -15,7 +15,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import testUtils.MockServer
+import testUtils.TestMockServer
+import testUtils.TestServerHolder
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -29,23 +30,23 @@ class TemplatePagingSourceTest {
     @Inject
     lateinit var repository: ChaikaSoftApiServiceRepositoryInterface
 
+    // Будем использовать TestMockServer через TestServerHolder
+    private lateinit var testMockServer: TestMockServer
+
     @Before
     fun setUp() {
-        // Запускаем MockServer, если он ещё не запущен
-        val isServerRunning = try {
-            MockServer.server.port > 0
-        } catch (e: IllegalStateException) {
-            false
-        }
-        if (!isServerRunning) {
-            MockServer.server.start()
-        }
+        // Создаем новый экземпляр TestMockServer для этого класса
+        testMockServer = TestMockServer().apply { start() }
+        // Записываем его в TestServerHolder, чтобы AndroidTestApiModule мог получить актуальный базовый URL
+        TestServerHolder.testMockServer = testMockServer
+
         hiltRule.inject()
     }
 
     @After
     fun tearDown() {
-        MockServer.server.shutdown()
+        // Останавливаем сервер после завершения тестов данного класса
+        testMockServer.shutdown()
     }
 
     @Test
@@ -57,8 +58,8 @@ class TemplatePagingSourceTest {
                 { "id": 2, "template_name": "Template2 for Test", "description": "desc2", "content": [] }
             ]
         }"""
-        // Enqueue ответ от MockServer.
-        MockServer.server.enqueue(
+        // Enqueue ответ от нового экземпляра сервера
+        testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(200)
                 .setHeader("Content-Type", "application/json")
@@ -82,11 +83,9 @@ class TemplatePagingSourceTest {
                 // Ожидаем, что будет возвращено 2 шаблона
                 assertEquals("Expected 2 templates", 2, loadResult.data.size)
             }
-
             is PagingSource.LoadResult.Error -> {
                 fail("LoadResult.Error: ${loadResult.throwable}")
             }
-
             else -> fail("Unexpected LoadResult: $loadResult")
         }
     }

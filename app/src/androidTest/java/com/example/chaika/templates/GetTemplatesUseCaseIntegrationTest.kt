@@ -7,15 +7,15 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.QueueDispatcher
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import testUtils.MockServer
+import testUtils.TestMockServer
+import testUtils.TestServerHolder
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -31,25 +31,18 @@ class GetTemplatesUseCaseIntegrationTest {
 
     @Before
     fun setUp() {
-        // Если сервер не запущен, запускаем его
-        val isServerRunning = try {
-            MockServer.server.port > 0
-        } catch (e: IllegalStateException) {
-            false
-        }
-        if (!isServerRunning) {
-            MockServer.server.start()
-        } else {
-            // Если сервер уже запущен, сбрасываем очередь ответов, установив стандартный QueueDispatcher
-            MockServer.server.dispatcher = QueueDispatcher()
-        }
+        // Создаем новый экземпляр сервера для этого класса
+        val testServer = TestMockServer().apply { start() }
+        // Записываем его в холдер, чтобы DI-модуль использовал его URL
+        TestServerHolder.testMockServer = testServer
+
         hiltRule.inject()
     }
 
     @After
     fun tearDown() {
-        // Не останавливаем сервер здесь, чтобы не мешать другим тестам.
-        // Если необходимо, остановку можно выполнить глобально после всех тестов.
+        // Завершаем работу сервера для данного класса
+        TestServerHolder.testMockServer.shutdown()
     }
 
     @Test
@@ -60,7 +53,7 @@ class GetTemplatesUseCaseIntegrationTest {
                 { "id": 2, "template_name": "Template2 for Test", "description": "desc2", "content": [] }
             ]
         }"""
-        MockServer.server.enqueue(
+        TestServerHolder.testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(200)
                 .setHeader("Content-Type", "application/json")
@@ -75,7 +68,7 @@ class GetTemplatesUseCaseIntegrationTest {
     @Test
     fun testServerReturnsEmptyListForNonMatchingQuery() = runTest {
         val responseBody = """{ "Templates": [] }"""
-        MockServer.server.enqueue(
+        TestServerHolder.testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(200)
                 .setHeader("Content-Type", "application/json")
@@ -89,7 +82,7 @@ class GetTemplatesUseCaseIntegrationTest {
 
     @Test(expected = Exception::class)
     fun testServerErrorCausesException() = runTest {
-        MockServer.server.enqueue(
+        TestServerHolder.testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(500)
                 .setHeader("Content-Type", "application/json")
