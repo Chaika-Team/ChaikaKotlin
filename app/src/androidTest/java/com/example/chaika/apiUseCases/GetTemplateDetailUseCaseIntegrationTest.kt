@@ -79,12 +79,14 @@ class GetTemplateDetailUseCaseIntegrationTest {
 
     @Test(expected = Exception::class)
     fun testServerErrorCausesException() = runTest {
-        // Эмулируем серверную ошибку с кодом 500
+        val responseBody = """{
+             "error": "internal server error"
+        }"""
         TestServerHolder.testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(500)
                 .setHeader("Content-Type", "application/json")
-                .setBody("")
+                .setBody(responseBody)
         )
         // Ожидается, что вызов getTemplateDetailUseCase выбросит исключение
         getTemplateDetailUseCase(1)

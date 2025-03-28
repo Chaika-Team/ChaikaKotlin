@@ -81,12 +81,16 @@ class FetchProductsFromServerUseCaseIntegrationTest {
 
     @Test(expected = Exception::class)
     fun testServerErrorForFetchProducts() = runTest {
+
+        val responseBody = """{
+             "error": "internal server error"
+        }"""
         // Эмулируем серверную ошибку
         TestServerHolder.testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(500)
                 .setHeader("Content-Type", "application/json")
-                .setBody("")
+                .setBody(responseBody)
         )
         // Ожидается, что use case выбросит исключение при ошибке сервера
         fetchProductsFromServerUseCase(limit = 100, offset = 0)

@@ -82,11 +82,14 @@ class GetTemplatesUseCaseIntegrationTest {
 
     @Test(expected = Exception::class)
     fun testServerErrorCausesException() = runTest {
+        val responseBody = """{
+             "error": "internal server error"
+        }"""
         TestServerHolder.testMockServer.server.enqueue(
             MockResponse()
                 .setResponseCode(500)
                 .setHeader("Content-Type", "application/json")
-                .setBody("")
+                .setBody(responseBody)
         )
         getTemplatesUseCase(query = "", limit = 100, offset = 0)
     }
