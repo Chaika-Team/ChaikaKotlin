@@ -1,4 +1,4 @@
-package com.example.chaika.templates
+package com.example.chaika.apiUseCases
 
 import androidx.paging.PagingSource
 import androidx.test.ext.junit.runners.AndroidJUnit4

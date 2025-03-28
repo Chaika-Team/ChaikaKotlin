@@ -1,4 +1,4 @@
-package com.example.chaika.templates
+package com.example.chaika.apiUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.chaika.domain.models.TemplateDomain
