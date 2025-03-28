@@ -53,7 +53,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: ./gradlew connectedAndroidTest
+          script: ./gradlew connectedAndroidTest -i
 
       - name: Run SonarQube scan
         uses: sonarsource/sonarqube-scan-action@master
