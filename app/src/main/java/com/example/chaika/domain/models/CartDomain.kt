@@ -6,5 +6,6 @@ package com.example.chaika.domain.models
  * @param items элементы корзины, представлены ДМ CartItemDomain.
  */
 data class CartDomain(
-    val items: MutableList<CartItemDomain>,
+    val items: List<CartItemDomain>,
 )
+

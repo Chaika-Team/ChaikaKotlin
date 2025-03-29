@@ -6,6 +6,7 @@ plugins {
     id("org.sonarqube") version "6.0.1.5171"
     id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
     id("jacoco")
+    // id("de.mannodermaus.android-junit5") version "1.12.0.0" apply false
 }
 
 sonar {

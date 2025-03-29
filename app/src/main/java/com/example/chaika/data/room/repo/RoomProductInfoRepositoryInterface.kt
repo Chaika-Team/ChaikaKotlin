@@ -1,5 +1,7 @@
 package com.example.chaika.data.room.repo
 
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import com.example.chaika.domain.models.ProductInfoDomain
 import kotlinx.coroutines.flow.Flow
 
@@ -8,6 +10,7 @@ interface RoomProductInfoRepositoryInterface {
     suspend fun insertProduct(product: ProductInfoDomain)
     suspend fun updateProduct(product: ProductInfoDomain)
     suspend fun deleteProduct(product: ProductInfoDomain)
-    // Добавьте метод для получения продукта по ID, если он будет нужен
-    // suspend fun getProductById(id: Int): ProductInfoDomain?
+    fun getPagedProducts(): PagingSource<Int, ProductInfoDomain>
+    suspend fun getProductById(productId: Int): ProductInfoDomain?
+
 }

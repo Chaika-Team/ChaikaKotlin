@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("jacoco")
+    id("de.mannodermaus.android-junit5") version "1.12.0.0"
 }
 
 android {
@@ -16,10 +17,10 @@ android {
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "0.0.1-alpha"
+        versionName = "0.0.2-alpha"
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.example.chaika"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.chaika.HiltTestRunner"
     }
 
     lint {
@@ -48,6 +49,12 @@ android {
     testOptions {
         unitTests {
             isReturnDefaultValues = true
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += setOf("META-INF/LICENSE.md")
         }
     }
 
@@ -125,7 +132,6 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.11.0")
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     implementation("com.squareup.moshi:moshi:1.13.0")
@@ -152,10 +158,19 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("org.junit.vintage:junit-vintage-engine:5.9.3")
 
+    androidTestImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
+    androidTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
+    // Если нужны параметризованные тесты в androidTest
+    androidTestImplementation("org.junit.jupiter:junit-jupiter-params:5.12.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
+
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.mockito:mockito-inline:4.0.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("org.mockito:mockito-junit-jupiter:4.0.0")
+    androidTestImplementation("org.mockito:mockito-android:4.5.1")
     testImplementation("tech.apter.junit5.jupiter:robolectric-extension:0.9.0")
 
     val roomVersion = "2.6.1"
@@ -167,7 +182,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("androidx.paging:paging-runtime-ktx:3.3.6")
+    androidTestImplementation("androidx.paging:paging-testing:3.3.6")
+
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
 
     val lifecycleVersion = "2.7.0"
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
@@ -185,5 +204,11 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+junitPlatform {
+    instrumentationTests {
+        includeExtensions.set(true)
     }
 }

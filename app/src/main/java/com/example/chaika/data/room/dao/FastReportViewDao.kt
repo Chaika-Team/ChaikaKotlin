@@ -5,6 +5,7 @@ import androidx.room.Query
 import com.example.chaika.data.room.entities.FastReportView
 import kotlinx.coroutines.flow.Flow
 
+@Suppress("FunctionInterface")
 @Dao
 interface FastReportViewDao {
     @Query("SELECT * FROM fast_report_view")

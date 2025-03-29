@@ -1,11 +1,11 @@
 package com.example.chaika.data.dataSource.repo
 
-import com.example.chaika.data.dataSource.apiService.ApiService
+import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.dto.ConductorDto
 import com.example.chaika.domain.models.ConductorDomain
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType
-import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -17,10 +17,10 @@ import retrofit2.Response
 /**
  * Тесты для ApiServiceRepository.
  */
-class ApiServiceRepositoryTest {
+class IAMApiServiceRepositoryTest {
     // Мок ApiService
-    private val apiService: ApiService = org.mockito.kotlin.mock()
-    private val repository = ApiServiceRepository(apiService)
+    private val IAMApiService: IAMApiService = org.mockito.kotlin.mock()
+    private val repository = IAMApiServiceRepository(IAMApiService)
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
@@ -44,7 +44,7 @@ class ApiServiceRepositoryTest {
                     image = "https://example.com/bob.png",
                 )
             // Мок успешного ответа
-            whenever(apiService.getUserInfo(eq("Bearer valid_token"))).thenReturn(
+            whenever(IAMApiService.getUserInfo(eq("Bearer valid_token"))).thenReturn(
                 Response.success(
                     dto,
                 ),
@@ -77,7 +77,7 @@ class ApiServiceRepositoryTest {
     fun testFetchUserInfo_emptyBody() =
         runBlocking {
             // Arrange: мок успешного ответа с null телом
-            whenever(apiService.getUserInfo(eq("Bearer token_empty"))).thenReturn(
+            whenever(IAMApiService.getUserInfo(eq("Bearer token_empty"))).thenReturn(
                 Response.success(
                     null,
                 ),
@@ -110,12 +110,11 @@ class ApiServiceRepositoryTest {
             val errorResponse =
                 Response.error<ConductorDto>(
                     404,
-                    ResponseBody.create(
-                        MediaType.get("application/json"),
-                        "{\"error\": \"Not Found\"}",
-                    ),
+                    "{\"error\": \"Not Found\"}".toResponseBody("application/json".toMediaType()),
                 )
-            whenever(apiService.getUserInfo(eq("Bearer invalid_token"))).thenReturn(errorResponse)
+            whenever(IAMApiService.getUserInfo(eq("Bearer invalid_token"))).thenReturn(
+                errorResponse,
+            )
 
             // Act
             val result = repository.fetchUserInfo("invalid_token")
@@ -142,7 +141,9 @@ class ApiServiceRepositoryTest {
         runBlocking {
             // Arrange: Мокируем исключение при вызове API. Используем RuntimeException вместо Exception.
             val exceptionToThrow = RuntimeException("Network error")
-            whenever(apiService.getUserInfo(eq("Bearer exception_token"))).thenThrow(exceptionToThrow)
+            whenever(IAMApiService.getUserInfo(eq("Bearer exception_token"))).thenThrow(
+                exceptionToThrow,
+            )
 
             // Act: вызываем метод fetchUserInfo
             val result = repository.fetchUserInfo("exception_token")

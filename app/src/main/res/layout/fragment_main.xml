@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.MainFragment">
 
-    <!-- Текст с надписью "Главная страница" -->
+    <!-- Заголовок -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -15,10 +15,33 @@
         android:text="Главная страница"
         android:textSize="24sp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/hotBarLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintBottom_toTopOf="@+id/rvProducts"
+        app:layout_constraintVertical_bias="0.05" />
+
+    <!-- RecyclerView для списка товаров -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProducts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintBottom_toTopOf="@+id/btnRefresh"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_product" />
+
+    <!-- Кнопка "Обновить" -->
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Обновить"
+        app:layout_constraintBottom_toTopOf="@+id/hotBarLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rvProducts" />
 
     <!-- Нижняя панель (hotBar) с кнопками -->
     <LinearLayout

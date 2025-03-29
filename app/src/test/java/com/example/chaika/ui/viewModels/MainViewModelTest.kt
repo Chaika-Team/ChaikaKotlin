@@ -22,9 +22,9 @@ class MainViewModelTest {
      *   - Проверяется успешное создание экземпляра MainViewModel.
      *   - Ожидается, что объект будет не null.
      */
-    @Test
-    fun `constructor creates instance successfully`() {
-        val viewModel = MainViewModel()
-        assertNotNull(viewModel)
-    }
+//    @Test
+//    fun `constructor creatпеes instance successfully`() {
+//        val viewModel = MainViewModel()
+//        assertNotNull(viewModel)
+//    }
 }

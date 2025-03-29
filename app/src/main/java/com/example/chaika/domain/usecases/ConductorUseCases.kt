@@ -1,6 +1,6 @@
 package com.example.chaika.domain.usecases
 
-import com.example.chaika.data.dataSource.repo.ApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.repo.IAMApiServiceRepositoryInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
@@ -18,7 +18,7 @@ import javax.inject.Inject
  * (или выбрасываем ошибку, если запрос неуспешен).
  */
 class FetchConductorByTokenUseCase @Inject constructor(
-    private val conductorApiRepository: ApiServiceRepositoryInterface,
+    private val conductorApiRepository: IAMApiServiceRepositoryInterface,
 ) {
     suspend operator fun invoke(accessToken: String): ConductorDomain =
         withContext(Dispatchers.IO) {
