@@ -21,6 +21,7 @@ open class OAuthManager
     constructor(
         private val authService: AuthorizationService,
         private val authIntentProvider: AuthIntentProviderInterface,
+        private val oauthConfig: OAuthConfig,
     ) {
         private var authState: AuthState? = null
         private var codeVerifier: String? = null
@@ -33,15 +34,15 @@ open class OAuthManager
          */
         open fun createAuthIntent(): Intent {
             Log.d("OAuthManager", "Starting authentication")
-            // Настраиваем конфигурацию эндпоинтов
+            // Настраиваем конфигурацию эндпоинтов из oauthConfig
             val serviceConfig =
                 AuthorizationServiceConfiguration(
-                    Uri.parse(AuthConfig.AUTH_ENDPOINT),
-                    Uri.parse(AuthConfig.TOKEN_ENDPOINT),
+                    Uri.parse(oauthConfig.authEndpoint),
+                    Uri.parse(oauthConfig.tokenEndpoint),
                 )
-            val clientId = AuthConfig.CLIENT_ID
-            val redirectUri = Uri.parse(AuthConfig.REDIRECT_URI)
-            val scope = AuthConfig.SCOPES
+            val clientId = oauthConfig.clientId
+            val redirectUri = Uri.parse(oauthConfig.redirectUri)
+            val scope = oauthConfig.scopes
 
             // Генерируем PKCE-параметры
             codeVerifier = PKCEUtil.generateCodeVerifier()

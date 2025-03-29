@@ -21,7 +21,6 @@ android {
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.example.chaika"
         testInstrumentationRunner = "com.example.chaika.HiltTestRunner"
-
     }
 
     lint {
@@ -167,11 +166,11 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
 
-
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.mockito:mockito-inline:4.0.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("org.mockito:mockito-junit-jupiter:4.0.0")
+    androidTestImplementation("org.mockito:mockito-android:4.5.1")
     testImplementation("tech.apter.junit5.jupiter:robolectric-extension:0.9.0")
 
     val roomVersion = "2.6.1"
@@ -185,7 +184,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("androidx.paging:paging-runtime-ktx:3.3.6")
     androidTestImplementation("androidx.paging:paging-testing:3.3.6")
-
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")

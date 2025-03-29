@@ -1,8 +1,10 @@
 package com.example.chaika.di
 
 import android.content.Context
+import com.example.chaika.auth.AuthConfig
 import com.example.chaika.auth.AuthIntentProvider
 import com.example.chaika.auth.AuthIntentProviderInterface
+import com.example.chaika.auth.OAuthConfig
 import com.example.chaika.auth.OAuthManager
 import dagger.Module
 import dagger.Provides
@@ -23,12 +25,24 @@ open class OAuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthIntentProvider(authService: AuthorizationService): AuthIntentProviderInterface = AuthIntentProvider(authService)
+    open fun provideAuthIntentProvider(authService: AuthorizationService): AuthIntentProviderInterface = AuthIntentProvider(authService)
 
     @Provides
     @Singleton
     fun provideOAuthManager(
         authService: AuthorizationService,
         authIntentProvider: AuthIntentProviderInterface,
-    ): OAuthManager = OAuthManager(authService, authIntentProvider)
+        oAuthConfig: OAuthConfig,
+    ): OAuthManager = OAuthManager(authService, authIntentProvider, oAuthConfig)
+
+    @Provides
+    @Singleton
+    fun provideOAuthConfig(): OAuthConfig =
+        OAuthConfig(
+            clientId = AuthConfig.CLIENT_ID,
+            redirectUri = AuthConfig.REDIRECT_URI,
+            authEndpoint = AuthConfig.AUTH_ENDPOINT,
+            tokenEndpoint = AuthConfig.TOKEN_ENDPOINT,
+            scopes = AuthConfig.SCOPES,
+        )
 }
