@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object CryptoModule {
+open class CryptoModule {
     @Provides
     @Singleton
     fun provideEncryptedTokenManager(
