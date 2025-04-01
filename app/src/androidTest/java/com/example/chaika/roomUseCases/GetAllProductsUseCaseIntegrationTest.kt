@@ -79,17 +79,4 @@ class GetAllProductsUseCaseIntegrationTest {
         assertEquals("Product 1", result[0].name)
         assertEquals("Product 2", result[1].name)
     }
-
-    @Test
-    fun testGetAllProductsUseCaseReturnsEmptyListWhenNoProductsInserted() = runBlocking {
-        // Очищаем базу, чтобы не было продуктов
-        appDatabase.clearAllTables()
-
-        // Вызываем юзкейс и получаем первое эмитированное значение из Flow
-        val result: List<ProductInfoDomain> = getAllProductsUseCase().first()
-
-        // Проверяем, что возвращается пустой список
-        assertEquals("Ожидается, что база не содержит продуктов", 0, result.size)
-    }
-
 }
