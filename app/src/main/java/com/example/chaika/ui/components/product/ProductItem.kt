@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.chaika.ui.dto.Product
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -21,39 +23,70 @@ fun ProductItem(
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit
 ) {
-    val currentProduct by rememberUpdatedState(newValue = product)
-
     Box(
         modifier = modifier
-            .width(160.dp)
-            .height(260.dp)
+            .padding(2.dp)
+            .height(130.dp)
+            .width(165.dp)
     ) {
+        // 1. Фон
         ProductBackground(
-            isInCart = currentProduct.isInCart,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(170.dp)
-                .align(Alignment.BottomCenter)
+            modifier = Modifier.matchParentSize(),
+            backgroundColor = Color.White,
+            cornerRadius = 24.dp
         )
 
-        ProductContent(
-            product = currentProduct,
+        // 2. Изображение - центрируем через Box
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(bottom = 16.dp, top = 70.dp),
-            onAddToCart = onAddToCart,
-            onQuantityIncrease = onQuantityIncrease,
-            onQuantityDecrease = onQuantityDecrease,
-        )
+                .height(120.dp),
+            contentAlignment = Alignment.TopCenter
+        // Выравнивание по центру сверху
+        ) {
+            ProductImage(
+                imageUrl = product.image,
+                modifier = Modifier
+                    .size(122.dp)
+                    .offset(y = (-80).dp) // Меньший отступ для корректного позиционирования
+            )
+        }
 
-        ProductImage(
-            imageUrl = currentProduct.image,
+        // 3. Контент
+        Column(
             modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.TopCenter)
-                .offset(y = 20.dp)
+                .fillMaxSize()
                 .zIndex(1f)
-        )
+                .padding(top = 18.dp),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            ProductContent(
+                product = product,
+                modifier = Modifier.fillMaxWidth(),
+                onAddToCart = onAddToCart,
+                onQuantityIncrease = onQuantityIncrease,
+                onQuantityDecrease = onQuantityDecrease,
+            )
+        }
     }
+}
+
+@Preview
+@Composable
+fun PreviewProductItem() {
+    ProductItem(
+        product = Product(
+            id = 1,
+            name = "Black Tea",
+            description = "Greenfield",
+            image = "res/drawable/black_tea.jpeg",
+            price = 20000.0,
+            isInCart = false,
+            quantity = 0
+        ),
+        modifier = Modifier,
+        onAddToCart = {},
+        onQuantityIncrease = {},
+        onQuantityDecrease = {}
+    )
 }

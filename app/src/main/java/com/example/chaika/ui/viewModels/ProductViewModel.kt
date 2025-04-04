@@ -115,11 +115,15 @@ class ProductViewModel @Inject constructor(
         _syncJob = viewModelScope.launch {
             viewModelScope.launch {
                 val cartItems = getCartItemsUseCase().first()
-                _productsState.forEach { (id, product) ->
-                    val cartItem = cartItems.find { it.product.id == id }
-                    _productsState[id] = product.copy(
-                        isInCart = cartItem != null,
-                        quantity = cartItem?.quantity ?: 1
+                for (item in cartItems) {
+                    _productsState[item.product.id] = Product(
+                        id = item.product.id,
+                        name = item.product.name,
+                        description = item.product.description,
+                        image = item.product.image,
+                        price = item.product.price,
+                        isInCart = item.quantity > 0,
+                        quantity = item.quantity
                     )
                 }
                 loadProducts()

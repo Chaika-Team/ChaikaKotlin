@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,10 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,20 +53,21 @@ fun ProductContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 16.dp)
     ) {
         Text(
             text = product.name,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            maxLines = 2,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(bottom = 8.dp)
+            //modifier = Modifier.padding(top = 16.dp)
         )
 
         AnimatedVisibility(visible = !product.isInCart) {
             NotInCartContent(
                 price = product.price,
+                description = product.description,
                 onAddToCart = onAddToCart
 //                isInCart = product.isInCart
             )
@@ -82,35 +87,47 @@ fun ProductContent(
 @Composable
 private fun NotInCartContent(
     price: Double,
+    description: String,
     onAddToCart: () -> Unit,
 //    isInCart: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
     ) {
-        Text(
-            text = "$${"%.2f".format(price)}",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                text = description,
+                maxLines = 1,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-        IconButton(
+            Text(
+                text = "${"%.2f".format(price)} ₽",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Button(
+            modifier = Modifier.size(30.dp),
+            shape = CircleShape,
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary),
             onClick = onAddToCart,
-            modifier = Modifier
-                .size(40.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(20.dp)
-                )
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Add to cart",
                 tint = Color.White,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.fillMaxSize(0.75F)
             )
         }
     }
@@ -125,13 +142,13 @@ private fun InCartContent(
 ) {
     Column {
         Text(
-            text = "$${"%.2f".format(price)}",
+            text = "${"%.2f".format(price)} ₽",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         QuantitySelector(
             quantity = quantity,

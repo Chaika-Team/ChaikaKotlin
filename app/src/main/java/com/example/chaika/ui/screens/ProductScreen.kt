@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.chaika.ui.components.product.ProductComponent
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
 
@@ -67,7 +68,7 @@ fun ProductScreen(
     ) {
         items(pagingData.itemCount) { index ->
             val product = pagingData[index] ?: return@items
-            ProductItem(
+            ProductComponent (
                 product = product,
                 onAddToCart = { viewModel.addToCart(product.id) },
                 onQuantityIncrease = { viewModel.updateQuantity(product.id, +1) },
