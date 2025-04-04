@@ -13,7 +13,7 @@ import com.example.chaika.databinding.FragmentAuthCheckBinding
 import com.example.chaika.ui.viewModels.AuthCheckViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+
 class AuthCheckFragment : Fragment() {
 
     private var _binding: FragmentAuthCheckBinding? = null

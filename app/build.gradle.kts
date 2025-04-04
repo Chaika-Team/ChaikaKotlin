@@ -60,6 +60,11 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
 }
 
@@ -125,6 +130,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.7")
     implementation("androidx.navigation:navigation-dynamic-features-fragment:2.8.7")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
 
     // AppAuth
     implementation("net.openid:appauth:0.10.0")
@@ -200,6 +206,32 @@ dependencies {
     testImplementation("com.google.dagger:hilt-android-testing:2.48")
     kspTest("com.google.dagger:hilt-compiler:2.48")
     testImplementation("io.mockk:mockk:1.12.0")
+
+
+    // Базовые зависимости Compose (обязательные)
+    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation(platform("androidx.compose:compose-bom:2024.05.00")) // BOM для согласованных версий
+
+    // Material 3 (основная тема)
+    implementation("androidx.compose.material3:material3")
+
+    // Опциональные компоненты (добавлять по необходимости)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Дополнительные модули (если используются)
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.animation:animation")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.paging:paging-compose:3.3.0") // or 3.2.1
+    implementation("androidx.paging:paging-runtime-ktx:3.3.0") // Required for Paging
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    ksp("com.google.dagger:hilt-android-compiler:2.48")
+
 }
 java {
     toolchain {
