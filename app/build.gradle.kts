@@ -173,6 +173,8 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-android:4.5.1")
     testImplementation("tech.apter.junit5.jupiter:robolectric-extension:0.9.0")
 
+    implementation("com.github.pwittchen:reactivenetwork-rx2:3.0.8")
+
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
