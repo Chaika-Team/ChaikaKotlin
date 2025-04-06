@@ -2,7 +2,7 @@
 
 package com.example.chaika.domain.usecases
 
-import com.example.chaika.data.room.repo.RoomReportRepositoryInterface
+import com.example.chaika.data.room.repo.RoomFastReportRepositoryInterface
 import com.example.chaika.domain.models.FastReportDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 class FastReportUseCasesTest {
 
     @Mock
-    lateinit var reportRepository: RoomReportRepositoryInterface
+    lateinit var reportRepository: RoomFastReportRepositoryInterface
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности

@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class RoomReportRepository @Inject constructor(
+class RoomFastFastReportRepository @Inject constructor(
     private val fastReportViewDao: FastReportViewDao,
-) : RoomReportRepositoryInterface {
+) : RoomFastReportRepositoryInterface {
     override fun getFastReportData(): Flow<List<FastReportDomain>> {
         return fastReportViewDao.getReportData().map { list ->
             list.map { it.toDomain() }

@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 
-class RoomReportRepositoryTest {
+class RoomFastReportRepositoryTest {
     private val fastReportViewDao = mock(FastReportViewDao::class.java)
-    private val repository = RoomReportRepository(fastReportViewDao)
+    private val repository = RoomFastFastReportRepository(fastReportViewDao)
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
