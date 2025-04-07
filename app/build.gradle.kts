@@ -136,6 +136,7 @@ dependencies {
 
     implementation("com.squareup.moshi:moshi:1.13.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
     ksp("com.github.bumptech.glide:compiler:4.12.0")
@@ -201,6 +202,14 @@ dependencies {
     kspAndroidTest("com.google.dagger:hilt-compiler:2.48")
     testImplementation("com.google.dagger:hilt-android-testing:2.48")
     kspTest("com.google.dagger:hilt-compiler:2.48")
+    // WorkManager с поддержкой Kotlin coroutines
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    testImplementation("androidx.work:work-testing:2.8.1")
+    androidTestImplementation("androidx.work:work-testing:2.8.1")
+
+    // Hilt Work Integration – позволяет использовать @HiltWorker, @AssistedInject и т.д.
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
     testImplementation("io.mockk:mockk:1.12.0")
 }
 java {
