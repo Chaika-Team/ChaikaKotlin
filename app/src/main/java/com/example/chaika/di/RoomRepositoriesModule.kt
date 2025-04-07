@@ -4,6 +4,7 @@ import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
+import com.example.chaika.data.room.dao.TripReportDao
 import com.example.chaika.data.room.repo.RoomCartItemRepository
 import com.example.chaika.data.room.repo.RoomCartItemRepositoryInterface
 import com.example.chaika.data.room.repo.RoomCartOperationRepository
@@ -14,6 +15,9 @@ import com.example.chaika.data.room.repo.RoomConductorRepository
 import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
 import com.example.chaika.data.room.repo.RoomProductInfoRepository
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
+import com.example.chaika.data.room.repo.RoomTripReportRepository
+import com.example.chaika.data.room.repo.RoomTripReportRepositoryInterface
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,4 +54,14 @@ object RoomRepositoriesModule {
     @Singleton
     fun provideRoomProductInfoRepository(productInfoDao: ProductInfoDao): RoomProductInfoRepositoryInterface =
         RoomProductInfoRepository(productInfoDao)
+
+    @Provides
+    @Singleton
+    fun provideRoomTripReportRepositoryInterface(
+        tripReportDao: TripReportDao,
+        moshi: Moshi
+    ): RoomTripReportRepositoryInterface {
+        return RoomTripReportRepository(tripReportDao, moshi)
+    }
 }
+

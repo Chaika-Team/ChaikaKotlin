@@ -7,6 +7,7 @@ import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ProductInfoDao
+import com.example.chaika.data.room.dao.TripReportDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,4 +35,7 @@ object DatabaseModule {
 
     @Provides
     fun provideProductInfoDao(db: AppDatabase): ProductInfoDao = db.productInfoDao()
+
+    @Provides
+    fun provideTripReportDao(db: AppDatabase): TripReportDao = db.tripReportDao()
 }
