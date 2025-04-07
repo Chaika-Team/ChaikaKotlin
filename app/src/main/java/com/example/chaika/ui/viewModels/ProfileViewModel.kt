@@ -11,8 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class ProfileViewModel @Inject constructor(
+
+class ProfileViewModel  constructor(
     private val getAllConductorsUseCase: GetAllConductorsUseCase,
     private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
