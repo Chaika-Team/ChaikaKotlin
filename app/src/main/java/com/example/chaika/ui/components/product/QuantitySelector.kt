@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chaika.ui.theme.ProductDimens.QuantitySelectorHeight
 
 @Composable
 fun QuantitySelector(
@@ -31,14 +31,14 @@ fun QuantitySelector(
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 30.dp // Добавляем параметр для радиуса скругления
+    cornerRadius: Dp = QuantitySelectorHeight // Добавляем параметр для радиуса скругления
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .height(QuantitySelectorHeight)
             .background(
-                color = Color(0xFFE21A1A),
+                color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(cornerRadius) // Скругляем углы фона
             )
             .clip(RoundedCornerShape(cornerRadius)), // Обрезаем контент по тем же скруглениям
@@ -47,7 +47,7 @@ fun QuantitySelector(
     ) {
         IconButton(
             onClick = onDecrease,
-            modifier = Modifier.size(36.dp),
+            modifier = Modifier.size(QuantitySelectorHeight * 1.2F),
             colors = IconButtonDefaults.iconButtonColors(
                 contentColor = Color.White
             )

@@ -231,6 +231,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.1")
 
 }
 java {

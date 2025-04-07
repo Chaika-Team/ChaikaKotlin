@@ -1,18 +1,24 @@
 package com.example.chaika.ui.components.product
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.example.chaika.ui.dto.Product
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.example.chaika.R
+import com.example.chaika.ui.dto.Product
+import com.example.chaika.ui.theme.ProductDimens
+import com.example.chaika.ui.theme.ProductDimens.BackGroundHeight
+import com.example.chaika.ui.theme.ProductDimens.ImageHeight
+import com.example.chaika.ui.theme.ProductDimens.ImageWidth
+import com.example.chaika.ui.theme.ProductDimens.ProductCardHeight
+import com.example.chaika.ui.theme.ProductDimens.ProductCardWidth
 
 
 @Composable
@@ -23,51 +29,60 @@ fun ProductItem(
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit
 ) {
-    Box(
+    val colorScheme = MaterialTheme.colorScheme
+
+    ConstraintLayout (
         modifier = modifier
-            .padding(2.dp)
-            .height(130.dp)
-            .width(165.dp)
+            .height(ProductCardHeight)
+            .width(ProductCardWidth)
     ) {
-        // 1. Фон
+        val (image, back, content) = createRefs()
+
         ProductBackground(
-            modifier = Modifier.matchParentSize(),
-            backgroundColor = Color.White,
-            cornerRadius = 24.dp
+            backgroundColor = colorScheme.background,
+            cornerRadius = 24.dp,
+            modifier = Modifier
+                .constrainAs(back) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.matchParent
+                    height = Dimension.fillToConstraints
+                }
+                .height(BackGroundHeight)
+                .width(ProductCardWidth)
         )
 
-        // 2. Изображение - центрируем через Box
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            contentAlignment = Alignment.TopCenter
-        // Выравнивание по центру сверху
-        ) {
-            ProductImage(
-                imageUrl = product.image,
-                modifier = Modifier
-                    .size(122.dp)
-                    .offset(y = (-80).dp) // Меньший отступ для корректного позиционирования
-            )
-        }
+            Box (
+                modifier = Modifier.constrainAs(image) {
+                    bottom.linkTo(content.top)
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.value(ImageWidth)
+                    height = Dimension.value(ImageHeight)
+                }
+            ) {
+                ProductImage(
+                    imageUrl = product.image
+                )
+            }
 
-        // 3. Контент
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(1f)
-                .padding(top = 18.dp),
-            verticalArrangement = Arrangement.Bottom
-        ) {
             ProductContent(
                 product = product,
-                modifier = Modifier.fillMaxWidth(),
                 onAddToCart = onAddToCart,
                 onQuantityIncrease = onQuantityIncrease,
                 onQuantityDecrease = onQuantityDecrease,
+                modifier = Modifier.constrainAs(content) {
+                    top.linkTo(image.bottom)
+                    bottom.linkTo(back.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+                    .padding(bottom = ProductDimens.PaddingM)
             )
-        }
+
     }
 }
 
@@ -79,7 +94,7 @@ fun PreviewProductItem() {
             id = 1,
             name = "Black Tea",
             description = "Greenfield",
-            image = "res/drawable/black_tea.jpeg",
+            image = R.drawable.black_tea.toString(),
             price = 20000.0,
             isInCart = false,
             quantity = 0

@@ -1,13 +1,7 @@
 package com.example.chaika.ui.components.product
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,16 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,10 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.chaika.ui.dto.Product
-
-import androidx.compose.material3.Icon
+import com.example.chaika.ui.theme.ProductDimens.PaddingL
+import com.example.chaika.ui.theme.ProductDimens.QuantitySelectorHeight
 
 
 @Composable
@@ -53,7 +43,7 @@ fun ProductContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 16.dp)
+            .padding(PaddingL)
     ) {
         Text(
             text = product.name,
@@ -61,7 +51,6 @@ fun ProductContent(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            //modifier = Modifier.padding(top = 16.dp)
         )
 
         AnimatedVisibility(visible = !product.isInCart) {
@@ -69,7 +58,6 @@ fun ProductContent(
                 price = product.price,
                 description = product.description,
                 onAddToCart = onAddToCart
-//                isInCart = product.isInCart
             )
         }
         AnimatedVisibility(visible = product.isInCart) {
@@ -89,7 +77,6 @@ private fun NotInCartContent(
     price: Double,
     description: String,
     onAddToCart: () -> Unit,
-//    isInCart: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -117,7 +104,7 @@ private fun NotInCartContent(
         }
 
         Button(
-            modifier = Modifier.size(30.dp),
+            modifier = Modifier.size(QuantitySelectorHeight),
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary),

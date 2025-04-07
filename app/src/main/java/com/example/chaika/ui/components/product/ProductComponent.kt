@@ -3,12 +3,17 @@ package com.example.chaika.ui.components.product
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.chaika.R
 import com.example.chaika.ui.dto.Product
+import com.example.chaika.ui.theme.ChaikaTheme
+import com.example.chaika.ui.theme.ProductDimens
+import com.example.chaika.ui.theme.ProductDimens.PaddingM
 
 @Composable
 fun ProductComponent(
@@ -18,18 +23,21 @@ fun ProductComponent(
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit
 ) {
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom,
-        modifier = Modifier.height(215.dp)
-    ) {
-        ProductItem(
-            product = product,
-            modifier = modifier,
-            onAddToCart = onAddToCart,
-            onQuantityIncrease = onQuantityIncrease,
-            onQuantityDecrease = onQuantityDecrease
-        )
+    ChaikaTheme {
+        val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier.height(height).padding(PaddingM)
+        ) {
+            ProductItem(
+                product = product,
+                modifier = modifier,
+                onAddToCart = onAddToCart,
+                onQuantityIncrease = onQuantityIncrease,
+                onQuantityDecrease = onQuantityDecrease
+            )
+        }
     }
 }
 
@@ -41,7 +49,7 @@ fun PreviewProductComponent() {
             id = 1,
             name = "Black Tea",
             description = "Greenfield",
-            image = "res/drawable/black_tea.jpeg",
+            image = R.drawable.black_tea.toString(),
             price = 20000.0,
             isInCart = false,
             quantity = 0

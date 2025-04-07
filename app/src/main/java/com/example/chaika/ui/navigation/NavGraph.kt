@@ -5,9 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.chaika.ui.screens.ProfileScreen
-import com.example.chaika.ui.screens.Screen_3
-import com.example.chaika.ui.screens.TripScreen
+import com.example.chaika.ui.screens.*
 
 @Composable
 fun NavGraph(navController: NavHostController) {
