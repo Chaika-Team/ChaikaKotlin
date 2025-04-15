@@ -15,7 +15,7 @@ import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.DeepLinkViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+
 class AuthFragment : Fragment() {
 
     private var _binding: FragmentAuthBinding? = null
