@@ -35,7 +35,7 @@ fun BottomBarIcon(
 
     // Применяем масштабирование
     val clickableSize = baseIconSize * scaleFactor
-    val buttonSize = clickableSize * 0.5f // Делаем область клика немного больше иконки
+    val buttonSize = clickableSize * 0.33f
 
     ChaikaTheme {
         val colors = MaterialTheme.colorScheme

@@ -1,3 +1,5 @@
+package com.example.chaika.ui.screens.product
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
@@ -48,15 +50,6 @@ fun ProductScreen(
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    if (uiState.error != null) {
-        Text(
-            text = "Error: ${uiState.error}",
-            color = LightColorScheme.error,
-            modifier = Modifier.fillMaxSize().wrapContentSize()
-        )
-        return
-    }
-
     ChaikaTheme {
         if (isLoading) {
             CircularProgressIndicator(
@@ -71,10 +64,8 @@ fun ProductScreen(
         if (uiState.error != null) {
             Text(
                 text = "Error: ${uiState.error}",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize()
+                color = LightColorScheme.error,
+                modifier = Modifier.fillMaxSize().wrapContentSize()
             )
             return@ChaikaTheme
         }

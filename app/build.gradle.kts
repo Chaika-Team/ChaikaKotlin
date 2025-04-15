@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.chaika"
-        minSdk = 24
+        minSdk = 26
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
