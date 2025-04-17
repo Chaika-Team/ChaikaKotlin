@@ -20,16 +20,16 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 @Composable
-fun TimeDetails(
+fun TimeDateDetails(
     modifier: Modifier = Modifier,
     tripRecord: TripRecord
 ) {
     ConstraintLayout(
         modifier = modifier
-            .height(TripDimens.TimeDetailsHeight)
+            .height(TripDimens.TimeDateDetailsHeight)
             .width(TripDimens.TimeDetailsWidth)
     ) {
-        val (startTime, time, arrow, endTime) = createRefs()
+        val (startTime, arrow, endTime) = createRefs()
 
         Column(
             modifier = Modifier.constrainAs(startTime) {
@@ -37,11 +37,16 @@ fun TimeDetails(
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 width = Dimension.percent(0.18f)
-                height = Dimension.value(TripDimens.TimeDetailsHeight)
+                height = Dimension.value(TripDimens.TimeDateDetailsHeight)
             },
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
         ) {
+            Text(
+                text = "${tripRecord.startTime.dayOfMonth}.${tripRecord.startTime.monthValue}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 14.sp
+            )
             Text(
                 text = "${tripRecord.startTime.hour}:${tripRecord.startTime.minute.toString().padStart(2, '0')}",
                 style = MaterialTheme.typography.bodyLarge,
@@ -50,15 +55,15 @@ fun TimeDetails(
         }
 
         Box(
-            modifier = Modifier.constrainAs(time) {
+            modifier = Modifier.constrainAs(arrow) {
                 start.linkTo(startTime.end)
                 end.linkTo(endTime.start)
                 top.linkTo(parent.top)
-                bottom.linkTo(arrow.top)
+                bottom.linkTo(parent.bottom)
                 width = Dimension.percent(0.64f)
-                height = Dimension.percent(0.7f)
+                height = Dimension.value(TripDimens.ArrowBoxHeight)
             },
-            contentAlignment = Alignment.TopCenter
+            contentAlignment = Alignment.BottomCenter
         ) {
             val duration = Duration.between(
                 tripRecord.startTime.coerceAtMost(tripRecord.endTime),
@@ -67,23 +72,11 @@ fun TimeDetails(
             val totalMinutes = duration.toMinutes()
             val hours = totalMinutes / 60
             val minutes = totalMinutes % 60
-            Text(
-                text = "$hours ч $minutes мин",
-                fontSize = 10.sp
-            )
-        }
-        Box(
-            modifier = Modifier.constrainAs(arrow) {
-                start.linkTo(startTime.end)
-                end.linkTo(endTime.start)
-                top.linkTo(time.bottom)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.percent(0.64f)
-                height = Dimension.percent(0.3f)
-            },
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Arrow()
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "$hours ч $minutes мин")
+                Arrow()
+            }
         }
 
         Column(
@@ -92,11 +85,16 @@ fun TimeDetails(
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 width = Dimension.percent(0.18f)
-                height = Dimension.value(TripDimens.TimeDetailsHeight)
+                height = Dimension.value(TripDimens.TimeDateDetailsHeight)
             },
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
+            Text(
+                text = "${tripRecord.endTime.dayOfMonth}.${tripRecord.endTime.monthValue}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 14.sp,
+            )
             Text(
                 text = "${tripRecord.endTime.hour}:${tripRecord.endTime.minute.toString().padStart(2, '0')}",
                 style = MaterialTheme.typography.bodyLarge,
@@ -108,8 +106,8 @@ fun TimeDetails(
 
 @Preview
 @Composable
-fun TimeDetailsPreview() {
-    TimeDetails(
+fun TimeDateDetailsPreview() {
+    TimeDateDetails(
         modifier = Modifier,
         tripRecord = TripRecord(
             routeID = 0,

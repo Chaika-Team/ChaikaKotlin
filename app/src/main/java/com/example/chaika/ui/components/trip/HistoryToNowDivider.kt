@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chaika.ui.theme.Strings
+import com.example.chaika.R
 
 @Composable
 fun HistoryToNowDivider(
@@ -31,7 +31,7 @@ fun HistoryToNowDivider(
                 top = 6.dp,
                 bottom = 6.dp
             ),
-            text = Strings.history,
+            text = R.string.history.toString(),
             fontSize = 11.sp,
             color = Color.LightGray
         )
@@ -49,7 +49,7 @@ fun HistoryToNowDivider(
                 top = 6.dp,
                 bottom = 6.dp
             ),
-            text = Strings.now,
+            text = R.string.now.toString(),
             fontSize = 11.sp,
             color = Color.LightGray
         )

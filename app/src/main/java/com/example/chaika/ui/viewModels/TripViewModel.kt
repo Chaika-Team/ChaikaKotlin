@@ -41,26 +41,6 @@ class TripViewModel @Inject constructor(
     private val _pagingDataFlow = MutableStateFlow<PagingData<TripRecord>>(PagingData.empty())
     val pagingDataFlow: StateFlow<PagingData<TripRecord>> = _pagingDataFlow.asStateFlow()
 
-    fun setNewTrip() {
-        _uiState.value = NewTrip
-    }
-
-    fun setFindByNumber() {
-        _uiState.value = ScreenState.FindByNumber
-    }
-
-    fun setFindByStation() {
-        _uiState.value = ScreenState.FindByStation
-    }
-
-    fun setSelectCarriage() {
-        _uiState.value = ScreenState.SelectCarriage
-    }
-
-    fun setCurrentTrip() {
-        _uiState.value = ScreenState.CurrentTrip
-    }
-
     fun loadHistory() {
         loadHistoryData()
         getHistory()

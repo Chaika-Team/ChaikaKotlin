@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.chaika.ui.components.bottomBar.BottomBar
 import com.example.chaika.ui.navigation.NavGraph
 import com.example.chaika.ui.theme.ChaikaTheme

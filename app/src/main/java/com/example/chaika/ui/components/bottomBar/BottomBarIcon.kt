@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.theme.BarDimens
-import com.example.chaika.ui.theme.ChaikaTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -37,26 +36,24 @@ fun BottomBarIcon(
     val clickableSize = baseIconSize * scaleFactor
     val buttonSize = clickableSize * 0.33f
 
-    ChaikaTheme {
-        val colors = MaterialTheme.colorScheme
-        val iconColor = if (selected) colors.primary else colors.secondary
+    val colors = MaterialTheme.colorScheme
+    val iconColor = if (selected) colors.primary else colors.secondary
 
-        IconButton(
-            onClick = onClick,
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(buttonSize)
+            .clip(RoundedCornerShape(BarDimens.CornerShape * scaleFactor)),
+        colors = IconButtonDefaults.iconButtonColors(
+            contentColor = iconColor
+        )
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = if (selected) colors.primary else colors.secondary,
             modifier = Modifier
                 .size(buttonSize)
-                .clip(RoundedCornerShape(BarDimens.CornerShape * scaleFactor)),
-            colors = IconButtonDefaults.iconButtonColors(
-                contentColor = iconColor
-            )
-        ) {
-            Icon(
-                imageVector = imageVector,
-                contentDescription = null,
-                tint = if (selected) colors.primary else colors.secondary,
-                modifier = Modifier
-                    .size(buttonSize)
-            )
-        }
+        )
     }
 }

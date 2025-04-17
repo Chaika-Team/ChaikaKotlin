@@ -2,28 +2,25 @@ package com.example.chaika.ui.screens.trip
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.navigation.NavHostController
+import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.TripViewModel
-import androidx.compose.runtime.*
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.chaika.ui.screens.trip.views.CurrentTripView
-import com.example.chaika.ui.screens.trip.views.FindByNumberView
-import com.example.chaika.ui.screens.trip.views.FindByStationView
-import com.example.chaika.ui.screens.trip.views.NewTripView
-import com.example.chaika.ui.screens.trip.views.SelectCarriageView
 import com.example.chaika.ui.viewModels.TripViewModel.ScreenState
 
 @Composable
 fun TripScreen(
-    viewModel: TripViewModel = hiltViewModel()
+    viewModel: TripViewModel,
+    navController: NavHostController
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     when (uiState) {
-        is ScreenState.NewTrip -> NewTripView()
-        is ScreenState.FindByNumber -> FindByNumberView()
-        is ScreenState.FindByStation -> FindByStationView()
-        is ScreenState.SelectCarriage -> SelectCarriageView()
-        is ScreenState.CurrentTrip -> CurrentTripView()
+        is ScreenState.NewTrip -> navController.navigate(Routes.TRIP_NEW)
+        is ScreenState.FindByNumber -> navController.navigate(Routes.TRIP_BY_NUMBER)
+        is ScreenState.FindByStation -> navController.navigate(Routes.TRIP_BY_STATION)
+        is ScreenState.SelectCarriage -> navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
+        is ScreenState.CurrentTrip -> navController.navigate(Routes.TRIP_CURRENT)
         is ScreenState.Error -> {}
     }
 }

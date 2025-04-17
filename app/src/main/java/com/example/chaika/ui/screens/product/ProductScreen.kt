@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.chaika.ui.components.product.ProductComponent
@@ -28,7 +29,8 @@ import com.example.chaika.ui.viewModels.ProductViewModel
 
 @Composable
 fun ProductScreen(
-    viewModel: ProductViewModel = hiltViewModel()
+    viewModel: ProductViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {

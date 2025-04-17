@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chaika.R
 import com.example.chaika.ui.dto.Product
-import com.example.chaika.ui.theme.ChaikaTheme
 import com.example.chaika.ui.theme.ProductDimens
 import com.example.chaika.ui.theme.ProductDimens.PaddingM
 
@@ -23,21 +22,19 @@ fun ProductComponent(
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit
 ) {
-    ChaikaTheme {
-        val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
-        Column (
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom,
-            modifier = Modifier.height(height).padding(PaddingM)
-        ) {
-            ProductItem(
-                product = product,
-                modifier = modifier,
-                onAddToCart = onAddToCart,
-                onQuantityIncrease = onQuantityIncrease,
-                onQuantityDecrease = onQuantityDecrease
-            )
-        }
+    val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom,
+        modifier = Modifier.height(height).padding(PaddingM)
+    ) {
+        ProductItem(
+            product = product,
+            modifier = modifier,
+            onAddToCart = onAddToCart,
+            onQuantityIncrease = onQuantityIncrease,
+            onQuantityDecrease = onQuantityDecrease
+        )
     }
 }
 

@@ -39,8 +39,7 @@ class ProductViewModel @Inject constructor(
     private val removeItemFromCartUseCase: RemoveItemFromCartUseCase,
     private val updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase,
     private val getCartItemsUseCase: GetCartItemsUseCase,
-    @ApplicationContext
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _productsState = mutableStateMapOf<Int, Product>()
@@ -171,7 +170,7 @@ class ProductViewModel @Inject constructor(
                      val success = updateItemQuantityInCartUseCase(
                         itemId = productId,
                         newQuantity = newQuantity,
-                        availableQuantity = Int.MAX_VALUE
+                        availableQuantity = Int.MAX_VALUE // TODO(Добавить адекватное число)
                     )
 
                     if (success) {
