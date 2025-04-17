@@ -65,9 +65,8 @@ fun SearchTripBar(
                 disabledIndicatorColor = Color.Transparent
             )
         )
-    ) {
+    ) { }
 
-    }
 }
 
 @Preview

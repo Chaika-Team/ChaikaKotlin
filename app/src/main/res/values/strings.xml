@@ -13,6 +13,7 @@
     <string name="rename">Изменить</string>
     <string name="history">История</string>
     <string name="now">Сейчас</string>
+    <string name="no_trip_history">История поездок отсутствует</string>
 
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>

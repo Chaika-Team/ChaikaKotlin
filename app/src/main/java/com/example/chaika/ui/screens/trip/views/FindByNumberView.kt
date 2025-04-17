@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -14,22 +16,42 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.chaika.ui.components.trip.FoundTripCard
 import com.example.chaika.ui.components.trip.SearchCard
-import com.example.chaika.ui.dto.Route
 import com.example.chaika.ui.viewModels.TripViewModel
+import androidx.compose.runtime.*
+import com.example.chaika.ui.navigation.Routes
+import kotlinx.coroutines.delay
 
 @Composable
 fun FindByNumberView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
-    val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
+    var searchDate by rememberSaveable { mutableStateOf("Сегодня") }
+    var searchStart by rememberSaveable { mutableStateOf("") }
+    var searchFinish by rememberSaveable { mutableStateOf("") }
+
+    val pagingData = viewModel.pagingFoundTripsFlow.collectAsLazyPagingItems()
+
+
+    LaunchedEffect(searchDate, searchStart, searchFinish) {
+        delay(500)
+        viewModel.getTrips(searchDate, searchStart, searchFinish)
+    }
 
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
         SearchCard(
-            modifier = Modifier
+            onSearch = { date, start, finish ->
+                searchDate = date
+                searchStart = start
+                searchFinish = finish
+            },
+            initialDateValue = searchDate,
+            initialStartValue = searchStart,
+            initialFinishValue = searchFinish
         )
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             modifier = Modifier.weight(1f).padding(
@@ -41,30 +63,20 @@ fun FindByNumberView(
         ) {
             items(
                 count = pagingData.itemCount,
-                key = pagingData.itemKey{it.carriageID}
+                key = pagingData.itemKey{it.trainId}
             ) { index ->
                 val tripRecord = pagingData[index]
                 if (tripRecord != null) {
                     FoundTripCard(
-                        modifier = Modifier.padding(
-                            top = 4.dp,
-                            bottom = 4.dp
-                        ),
+                        modifier = Modifier,
                         tripRecord = tripRecord,
-                        route = Route(
-                            routeID = 0,
-                            startName1 = "Московский вокзал",
-                            startName2 = "Санкт-Петербург-Главный",
-                            endName1 = "ТПУ черкизово",
-                            endName2 = "Москва ВК Восточный"
-                        )
+                        onClick = {
+                            viewModel.setSelectCarriage(tripRecord)
+                            navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
+                        }
                     )
                 }
             }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadHistory()
     }
 }
