@@ -10,6 +10,7 @@ val BackgroundDark = Color(0xFF201E28) // bg
 val BackgroundLighter = Color(0xFF34323C) // bg_lighter
 val DangerRed = Color(0xFFD8472D)
 val RzdRed = Color(0xFFE21A1A)
+val Search = Color(0xFFF0F5FA)
 
 val LightColorScheme = lightColorScheme(
     primary = RzdRed,
@@ -33,7 +34,7 @@ val LightColorScheme = lightColorScheme(
     surface = Color.White,
     onSurface = Color.Black,
 
-    surfaceVariant = Color(0xFFF0F0F0), // light_gray2
+    surfaceVariant = Search, // light_gray2
     onSurfaceVariant = Color(0xFF6C6C6C), // hint
 )
 

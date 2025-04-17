@@ -11,17 +11,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.chaika.ui.components.trip.HistoryRecordCard
 import com.example.chaika.ui.components.trip.HistoryToNowDivider
 import com.example.chaika.ui.components.trip.NewTripButton
 import com.example.chaika.ui.dto.Route
+import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.TripViewModel
 
 @Composable
 fun NewTripView(
-    viewModel: TripViewModel = hiltViewModel()
+    viewModel: TripViewModel,
+    navController: NavController
 ) {
     val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
 
@@ -67,7 +70,7 @@ fun NewTripView(
         )
 
         NewTripButton(
-            onClick = { viewModel.setFindByNumber() },
+            onClick = { navController.navigate(Routes.TRIP_BY_NUMBER) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

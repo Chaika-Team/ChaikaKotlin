@@ -11,6 +11,8 @@
     <string name="edit_text_trip_hint_dialog">Укажите название</string>
     <string name="create">Добавить</string>
     <string name="rename">Изменить</string>
+    <string name="history">История</string>
+    <string name="now">Сейчас</string>
 
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>
