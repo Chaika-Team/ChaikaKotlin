@@ -45,7 +45,7 @@ fun BottomBar(navController: NavController) {
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
             selected = Routes.mainRoutes[Routes.TRIP]?.contains(currentRoute) == true,
             onClick = {
-                navController.navigate(Routes.TRIP) {
+                navController.navigate(Routes.TRIP_GRAPH) {
                     popUpTo(Routes.TRIP) { inclusive = true }
                     launchSingleTop = true
                 }

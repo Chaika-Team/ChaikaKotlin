@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.chaika.R
-import com.example.chaika.ui.dto.Route
 import com.example.chaika.ui.dto.TripRecord
 import com.example.chaika.ui.theme.TripDimens
 import java.time.LocalDateTime
@@ -26,8 +25,7 @@ import java.time.LocalDateTime
 @Composable
 fun FoundTripContent(
     modifier: Modifier = Modifier,
-    tripRecord: TripRecord,
-    route: Route
+    tripRecord: TripRecord
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -39,7 +37,7 @@ fun FoundTripContent(
         Row(
             modifier = Modifier
                 .constrainAs(trainId) {
-                    start.linkTo(sideRect.end, margin = 4.dp)
+                    start.linkTo(sideRect.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(timeDetails.top)
                 },
@@ -70,12 +68,12 @@ fun FoundTripContent(
         )
 
         StationsDetails(
-            route = route,
+            tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
                     start.linkTo(sideRect.end, margin = 4.dp)
                     top.linkTo(timeDetails.bottom)
-                    end.linkTo(parent.end, margin = 4.dp)
+                    end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                 }
         )
@@ -92,14 +90,11 @@ fun FoundTripContentPreview() {
             trainId = "119A",
             startTime = LocalDateTime.parse("2024-03-30T00:12:00"),
             endTime = LocalDateTime.parse("2024-03-30T09:47:00"),
-            carriageID = 33
-        ),
-        route = Route(
-            routeID = 0,
+            carriageID = 33,
             startName1 = "Московский вокзал",
             startName2 = "Санкт-Петербург-Главный",
             endName1 = "ТПУ черкизово",
             endName2 = "Москва ВК Восточный"
-        )
+        ),
     )
 }

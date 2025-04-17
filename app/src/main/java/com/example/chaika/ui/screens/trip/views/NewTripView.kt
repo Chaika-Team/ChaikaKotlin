@@ -6,18 +6,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.example.chaika.R
 import com.example.chaika.ui.components.trip.HistoryRecordCard
 import com.example.chaika.ui.components.trip.HistoryToNowDivider
 import com.example.chaika.ui.components.trip.NewTripButton
-import com.example.chaika.ui.dto.Route
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.TripViewModel
 
@@ -26,7 +30,30 @@ fun NewTripView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
-    val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
+    val pagingData = viewModel.pagingHistoryFlow.collectAsLazyPagingItems()
+
+    val loadState = pagingData.loadState
+
+    when {
+        loadState.refresh is LoadState.Loading -> {
+            CircularProgressIndicator()
+        }
+        loadState.refresh is LoadState.Error -> {
+            val error = loadState.refresh as LoadState.Error
+            Text(
+                text = "Произошла ошибка: ${error.error.localizedMessage}",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        pagingData.itemCount == 0 -> {
+            Text(
+                text = stringResource(R.string.no_trip_history),
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+
 
     Column (
         modifier = Modifier.fillMaxSize()
@@ -39,7 +66,6 @@ fun NewTripView(
                 top = 6.dp,
                 bottom = 6.dp
             ),
-            //contentPadding = PaddingValues(32.dp)
         ) {
             items(
                 count = pagingData.itemCount,
@@ -52,14 +78,7 @@ fun NewTripView(
                             top = 4.dp,
                             bottom = 4.dp
                         ),
-                        tripRecord = tripRecord,
-                        route = Route(
-                            routeID = 0,
-                            startName1 = "Московский вокзал",
-                            startName2 = "Санкт-Петербург-Главный",
-                            endName1 = "ТПУ черкизово",
-                            endName2 = "Москва ВК Восточный"
-                        )
+                        tripRecord = tripRecord
                     )
                 }
             }
@@ -70,7 +89,10 @@ fun NewTripView(
         )
 
         NewTripButton(
-            onClick = { navController.navigate(Routes.TRIP_BY_NUMBER) },
+            onClick = {
+                viewModel.setFindByNumber()
+                navController.navigate(Routes.TRIP_BY_NUMBER)
+                      },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

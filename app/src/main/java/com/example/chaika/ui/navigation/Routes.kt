@@ -15,7 +15,7 @@ object Routes {
 
     val mainRoutes = mapOf(
         TRIP to listOf(
-            TRIP, TRIP_NEW,
+            TRIP, TRIP_NEW, TRIP_GRAPH,
             TRIP_BY_NUMBER, TRIP_BY_STATION,
             TRIP_SELECT_CARRIAGE, TRIP_CURRENT
         ),

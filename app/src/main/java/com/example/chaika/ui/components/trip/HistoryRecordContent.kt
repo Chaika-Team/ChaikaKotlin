@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.chaika.R
-import com.example.chaika.ui.dto.Route
 import com.example.chaika.ui.dto.TripRecord
 import com.example.chaika.ui.theme.TripDimens
 import java.time.LocalDateTime
@@ -32,7 +31,6 @@ import java.time.LocalDateTime
 fun HistoryRecordContent(
     modifier: Modifier = Modifier,
     tripRecord: TripRecord,
-    route: Route
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -85,7 +83,7 @@ fun HistoryRecordContent(
         )
 
         StationsDetails(
-            route = route,
+            tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
                     start.linkTo(sideRect.end, margin = 4.dp)
@@ -123,10 +121,7 @@ fun HistoryContent() {
             trainId = "119A",
             startTime = LocalDateTime.parse("2024-03-30T00:12:00"),
             endTime = LocalDateTime.parse("2024-03-30T09:47:00"),
-            carriageID = 33
-        ),
-        route = Route(
-            routeID = 0,
+            carriageID = 33,
             startName1 = "Московский вокзал",
             startName2 = "Санкт-Петербург-Главный",
             endName1 = "ТПУ черкизово",

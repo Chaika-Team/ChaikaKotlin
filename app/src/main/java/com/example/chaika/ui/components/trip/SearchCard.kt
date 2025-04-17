@@ -1,5 +1,6 @@
 package com.example.chaika.ui.components.trip
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +22,19 @@ import androidx.compose.runtime.*
 @Composable
 fun SearchCard(
     height: Dp = TripDimens.SearchCardHeight,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearch: (date: String, startStation: String, finishStation: String) -> Unit = { _, _, _ -> },
+    initialDateValue: String = "Сегодня",
+    initialStartValue: String = "",
+    initialFinishValue: String = ""
 ) {
-    var searchDate by rememberSaveable { mutableStateOf("") }
-    var searchStart by rememberSaveable { mutableStateOf("") }
-    var searchFinish by rememberSaveable { mutableStateOf("") }
+    var searchDate by rememberSaveable { mutableStateOf(initialDateValue) }
+    var searchStart by rememberSaveable { mutableStateOf(initialStartValue) }
+    var searchFinish by rememberSaveable { mutableStateOf(initialFinishValue) }
+
+    LaunchedEffect(searchDate, searchStart, searchFinish) {
+        onSearch(searchDate, searchStart, searchFinish)
+    }
 
     Box(
         modifier = modifier
@@ -47,8 +56,8 @@ fun SearchCard(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 onQueryChange = { newText ->
-                    println(newText)
                     searchDate = newText
+                    Log.d("SearchCard", "Date changed: $newText")
                                 },
                 placeholderText = "Дата отправления",
                 cornerRadius = TripDimens.SearchBarCornerRadius,
@@ -60,8 +69,8 @@ fun SearchCard(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 onQueryChange = { newText ->
-                    println(newText)
                     searchStart = newText
+                    Log.d("SearchCard", "Start changed: $newText")
                 },
                 placeholderText = "Станция отправки",
                 cornerRadius = TripDimens.SearchBarCornerRadius
@@ -72,8 +81,8 @@ fun SearchCard(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 onQueryChange = { newText ->
-                    println(newText)
                     searchFinish = newText
+                    Log.d("SearchCard", "Finish changed: $newText")
                 },
                 placeholderText = "Станция прибытия",
                 cornerRadius = TripDimens.SearchBarCornerRadius
