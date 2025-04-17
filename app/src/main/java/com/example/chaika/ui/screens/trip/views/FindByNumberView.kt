@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.chaika.ui.components.trip.FoundTripCard
-import com.example.chaika.ui.components.trip.SearchCard
+import com.example.chaika.ui.components.trip.SearchTripSurface
 import com.example.chaika.ui.viewModels.TripViewModel
 import androidx.compose.runtime.*
 import com.example.chaika.ui.navigation.Routes
@@ -41,7 +41,7 @@ fun FindByNumberView(
     Column (
         modifier = Modifier.fillMaxSize()
     ) {
-        SearchCard(
+        SearchTripSurface(
             onSearch = { date, start, finish ->
                 searchDate = date
                 searchStart = start

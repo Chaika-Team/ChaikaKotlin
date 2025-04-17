@@ -1,6 +1,7 @@
 package com.example.chaika.ui.viewModels.tripMocks
 
 import androidx.paging.PagingData
+import com.example.chaika.ui.dto.Carriage
 import com.example.chaika.ui.dto.TripRecord
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -65,4 +66,23 @@ fun getPagedFutureTripsUseCase(pageSize: Int): Flow<PagingData<TripRecord>> {
     return flow {
         emit(PagingData.from(mockTrips))
     }
+}
+
+fun getPagedCarriagesUseCase(pageSize: Int, trainId: String): Flow<PagingData<Carriage>> {
+    val mockCarriages = (1..30).map { id ->
+        Carriage(
+            id = id,
+            classType = generateRandomClassType()
+        )
+    }
+
+    return flow {
+        emit(PagingData.from(mockCarriages))
+    }
+}
+
+private fun generateRandomClassType(): String {
+    val randomNumber = (1..3).random()
+    val randomLetter = listOf("А", "Б", "В", "Г", "Д").random()
+    return "$randomNumber$randomLetter"
 }

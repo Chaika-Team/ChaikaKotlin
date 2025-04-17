@@ -5,12 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.example.chaika.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -18,17 +17,18 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.chaika.ui.theme.TripDimens
 
-
 @Composable
-fun NewTripButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+fun CarriageCard(
+    modifier: Modifier,
+    carriageId: Int,
+    onClick: () -> Unit,
+    height: Dp = TripDimens.CarriageCardHeight,
+    width: Dp = TripDimens.CarriageCardWidth
 ) {
     Box(
         modifier = modifier
@@ -39,8 +39,8 @@ fun NewTripButton(
             )
             .background(Color.White, RoundedCornerShape(TripDimens.CornerRadius))
             .clickable(onClick = onClick)
-            .height(TripDimens.NewTripButtonHeight)
-            .width(TripDimens.NewTripButtonWidth),
+            .height(height)
+            .width(width),
         contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -54,17 +54,10 @@ fun NewTripButton(
             )
         }
 
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_plus),
-            contentDescription = "Добавить поездку",
-            modifier = Modifier.size(TripDimens.IconSize),
-            tint = Color.Black
+        Text(
+            text = carriageId.toString(),
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
-}
-
-@Preview
-@Composable
-fun NewTripButtonPreview() {
-    NewTripButton () {  }
 }
