@@ -39,7 +39,7 @@ fun FoundTripCard(
                 .height(1.dp)
                 .align(Alignment.TopCenter),
             thickness = 1.dp,
-            color = colorScheme.onSurface
+            color = colorScheme.onSurfaceVariant
         )
         FoundTripContent(
             modifier = Modifier.matchParentSize(),
@@ -51,7 +51,7 @@ fun FoundTripCard(
                 .height(1.dp)
                 .align(Alignment.BottomCenter),
             thickness = 1.dp,
-            color = colorScheme.onSurface
+            color = colorScheme.onSurfaceVariant
         )
     }
 }

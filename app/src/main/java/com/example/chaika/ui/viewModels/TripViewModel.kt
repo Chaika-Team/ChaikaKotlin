@@ -5,14 +5,14 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.annotation.Dimension
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
+import com.example.chaika.ui.dto.Carriage
 import com.example.chaika.ui.dto.TripRecord
 import com.example.chaika.ui.viewModels.tripMocks.fetchAndSaveHistoryUseCase
+import com.example.chaika.ui.viewModels.tripMocks.getPagedCarriagesUseCase
 import com.example.chaika.ui.viewModels.tripMocks.getPagedFutureTripsUseCase
 import com.example.chaika.ui.viewModels.tripMocks.getPagedHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,11 +28,7 @@ import javax.inject.Inject
 class TripViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-
-    private val _productsState = mutableStateMapOf<Int, TripRecord>()
-
     private val _selectedTripRecord = MutableStateFlow<TripRecord?>(null)
-    val selectedTripRecord: StateFlow<TripRecord?> = _selectedTripRecord.asStateFlow()
 
     private val _uiState = MutableStateFlow<ScreenState>(ScreenState.NewTrip)
     val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
@@ -46,6 +41,9 @@ class TripViewModel @Inject constructor(
 
     private val _pagingFoundTripsFlow = MutableStateFlow<PagingData<TripRecord>>(PagingData.empty())
     val pagingFoundTripsFlow: StateFlow<PagingData<TripRecord>> = _pagingFoundTripsFlow.asStateFlow()
+
+    private val _pagingCarriageFlow = MutableStateFlow<PagingData<Carriage>>(PagingData.empty())
+    val pagingCarriageFlow: StateFlow<PagingData<Carriage>> = _pagingCarriageFlow.asStateFlow()
 
     fun loadHistory() {
         loadHistoryData()
@@ -67,19 +65,24 @@ class TripViewModel @Inject constructor(
     fun setSelectCarriage(tripRecord: TripRecord) {
         _selectedTripRecord.value = tripRecord
         _uiState.value = ScreenState.SelectCarriage
+        loadCarriages(tripRecord.trainId)
     }
 
     fun setCurrentTrip() {
         _uiState.value = ScreenState.CurrentTrip
     }
 
-    private fun loadHistoryData() {
+    fun getSelectedTrip(): TripRecord? {
+        return _selectedTripRecord.value
+    }
+
+    fun loadHistoryData() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 fetchAndSaveHistoryUseCase()
             } catch (e: Exception) {
-                Log.e(e.toString(), "Не удалось загрузить историю")
+                Log.e("TripViewModel", "Failed to load history", e)
                 _uiState.update { ScreenState.Error }
             } finally {
                 _isLoading.value = false
@@ -90,24 +93,8 @@ class TripViewModel @Inject constructor(
     private fun getHistory() {
         viewModelScope.launch {
             getPagedHistoryUseCase(
-                pageSize = calculatePageSize(context = context)
-            ).map { pagingData ->
-                pagingData.map { tripRecord ->
-                    _productsState.getOrPut(tripRecord.routeID) {
-                        TripRecord(
-                            routeID = tripRecord.routeID,
-                            trainId = tripRecord.trainId,
-                            startTime = tripRecord.startTime,
-                            endTime = tripRecord.endTime,
-                            carriageID = tripRecord.carriageID,
-                            startName1 = tripRecord.startName1,
-                            startName2 = tripRecord.startName2,
-                            endName1 = tripRecord.endName1,
-                            endName2 = tripRecord.endName2
-                        )
-                    }
-                }
-            }
+                pageSize = calculatePageSize(context)
+            )
                 .cachedIn(viewModelScope)
                 .collect { pagingData ->
                     _pagingHistoryFlow.value = pagingData
@@ -118,27 +105,24 @@ class TripViewModel @Inject constructor(
     fun getTrips(searchDate: String, searchStart: String, searchFinish: String) {
         viewModelScope.launch {
             getPagedFutureTripsUseCase(
-                pageSize = calculatePageSize(context = context)
-            ).map { pagingData ->
-                pagingData.map { tripRecord ->
-                    _productsState.getOrPut(tripRecord.routeID) {
-                        TripRecord(
-                            routeID = tripRecord.routeID,
-                            trainId = tripRecord.trainId,
-                            startTime = tripRecord.startTime,
-                            endTime = tripRecord.endTime,
-                            carriageID = tripRecord.carriageID,
-                            startName1 = tripRecord.startName1,
-                            startName2 = tripRecord.startName2,
-                            endName1 = tripRecord.endName1,
-                            endName2 = tripRecord.endName2
-                        )
-                    }
-                }
-            }
+                pageSize = calculatePageSize(context),
+            )
                 .cachedIn(viewModelScope)
                 .collect { pagingData ->
                     _pagingFoundTripsFlow.value = pagingData
+                }
+        }
+    }
+
+
+    fun loadCarriages(trainId: String) {
+        viewModelScope.launch {
+            getPagedCarriagesUseCase(
+                pageSize = calculatePageSize(context),
+                trainId = trainId
+            ).cachedIn(viewModelScope)
+                .collect { pagingData ->
+                    _pagingCarriageFlow.value = pagingData
                 }
         }
     }

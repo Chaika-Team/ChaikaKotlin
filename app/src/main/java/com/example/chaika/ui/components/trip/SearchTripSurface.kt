@@ -20,7 +20,7 @@ import com.example.chaika.ui.theme.TripDimens
 import androidx.compose.runtime.*
 
 @Composable
-fun SearchCard(
+fun SearchTripSurface(
     height: Dp = TripDimens.SearchCardHeight,
     modifier: Modifier = Modifier,
     onSearch: (date: String, startStation: String, finishStation: String) -> Unit = { _, _, _ -> },
@@ -41,7 +41,7 @@ fun SearchCard(
             .fillMaxWidth()
             .height(height),
     ) {
-        SearchCardBackground(
+        SurfaceBackground(
             modifier = Modifier.matchParentSize()
         )
 
@@ -57,7 +57,7 @@ fun SearchCard(
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 onQueryChange = { newText ->
                     searchDate = newText
-                    Log.d("SearchCard", "Date changed: $newText")
+                    Log.d("SearchTripSurface", "Date changed: $newText")
                                 },
                 placeholderText = "Дата отправления",
                 cornerRadius = TripDimens.SearchBarCornerRadius,
@@ -70,7 +70,7 @@ fun SearchCard(
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 onQueryChange = { newText ->
                     searchStart = newText
-                    Log.d("SearchCard", "Start changed: $newText")
+                    Log.d("SearchTripSurface", "Start changed: $newText")
                 },
                 placeholderText = "Станция отправки",
                 cornerRadius = TripDimens.SearchBarCornerRadius
@@ -82,7 +82,7 @@ fun SearchCard(
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 onQueryChange = { newText ->
                     searchFinish = newText
-                    Log.d("SearchCard", "Finish changed: $newText")
+                    Log.d("SearchTripSurface", "Finish changed: $newText")
                 },
                 placeholderText = "Станция прибытия",
                 cornerRadius = TripDimens.SearchBarCornerRadius
@@ -94,5 +94,5 @@ fun SearchCard(
 @Preview
 @Composable
 fun SearchCardPreview() {
-    SearchCard(modifier = Modifier)
+    SearchTripSurface(modifier = Modifier)
 }
