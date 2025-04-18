@@ -32,6 +32,8 @@ fun HistoryRecordContent(
     modifier: Modifier = Modifier,
     tripRecord: TripRecord,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     ConstraintLayout(
         modifier = modifier
             .height(TripDimens.RecordCardHeight)
@@ -46,7 +48,8 @@ fun HistoryRecordContent(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     width = Dimension.value(TripDimens.SideRectWidth)
-                }
+                },
+            color = colorScheme.secondary
         )
 
         Row(

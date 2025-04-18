@@ -47,7 +47,6 @@ class TripViewModel @Inject constructor(
 
     fun loadHistory() {
         loadHistoryData()
-        getHistory()
     }
 
     fun setNewTrip() {
@@ -68,7 +67,8 @@ class TripViewModel @Inject constructor(
         loadCarriages(tripRecord.trainId)
     }
 
-    fun setCurrentTrip() {
+    fun setCurrentTrip(carriage: Carriage) {
+        // TODO: Дополнение TripRecord информацией из Carriage
         _uiState.value = ScreenState.CurrentTrip
     }
 
@@ -81,6 +81,7 @@ class TripViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 fetchAndSaveHistoryUseCase()
+                getHistory()
             } catch (e: Exception) {
                 Log.e("TripViewModel", "Failed to load history", e)
                 _uiState.update { ScreenState.Error }

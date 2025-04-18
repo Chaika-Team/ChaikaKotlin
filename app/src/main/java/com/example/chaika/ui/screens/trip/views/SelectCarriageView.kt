@@ -17,6 +17,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.R
 import com.example.chaika.ui.components.trip.CarriageCard
 import com.example.chaika.ui.components.trip.SelectedTripRecordSurface
+import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.TripDimens
 import com.example.chaika.ui.viewModels.TripViewModel
 
@@ -33,43 +34,46 @@ fun SelectCarriageView(
         }
     }
 
-    when {
-        viewModel.getSelectedTrip() == null -> {
-            Text(
-                text = stringResource(R.string.no_selected_trip_error),
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-    }
+    val selectedTrip = viewModel.getSelectedTrip()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        viewModel.getSelectedTrip()?.let {
+    if (selectedTrip == null) {
+        Text(
+            text = stringResource(R.string.no_selected_trip_error),
+            modifier = Modifier.padding(16.dp)
+        )
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
             SelectedTripRecordSurface(
                 height = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL + TripDimens.PaddingXL,
-                tripRecord = it
+                tripRecord = selectedTrip
             )
-        }
 
-        LazyColumn {
-            groupedCarriages.value.forEach { (classType, carriages) ->
-                item(key = "header_$classType") {
-                    Text(
-                        text = stringResource(R.string.carriage_class) + " $classType",
-                        modifier = Modifier.padding(8.dp),
-                    )
-                }
-                items(
-                    count = carriages.size,
-                    key = { index -> carriages[index].id }
-                ) { index ->
-                    val carriage = carriages[index]
-                    CarriageCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp),
-                        carriageId = carriage.id,
-                        onClick = {  }
-                    )
+            LazyColumn {
+                groupedCarriages.value.forEach { (classType, carriages) ->
+                    item(key = "header_$classType") {
+                        Text(
+                            text = stringResource(R.string.carriage_class) + " $classType",
+                            modifier = Modifier.padding(8.dp),
+                        )
+                    }
+                    items(
+                        count = carriages.size,
+                        key = { index -> carriages[index].id }
+                    ) { index ->
+                        val carriage = carriages[index]
+                        CarriageCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            carriageId = carriage.id,
+                            onClick = {
+                                viewModel.setCurrentTrip(carriage = carriage)
+                                navController.navigate(Routes.TRIP_CURRENT)
+                            }
+                        )
+                    }
                 }
             }
         }

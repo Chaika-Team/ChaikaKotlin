@@ -1,5 +1,6 @@
 package com.example.chaika.ui.components.trip
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -11,9 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -23,21 +29,38 @@ import com.example.chaika.ui.theme.TripDimens
 import java.time.LocalDateTime
 
 @Composable
-fun FoundTripContent(
+fun CurrentTripContent(
     modifier: Modifier = Modifier,
-    tripRecord: TripRecord
+    tripRecord: TripRecord,
+    heightTotal: Dp = TripDimens.NewTripButtonHeight,
+    widthTotal: Dp = TripDimens.CardWidth,
+    onClick: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     ConstraintLayout(
         modifier = modifier
-            .height(TripDimens.FoundTripCardHeight)
-            .width(TripDimens.CardWidth)
+            .height(heightTotal)
+            .width(widthTotal)
     ) {
-        val (trainId, timeDetails, stationsDetails) = createRefs()
+        val (sideRect, trainId, timeDetails, stationsDetails, button) = createRefs()
+
+        SideRect(
+            modifier = Modifier
+                .constrainAs(sideRect) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.value(TripDimens.SideRectWidth)
+                },
+            color = colorScheme.primary,
+            height = heightTotal
+        )
 
         Row(
             modifier = Modifier
                 .constrainAs(trainId) {
-                    start.linkTo(parent.start)
+                    start.linkTo(sideRect.end, margin = 4.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(timeDetails.top)
                 },
@@ -59,7 +82,7 @@ fun FoundTripContent(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(timeDetails) {
-                    start.linkTo(parent.start, margin = 4.dp)
+                    start.linkTo(sideRect.end, margin = 4.dp)
                     top.linkTo(trainId.bottom)
                     end.linkTo(parent.end, margin = 4.dp)
                     bottom.linkTo(stationsDetails.top)
@@ -71,19 +94,46 @@ fun FoundTripContent(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
-                    start.linkTo(parent.start, margin = 4.dp)
+                    start.linkTo(sideRect.end, margin = 4.dp)
                     top.linkTo(timeDetails.bottom)
-                    end.linkTo(parent.end)
+                    end.linkTo(parent.end, margin = 4.dp)
+                    bottom.linkTo(button.top)
                     width = Dimension.fillToConstraints
                 }
+        )
+
+        FinishCurrentTripButton(
+            modifier = Modifier.constrainAs(button) {
+                start.linkTo(sideRect.end, margin = 4.dp)
+                top.linkTo(stationsDetails.bottom)
+                end.linkTo(parent.end, margin = 4.dp)
+                bottom.linkTo(parent.bottom, margin = 4.dp)
+                width = Dimension.fillToConstraints
+            },
+            onClick = onClick
+        )
+    }
+    // Пунктирная граница по периметру
+    Canvas(
+        modifier = modifier
+            .height(heightTotal)
+            .width(widthTotal)
+    ) {
+        drawRoundRect(
+            color = Color.Gray,
+            cornerRadius = CornerRadius(8.dp.toPx()),
+            style = Stroke(
+                width = 1.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 5f), 0f)
+            )
         )
     }
 }
 
 @Preview
 @Composable
-fun FoundTripContentPreview() {
-    FoundTripContent(
+fun CurrentTripButtonPreview() {
+    CurrentTripContent(
         modifier = Modifier,
         tripRecord = TripRecord(
             routeID = 0,
@@ -96,5 +146,6 @@ fun FoundTripContentPreview() {
             endName1 = "ТПУ черкизово",
             endName2 = "Москва ВК Восточный"
         ),
+        onClick = { }
     )
 }
