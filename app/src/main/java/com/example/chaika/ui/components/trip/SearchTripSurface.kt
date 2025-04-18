@@ -18,7 +18,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.theme.TripDimens
 import androidx.compose.runtime.*
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 
+@OptIn(FlowPreview::class)
 @Composable
 fun SearchTripSurface(
     height: Dp = TripDimens.SearchCardHeight,
@@ -33,7 +36,10 @@ fun SearchTripSurface(
     var searchFinish by rememberSaveable { mutableStateOf(initialFinishValue) }
 
     LaunchedEffect(searchDate, searchStart, searchFinish) {
-        onSearch(searchDate, searchStart, searchFinish)
+        snapshotFlow { Triple(searchDate, searchStart, searchFinish) }
+            .debounce(400)
+            .collect { (d, s, f) -> onSearch(d, s, f) }
+
     }
 
     Box(

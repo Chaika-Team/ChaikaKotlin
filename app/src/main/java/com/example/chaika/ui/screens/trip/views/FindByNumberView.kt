@@ -71,6 +71,7 @@ fun FindByNumberView(
                         modifier = Modifier,
                         tripRecord = tripRecord,
                         onClick = {
+                            viewModel.createNewTrip()
                             viewModel.setSelectCarriage(tripRecord)
                             navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
                         }

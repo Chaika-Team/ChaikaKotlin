@@ -12,26 +12,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.theme.TripDimens
 
 @Composable
 fun SideRect(
-    modifier: Modifier
+    modifier: Modifier,
+    width: Dp = TripDimens.SideRectWidth,
+    height: Dp = TripDimens.RecordCardHeight,
+    color: Color
 ) {
-    var colorScheme = MaterialTheme.colorScheme
-
     Box (
-        modifier
+        modifier = modifier
             .fillMaxHeight()
-            .width(TripDimens.SideRectWidth)
-            .background(
-                color = colorScheme.secondary
-            )
+            .width(width)
+            .background(color = color)
     ) {
         Canvas(
-            modifier = modifier
-                .height(TripDimens.RecordCardHeight)
+            modifier = Modifier
+                .height(height)
                 .width(TripDimens.CardWidth)
         ) {
             val rightBorder = size.width
@@ -44,7 +45,11 @@ fun SideRect(
             )
         }
     }
+}
 
-    // Пунктирная линия справа
-
+@Preview
+@Composable
+fun SideRectPreview() {
+    val colorScheme = MaterialTheme.colorScheme
+    SideRect(modifier = Modifier, color = colorScheme.primary)
 }

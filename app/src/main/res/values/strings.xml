@@ -16,6 +16,7 @@
     <string name="no_trip_history">История поездок отсутствует</string>
     <string name="no_selected_trip_error">Ошибка загрузки выбранного маршрута</string>
     <string name="carriage_class">Класс</string>
+    <string name="finish_trip">ЗАВЕРШИТЬ</string>
 
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>

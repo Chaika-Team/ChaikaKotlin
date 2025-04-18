@@ -9,36 +9,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.example.chaika.ui.dto.TripRecord
 import com.example.chaika.ui.theme.TripDimens
 import java.time.LocalDateTime
 
 @Composable
-fun HistoryRecordCard(
+fun CurrentTripCard(
     modifier: Modifier = Modifier,
-    tripRecord: TripRecord
+    tripRecord: TripRecord,
+    heightTotal: Dp = TripDimens.NewTripButtonHeight,
+    widthTotal: Dp = TripDimens.CardWidth,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
-            .height(TripDimens.RecordCardHeight)
-            .width(TripDimens.CardWidth)
+            .height(heightTotal)
+            .width(widthTotal)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.medium
             )
             .clip(MaterialTheme.shapes.medium)
     ) {
-        HistoryRecordContent(
+        CurrentTripContent(
             modifier = Modifier.matchParentSize(),
-            tripRecord = tripRecord
+            tripRecord = tripRecord,
+            heightTotal = heightTotal,
+            widthTotal = widthTotal,
+            onClick = onClick
         )
     }
 }
 
 @Preview
 @Composable
-fun HistoryPreview() {
-    HistoryRecordCard(
+fun CurrentTripCardPreview() {
+    CurrentTripCard (
         modifier = Modifier,
         tripRecord = TripRecord(
             routeID = 0,
@@ -50,6 +57,7 @@ fun HistoryPreview() {
             startName2 = "Санкт-Петербург-Главный",
             endName1 = "ТПУ черкизово",
             endName2 = "Москва ВК Восточный"
-        )
+        ),
+        onClick = { }
     )
 }
