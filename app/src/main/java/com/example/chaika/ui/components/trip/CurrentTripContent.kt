@@ -1,6 +1,5 @@
 package com.example.chaika.ui.components.trip
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -12,11 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -54,7 +55,6 @@ fun CurrentTripContent(
                     width = Dimension.value(TripDimens.SideRectWidth)
                 },
             color = colorScheme.primary,
-            height = heightTotal
         )
 
         Row(
@@ -69,7 +69,7 @@ fun CurrentTripContent(
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.train_ic),
                 modifier = Modifier.size(TripDimens.IconSize)
             )
             Text(
@@ -113,22 +113,24 @@ fun CurrentTripContent(
             onClick = onClick
         )
     }
-    // Пунктирная граница по периметру
-    Canvas(
-        modifier = modifier
-            .height(heightTotal)
-            .width(widthTotal)
-    ) {
+}
+
+fun Modifier.dashedBorder(
+    color: Color = Color.Gray,
+    cornerRadius: Dp = 8.dp,
+    pathEffect: PathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 5f), 0f)
+) = this.then(
+    Modifier.drawBehind {
         drawRoundRect(
-            color = Color.Gray,
-            cornerRadius = CornerRadius(8.dp.toPx()),
+            color = color,
+            cornerRadius = CornerRadius(cornerRadius.toPx()),
             style = Stroke(
                 width = 1.dp.toPx(),
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 5f), 0f)
+                pathEffect = pathEffect
             )
         )
     }
-}
+)
 
 @Preview
 @Composable

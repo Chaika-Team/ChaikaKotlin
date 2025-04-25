@@ -19,8 +19,10 @@ object TripDimens {
     val SearchBarHeight = 52.dp
     val SearchBarCornerRadius = 10.dp
     val PaddingXL = 24.dp
+    val PaddingM = 6.dp
     val CarriageCardHeight = 48.dp
     val CarriageCardWidth = 168.dp
     val FinishTripHeight = 46.dp
     val FinishTripWidth = 280.dp
+
 }

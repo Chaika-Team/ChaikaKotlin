@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,11 +43,11 @@ fun FoundTripContent(
                     bottom.linkTo(timeDetails.top)
                 },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.train_ic),
                 modifier = Modifier.size(TripDimens.IconSize)
             )
             Text(

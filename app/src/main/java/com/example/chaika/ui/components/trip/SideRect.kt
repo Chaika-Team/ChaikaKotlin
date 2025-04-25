@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,7 +20,6 @@ import com.example.chaika.ui.theme.TripDimens
 fun SideRect(
     modifier: Modifier,
     width: Dp = TripDimens.SideRectWidth,
-    height: Dp = TripDimens.RecordCardHeight,
     color: Color
 ) {
     Box (
@@ -31,11 +29,9 @@ fun SideRect(
             .background(color = color)
     ) {
         Canvas(
-            modifier = Modifier
-                .height(height)
-                .width(TripDimens.CardWidth)
+            modifier = Modifier.matchParentSize()
         ) {
-            val rightBorder = size.width
+            val rightBorder = width.toPx()
             drawLine(
                 color = Color.Gray,
                 start = Offset(rightBorder, 0f),

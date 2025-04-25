@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BottomBarBackground(
     modifier: Modifier = Modifier,
-    height: Dp = 64.dp,
+    height: Dp = 80.dp,
     cornerRadius: Dp = 20.dp,
     backgroundColor: Color = Color.White,
     elevation: Dp = 10.dp

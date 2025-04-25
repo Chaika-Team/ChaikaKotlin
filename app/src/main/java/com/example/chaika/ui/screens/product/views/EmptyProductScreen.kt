@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.chaika.ui.theme.ChaikaTheme
 import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.navigation.Routes
 
@@ -19,18 +18,17 @@ import com.example.chaika.ui.navigation.Routes
 fun ProductEntryScreen(
     navController: NavController
 ) {
-    ChaikaTheme {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+    // TODO()
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = { navController.navigate(Routes.PRODUCT) },
+            modifier = Modifier.padding(16.dp)
         ) {
-            Button(
-                onClick = { navController.navigate(Routes.PRODUCT) },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(text = "View products")
-            }
+            Text(text = "View products")
         }
     }
 }

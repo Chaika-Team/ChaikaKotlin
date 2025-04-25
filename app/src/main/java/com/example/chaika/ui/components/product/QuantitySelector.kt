@@ -19,9 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chaika.ui.theme.ProductDimens.QuantitySelectorHeight
 
@@ -49,13 +47,13 @@ fun QuantitySelector(
             onClick = onDecrease,
             modifier = Modifier.size(QuantitySelectorHeight * 1.2F),
             colors = IconButtonDefaults.iconButtonColors(
-                contentColor = Color.White
+                contentColor = MaterialTheme.colorScheme.background
             )
         ) {
             Icon(
                 Icons.Default.Remove,
                 contentDescription = "Decrease",
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.background
             )
         }
 
@@ -63,20 +61,20 @@ fun QuantitySelector(
             text = quantity.toString(),
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 18.sp,
-            color = Color.White
+            color = MaterialTheme.colorScheme.background
         )
 
         IconButton(
             onClick = onIncrease,
-            modifier = Modifier.size(36.dp),
+            modifier = Modifier.size(QuantitySelectorHeight * 1.2F),
             colors = IconButtonDefaults.iconButtonColors(
-                contentColor = Color.White
+                contentColor = MaterialTheme.colorScheme.background
             )
         ) {
             Icon(
                 Icons.Default.Add,
                 contentDescription = "Increase",
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.background
             )
         }
     }

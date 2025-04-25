@@ -22,7 +22,6 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.chaika.ui.components.product.ProductComponent
-import com.example.chaika.ui.theme.ChaikaTheme
 import com.example.chaika.ui.theme.LightColorScheme
 import com.example.chaika.ui.viewModels.ProductViewModel
 
@@ -52,43 +51,41 @@ fun ProductScreen(
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    ChaikaTheme {
-        if (isLoading) {
+    when {
+        isLoading -> {
             CircularProgressIndicator(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(),
                 color = MaterialTheme.colorScheme.primary
             )
-            return@ChaikaTheme
         }
-
-        if (uiState.error != null) {
+        uiState.error != null -> {
             Text(
                 text = "Error: ${uiState.error}",
                 color = LightColorScheme.error,
                 modifier = Modifier.fillMaxSize().wrapContentSize()
             )
-            return@ChaikaTheme
         }
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(
-                count = pagingData.itemCount,
-                key = pagingData.itemKey{it.id}
-            ) { index ->
-                val product = pagingData[index]
-                if (product != null) {
-                    ProductComponent(
-                        product = product,
-                        onAddToCart = { viewModel.addToCart(product.id) },
-                        onQuantityIncrease = { viewModel.updateQuantity(product.id, +1) },
-                        onQuantityDecrease = { viewModel.updateQuantity(product.id, -1) }
-                    )
+        else -> {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(
+                    count = pagingData.itemCount,
+                    key = pagingData.itemKey{it.id}
+                ) { index ->
+                    val product = pagingData[index]
+                    if (product != null) {
+                        ProductComponent(
+                            product = product,
+                            onAddToCart = { viewModel.addToCart(product.id) },
+                            onQuantityIncrease = { viewModel.updateQuantity(product.id, +1) },
+                            onQuantityDecrease = { viewModel.updateQuantity(product.id, -1) }
+                        )
+                    }
                 }
             }
         }

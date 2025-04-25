@@ -13,10 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.R
 import com.example.chaika.ui.components.trip.CarriageCard
 import com.example.chaika.ui.components.trip.SelectedTripRecordSurface
+import com.example.chaika.ui.components.util.EmptyState
+import com.example.chaika.ui.components.util.ErrorMessage
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.TripDimens
 import com.example.chaika.ui.viewModels.TripViewModel
@@ -51,28 +54,53 @@ fun SelectCarriageView(
             )
 
             LazyColumn {
-                groupedCarriages.value.forEach { (classType, carriages) ->
-                    item(key = "header_$classType") {
-                        Text(
-                            text = stringResource(R.string.carriage_class) + " $classType",
-                            modifier = Modifier.padding(8.dp),
-                        )
+                when {
+                    // TODO: Обработка загрузки
+
+                    pagingItems.loadState.refresh is LoadState.Error -> {
+                        item {
+                            val error = pagingItems.loadState.refresh as LoadState.Error
+                            ErrorMessage(
+                                message = stringResource(R.string.loading_error_message, error.error.localizedMessage),
+                                modifier = Modifier.fillParentMaxSize(),
+                                onRetry = { pagingItems.retry() }
+                            )
+                        }
                     }
-                    items(
-                        count = carriages.size,
-                        key = { index -> carriages[index].id }
-                    ) { index ->
-                        val carriage = carriages[index]
-                        CarriageCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
-                            carriageId = carriage.id,
-                            onClick = {
-                                viewModel.setCurrentTrip(carriage = carriage)
-                                navController.navigate(Routes.TRIP_CURRENT)
+
+                    groupedCarriages.value.isEmpty() -> {
+                        item {
+                            EmptyState(
+                                message = stringResource(R.string.empty_carriages_message),
+                                modifier = Modifier.fillParentMaxSize()
+                            )
+                        }
+                    }
+                    else -> {
+                        groupedCarriages.value.forEach { (classType, carriages) ->
+                            item(key = "header_$classType") {
+                                Text(
+                                    text = stringResource(R.string.carriage_class) + " $classType",
+                                    modifier = Modifier.padding(8.dp),
+                                )
                             }
-                        )
+                            items(
+                                count = carriages.size,
+                                key = { index -> carriages[index].id }
+                            ) { index ->
+                                val carriage = carriages[index]
+                                CarriageCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(4.dp),
+                                    carriageId = carriage.id,
+                                    onClick = {
+                                        viewModel.setCurrentTrip(carriage = carriage)
+                                        navController.navigate(Routes.TRIP_CURRENT)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }

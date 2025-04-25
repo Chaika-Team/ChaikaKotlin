@@ -33,7 +33,7 @@ fun CurrentTripCard(
             .clip(MaterialTheme.shapes.medium)
     ) {
         CurrentTripContent(
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier.matchParentSize().dashedBorder(),
             tripRecord = tripRecord,
             heightTotal = heightTotal,
             widthTotal = widthTotal,

@@ -55,6 +55,8 @@ class ProductViewModel @Inject constructor(
 
     private var _syncJob: Job? = null
 
+    private var loadProductsJob: Job? = null
+
 
     init {
         loadInitialData()
@@ -81,7 +83,8 @@ class ProductViewModel @Inject constructor(
     }
 
     private fun loadProducts() {
-        viewModelScope.launch {
+        loadProductsJob?.cancel()
+        loadProductsJob = viewModelScope.launch {
             getPagedProductsUseCase(
                 pageSize = calculatePageSize(context = context)
             ).map { pagingData ->

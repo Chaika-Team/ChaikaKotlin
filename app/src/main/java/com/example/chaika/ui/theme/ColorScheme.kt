@@ -40,7 +40,7 @@ val LightColorScheme = lightColorScheme(
 
 val DarkColorScheme = darkColorScheme(
     primary = RzdRed,
-    onPrimary = Color.Black,
+    onPrimary = Color(0xFF787878),
     primaryContainer = RzdRed.copy(alpha = 0.2f),
     onPrimaryContainer = RzdRed,
 

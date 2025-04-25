@@ -67,7 +67,7 @@ fun SearchTripSurface(
                                 },
                 placeholderText = "Дата отправления",
                 cornerRadius = TripDimens.SearchBarCornerRadius,
-                initialQuery = "Сегодня"
+                initialQuery = initialDateValue
             )
 
             SearchTripBar(

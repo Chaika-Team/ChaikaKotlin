@@ -29,7 +29,7 @@ fun HistoryRecordCard(
             .clip(MaterialTheme.shapes.medium)
     ) {
         HistoryRecordContent(
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier.matchParentSize().dashedBorder(),
             tripRecord = tripRecord
         )
     }

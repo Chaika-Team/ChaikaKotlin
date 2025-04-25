@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.chaika.R
 import com.example.chaika.ui.navigation.Routes
+import com.example.chaika.ui.theme.BarDimens
 
 @Composable
 fun BottomBar(navController: NavController) {
@@ -31,13 +32,14 @@ fun BottomBar(navController: NavController) {
                 topEnd = 20.dp
             ),
             clip = true
-        )
+        ),
+        height = BarDimens.BarHeight
     )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp),
+            .height(BarDimens.BarHeight),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
