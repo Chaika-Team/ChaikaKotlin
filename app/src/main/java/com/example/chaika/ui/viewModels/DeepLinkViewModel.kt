@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-@HiltViewModel
+
 class DeepLinkViewModel @Inject constructor() : ViewModel() {
     private val _deepLinkIntent = MutableLiveData<Intent?>()
     val deepLinkIntent: LiveData<Intent?> = _deepLinkIntent

@@ -14,7 +14,7 @@ import com.example.chaika.ui.viewModels.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
-@AndroidEntryPoint
+
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
