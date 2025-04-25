@@ -19,7 +19,7 @@
     <string name="carriage_class">Класс</string>
     <string name="finish_trip">ЗАВЕРШИТЬ</string>
     <string name="retry_action">Повторить</string>
-    <string name="loading_error_message">Ошибка загрузки: %s</string>
+    <string name="loading_error_message">Ошибка загрузки: %1$s</string>
     <string name="empty_carriages_message">Нет доступных вагонов</string>
     <string name="train_ic">Иконка поезда</string>
 
