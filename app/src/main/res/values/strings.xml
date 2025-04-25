@@ -11,11 +11,23 @@
     <string name="edit_text_trip_hint_dialog">Укажите название</string>
     <string name="create">Добавить</string>
     <string name="rename">Изменить</string>
+    <string name="history">История</string>
+    <string name="now">Сейчас</string>
+    <string name="today">Сегодня</string>
+    <string name="no_trip_history">История поездок отсутствует</string>
+    <string name="no_selected_trip_error">Ошибка загрузки выбранного маршрута</string>
+    <string name="carriage_class">Класс</string>
+    <string name="finish_trip">ЗАВЕРШИТЬ</string>
+    <string name="retry_action">Повторить</string>
+    <string name="loading_error_message">Ошибка загрузки: %1$s</string>
+    <string name="empty_carriages_message">Нет доступных вагонов</string>
+    <string name="train_ic">Иконка поезда</string>
 
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>
     <string name="trip_added">Поездка добавлена</string>
     <string name="error_performing_operation">Ошибка при выполнении операции: %1$s</string>
+    <string name="error">Ошибка: </string>
 
     <string name="employee_id">Таб № %1$s</string>
     <string name="product_price">Цена: %1$.2f</string>

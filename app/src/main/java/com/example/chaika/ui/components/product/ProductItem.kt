@@ -64,7 +64,8 @@ fun ProductItem(
                 }
             ) {
                 ProductImage(
-                    imageUrl = product.image
+                    imageUrl = product.image,
+                    contentDescription = "Изображение продукта: ${product.name}"
                 )
             }
 

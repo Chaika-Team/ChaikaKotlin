@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 
 @Composable
-fun TripScreen() {
-    Text("Trip", modifier = Modifier.fillMaxSize().wrapContentSize())
+fun OperationScreen(
+    navController: NavHostController
+) {
+    // TODO()
+    Text("Operation", modifier = Modifier.fillMaxSize().wrapContentSize())
 }
