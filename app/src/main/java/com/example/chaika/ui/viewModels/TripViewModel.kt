@@ -7,28 +7,34 @@ import android.util.Log
 import androidx.annotation.Dimension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import com.example.chaika.ui.dto.Carriage
-import com.example.chaika.ui.dto.TripRecord
+import com.example.chaika.domain.models.trip.CarriageDomain
+import com.example.chaika.domain.models.trip.StationDomain
+import com.example.chaika.domain.models.trip.TripDomain
+import com.example.chaika.domain.usecases.GetCarriagesForTrainUseCase
+import com.example.chaika.domain.usecases.SearchTripsByStationsUseCase
+import com.example.chaika.domain.usecases.SuggestStationsUseCase
 import com.example.chaika.ui.viewModels.tripMocks.fetchAndSaveHistoryUseCase
-import com.example.chaika.ui.viewModels.tripMocks.getPagedCarriagesUseCase
-import com.example.chaika.ui.viewModels.tripMocks.getPagedFutureTripsUseCase
-import com.example.chaika.ui.viewModels.tripMocks.getPagedHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class TripViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val getCarriagesForTrainUseCase: GetCarriagesForTrainUseCase,
+    private val searchTripByStationUseCase: SearchTripsByStationsUseCase,
+    private val suggestStationsUseCase: SuggestStationsUseCase
 ) : ViewModel() {
-    private val _selectedTripRecord = MutableStateFlow<TripRecord?>(null)
+    private val _selectedTripRecord = MutableStateFlow<TripDomain?>(null)
+
+    private val _selectedCarriage = MutableStateFlow<CarriageDomain?>(null)
 
     private val _uiState = MutableStateFlow<ScreenState>(ScreenState.NewTrip)
     val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
@@ -36,21 +42,25 @@ class TripViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _pagingHistoryFlow = MutableStateFlow<PagingData<TripRecord>>(PagingData.empty())
-    val pagingHistoryFlow: StateFlow<PagingData<TripRecord>> = _pagingHistoryFlow.asStateFlow()
+    private val _pagingHistoryFlow = MutableStateFlow<List<TripDomain>>(emptyList())
+    val pagingHistoryFlow: StateFlow<List<TripDomain>> = _pagingHistoryFlow.asStateFlow()
 
-    private val _pagingFoundTripsFlow = MutableStateFlow<PagingData<TripRecord>>(PagingData.empty())
-    val pagingFoundTripsFlow: StateFlow<PagingData<TripRecord>> = _pagingFoundTripsFlow.asStateFlow()
+    private val _foundTripsList = MutableStateFlow<List<TripDomain>>(emptyList())
+    val foundTripsList: StateFlow<List<TripDomain>> = _foundTripsList.asStateFlow()
 
-    private val _pagingCarriageFlow = MutableStateFlow<PagingData<Carriage>>(PagingData.empty())
-    val pagingCarriageFlow: StateFlow<PagingData<Carriage>> = _pagingCarriageFlow.asStateFlow()
+    private val _carriageList = MutableStateFlow<List<CarriageDomain>>(emptyList())
+    val carriageList: StateFlow<List<CarriageDomain>> = _carriageList.asStateFlow()
 
     fun loadHistory() {
         loadHistoryData()
     }
 
     fun setNewTrip() {
-        _uiState.value = ScreenState.NewTrip
+        viewModelScope.launch {
+            _selectedTripRecord.update { null }
+            _selectedCarriage.update { null }
+            _uiState.update { ScreenState.NewTrip }
+        }
     }
 
     fun setFindByNumber() {
@@ -61,18 +71,30 @@ class TripViewModel @Inject constructor(
         _uiState.value = ScreenState.FindByStation
     }
 
-    fun setSelectCarriage(tripRecord: TripRecord) {
-        _selectedTripRecord.value = tripRecord
-        _uiState.value = ScreenState.SelectCarriage
-        loadCarriages(tripRecord.trainId)
+    fun setSelectCarriage(tripRecord: TripDomain) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _selectedTripRecord.value = tripRecord
+                _carriageList.value = getCarriagesForTrainUseCase(tripRecord.uuid) ?: emptyList()
+            } catch (e: Exception) {
+                Log.e("TripViewModel", "Error loading carriages", e)
+                _carriageList.value = emptyList()
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
-    fun setCurrentTrip(carriage: Carriage) {
-        // TODO: Дополнение TripRecord информацией из Carriage
-        _uiState.value = ScreenState.CurrentTrip
+
+    fun setCurrentTrip(carriage: CarriageDomain) {
+        viewModelScope.launch {
+            _selectedCarriage.value = carriage
+            _uiState.value = ScreenState.CurrentTrip
+        }
     }
 
-    fun getSelectedTrip(): TripRecord? {
+    fun getSelectedTrip(): TripDomain? {
         return _selectedTripRecord.value
     }
 
@@ -93,51 +115,23 @@ class TripViewModel @Inject constructor(
 
     private fun getHistory() {
         viewModelScope.launch {
-            getPagedHistoryUseCase(
-                pageSize = calculatePageSize(context)
+            _pagingHistoryFlow.value = fetchAndSaveHistoryUseCase()
+
+        }
+    }
+
+    fun getTrips(searchDate: String, searchStart: Int, searchFinish: Int) {
+        viewModelScope.launch {
+            _foundTripsList.value = searchTripByStationUseCase(
+                searchDate, searchStart, searchFinish
             )
-                .cachedIn(viewModelScope)
-                .collect { pagingData ->
-                    _pagingHistoryFlow.value = pagingData
-                }
         }
     }
 
-    fun getTrips(searchDate: String, searchStart: String, searchFinish: String) {
-        viewModelScope.launch {
-            getPagedFutureTripsUseCase(
-                pageSize = calculatePageSize(context),
-            )
-                .cachedIn(viewModelScope)
-                .collect { pagingData ->
-                    _pagingFoundTripsFlow.value = pagingData
-                }
+    suspend fun suggestStations(query: String, limit: Int): List<StationDomain> {
+        return withContext(Dispatchers.IO) {
+            suggestStationsUseCase(query, limit)
         }
-    }
-
-
-    fun loadCarriages(trainId: String) {
-        viewModelScope.launch {
-            getPagedCarriagesUseCase(
-                pageSize = calculatePageSize(context),
-                trainId = trainId
-            ).cachedIn(viewModelScope)
-                .collect { pagingData ->
-                    _pagingCarriageFlow.value = pagingData
-                }
-        }
-    }
-
-    fun createNewTrip() {
-        viewModelScope.launch {
-            // TODO(Логика создания новой поездки)
-            _uiState.update { ScreenState.CurrentTrip }
-        }
-    }
-
-    fun finishCurrentTrip() {
-        // TODO(Логика завершения поездки)
-        _uiState.update { ScreenState.NewTrip }
     }
 
     fun calculatePageSize(
@@ -160,4 +154,3 @@ class TripViewModel @Inject constructor(
         object Error: ScreenState()
     }
 }
-
