@@ -20,7 +20,11 @@ android {
         versionName = "0.0.2-alpha"
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.example.chaika"
-        testInstrumentationRunner = "com.example.chaika.HiltTestRunner"
+
+
+        testInstrumentationRunner = "com.example.chaika.KaspressoHiltTestRunner"
+
+
     }
 
     lint {
@@ -219,6 +223,12 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.11")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.11")
+    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.6.0")
+    androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.6.0")
 
     // Дополнительные модули (если используются)
     implementation("androidx.compose.foundation:foundation")
