@@ -45,7 +45,7 @@ fun TimeDetails(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = tripDetails.arrivalTime,
+                text = tripDetails.departureTime,
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 20.sp,
             )

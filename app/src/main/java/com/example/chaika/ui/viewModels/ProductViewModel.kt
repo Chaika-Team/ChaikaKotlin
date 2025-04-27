@@ -3,6 +3,7 @@ package com.example.chaika.ui.viewModels
 
 import android.content.Context
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.annotation.Dimension
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
@@ -99,6 +100,8 @@ class ProductViewModel @Inject constructor(
                     _pagingDataFlow.value = pagingData
                 }
         }
+        Log.d("ProductViewModel", "${_pagingDataFlow.value}")
+
     }
 
     fun syncWithCartOnChange() {
@@ -173,7 +176,7 @@ class ProductViewModel @Inject constructor(
                      val success = updateItemQuantityInCartUseCase(
                         itemId = productId,
                         newQuantity = newQuantity,
-                        availableQuantity = Int.MAX_VALUE // TODO(Добавить адекватное число)
+                        availableQuantity = 50
                     )
 
                     if (success) {

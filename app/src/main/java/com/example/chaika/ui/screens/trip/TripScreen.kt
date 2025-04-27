@@ -16,8 +16,14 @@ fun TripScreen(
     navController: NavHostController
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val shiftStatus by viewModel.shiftStatus.collectAsState()
 
-    LaunchedEffect(uiState) {
+    LaunchedEffect(Unit) {
+        viewModel.checkActiveShift()
+    }
+
+    LaunchedEffect(uiState, shiftStatus) {
+        if (shiftStatus == null) return@LaunchedEffect
         val currentRoute = navController.currentBackStackEntry?.destination?.route
         val targetRoute = when (uiState) {
             is ScreenState.NewTrip -> Routes.TRIP_NEW
@@ -28,8 +34,12 @@ fun TripScreen(
             is ScreenState.Error -> null
         }
 
+        Log.d("TripScreen", "uiState: $uiState, currentRoute: $currentRoute, targetRoute: $targetRoute")
+
         if (targetRoute != null && targetRoute != currentRoute) {
+            Log.d("TripScreen", "Navigating to $targetRoute")
             navController.navigate(targetRoute) {
+                popUpTo(Routes.TRIP_GRAPH) { inclusive = false }
                 launchSingleTop = true
                 restoreState = true
             }

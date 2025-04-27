@@ -13,7 +13,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ChaikaSoftApiService {
-    @GET("api/v1/products")
+    @GET("api/v1/product/")
     suspend fun getProducts(
         @Query("limit") limit: Int = 100,
         @Query("offset") offset: Int = 0

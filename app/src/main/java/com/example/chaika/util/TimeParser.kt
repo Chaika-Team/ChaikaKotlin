@@ -31,14 +31,28 @@ fun getTime(dateTime: String): String {
 
 fun parseDuration(duration: String): Pair<Int, Int> {
     return try {
-        val dur = Duration.parse(duration)
-        val hours = dur.toHours().toInt()
-        val minutes = dur.minusHours(hours.toLong()).toMinutes().toInt()
-        hours to minutes
+        try {
+            val dur = Duration.parse(duration)
+            val hours = dur.toHours().toInt()
+            val minutes = dur.minusHours(hours.toLong()).toMinutes().toInt()
+            hours to minutes
+        } catch (e: Exception) {
+            parseAlternativeDuration(duration)
+        }
     } catch (e: Exception) {
-        Log.e("TimeParser", e.toString())
+        Log.e("TimeParser", "Failed to parse duration: $duration", e)
         0 to 0
     }
+}
+
+private fun parseAlternativeDuration(duration: String): Pair<Int, Int> {
+    val hoursMatch = Regex("""(\d+)h""").find(duration)
+    val minutesMatch = Regex("""(\d+)m""").find(duration)
+
+    val hours = hoursMatch?.groupValues?.get(1)?.toIntOrNull() ?: 0
+    val minutes = minutesMatch?.groupValues?.get(1)?.toIntOrNull() ?: 0
+
+    return hours to minutes
 }
 
 fun TripDomain.parseTripDetails(): TripDetails {
