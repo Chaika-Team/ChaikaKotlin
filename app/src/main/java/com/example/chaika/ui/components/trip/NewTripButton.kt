@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,7 @@ fun NewTripButton(
 ) {
     Box(
         modifier = modifier
+            .testTag("newTripButton")
             .shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(TripDimens.CornerRadius),
