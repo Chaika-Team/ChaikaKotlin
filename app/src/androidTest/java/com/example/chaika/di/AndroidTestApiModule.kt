@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import testUtils.TestServerHolder
 
 @Module
@@ -12,5 +13,6 @@ import testUtils.TestServerHolder
     replaces = [ApiModule::class],
 )
 open class AndroidTestApiModule : ApiModule() {
-    override fun baseUrl(): HttpUrl = TestServerHolder.testMockServer.server.url("/")
+    // TODO: override fun baseUrl(): HttpUrl = TestServerHolder.testMockServer.server.url("/")
+    override fun baseUrl(): HttpUrl = "https://chaika-soft.ru/".toHttpUrl()
 }
