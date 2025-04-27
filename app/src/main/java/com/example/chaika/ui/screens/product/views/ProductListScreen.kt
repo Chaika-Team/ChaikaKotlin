@@ -41,7 +41,7 @@ fun ProductListScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_START -> viewModel.syncWithCartOnChange()
+                Lifecycle.Event.ON_START -> viewModel.observeCartChanges()
                 Lifecycle.Event.ON_STOP -> viewModel.clearState()
                 else -> {}
             }
@@ -62,7 +62,7 @@ fun ProductListScreen(
                 onClick = {
                     viewModel.setCart()
                     navController.navigate(Routes.PRODUCT_CART) {
-                        popUpTo(Routes.PRODUCT_CART) { inclusive = true }
+                        popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
                     }
                 },
                 modifier = Modifier.padding(16.dp)
