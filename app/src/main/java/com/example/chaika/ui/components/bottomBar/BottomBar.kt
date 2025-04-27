@@ -20,7 +20,9 @@ import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.BarDimens
 
 @Composable
-fun BottomBar(navController: NavController) {
+fun BottomBar(
+    navController: NavController,
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -57,8 +59,8 @@ fun BottomBar(navController: NavController) {
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_bag),
             selected = Routes.mainRoutes[Routes.PRODUCT]?.contains(currentRoute) == true,
             onClick = {
-                navController.navigate(Routes.PRODUCT_ENTRY) {
-                    popUpTo(Routes.PRODUCT_ENTRY) { inclusive = true }
+                navController.navigate(Routes.PRODUCT_GRAPH) {
+                    popUpTo(Routes.PRODUCT_GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
             }

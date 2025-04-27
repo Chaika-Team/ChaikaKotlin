@@ -1,86 +1,45 @@
 package com.example.chaika.ui.screens.product
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Text
+import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
-import com.example.chaika.ui.components.product.ProductComponent
-import com.example.chaika.ui.theme.LightColorScheme
+import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.ProductViewModel
-
+import com.example.chaika.ui.viewModels.ProductViewModel.ScreenState
 
 @Composable
 fun ProductScreen(
-    viewModel: ProductViewModel = hiltViewModel(),
+    viewModel: ProductViewModel,
     navController: NavHostController
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_START -> viewModel.syncWithCartOnChange()
-                Lifecycle.Event.ON_STOP -> viewModel.clearState()
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
     val uiState by viewModel.uiState.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
 
-    when {
-        isLoading -> {
-            //TODO: Сейчас isLoading по вообще всем товарам, поэтому очень долгая загрузка
+    LaunchedEffect(uiState) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+        val targetRoute = when (uiState) {
+            is ScreenState.ProductList -> Routes.PRODUCT_LIST
+            is ScreenState.Empty -> Routes.PRODUCT_ENTRY
+            is ScreenState.Cart -> Routes.PRODUCT_CART
+            is ScreenState.Error -> null
         }
-        uiState.error != null -> {
-            Text(
-                text = "Error: ${uiState.error}",
-                color = LightColorScheme.error,
-                modifier = Modifier.fillMaxSize().wrapContentSize()
-            )
-        }
-        else -> {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                items(
-                    count = pagingData.itemCount,
-                    key = pagingData.itemKey{it.id}
-                ) { index ->
-                    val product = pagingData[index]
-                    if (product != null) {
-                        ProductComponent(
-                            product = product,
-                            onAddToCart = { viewModel.addToCart(product.id) },
-                            onQuantityIncrease = { viewModel.updateQuantity(product.id, +1) },
-                            onQuantityDecrease = { viewModel.updateQuantity(product.id, -1) }
-                        )
-                    }
-                }
+
+        Log.d("ProductScreen", "uiState: $uiState, currentRoute: $currentRoute, targetRoute: $targetRoute")
+
+        if (targetRoute != null && targetRoute != currentRoute) {
+            Log.d("TripScreen", "Navigating to $targetRoute")
+            navController.navigate(targetRoute) {
+                popUpTo(Routes.PRODUCT_GRAPH) { inclusive = false }
+                launchSingleTop = true
+                restoreState = true
             }
+        }
+
+        if (uiState is ScreenState.Error) {
+            // TODO()
+            Log.e("TripScreen", "Some error")
         }
     }
 }
