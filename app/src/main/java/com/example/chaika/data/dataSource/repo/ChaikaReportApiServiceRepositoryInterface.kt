@@ -1,6 +1,6 @@
 package com.example.chaika.data.dataSource.repo
 
-import com.example.chaika.domain.models.trip.ConductorTripShift
+import com.example.chaika.domain.models.trip.ConductorTripShiftDomain
 
 /**
  * Интерфейс репозитория для работы с ChaikaReports.*
@@ -11,5 +11,5 @@ interface ChaikaReportApiServiceRepositoryInterface {
      *
      * @return Список назначений смен проводника, содержащих данные поездки и активный вагон.
      */
-    suspend fun getTripHistory(): List<ConductorTripShift>
+    suspend fun getTripHistory(): List<ConductorTripShiftDomain>
 }
