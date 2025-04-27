@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.compose.ui.unit.dp
-import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.ProductViewModel
 
 
@@ -28,9 +27,7 @@ fun ProductEntryScreen(
     ) {
         Button(
             onClick = {
-                navController.navigate(Routes.PRODUCT_LIST) {
-                    popUpTo(Routes.PRODUCT_ENTRY) { inclusive = false }
-                }
+                viewModel.setProductList()
             },
             modifier = Modifier.padding(16.dp)
         ) {
