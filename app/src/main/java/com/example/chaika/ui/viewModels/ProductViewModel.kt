@@ -113,6 +113,8 @@ class ProductViewModel @Inject constructor(
                     _pagingDataFlow.value = pagingData
                 }
         }
+        Log.d("ProductViewModel", "${_pagingDataFlow.value}")
+
     }
 
     private fun loadCartItems() {
