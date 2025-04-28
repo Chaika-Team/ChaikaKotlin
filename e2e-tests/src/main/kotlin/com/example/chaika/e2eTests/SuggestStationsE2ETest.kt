@@ -14,6 +14,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * E2E–тест сценария «предложение станций» на экране NewTrip.
+ */
 @HiltAndroidTest
 class SuggestStationsE2ETest {
 
@@ -30,31 +33,33 @@ class SuggestStationsE2ETest {
 
     @Test
     fun typingSa_showsSumskiyPosad() {
-        // 1) Открываем экран NewTrip
+        // 1) Открываем экран создания новой поездки
         composeRule
             .onNodeWithTag("newTripButton")
             .assertIsDisplayed()
             .performClick()
 
-        // 2) Вводим «са» в поле станции отправки
+        // 2) Фокусируемся на поле «Станция отправки» и вводим «са»
         composeRule
             .onNodeWithTag("startStationField")
             .assertIsDisplayed()
-            .performTextInput("са")
+            .performClick()            // запросить фокус
+            .performTextInput("са")    // вводим текст
 
-        // 3) Ждём пока дебаунс (300 мс) сработает и меню появится
+        // 3) Дождаться debounce и появления хотя бы одной подсказки
         composeRule.waitUntil(
             condition = {
-                // найдётся хотя бы один узел с нужным текстом
-                composeRule.onAllNodesWithText("СУМСКИЙ ПОСАД").fetchSemanticsNodes().isNotEmpty()
+                composeRule
+                    .onAllNodesWithText("СУМСКИЙ ПОСАД")
+                    .fetchSemanticsNodes()
+                    .isNotEmpty()
             },
             timeoutMillis = 5_000L
         )
 
-        // 4) Теперь проверяем, что нужная подсказка отображается
+        // 4) Проверить, что в списке подсказок есть нужный город
         composeRule
             .onNodeWithText("СУМСКИЙ ПОСАД")
             .assertIsDisplayed()
     }
-
 }

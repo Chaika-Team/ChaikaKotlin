@@ -56,6 +56,7 @@ fun SearchTripSurfaceDropdown(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                textFieldTestTag = "startStationField",
                 onQueryChange = { newText ->
                     Log.d("SearchTripSurface", "Start changed: $newText")
                 },
@@ -73,6 +74,7 @@ fun SearchTripSurfaceDropdown(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                textFieldTestTag = "finishStationField",
                 onQueryChange = { newText ->
                     Log.d("SearchTripSurface", "Finish changed: $newText")
                 },

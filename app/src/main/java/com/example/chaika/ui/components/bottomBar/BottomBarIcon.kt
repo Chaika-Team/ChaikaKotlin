@@ -16,14 +16,15 @@ import com.example.chaika.ui.theme.BarDimens
 fun BottomBarIcon(
     imageVector: ImageVector,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier // ← добавили сюда
 ) {
     val colors = MaterialTheme.colorScheme
     val iconColor = if (selected) colors.primary else colors.secondary
 
     IconButton(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .size(BarDimens.IconSize)
             .clip(RoundedCornerShape(BarDimens.CornerShape)),
         colors = IconButtonDefaults.iconButtonColors(
@@ -34,8 +35,7 @@ fun BottomBarIcon(
             imageVector = imageVector,
             contentDescription = "Navigation icon",
             tint = if (selected) colors.primary else colors.secondary,
-            modifier = Modifier
-                .size(BarDimens.IconSize)
+            modifier = Modifier.size(BarDimens.IconSize)
         )
     }
 }

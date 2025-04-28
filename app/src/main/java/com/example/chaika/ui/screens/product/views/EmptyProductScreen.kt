@@ -9,8 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.ProductViewModel
 
@@ -32,7 +33,9 @@ fun ProductEntryScreen(
                     popUpTo(Routes.PRODUCT_ENTRY) { inclusive = false }
                 }
             },
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .testTag("viewProductsButton")
         ) {
             Text(text = "View products")
         }

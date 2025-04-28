@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -63,7 +64,9 @@ fun BottomBar(
                     popUpTo(Routes.PRODUCT_GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
-            }
+            },
+            modifier = Modifier
+                .testTag("productTab")
         )
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_time),

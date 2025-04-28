@@ -37,6 +37,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun DropDownMenu(
     modifier: Modifier = Modifier,
+    textFieldTestTag: String? = null,
     initialQuery: String = "",
     onQueryChange: (String) -> Unit,
     onItemSelected: (StationDomain) -> Unit,
@@ -102,10 +103,10 @@ fun DropDownMenu(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
-                //уникальный «тестовый тег»:
-                .testTag(
-                    if (placeholderText.contains("отправки")) "startStationField"
-                    else "finishStationField"
+                .then(
+                    textFieldTestTag
+                        ?.let { Modifier.testTag(it) }
+                        ?: Modifier
                 ),
             placeholder = {
                 Text(

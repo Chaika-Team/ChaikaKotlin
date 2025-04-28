@@ -23,6 +23,7 @@ import com.example.chaika.ui.viewModels.TripViewModel
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.testTag
 
 @Composable
 fun SelectCarriageView(
@@ -53,7 +54,11 @@ fun SelectCarriageView(
 
                 val groupedCarriages = carriages.groupBy { it.classType }
 
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("carriageList")            // ← вот этот тег
+                ) {
                     if (groupedCarriages.isEmpty()) {
                         item {
                             EmptyState(
@@ -73,7 +78,8 @@ fun SelectCarriageView(
                                 CarriageCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(4.dp),
+                                        .padding(4.dp)
+                                        .testTag("carriageCard"),
                                     carriageId = carriage.carNumber.toInt(),
                                     onClick = {
                                         viewModel.setCurrentTrip(carriage = carriage)

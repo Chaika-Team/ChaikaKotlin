@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import com.example.chaika.ui.components.trip.FoundTripCard
 import com.example.chaika.ui.viewModels.TripViewModel
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.testTag
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.domain.models.trip.StationDomain
 import com.example.chaika.ui.components.trip.SearchTripSurfaceDropdown
@@ -63,9 +64,8 @@ fun FindByNumberView(
             columns = GridCells.Fixed(1),
             modifier = Modifier
                 .weight(1f)
-                .padding(
-                    start = 24.dp, end = 24.dp, top = 6.dp, bottom = 6.dp
-                ),
+                .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 6.dp)
+                .testTag("foundTripsGrid")      // ← тест-тег для списка
         ) {
             items(foundTrips) { trip ->
                 FoundTripCard(

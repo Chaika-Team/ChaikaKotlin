@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -94,6 +95,7 @@ fun ProductListScreen(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier
+                        .testTag("productListGrid")
                         .fillMaxSize()
                         .padding(innerPadding),
                     contentPadding = PaddingValues(16.dp)
@@ -105,6 +107,7 @@ fun ProductListScreen(
                         val product = pagingData[index]
                         if (product != null) {
                             ProductComponent(
+                                modifier = Modifier.testTag("productCard"),
                                 product = product,
                                 onAddToCart = { viewModel.addToCart(product.id) },
                                 onQuantityIncrease = { viewModel.updateQuantity(product.id, +1) },

@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -58,11 +57,7 @@ class ProductViewModel @Inject constructor(
     private var loadProductsJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            if (_pagingDataFlow.value == PagingData.empty<Product>()) {
-                loadInitialData()
-            }
-        }
+        loadInitialData()
         loadProducts()
         observeCartChanges()
         loadCartItems()
@@ -104,7 +99,8 @@ class ProductViewModel @Inject constructor(
                         domainProduct.toUiModel()
                     }.copy(
                         isInCart = _cartItems.value.any { it.id == domainProduct.id },
-                        quantity = _cartItems.value.find { it.id == domainProduct.id }?.quantity ?: 1
+                        quantity = _cartItems.value.find { it.id == domainProduct.id }?.quantity
+                            ?: 1
                     )
                 }
             }
