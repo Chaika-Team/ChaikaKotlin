@@ -14,14 +14,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.example.chaika.ui.dto.TripRecord
+import com.example.chaika.domain.models.trip.TripDomain
 import com.example.chaika.ui.theme.TripDimens
 
 
 @Composable
 fun StationsDetails(
     modifier: Modifier = Modifier,
-    tripRecord: TripRecord
+    tripRecord: TripDomain
 ) {
     var colorScheme = MaterialTheme.colorScheme
     ConstraintLayout(
@@ -43,7 +43,7 @@ fun StationsDetails(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = tripRecord.startName1,
+                text = tripRecord.from.name,
                 style = MaterialTheme.typography.bodySmall,
                 color = colorScheme.secondary,
                 fontSize = 10.sp,
@@ -51,7 +51,7 @@ fun StationsDetails(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = tripRecord.startName2,
+                text = tripRecord.from.city,
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 10.sp,
                 maxLines = 1,
@@ -71,7 +71,7 @@ fun StationsDetails(
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = tripRecord.endName1,
+                text = tripRecord.to.name,
                 style = MaterialTheme.typography.bodySmall,
                 color = colorScheme.secondary,
                 fontSize = 10.sp,
@@ -79,7 +79,7 @@ fun StationsDetails(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = tripRecord.endName2,
+                text = tripRecord.to.city,
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 10.sp,
                 maxLines = 1,

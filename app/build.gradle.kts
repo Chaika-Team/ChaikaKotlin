@@ -47,6 +47,7 @@ android {
     }
 
     testOptions {
+        animationsDisabled = true
         unitTests {
             isReturnDefaultValues = true
         }
@@ -207,7 +208,6 @@ dependencies {
     kspTest("com.google.dagger:hilt-compiler:2.48")
     testImplementation("io.mockk:mockk:1.12.0")
 
-
     // Базовые зависимости Compose (обязательные)
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00")) // BOM для согласованных версий
@@ -226,13 +226,12 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.paging:paging-compose:3.3.0") // or 3.2.1
     implementation("androidx.paging:paging-runtime-ktx:3.3.0") // Required for Paging
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("com.google.dagger:hilt-android-compiler:2.48")
     implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.1")
-
 }
 java {
     toolchain {

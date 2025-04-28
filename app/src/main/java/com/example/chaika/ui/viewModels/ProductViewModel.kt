@@ -1,8 +1,8 @@
 package com.example.chaika.ui.viewModels
 
-
 import android.content.Context
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.annotation.Dimension
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
@@ -25,7 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,29 +43,36 @@ class ProductViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _productsState = mutableStateMapOf<Int, Product>()
-
-    private val _uiState = MutableStateFlow(ProductScreenUiState())
-    val uiState: StateFlow<ProductScreenUiState> = _uiState.asStateFlow()
-
+    private val _uiState = MutableStateFlow<ScreenState>(ScreenState.Empty)
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
+    private val _cartItems = MutableStateFlow<List<Product>>(emptyList())
     private val _pagingDataFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
+
+    val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    val cartItems: StateFlow<List<Product>> = _cartItems.asStateFlow()
     val pagingDataFlow: StateFlow<PagingData<Product>> = _pagingDataFlow.asStateFlow()
 
-    private var _syncJob: Job? = null
-
+    private var syncJob: Job? = null
     private var loadProductsJob: Job? = null
-
 
     init {
         loadInitialData()
         loadProducts()
-        syncWithCartOnChange()
+        observeCartChanges()
+        loadCartItems()
     }
 
     fun clearState() {
         _productsState.clear()
+    }
+
+    fun setProductList() {
+        _uiState.update { ScreenState.ProductList }
+    }
+
+    fun setCart() {
+        _uiState.update { ScreenState.Cart }
     }
 
     private fun loadInitialData() {
@@ -73,9 +80,8 @@ class ProductViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 fetchAndSaveProductsUseCase()
-                _uiState.update { it.copy(error = null) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
+                _uiState.update { ScreenState.Error }
             } finally {
                 _isLoading.value = false
             }
@@ -88,12 +94,16 @@ class ProductViewModel @Inject constructor(
             getPagedProductsUseCase(
                 pageSize = calculatePageSize(context = context)
             ).map { pagingData ->
-                    pagingData.map { domainProduct ->
-                        _productsState.getOrPut(domainProduct.id) {
-                            domainProduct.toUiModel()
-                        }
-                    }
+                pagingData.map { domainProduct ->
+                    _productsState.getOrPut(domainProduct.id) {
+                        domainProduct.toUiModel()
+                    }.copy(
+                        isInCart = _cartItems.value.any { it.id == domainProduct.id },
+                        quantity = _cartItems.value.find { it.id == domainProduct.id }?.quantity
+                            ?: 1
+                    )
                 }
+            }
                 .cachedIn(viewModelScope)
                 .collect { pagingData ->
                     _pagingDataFlow.value = pagingData
@@ -101,37 +111,54 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun syncWithCartOnChange() {
-        if (_syncJob?.isActive == true) return
-        _syncJob = viewModelScope.launch {
-            val cartItems = getCartItemsUseCase().first()
-            for (item in cartItems) {
-                _productsState[item.product.id] = Product(
-                    id = item.product.id,
-                    name = item.product.name,
-                    description = item.product.description,
-                    image = item.product.image,
-                    price = item.product.price,
-                    isInCart = item.quantity > 0,
-                    quantity = item.quantity
-                )
+    private fun loadCartItems() {
+        viewModelScope.launch {
+            getCartItemsUseCase().collectLatest { cartItems ->
+                _cartItems.value = cartItems.map { cartItem ->
+                    Product(
+                        id = cartItem.product.id,
+                        name = cartItem.product.name,
+                        description = cartItem.product.description,
+                        image = cartItem.product.image,
+                        price = cartItem.product.price,
+                        isInCart = true,
+                        quantity = cartItem.quantity
+                    )
+                }
+                // Обновляем состояние продуктов при изменении корзины
+                updateProductsState()
             }
-            loadProducts()
         }
     }
 
-    fun syncWithCartOnRemove() {
-        if (_syncJob?.isActive == true) return
-        _syncJob = viewModelScope.launch {
-            val cartItems = getCartItemsUseCase().first()
-            val updatedProducts = _productsState.mapValues { (id, product) ->
-                val isInCart = cartItems.any { it.product.id == id }
-                product.copy(isInCart = isInCart)
-            }.toMutableMap()
+    fun observeCartChanges() {
+        syncJob?.cancel()
+        syncJob = viewModelScope.launch {
+            getCartItemsUseCase().collectLatest { cartItems ->
+                updateProductsState()
+                loadProducts()
+            }
+        }
+    }
 
-            _productsState.putAll(updatedProducts)
+    private fun updateProductsState() {
+        _cartItems.value.forEach { cartItem ->
+            _productsState[cartItem.id]?.let { current ->
+                _productsState[cartItem.id] = current.copy(
+                    isInCart = true,
+                    quantity = cartItem.quantity
+                )
+            }
+        }
 
-             loadProducts()
+        // Обновляем продукты, которых нет в корзине
+        _productsState.forEach { (id, product) ->
+            if (!_cartItems.value.any { it.id == id }) {
+                _productsState[id] = product.copy(
+                    isInCart = false,
+                    quantity = 1
+                )
+            }
         }
     }
 
@@ -142,48 +169,54 @@ class ProductViewModel @Inject constructor(
                     product = product.toDomain(),
                     quantity = product.quantity
                 )
-
-                val success = addItemToCartUseCase(cartItem)
-
-                if (success) {
-                    syncWithCartOnChange()
-                }
+                addItemToCartUseCase(cartItem)
+                // Изменения подхватятся через observeCartChanges
             }
         }
     }
 
     fun removeFromCart(productId: Int) {
         viewModelScope.launch {
-            _productsState[productId]?.let { product ->
-                val success = removeItemFromCartUseCase(itemId = productId)
+            removeItemFromCartUseCase(productId)
+            // Изменения подхватятся через observeCartChanges
+        }
+    }
 
-                if (success) {
-                    syncWithCartOnRemove()
+    fun updateCartQuantity(productId: Int, change: Int) {
+        viewModelScope.launch {
+            _cartItems.value.find { it.id == productId }?.let { current ->
+                val newQuantity = current.quantity + change
+                if (newQuantity > 0) {
+                    updateItemQuantityInCartUseCase(
+                        itemId = productId,
+                        newQuantity = newQuantity,
+                        availableQuantity = 50
+                    )
+                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity")
+                    // Изменения подхватятся через observeCartChanges
+                } else {
+                    removeFromCart(productId)
+                    Log.d("ProductViewModel", "Removed $productId from cart")
                 }
-            }
+            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _cartItems")
         }
     }
 
     fun updateQuantity(productId: Int, change: Int) {
         viewModelScope.launch {
             _productsState[productId]?.let { current ->
-                val newQuantity = (current.quantity + change)
-
+                val newQuantity = current.quantity + change
                 if (newQuantity > 0) {
-                     val success = updateItemQuantityInCartUseCase(
+                    updateItemQuantityInCartUseCase(
                         itemId = productId,
                         newQuantity = newQuantity,
-                        availableQuantity = Int.MAX_VALUE // TODO(Добавить адекватное число)
+                        availableQuantity = 50
                     )
-
-                    if (success) {
-                        loadProducts()
-                        syncWithCartOnChange()
-                    }
+                    // Изменения подхватятся через observeCartChanges
                 } else {
                     removeFromCart(productId)
                 }
-            }
+            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _productsState")
         }
     }
 
@@ -209,9 +242,11 @@ class ProductViewModel @Inject constructor(
             quantity = 1
         )
     }
-}
 
-data class ProductScreenUiState(
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+    sealed class ScreenState {
+        object Empty : ScreenState()
+        object ProductList : ScreenState()
+        object Cart : ScreenState()
+        object Error : ScreenState()
+    }
+}

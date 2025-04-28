@@ -6,6 +6,7 @@ import com.example.chaika.data.room.AppDatabase
 import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
+import com.example.chaika.data.room.dao.ConductorTripShiftDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import dagger.Module
 import dagger.Provides
@@ -40,4 +41,8 @@ object AndroidTestDatabaseModule {
 
     @Provides
     fun provideProductInfoDao(db: AppDatabase): ProductInfoDao = db.productInfoDao()
+
+    @Provides
+    fun provideConductorTripShiftDao(db: AppDatabase): ConductorTripShiftDao =
+        db.conductorTripShiftDao()
 }

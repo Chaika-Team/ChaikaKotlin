@@ -17,5 +17,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ChaikaKotlin"
-include(":app")
- 
+include(":app", ":e2e-tests")

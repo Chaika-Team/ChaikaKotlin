@@ -1,8 +1,10 @@
 package com.example.chaika.di
 
 import com.example.chaika.data.dataSource.apiService.ChaikaSoftApiService
+import com.example.chaika.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepository
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.example.chaika.data.dataSource.repo.ChaikaSoftRoutesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,4 +44,11 @@ open class ApiModule {
     fun provideChaikaSoftApiServiceRepository(
         @Named("ChaikaSoftApiService") service: ChaikaSoftApiService,
     ): ChaikaSoftApiServiceRepositoryInterface = ChaikaSoftApiServiceRepository(service)
+
+    @Provides
+    @Singleton
+    fun provideChaikaRoutesAdapterRepository(
+        @Named("ChaikaSoftApiService") service: ChaikaSoftApiService
+    ): ChaikaRoutesAdapterApiServiceRepositoryInterface =
+        ChaikaSoftRoutesRepository(service)
 }
