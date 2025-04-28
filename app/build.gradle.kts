@@ -20,11 +20,7 @@ android {
         versionName = "0.0.2-alpha"
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.example.chaika"
-
-
-        testInstrumentationRunner = "com.example.chaika.KaspressoHiltTestRunner"
-
-
+        testInstrumentationRunner = "com.example.chaika.HiltTestRunner"
     }
 
     lint {
@@ -212,7 +208,6 @@ dependencies {
     kspTest("com.google.dagger:hilt-compiler:2.48")
     testImplementation("io.mockk:mockk:1.12.0")
 
-
     // Базовые зависимости Compose (обязательные)
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00")) // BOM для согласованных версий
@@ -225,25 +220,18 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.11")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.11")
-    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.6.0")
-    androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.6.0")
-
     // Дополнительные модули (если используются)
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.animation:animation")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.paging:paging-compose:3.3.0") // or 3.2.1
     implementation("androidx.paging:paging-runtime-ktx:3.3.0") // Required for Paging
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("com.google.dagger:hilt-android-compiler:2.48")
     implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.1")
-
 }
 java {
     toolchain {

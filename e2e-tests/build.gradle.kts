@@ -69,6 +69,8 @@ dependencies {
     // Kaspresso + Compose-support
     implementation("com.kaspersky.android-components:kaspresso:1.6.0")
     implementation("com.kaspersky.android-components:kaspresso-compose-support:1.6.0")
+    implementation("androidx.compose.ui:ui-test-junit4:1.5.11")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.11")
 }
 
 java {
