@@ -13,6 +13,7 @@ object Routes {
     const val PRODUCT_ENTRY = "product/graph/product_entry"
     const val PRODUCT_LIST = "product/graph/product_list"
     const val PRODUCT_CART = "product/graph/cart"
+    const val PRODUCT_PACKAGE = "product/graph/package"
     const val OPERATION = "operation"
     const val PROFILE = "profile"
 
@@ -22,7 +23,10 @@ object Routes {
             TRIP_BY_NUMBER, TRIP_BY_STATION,
             TRIP_SELECT_CARRIAGE, TRIP_CURRENT
         ),
-        PRODUCT to listOf(PRODUCT_ENTRY, PRODUCT, PRODUCT_LIST, PRODUCT_CART),
+        PRODUCT to listOf(
+            PRODUCT_ENTRY, PRODUCT, PRODUCT_LIST,
+            PRODUCT_CART, PRODUCT_PACKAGE, PRODUCT_GRAPH
+        ),
         OPERATION to listOf(OPERATION),
         PROFILE to listOf(PROFILE)
     )

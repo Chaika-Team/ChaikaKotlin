@@ -43,15 +43,19 @@ class ProductViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _productsState = mutableStateMapOf<Int, Product>()
+    private val _productsCartState = mutableStateMapOf<Int, Product>()
     private val _uiState = MutableStateFlow<ScreenState>(ScreenState.Empty)
     private val _isLoading = MutableStateFlow(false)
     private val _cartItems = MutableStateFlow<List<Product>>(emptyList())
+    private val _packageItems = MutableStateFlow<List<Product>>(emptyList())
     private val _pagingDataFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
+    private val _pagingPackageDataFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
 
     val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     val cartItems: StateFlow<List<Product>> = _cartItems.asStateFlow()
+    val packageItems: StateFlow<List<Product>> = _packageItems.asStateFlow()
+    val pagingPackageDataFlow: StateFlow<PagingData<Product>> = _pagingPackageDataFlow.asStateFlow()
     val pagingDataFlow: StateFlow<PagingData<Product>> = _pagingDataFlow.asStateFlow()
 
     private var syncJob: Job? = null
@@ -66,14 +70,6 @@ class ProductViewModel @Inject constructor(
         loadProducts()
         observeCartChanges()
         loadCartItems()
-    }
-
-    fun clearState() {
-        _productsState.clear()
-    }
-
-    fun setProductList() {
-        _uiState.update { ScreenState.ProductList }
     }
 
     fun setCart() {
@@ -100,7 +96,7 @@ class ProductViewModel @Inject constructor(
                 pageSize = calculatePageSize(context = context)
             ).map { pagingData ->
                 pagingData.map { domainProduct ->
-                    _productsState.getOrPut(domainProduct.id) {
+                    _productsCartState.getOrPut(domainProduct.id) {
                         domainProduct.toUiModel()
                     }.copy(
                         isInCart = _cartItems.value.any { it.id == domainProduct.id },
@@ -135,6 +131,46 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun loadPackageItems() {
+        TODO("Not yet implemented")
+    }
+    
+    fun addToPackage(productId: Int) {
+        TODO()
+    }
+    
+    fun removeFromPackage(productId: Int) {
+        TODO()
+    }
+    
+    fun updatePackageQuantity(productId: Int, change: Int) {
+        viewModelScope.launch {
+            _packageItems.value.find { it.id == productId }?.let { current ->
+                val newQuantity = current.quantity + change
+                if (newQuantity > 0) {
+                    TODO("UC needs to be implemented")
+//                    updateItemQuantityInCartUseCase(
+//                        itemId = productId,
+//                        newQuantity = newQuantity,
+//                        availableQuantity = 50
+//                    )
+                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in package")
+                } else {
+                    removeFromPackage(productId)
+                    Log.d("ProductViewModel", "Removed $productId from package")
+                }
+            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _packageItems")
+        }
+    }
+
+    fun clearPackageState() {
+        //TODO()
+    }
+
+    fun observePackageChanges() {
+        //TODO()
+    }
+
     fun observeCartChanges() {
         syncJob?.cancel()
         syncJob = viewModelScope.launch {
@@ -147,18 +183,17 @@ class ProductViewModel @Inject constructor(
 
     private fun updateProductsState() {
         _cartItems.value.forEach { cartItem ->
-            _productsState[cartItem.id]?.let { current ->
-                _productsState[cartItem.id] = current.copy(
+            _productsCartState[cartItem.id]?.let { current ->
+                _productsCartState[cartItem.id] = current.copy(
                     isInCart = true,
                     quantity = cartItem.quantity
                 )
             }
         }
 
-        // Обновляем продукты, которых нет в корзине
-        _productsState.forEach { (id, product) ->
+        _productsCartState.forEach { (id, product) ->
             if (!_cartItems.value.any { it.id == id }) {
-                _productsState[id] = product.copy(
+                _productsCartState[id] = product.copy(
                     isInCart = false,
                     quantity = 1
                 )
@@ -168,13 +203,12 @@ class ProductViewModel @Inject constructor(
 
     fun addToCart(productId: Int) {
         viewModelScope.launch {
-            _productsState[productId]?.let { product ->
+            _productsCartState[productId]?.let { product ->
                 val cartItem = CartItemDomain(
                     product = product.toDomain(),
                     quantity = product.quantity
                 )
                 addItemToCartUseCase(cartItem)
-                // Изменения подхватятся через observeCartChanges
             }
         }
     }
@@ -182,7 +216,6 @@ class ProductViewModel @Inject constructor(
     fun removeFromCart(productId: Int) {
         viewModelScope.launch {
             removeItemFromCartUseCase(productId)
-            // Изменения подхватятся через observeCartChanges
         }
     }
 
@@ -196,31 +229,12 @@ class ProductViewModel @Inject constructor(
                         newQuantity = newQuantity,
                         availableQuantity = 50
                     )
-                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity")
-                    // Изменения подхватятся через observeCartChanges
+                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in cart")
                 } else {
                     removeFromCart(productId)
                     Log.d("ProductViewModel", "Removed $productId from cart")
                 }
             } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _cartItems")
-        }
-    }
-
-    fun updateQuantity(productId: Int, change: Int) {
-        viewModelScope.launch {
-            _productsState[productId]?.let { current ->
-                val newQuantity = current.quantity + change
-                if (newQuantity > 0) {
-                    updateItemQuantityInCartUseCase(
-                        itemId = productId,
-                        newQuantity = newQuantity,
-                        availableQuantity = 50
-                    )
-                    // Изменения подхватятся через observeCartChanges
-                } else {
-                    removeFromCart(productId)
-                }
-            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _productsState")
         }
     }
 
@@ -250,6 +264,7 @@ class ProductViewModel @Inject constructor(
     sealed class ScreenState {
         object Empty : ScreenState()
         object ProductList : ScreenState()
+        object Package: ScreenState()
         object Cart : ScreenState()
         object Error : ScreenState()
     }
