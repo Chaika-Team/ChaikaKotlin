@@ -9,13 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.chaika.ui.dto.TripRecord
+import com.example.chaika.domain.models.trip.TripDomain
 
 @Composable
 fun SelectedTripRecordSurface(
     modifier: Modifier = Modifier,
     height: Dp,
-    tripRecord: TripRecord
+    tripRecord: TripDomain
 ) {
     Box(
         modifier.fillMaxWidth().height(height),

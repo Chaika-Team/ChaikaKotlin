@@ -25,14 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.chaika.R
-import com.example.chaika.ui.dto.TripRecord
+import com.example.chaika.domain.models.trip.StationDomain
+import com.example.chaika.domain.models.trip.TripDomain
 import com.example.chaika.ui.theme.TripDimens
-import java.time.LocalDateTime
 
 @Composable
 fun CurrentTripContent(
     modifier: Modifier = Modifier,
-    tripRecord: TripRecord,
+    tripRecord: TripDomain,
     heightTotal: Dp = TripDimens.NewTripButtonHeight,
     widthTotal: Dp = TripDimens.CardWidth,
     onClick: () -> Unit
@@ -73,7 +73,7 @@ fun CurrentTripContent(
                 modifier = Modifier.size(TripDimens.IconSize)
             )
             Text(
-                text = tripRecord.trainId,
+                text = tripRecord.trainNumber,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -137,16 +137,22 @@ fun Modifier.dashedBorder(
 fun CurrentTripButtonPreview() {
     CurrentTripContent(
         modifier = Modifier,
-        tripRecord = TripRecord(
-            routeID = 0,
-            trainId = "119A",
-            startTime = LocalDateTime.parse("2024-03-30T00:12:00"),
-            endTime = LocalDateTime.parse("2024-03-30T09:47:00"),
-            carriageID = 33,
-            startName1 = "Московский вокзал",
-            startName2 = "Санкт-Петербург-Главный",
-            endName1 = "ТПУ черкизово",
-            endName2 = "Москва ВК Восточный"
+        tripRecord = TripDomain(
+            uuid = "12",
+            trainNumber = "120A",
+            departure = "2025-03-29T23:55:00+03:00",
+            arrival = "2025-03-30T09:47:00+03:00",
+            duration = "PT9H52M",
+            from = StationDomain(
+                code = 1,
+                name = "Московский вокзал",
+                city = "Санкт-Петербург-Главный"
+            ),
+            to = StationDomain(
+                code = 2,
+                name = "ТПУ Черкизово",
+                city = "Москва ВК Восточный"
+            )
         ),
         onClick = { }
     )

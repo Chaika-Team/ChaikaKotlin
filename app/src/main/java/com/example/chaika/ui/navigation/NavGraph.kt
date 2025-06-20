@@ -10,7 +10,9 @@ import androidx.navigation.compose.navigation
 import com.example.chaika.ui.screens.OperationScreen
 import com.example.chaika.ui.screens.ProfileScreen
 import com.example.chaika.ui.screens.product.ProductScreen
+import com.example.chaika.ui.screens.product.views.CartScreen
 import com.example.chaika.ui.screens.product.views.ProductEntryScreen
+import com.example.chaika.ui.screens.product.views.ProductListScreen
 import com.example.chaika.ui.screens.trip.TripScreen
 import com.example.chaika.ui.screens.trip.views.CurrentTripView
 import com.example.chaika.ui.screens.trip.views.FindByNumberView
@@ -21,8 +23,6 @@ import com.example.chaika.ui.viewModels.TripViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    val productViewModel: ProductViewModel = hiltViewModel()
-
     NavHost(
         navController = navController,
         startDestination = Routes.TRIP_GRAPH
@@ -87,15 +87,47 @@ fun NavGraph(navController: NavHostController) {
             }
         }
 
-        composable(route = Routes.PRODUCT_ENTRY) {
-            ProductEntryScreen(navController = navController)
+        navigation(
+            startDestination = Routes.PRODUCT,
+            route = Routes.PRODUCT_GRAPH
+        ) {
+            composable(route = Routes.PRODUCT) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                ProductScreen(viewModel = productViewModel, navController = navController)
+            }
+
+            composable(route = Routes.PRODUCT_ENTRY) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                ProductEntryScreen(viewModel = productViewModel, navController = navController)
+            }
+
+            composable(route = Routes.PRODUCT_LIST) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                ProductListScreen(viewModel = productViewModel, navController = navController)
+            }
+
+            composable(route = Routes.PRODUCT_CART) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                CartScreen(viewModel = productViewModel, navController = navController)
+            }
         }
-        composable(route = Routes.PRODUCT) {
-            ProductScreen(viewModel = productViewModel, navController = navController)
-        }
+
         composable(route = Routes.OPERATION) {
             OperationScreen(navController = navController)
         }
+
         composable(route = Routes.PROFILE) {
             ProfileScreen(navController = navController)
         }

@@ -14,16 +14,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.example.chaika.ui.dto.TripRecord
+import com.example.chaika.domain.models.trip.StationDomain
+import com.example.chaika.domain.models.trip.TripDomain
 import com.example.chaika.ui.theme.TripDimens
-import java.time.Duration
-import java.time.LocalDateTime
+import com.example.chaika.util.parseTripDetails
 
 @Composable
 fun TimeDetails(
     modifier: Modifier = Modifier,
-    tripRecord: TripRecord
+    tripRecord: TripDomain
 ) {
+    val tripDetails = tripRecord.parseTripDetails()
+
     ConstraintLayout(
         modifier = modifier
             .height(TripDimens.TimeDetailsHeight)
@@ -43,7 +45,7 @@ fun TimeDetails(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "${tripRecord.startTime.hour}:${tripRecord.startTime.minute.toString().padStart(2, '0')}",
+                text = tripDetails.departureTime,
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 20.sp,
             )
@@ -60,17 +62,7 @@ fun TimeDetails(
             },
             contentAlignment = Alignment.TopCenter
         ) {
-            val duration = Duration.between(
-                tripRecord.startTime.coerceAtMost(tripRecord.endTime),
-                tripRecord.startTime.coerceAtLeast(tripRecord.endTime)
-            )
-            val totalMinutes = duration.toMinutes()
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-            Text(
-                text = "$hours ч $minutes мин",
-                fontSize = 10.sp
-            )
+            Text(text = "${tripDetails.durationHours} ч ${tripDetails.durationMinutes} мин")
         }
         Box(
             modifier = Modifier.constrainAs(arrow) {
@@ -98,9 +90,9 @@ fun TimeDetails(
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = "${tripRecord.endTime.hour}:${tripRecord.endTime.minute.toString().padStart(2, '0')}",
+                text = tripDetails.arrivalTime,
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 20.sp
+                fontSize = 20.sp,
             )
         }
     }
@@ -111,16 +103,22 @@ fun TimeDetails(
 fun TimeDetailsPreview() {
     TimeDetails(
         modifier = Modifier,
-        tripRecord = TripRecord(
-            routeID = 0,
-            trainId = "119A",
-            startTime = LocalDateTime.parse("2024-03-30T00:12:00"),
-            endTime = LocalDateTime.parse("2024-03-30T09:47:00"),
-            carriageID = 33,
-            startName1 = "Московский вокзал",
-            startName2 = "Санкт-Петербург-Главный",
-            endName1 = "ТПУ черкизово",
-            endName2 = "Москва ВК Восточный"
+        tripRecord = TripDomain(
+            uuid = "12",
+            trainNumber = "120A",
+            departure = "2025-03-29T23:55:00+03:00",
+            arrival = "2025-03-30T09:47:00+03:00",
+            duration = "PT9H52M",
+            from = StationDomain(
+                code = 1,
+                name = "Московский вокзал",
+                city = "Санкт-Петербург-Главный"
+            ),
+            to = StationDomain(
+                code = 2,
+                name = "ТПУ Черкизово",
+                city = "Москва ВК Восточный"
+            )
         )
     )
 }

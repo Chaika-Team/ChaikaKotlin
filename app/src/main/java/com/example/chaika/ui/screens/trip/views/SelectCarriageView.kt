@@ -5,95 +5,76 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.R
 import com.example.chaika.ui.components.trip.CarriageCard
 import com.example.chaika.ui.components.trip.SelectedTripRecordSurface
 import com.example.chaika.ui.components.util.EmptyState
-import com.example.chaika.ui.components.util.ErrorMessage
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.TripDimens
 import com.example.chaika.ui.viewModels.TripViewModel
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun SelectCarriageView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
-    val pagingItems = viewModel.pagingCarriageFlow.collectAsLazyPagingItems()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val carriages by viewModel.carriageList.collectAsState()
+    val selectedTrip by remember { derivedStateOf { viewModel.getSelectedTrip() } }
 
-    val groupedCarriages = remember(pagingItems) {
-        derivedStateOf {
-            pagingItems.itemSnapshotList.items.groupBy { it.classType }
-        }
-    }
 
-    val selectedTrip = viewModel.getSelectedTrip()
+    Column(modifier = Modifier.fillMaxSize()) {
+        when {
+            isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+            selectedTrip == null -> {
+                Text(
+                    text = stringResource(R.string.no_selected_trip_error),
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            else -> {
+                SelectedTripRecordSurface(
+                    height = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL * 2,
+                    tripRecord = selectedTrip!!
+                )
 
-    if (selectedTrip == null) {
-        Text(
-            text = stringResource(R.string.no_selected_trip_error),
-            modifier = Modifier.padding(16.dp)
-        )
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            SelectedTripRecordSurface(
-                height = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL + TripDimens.PaddingXL,
-                tripRecord = selectedTrip
-            )
+                val groupedCarriages = carriages.groupBy { it.classType }
 
-            LazyColumn {
-                when {
-                    // TODO: Обработка загрузки
-
-                    pagingItems.loadState.refresh is LoadState.Error -> {
-                        item {
-                            val error = pagingItems.loadState.refresh as LoadState.Error
-                            ErrorMessage(
-                                message = stringResource(R.string.loading_error_message, error.error.localizedMessage),
-                                modifier = Modifier.fillParentMaxSize(),
-                                onRetry = { pagingItems.retry() }
-                            )
-                        }
-                    }
-
-                    groupedCarriages.value.isEmpty() -> {
+                LazyColumn {
+                    if (groupedCarriages.isEmpty()) {
                         item {
                             EmptyState(
                                 message = stringResource(R.string.empty_carriages_message),
                                 modifier = Modifier.fillParentMaxSize()
                             )
                         }
-                    }
-                    else -> {
-                        groupedCarriages.value.forEach { (classType, carriages) ->
+                    } else {
+                        groupedCarriages.forEach { (classType, subCarriages) ->
                             item(key = "header_$classType") {
                                 Text(
                                     text = stringResource(R.string.carriage_class) + " $classType",
                                     modifier = Modifier.padding(8.dp),
                                 )
                             }
-                            items(
-                                count = carriages.size,
-                                key = { index -> carriages[index].id }
-                            ) { index ->
-                                val carriage = carriages[index]
+                            items(subCarriages) { carriage ->
                                 CarriageCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(4.dp),
-                                    carriageId = carriage.id,
+                                    carriageId = carriage.carNumber.toInt(),
                                     onClick = {
                                         viewModel.setCurrentTrip(carriage = carriage)
                                         navController.navigate(Routes.TRIP_CURRENT)

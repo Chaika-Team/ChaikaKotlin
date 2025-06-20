@@ -9,7 +9,7 @@ import testUtils.TestServerHolder
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [ApiModule::class]
+    replaces = [ApiModule::class],
 )
 open class AndroidTestApiModule : ApiModule() {
     override fun baseUrl(): HttpUrl = TestServerHolder.testMockServer.server.url("/")
