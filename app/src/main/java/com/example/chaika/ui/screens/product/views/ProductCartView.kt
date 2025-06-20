@@ -7,69 +7,45 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import com.example.chaika.R
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.theme.LightColorScheme
 import com.example.chaika.ui.viewModels.ProductViewModel
-import com.example.chaika.ui.navigation.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductListScreen(
+fun ProductCartView(
     viewModel: ProductViewModel,
     navController: NavHostController
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_START -> viewModel.observeCartChanges()
-                Lifecycle.Event.ON_STOP -> viewModel.clearState()
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
-    val uiState by viewModel.uiState.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    viewModel.setCart()
-                    navController.navigate(Routes.PRODUCT_CART) {
-                        popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
-                    }
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_cart_buy),
-                    contentDescription = "Go to cart"
+                    contentDescription = "Proceed to checkout"
                 )
             }
         }
@@ -85,8 +61,15 @@ fun ProductListScreen(
             }
             uiState == ProductViewModel.ScreenState.Error -> {
                 Text(
-                    text = "Error",
+                    text = "Error loading cart",
                     color = LightColorScheme.error,
+                    modifier = Modifier.fillMaxSize().wrapContentSize()
+                )
+            }
+            cartItems.isEmpty() -> {
+                Text(
+                    text = "Your cart is empty",
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.fillMaxSize().wrapContentSize()
                 )
             }
@@ -99,18 +82,16 @@ fun ProductListScreen(
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     items(
-                        count = pagingData.itemCount,
-                        key = pagingData.itemKey { it.id }
+                        count = cartItems.size,
+                        key = { index -> cartItems[index].id }
                     ) { index ->
-                        val product = pagingData[index]
-                        if (product != null) {
-                            ProductComponent(
-                                product = product,
-                                onAddToCart = { viewModel.addToCart(product.id) },
-                                onQuantityIncrease = { viewModel.updateQuantity(product.id, +1) },
-                                onQuantityDecrease = { viewModel.updateQuantity(product.id, -1) }
-                            )
-                        }
+                        val product = cartItems[index]
+                        ProductComponent(
+                            product = product,
+                            onAddToCart = { viewModel.addToCart(product.id) },
+                            onQuantityIncrease = { viewModel.updateCartQuantity(product.id, +1) },
+                            onQuantityDecrease = { viewModel.updateCartQuantity(product.id, -1) },
+                        )
                     }
                 }
             }

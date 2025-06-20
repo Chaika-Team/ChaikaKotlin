@@ -17,26 +17,23 @@ fun Arrow(
     modifier: Modifier = Modifier,
     pointSize: Dp = 8.dp,
     spaceAfterPoint: Dp = 2.dp,
-    baseArrowLength: Dp = 145.dp,
     color: Color = Color.Black
 ) {
     val density = LocalDensity.current
     val pointSizePx = with(density) { pointSize.toPx() }
     val spacePx = with(density) { spaceAfterPoint.toPx() }
-    val baseArrowLengthPx = with(density) { baseArrowLength.toPx() }
+    val endPaddingPx = 4f
 
     Canvas(modifier = modifier.fillMaxWidth()) {
         val canvasWidth = size.width
-        val arrowLength = minOf(baseArrowLengthPx, canvasWidth - pointSizePx - spacePx - 20) // 20 - минимальное место для стрелки
+        val lineStartX = pointSizePx + spacePx
+        val lineEndX = canvasWidth - endPaddingPx
 
         drawCircle(
             color = color,
             radius = pointSizePx / 2,
             center = Offset(x = pointSizePx / 2, y = size.height / 2)
         )
-
-        var lineStartX = pointSizePx + spacePx
-        val lineEndX = lineStartX + arrowLength
 
         drawLine(
             color = color,
