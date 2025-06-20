@@ -1,5 +1,6 @@
 package com.example.chaika.ui.screens.product.views
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -7,8 +8,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,17 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.chaika.R
+import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.LightColorScheme
@@ -57,24 +55,9 @@ fun ProductPackageView(
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.setCart()
-                    navController.navigate(Routes.PRODUCT_CART) {
-                        popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
-                    }
-                },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_cart_buy),
-                    contentDescription = "Go to cart"
-                )
-            }
-        }
-    ) { innerPadding ->
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
         when {
             isLoading -> {
                 CircularProgressIndicator(
@@ -96,8 +79,7 @@ fun ProductPackageView(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier
                         .testTag("packageListGrid")
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     items(packageItems.size) { index ->
@@ -119,5 +101,16 @@ fun ProductPackageView(
                 }
             }
         }
+        CartFAB(
+            totalPrice = "60 000",
+            itemsCount = 11,
+            onClick = {
+                viewModel.setCart()
+                navController.navigate(Routes.PRODUCT_CART) {
+                    popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
+                }
+            },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(end = 24.dp)
+        )
     }
 }
