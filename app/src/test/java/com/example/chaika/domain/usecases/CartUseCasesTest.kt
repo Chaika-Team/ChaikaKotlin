@@ -32,11 +32,20 @@ class CartUseCasesTest {
     @Mock
     lateinit var roomCartRepo: RoomCartRepositoryInterface
 
+    @Mock
+    lateinit var saveOpUseCaseMock: SaveCartWithItemsAndOperationUseCase
+
     private lateinit var saveCartUseCase: SaveCartWithItemsAndOperationUseCase
     private lateinit var addItemUseCase: AddItemToCartUseCase
     private lateinit var removeItemUseCase: RemoveItemFromCartUseCase
     private lateinit var updateQuantityUseCase: UpdateItemQuantityInCartUseCase
     private lateinit var getCartItemsUseCase: GetCartItemsUseCase
+
+    // новые обёртки
+    private lateinit var addOpUseCase: AddOpUseCase
+    private lateinit var soldCashOpUseCase: SoldCashOpUseCase
+    private lateinit var soldCardOpUseCase: SoldCardOpUseCase
+    private lateinit var replenishUseCase: ReplenishUseCase
 
     // Пример доменных объектов для тестов
     private val dummyCartItems = listOf(
@@ -62,6 +71,11 @@ class CartUseCasesTest {
         removeItemUseCase = RemoveItemFromCartUseCase(inMemoryCartRepo)
         updateQuantityUseCase = UpdateItemQuantityInCartUseCase(inMemoryCartRepo)
         getCartItemsUseCase = GetCartItemsUseCase(inMemoryCartRepo)
+
+        addOpUseCase = AddOpUseCase(saveOpUseCaseMock)
+        soldCashOpUseCase = SoldCashOpUseCase(saveOpUseCaseMock)
+        soldCardOpUseCase = SoldCardOpUseCase(saveOpUseCaseMock)
+        replenishUseCase = ReplenishUseCase(saveOpUseCaseMock)
     }
 
     /**
@@ -136,5 +150,69 @@ class CartUseCasesTest {
         // Получаем снимок списка из Flow
         val result = getCartItemsUseCase.invoke().first()
         assertEquals(dummyCartItems, result)
+    }
+
+    /**
+     * Тест для AddOpUseCase.
+     * Проверяется, что при вызове invoke(conductorId)
+     * базовый SaveCartWithItemsAndOperationUseCase
+     * получает CartOperationDomain с типом ADD и тем же conductorId.
+     */
+    @Test
+    fun `AddOpUseCase invokes saveOpUseCase with ADD`() = runTest {
+        val conductorId = 42
+        val expectedOp = CartOperationDomain(OperationTypeDomain.ADD, conductorId)
+
+        addOpUseCase.invoke(conductorId)
+
+        verify(saveOpUseCaseMock).invoke(expectedOp)
+    }
+
+    /**
+     * Тест для SoldCashOpUseCase.
+     * Проверяется, что при вызове invoke(conductorId)
+     * базовый SaveCartWithItemsAndOperationUseCase
+     * получает CartOperationDomain с типом SOLD_CASH и тем же conductorId.
+     */
+    @Test
+    fun `SoldCashOpUseCase invokes saveOpUseCase with SOLD_CASH`() = runTest {
+        val conductorId = 43
+        val expectedOp = CartOperationDomain(OperationTypeDomain.SOLD_CASH, conductorId)
+
+        soldCashOpUseCase.invoke(conductorId)
+
+        verify(saveOpUseCaseMock).invoke(expectedOp)
+    }
+
+    /**
+     * Тест для SoldCardOpUseCase.
+     * Проверяется, что при вызове invoke(conductorId)
+     * базовый SaveCartWithItemsAndOperationUseCase
+     * получает CartOperationDomain с типом SOLD_CART и тем же conductorId.
+     */
+    @Test
+    fun `SoldCardOpUseCase invokes saveOpUseCase with SOLD_CART`() = runTest {
+        val conductorId = 44
+        val expectedOp = CartOperationDomain(OperationTypeDomain.SOLD_CART, conductorId)
+
+        soldCardOpUseCase.invoke(conductorId)
+
+        verify(saveOpUseCaseMock).invoke(expectedOp)
+    }
+
+    /**
+     * Тест для ReplenishUseCase.
+     * Проверяется, что при вызове invoke(conductorId)
+     * базовый SaveCartWithItemsAndOperationUseCase
+     * получает CartOperationDomain с типом REPLENISH и тем же conductorId.
+     */
+    @Test
+    fun `ReplenishUseCase invokes saveOpUseCase with REPLENISH`() = runTest {
+        val conductorId = 45
+        val expectedOp = CartOperationDomain(OperationTypeDomain.REPLENISH, conductorId)
+
+        replenishUseCase.invoke(conductorId)
+
+        verify(saveOpUseCaseMock).invoke(expectedOp)
     }
 }
