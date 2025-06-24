@@ -1,6 +1,7 @@
 package com.example.chaika.ui.navigation
 
 object Routes {
+    const val LOGIN = "login"
     const val TRIP = "trip"
     const val TRIP_NEW = "trip/graph/new"
     const val TRIP_BY_NUMBER = "trip/graph/by_number"

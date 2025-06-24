@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.chaika.ui.screens.OperationScreen
 import com.example.chaika.ui.screens.ProfileScreen
+import com.example.chaika.ui.screens.auth.LoginScreen
 import com.example.chaika.ui.screens.product.ProductScreen
 import com.example.chaika.ui.screens.product.views.CartScreen
 import com.example.chaika.ui.screens.product.views.ProductEntryScreen
@@ -18,6 +19,7 @@ import com.example.chaika.ui.screens.trip.views.CurrentTripView
 import com.example.chaika.ui.screens.trip.views.FindByNumberView
 import com.example.chaika.ui.screens.trip.views.NewTripView
 import com.example.chaika.ui.screens.trip.views.SelectCarriageView
+import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 
@@ -25,8 +27,16 @@ import com.example.chaika.ui.viewModels.TripViewModel
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Routes.TRIP_GRAPH
+        startDestination = Routes.LOGIN
     ) {
+        composable(Routes.LOGIN) {
+            val viewModel = hiltViewModel<AuthViewModel>()
+            LoginScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
         navigation(
             startDestination = Routes.TRIP,
             route = Routes.TRIP_GRAPH
