@@ -10,7 +10,9 @@ data class Product(
     val image: String,
     val price: Double,
     val isInCart: Boolean = false,
-    val quantity: Int = 1
+    val quantity: Int = 1,
+    val isInPackage: Boolean = false,
+    val packageQuantity: Int = 1
 ) {
     fun toDomain(): ProductInfoDomain = ProductInfoDomain(
         id = this.id,
