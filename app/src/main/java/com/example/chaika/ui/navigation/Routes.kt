@@ -17,6 +17,10 @@ object Routes {
     const val OPERATION = "operation"
     const val PROFILE = "profile"
 
+    val routesWithoutBottomBar = setOf(
+        LOGIN
+    )
+
     val mainRoutes = mapOf(
         TRIP to listOf(
             TRIP, TRIP_NEW, TRIP_GRAPH,
