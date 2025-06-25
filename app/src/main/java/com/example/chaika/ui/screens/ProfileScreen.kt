@@ -9,7 +9,6 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun ProfileScreen(
-    navController: NavHostController
 ) {
     // TODO()
     Text("Profile", modifier = Modifier.fillMaxSize().wrapContentSize())

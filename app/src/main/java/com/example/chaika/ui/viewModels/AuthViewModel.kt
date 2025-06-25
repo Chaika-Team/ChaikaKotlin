@@ -74,9 +74,9 @@ class AuthViewModel @Inject constructor(
             )
 
             try {
-                val result = completeAuthorizationFlowUseCase(intent)
+                completeAuthorizationFlowUseCase(intent)
                 Log.d(TAG, "Auth flow completed successfully")
-                Log.d(TAG, "Token received: ${result.first.take(10)}...")
+                Log.d(TAG, "Token received")
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -88,7 +88,7 @@ class AuthViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isAuthenticated = false,
-                    errorMessage = "Ошибка авторизации: ${e.message}"
+                    errorMessage = "Login error: ${e.message}"
                 )
             }
         }
@@ -100,7 +100,6 @@ class AuthViewModel @Inject constructor(
 
     fun onNavigationHandled() {
         Log.d(TAG, "Navigation handled")
-        // Note: We don't reset isAuthenticated here to maintain login state
     }
 }
 

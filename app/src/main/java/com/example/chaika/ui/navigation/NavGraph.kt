@@ -109,7 +109,7 @@ fun NavGraph(navController: NavHostController) {
                 ProductScreen(viewModel = productViewModel, navController = navController)
             }
 
-            composable(route = Routes.PRODUCT_ENTRY) { backStackEntry ->
+            composable(route = Routes.PRODUCT_ENTRY) { _ ->
                 ProductEntryScreen(navController = navController)
             }
 
@@ -131,11 +131,11 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(route = Routes.OPERATION) {
-            OperationScreen(navController = navController)
+            OperationScreen()
         }
 
         composable(route = Routes.PROFILE) {
-            ProfileScreen(navController = navController)
+            ProfileScreen()
         }
     }
 }
