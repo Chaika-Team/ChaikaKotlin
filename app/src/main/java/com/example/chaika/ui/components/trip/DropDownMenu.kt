@@ -33,17 +33,59 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
+@Composable
+private fun StationSearchResults(
+    isLoading: Boolean,
+    error: String?,
+    query: String,
+    suggestions: List<StationDomain>,
+    onStationSelected: (StationDomain) -> Unit
+) {
+    when {
+        isLoading -> {
+            DropdownMenuItem(
+                text = { Text("Поиск...") },
+                onClick = {}
+            )
+        }
+        error != null -> {
+            DropdownMenuItem(
+                text = { Text(error) },
+                onClick = {}
+            )
+        }
+        query.length < 2 -> {
+            DropdownMenuItem(
+                text = { Text("Введите минимум 2 символа") },
+                onClick = {}
+            )
+        }
+        suggestions.isEmpty() && query.isNotEmpty() -> {
+            DropdownMenuItem(
+                text = { Text("Ничего не найдено") },
+                onClick = {}
+            )
+        }
+        suggestions.isNotEmpty() -> {
+            suggestions.forEach { station ->
+                DropdownMenuItem(
+                    text = { Text(station.name) },
+                    onClick = { onStationSelected(station) }
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropDownMenu(
     modifier: Modifier = Modifier,
     initialQuery: String = "",
-    onQueryChange: (String) -> Unit,
     onItemSelected: (StationDomain) -> Unit,
     placeholderText: String = "Выберите...",
     cornerRadius: Dp = 10.dp,
     suggestStations: suspend (String, Int) -> List<StationDomain>,
-    isStationSearch: Boolean = false,
     maxSuggestions: Int = 10
 ) {
     var query by rememberSaveable { mutableStateOf(initialQuery) }
@@ -55,11 +97,8 @@ fun DropDownMenu(
     val colorScheme = MaterialTheme.colorScheme
     val searchQuery = remember { MutableStateFlow("") }
 
-    // Обновляем searchQuery при изменении query (с debounce)
     LaunchedEffect(query) {
-        if (isStationSearch) {
-            searchQuery.update { query }
-        }
+        searchQuery.update { query }
     }
 
     LaunchedEffect(searchQuery) {
@@ -96,13 +135,11 @@ fun DropDownMenu(
             value = query,
             onValueChange = { newQuery ->
                 query = newQuery
-                onQueryChange(newQuery)
-                if (isStationSearch) expanded = newQuery.isNotEmpty()
+                expanded = newQuery.isNotEmpty()
             },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
-                //уникальный «тестовый тег»:
                 .testTag(
                     if (placeholderText.contains("отправки")) "startStationField"
                     else "finishStationField"
@@ -129,57 +166,17 @@ fun DropDownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                when {
-                    // Загрузка
-                    isLoading -> {
-                        DropdownMenuItem(
-                            text = { Text("Поиск...") },
-                            onClick = {}
-                        )
+                StationSearchResults(
+                    isLoading = isLoading,
+                    error = error,
+                    query = query,
+                    suggestions = suggestions,
+                    onStationSelected = { station ->
+                        query = station.name
+                        onItemSelected(station)
+                        expanded = false
                     }
-                    // Ошибка
-                    error != null -> {
-                        DropdownMenuItem(
-                            text = { Text(error!!) },
-                            onClick = {}
-                        )
-                    }
-                    // Поиск станций (минимум 2 символа)
-                    isStationSearch && query.length < 2 -> {
-                        DropdownMenuItem(
-                            text = { Text("Введите минимум 2 символа") },
-                            onClick = {}
-                        )
-                    }
-                    // Нет результатов
-                    isStationSearch && suggestions.isEmpty() && query.isNotEmpty() -> {
-                        DropdownMenuItem(
-                            text = { Text("Ничего не найдено") },
-                            onClick = {}
-                        )
-                    }
-                    // Показать результаты
-                    suggestions.isNotEmpty() -> {
-                        suggestions.forEach { station ->
-                            DropdownMenuItem(
-                                text = { Text(station.name) },
-                                onClick = {
-                                    query = station.name
-                                    onItemSelected(station)
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                    // Обычный выпадающий список (если не поиск)
-                    !isStationSearch -> {
-                        // Здесь можно добавить статические варианты, если нужно
-                        DropdownMenuItem(
-                            text = { Text("Нет доступных вариантов") },
-                            onClick = {}
-                        )
-                    }
-                }
+                )
             }
         }
     }
@@ -189,7 +186,6 @@ fun DropDownMenu(
 @Composable
 fun DropdownTripMenuPreview() {
     DropDownMenu(
-        onQueryChange = {},
         onItemSelected = {},
         suggestStations = { _, _ -> emptyList() }
     )

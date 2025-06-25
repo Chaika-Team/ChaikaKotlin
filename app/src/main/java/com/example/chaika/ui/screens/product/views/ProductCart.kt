@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.chaika.R
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.theme.LightColorScheme
@@ -28,7 +27,6 @@ import com.example.chaika.ui.viewModels.ProductViewModel
 @Composable
 fun CartScreen(
     viewModel: ProductViewModel,
-    navController: NavHostController
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
