@@ -110,11 +110,7 @@ fun NavGraph(navController: NavHostController) {
             }
 
             composable(route = Routes.PRODUCT_ENTRY) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
-                }
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                ProductEntryScreen(viewModel = productViewModel, navController = navController)
+                ProductEntryScreen(navController = navController)
             }
 
             composable(route = Routes.PRODUCT_LIST) { backStackEntry ->
@@ -130,7 +126,7 @@ fun NavGraph(navController: NavHostController) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                CartScreen(viewModel = productViewModel, navController = navController)
+                CartScreen(viewModel = productViewModel)
             }
         }
 
