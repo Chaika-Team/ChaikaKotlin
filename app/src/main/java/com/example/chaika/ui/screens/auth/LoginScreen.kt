@@ -7,11 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import android.util.Log
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.AuthViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.chaika.R
+import com.example.chaika.ui.theme.LoginDimens
 
 @Composable
 fun LoginScreen(
@@ -64,7 +66,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(LoginDimens.LoginContainerPadding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -77,12 +79,12 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             enabled = !uiState.isLoading
         ) {
-            Text("Вход")
+            Text(stringResource(R.string.login_button))
         }
 
         if (uiState.isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(LoginDimens.LoadingIndicatorPadding)
             )
         }
 
@@ -90,7 +92,7 @@ fun LoginScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = LoginDimens.ErrorCardTopPadding),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer
                 )
@@ -98,7 +100,7 @@ fun LoginScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(LoginDimens.ErrorCardPadding),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -110,7 +112,7 @@ fun LoginScreen(
                     TextButton(
                         onClick = { viewModel.clearError() }
                     ) {
-                        Text("OK")
+                        Text(stringResource(R.string.login_ok))
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.chaika.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -8,12 +9,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.chaika.ui.screens.OperationScreen
-import com.example.chaika.ui.screens.ProfileScreen
+import com.example.chaika.ui.screens.profile.ProfileScreen
 import com.example.chaika.ui.screens.auth.LoginScreen
 import com.example.chaika.ui.screens.product.ProductScreen
 import com.example.chaika.ui.screens.product.views.CartScreen
 import com.example.chaika.ui.screens.product.views.ProductEntryScreen
 import com.example.chaika.ui.screens.product.views.ProductListScreen
+import com.example.chaika.ui.screens.profile.views.AboutView
+import com.example.chaika.ui.screens.profile.views.FaqsView
+import com.example.chaika.ui.screens.profile.views.FeedbackView
+import com.example.chaika.ui.screens.profile.views.PersonalDataView
+import com.example.chaika.ui.screens.profile.views.SettingsView
 import com.example.chaika.ui.screens.trip.TripScreen
 import com.example.chaika.ui.screens.trip.views.CurrentTripView
 import com.example.chaika.ui.screens.trip.views.FindByNumberView
@@ -21,19 +27,19 @@ import com.example.chaika.ui.screens.trip.views.NewTripView
 import com.example.chaika.ui.screens.trip.views.SelectCarriageView
 import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
+import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
     NavHost(
         navController = navController,
         startDestination = Routes.LOGIN
     ) {
-        composable(Routes.LOGIN) {
-            val viewModel = hiltViewModel<AuthViewModel>()
+        composable(Routes.LOGIN) { _ ->
             LoginScreen(
                 navController = navController,
-                viewModel = viewModel
+                viewModel = authViewModel
             )
         }
 
@@ -134,8 +140,35 @@ fun NavGraph(navController: NavHostController) {
             OperationScreen()
         }
 
-        composable(route = Routes.PROFILE) {
-            ProfileScreen()
+        navigation(
+            startDestination = Routes.PROFILE,
+            route = Routes.PROFILE_GRAPH
+        ) {
+            composable(route = Routes.PROFILE) { backStackEntry ->
+                val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
+                ProfileScreen(
+                    viewModel = profileViewModel,
+                    authViewModel = authViewModel,
+                    navController = navController
+                )
+            }
+            composable(route = Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->
+                val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
+                val conductor = profileViewModel.conductorState.collectAsState().value
+                PersonalDataView(conductor = conductor)
+            }
+            composable(route = Routes.PROFILE_SETTINGS) {
+                SettingsView()
+            }
+            composable(route = Routes.PROFILE_FAQS) {
+                FaqsView()
+            }
+            composable(route = Routes.PROFILE_FEEDBACK) {
+                FeedbackView()
+            }
+            composable(route = Routes.PROFILE_ABOUT) {
+                AboutView()
+            }
         }
     }
 }

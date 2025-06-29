@@ -1,6 +1,5 @@
 package com.example.chaika.ui.activities
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +16,8 @@ import com.example.chaika.ui.navigation.NavGraph
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.ChaikaTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.chaika.ui.viewModels.AuthViewModel
 
 @Composable
 fun shouldShowBottomBar(currentRoute: String?): Boolean {
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ChaikaTheme {
+                val authViewModel: AuthViewModel = hiltViewModel()
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
@@ -41,7 +43,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { paddingValues ->
                     Box(modifier = Modifier.padding(paddingValues)) {
-                        NavGraph(navController = navController)
+                        NavGraph(navController = navController, authViewModel = authViewModel)
                     }
                 }
             }

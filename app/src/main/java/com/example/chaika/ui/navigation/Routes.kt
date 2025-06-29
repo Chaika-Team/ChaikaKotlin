@@ -16,6 +16,12 @@ object Routes {
     const val PRODUCT_CART = "product/graph/cart"
     const val OPERATION = "operation"
     const val PROFILE = "profile"
+    const val PROFILE_PERSONAL_DATA = "profile/personal_data"
+    const val PROFILE_SETTINGS = "profile/settings"
+    const val PROFILE_FAQS = "profile/faqs"
+    const val PROFILE_FEEDBACK = "profile/feedback"
+    const val PROFILE_ABOUT = "profile/about"
+    const val PROFILE_GRAPH = "profile/graph"
 
     val routesWithoutBottomBar = setOf(
         LOGIN
@@ -29,6 +35,10 @@ object Routes {
         ),
         PRODUCT to listOf(PRODUCT_ENTRY, PRODUCT, PRODUCT_LIST, PRODUCT_CART),
         OPERATION to listOf(OPERATION),
-        PROFILE to listOf(PROFILE)
+        PROFILE to listOf(
+            PROFILE, PROFILE_PERSONAL_DATA, PROFILE_SETTINGS,
+            PROFILE_FAQS, PROFILE_FEEDBACK, PROFILE_ABOUT,
+            PROFILE_GRAPH
+        )
     )
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chaika.domain.usecases.CompleteAuthorizationFlowUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
+import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
-    private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase
+    private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     companion object {
@@ -59,13 +61,12 @@ class AuthViewModel @Inject constructor(
     fun startAuth(): Intent {
         Log.d(TAG, "Starting auth flow...")
         val intent = startAuthorizationUseCase()
-        Log.d(TAG, "Auth intent created: ${intent.component}")
+        Log.d(TAG, "Auth intent created")
         return intent
     }
 
     fun handleAuthResult(intent: Intent) {
         Log.d(TAG, "Handling auth result...")
-        Log.d(TAG, "Intent data: ${intent.data}")
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
@@ -100,6 +101,13 @@ class AuthViewModel @Inject constructor(
 
     fun onNavigationHandled() {
         Log.d(TAG, "Navigation handled")
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isAuthenticated = false)
+            logoutUseCase()
+        }
     }
 }
 
