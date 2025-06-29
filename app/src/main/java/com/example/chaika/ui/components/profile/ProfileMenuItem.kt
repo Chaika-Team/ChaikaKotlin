@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +71,7 @@ fun ProfileMenuItem(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.profile_menu_item_icon_description),
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(ProfileDimens.MenuItemIconInnerSize)
             )
@@ -88,7 +89,7 @@ fun ProfileMenuItem(
 
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow),
-            contentDescription = "Navigate",
+            contentDescription = stringResource(R.string.navigate),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

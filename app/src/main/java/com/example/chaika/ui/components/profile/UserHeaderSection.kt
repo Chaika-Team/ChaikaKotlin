@@ -1,6 +1,5 @@
 package com.example.chaika.ui.components.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,13 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import com.example.chaika.domain.models.ConductorDomain
-import androidx.compose.ui.graphics.painter.Painter
-import coil.compose.rememberImagePainter
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.chaika.R
 import com.example.chaika.ui.theme.ProfileDimens
 import com.example.chaika.ui.theme.ProfileBackground
+import coil.compose.AsyncImage
 
 @Composable
 fun UserHeaderSection(
@@ -51,9 +49,8 @@ fun UserHeaderSection(
             contentAlignment = Alignment.Center
         ) {
             if (conductor?.image != null && conductor.image.isNotBlank()) {
-                val painter: Painter = rememberImagePainter(conductor.image)
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = conductor.image,
                     contentDescription = stringResource(R.string.profile_user_avatar),
                     modifier = Modifier
                         .size(ProfileDimens.AvatarSize)

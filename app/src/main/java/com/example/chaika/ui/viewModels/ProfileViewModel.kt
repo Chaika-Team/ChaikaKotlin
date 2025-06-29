@@ -1,20 +1,22 @@
 package com.example.chaika.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chaika.domain.models.ConductorDomain
-import com.example.chaika.domain.usecases.GetAllConductorsUseCase
+import com.example.chaika.domain.usecases.GetAccessTokenUseCase
+import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getAllConductorsUseCase: GetAllConductorsUseCase
+    private val getAccessTokenUseCase: GetAccessTokenUseCase,
+    private val fetchConductorByTokenUseCase: FetchConductorByTokenUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ScreenState>(ScreenState.Profile)
@@ -25,8 +27,18 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getAllConductorsUseCase().map { it.firstOrNull() }.collect {
-                _conductorState.value = it
+            try {
+                val token = getAccessTokenUseCase()
+                if (token != null) {
+                    val conductor = fetchConductorByTokenUseCase(token)
+                    _conductorState.value = conductor
+                } else {
+                    _conductorState.value = null
+                }
+            } catch (e: Exception) {
+                // TODO: Обработать ошибку загрузки данных проводника
+                Log.e("ProfileViewModel", "Error loading conductor data", e)
+                _conductorState.value = null
             }
         }
     }
@@ -58,5 +70,6 @@ class ProfileViewModel @Inject constructor(
         object Faqs : ScreenState()
         object Feedback : ScreenState()
         object About : ScreenState()
+        object Error : ScreenState()
     }
 } 

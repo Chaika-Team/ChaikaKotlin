@@ -3,21 +3,18 @@ package com.example.chaika.ui.screens.profile.views
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.chaika.R
+import com.example.chaika.ui.components.profile.FaqCard
 
 @Composable
 fun FaqsView() {
-    var expandedItems by remember { mutableStateOf(mutableSetOf<Int>()) }
+    var expandedItems by remember { mutableStateOf(setOf<Int>()) }
 
     val faqs = listOf(
         FAQ(
@@ -61,60 +58,20 @@ fun FaqsView() {
             .verticalScroll(rememberScrollState())
     ) {
         faqs.forEachIndexed { index, faq ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = faq.question,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(
-                            onClick = {
-                                if (expandedItems.contains(index)) {
-                                    expandedItems = expandedItems.toMutableSet().apply { remove(index) }
-                                } else {
-                                    expandedItems = expandedItems.toMutableSet().apply { add(index) }
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (expandedItems.contains(index)) {
-                                    Icons.Default.ExpandLess
-                                } else {
-                                    Icons.Default.ExpandMore
-                                },
-                                contentDescription = if (expandedItems.contains(index)) {
-                                    stringResource(R.string.faqs_collapse)
-                                } else {
-                                    stringResource(R.string.faqs_expand)
-                                }
-                            )
-                        }
+            FaqCard(
+                question = faq.question,
+                answer = faq.answer,
+                expanded = expandedItems.contains(index),
+                onExpandToggle = {
+                    expandedItems = if (expandedItems.contains(index)) {
+                        expandedItems - index
+                    } else {
+                        expandedItems + index
                     }
-                    
-                    if (expandedItems.contains(index)) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = faq.answer,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
+                },
+                expandContentDescription = stringResource(R.string.faqs_expand),
+                collapseContentDescription = stringResource(R.string.faqs_collapse)
+            )
         }
         
         Card(

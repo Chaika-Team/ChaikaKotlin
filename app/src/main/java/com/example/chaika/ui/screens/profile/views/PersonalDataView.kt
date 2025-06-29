@@ -97,15 +97,6 @@ fun PersonalDataView(conductor: ConductorDomain?) {
                     label = stringResource(R.string.profile_photo),
                     value = if (conductor?.image != null) stringResource(R.string.personal_data_photo_loaded) else stringResource(R.string.personal_data_photo_not_loaded)
                 )
-                
-                if (conductor?.image != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.personal_data_photo_path, conductor.image),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
             }
         }
     }

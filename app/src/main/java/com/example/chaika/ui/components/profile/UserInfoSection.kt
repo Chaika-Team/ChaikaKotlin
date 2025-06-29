@@ -38,7 +38,9 @@ fun UserInfoSection(conductor: ConductorDomain?, onClick: () -> Unit) {
     ) {
         Column {
             Text(
-                text = listOfNotNull(conductor?.familyName, conductor?.name).joinToString(" ").ifBlank { "Имя Фамилия" },
+                text = listOfNotNull(conductor?.name, conductor?.familyName)
+                    .joinToString(" ")
+                    .ifBlank { stringResource(R.string.profile_default_first_and_family_name) },
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp

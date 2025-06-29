@@ -54,11 +54,19 @@
     <string name="profile_middle_name">Отчество</string>
     <string name="profile_employee_id">Табельный номер</string>
     <string name="profile_photo">Фото</string>
+    <string name="profile_default_first_and_family_name">Имя Фамилия</string>
+    <string name="profile_menu_item_icon_description">Profile menu item icon</string>
 
     <!-- Login Screen -->
     <string name="login_button">Вход</string>
     <string name="login_ok">OK</string>
     <string name="login_error_title">Ошибка входа</string>
+
+    <!-- Exit Confirmation Dialog -->
+    <string name="exit_confirmation_title">Выход</string>
+    <string name="exit_confirmation_message">Вы действительно хотите выйти из приложения?</string>
+    <string name="exit_confirmation_yes">Да</string>
+    <string name="exit_confirmation_no">Нет</string>
 
     <!-- About View -->
     <string name="about_app_version">Версия 1.0.0</string>
@@ -131,6 +139,7 @@
     <string name="feedback_send_button">Отправить сообщение</string>
     <string name="feedback_additional_info_title">Дополнительная информация</string>
     <string name="feedback_additional_info_text">• Мы стремимся ответить на все сообщения в течение 24 часов\n• Для срочных вопросов используйте раздел \"FAQs\"\n• Ваши отзывы помогают нам улучшать приложение</string>
+    <string name="feedback_email_invalid">Введите корректный email адрес</string>
 
     <!-- Personal Data View -->
     <string name="personal_data_title">Персональные данные</string>
@@ -140,6 +149,7 @@
     <string name="personal_data_employee_id_label">ID сотрудника</string>
     <string name="personal_data_photo_loaded">Загружено</string>
     <string name="personal_data_photo_not_loaded">Не загружено</string>
-    <string name="personal_data_photo_path">Фото профиля: %1$s</string>
+
+    <string name="navigate">Navigate</string>
 
 </resources>

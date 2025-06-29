@@ -26,6 +26,8 @@ fun FeedbackView() {
     var selectedCategory by remember { mutableStateOf("") }
     var isSubmitted by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
+    var isEmailValid by remember { mutableStateOf(true) }
+    var showEmailError by remember { mutableStateOf(false) }
 
     val categories = listOf(
         stringResource(R.string.feedback_category_general),
@@ -35,7 +37,15 @@ fun FeedbackView() {
         stringResource(R.string.feedback_category_other)
     )
 
-    // Инициализируем выбранную категорию
+    fun validateEmail(email: String): Boolean {
+        return email.isEmpty() || android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    LaunchedEffect(email) {
+        isEmailValid = validateEmail(email)
+        showEmailError = email.isNotEmpty() && !isEmailValid
+    }
+
     LaunchedEffect(Unit) {
         if (selectedCategory.isEmpty()) {
             selectedCategory = categories.first()
@@ -162,7 +172,16 @@ fun FeedbackView() {
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
-                        )
+                        ),
+                        isError = showEmailError,
+                        supportingText = {
+                            if (showEmailError) {
+                                Text(
+                                    text = stringResource(R.string.feedback_email_invalid),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -200,7 +219,7 @@ fun FeedbackView() {
                             isSubmitted = true 
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = name.isNotBlank() && message.isNotBlank()
+                        enabled = name.isNotBlank() && message.isNotBlank() && (email.isBlank() || validateEmail(email))
                     ) {
                         Text(stringResource(R.string.feedback_send_button))
                     }

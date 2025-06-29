@@ -14,6 +14,8 @@ import com.example.chaika.ui.viewModels.AuthViewModel
 import androidx.compose.ui.res.stringResource
 import com.example.chaika.R
 import com.example.chaika.ui.theme.LoginDimens
+import androidx.activity.compose.BackHandler
+import kotlin.system.exitProcess
 
 @Composable
 fun LoginScreen(
@@ -40,7 +42,6 @@ fun LoginScreen(
         }
     }
 
-    // Handle navigation when authentication is successful
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
             Log.d("LoginScreen", "isAuthenticated = true, navigating to TRIP_GRAPH")
@@ -51,7 +52,6 @@ fun LoginScreen(
         }
     }
 
-    // Show loading during initial auth check
     if (uiState.isCheckingAuth) {
         Log.d("LoginScreen", "Showing initial loading screen")
         Box(
@@ -61,6 +61,33 @@ fun LoginScreen(
             CircularProgressIndicator()
         }
         return
+    }
+
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text(text = stringResource(R.string.exit_confirmation_title)) },
+            text = { Text(text = stringResource(R.string.exit_confirmation_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showExitDialog = false
+                    exitProcess(0)
+                }) {
+                    Text(text = stringResource(R.string.exit_confirmation_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text(text = stringResource(R.string.exit_confirmation_no))
+                }
+            }
+        )
     }
 
     Column(
