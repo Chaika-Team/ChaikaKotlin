@@ -21,33 +21,30 @@
         <!-- Основное активити с навигационным intent‑фильтром для deep link -->
         <activity
             android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTask"
             android:exported="true">
             <!-- Для запуска из лаунчера -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Для обработки deep link -->
+        </activity>
+
+        <!-- Стандартный получатель Redirect URI для AppAuth -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter
                 android:autoVerify="true"
                 tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:scheme="com.example.chaika"
                     android:host="oauth2redirect" />
             </intent-filter>
         </activity>
-
-        <!-- Отключаем стандартный получатель Redirect URI, чтобы не было дублирования -->
-        <activity
-            android:name="net.openid.appauth.RedirectUriReceiverActivity"
-            android:enabled="false"
-            android:exported="true" />
 
     </application>
 </manifest>

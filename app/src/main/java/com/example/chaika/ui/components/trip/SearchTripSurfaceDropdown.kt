@@ -1,6 +1,5 @@
 package com.example.chaika.ui.components.trip
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,15 +55,11 @@ fun SearchTripSurfaceDropdown(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
-                onQueryChange = { newText ->
-                    Log.d("SearchTripSurface", "Start changed: $newText")
-                },
                 onItemSelected = { station ->
                     onStartStationChange(station)
                 },
                 placeholderText = "Станция отправки",
                 cornerRadius = TripDimens.SearchBarCornerRadius,
-                isStationSearch = true,
                 initialQuery = "",
                 suggestStations = suggestStations
             )
@@ -73,15 +68,11 @@ fun SearchTripSurfaceDropdown(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
-                onQueryChange = { newText ->
-                    Log.d("SearchTripSurface", "Finish changed: $newText")
-                },
                 onItemSelected = { station ->
                     onFinishStationChange(station)
                 },
                 placeholderText = "Станция прибытия",
                 cornerRadius = TripDimens.SearchBarCornerRadius,
-                isStationSearch = true,
                 initialQuery = "",
                 suggestStations = suggestStations
             )

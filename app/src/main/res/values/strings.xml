@@ -40,4 +40,116 @@
     <!-- Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Profile Screen -->
+    <string name="profile_personal_data">Персональные данные</string>
+    <string name="profile_settings">Настройки</string>
+    <string name="profile_faqs">FAQs</string>
+    <string name="profile_feedback">Обратная связь</string>
+    <string name="profile_about">О приложении</string>
+    <string name="profile_add_user">Добавить пользователя</string>
+    <string name="profile_user_avatar">Аватар пользователя</string>
+    <string name="profile_navigate">Навигация</string>
+    <string name="profile_family_name">Фамилия</string>
+    <string name="profile_first_name">Имя</string>
+    <string name="profile_middle_name">Отчество</string>
+    <string name="profile_employee_id">Табельный номер</string>
+    <string name="profile_photo">Фото</string>
+    <string name="profile_default_first_and_family_name">Имя Фамилия</string>
+    <string name="profile_menu_item_icon_description">Profile menu item icon</string>
+
+    <!-- Login Screen -->
+    <string name="login_button">Вход</string>
+    <string name="login_ok">OK</string>
+    <string name="login_error_title">Ошибка входа</string>
+
+    <!-- Exit Confirmation Dialog -->
+    <string name="exit_confirmation_title">Выход</string>
+    <string name="exit_confirmation_message">Вы действительно хотите выйти из приложения?</string>
+    <string name="exit_confirmation_yes">Да</string>
+    <string name="exit_confirmation_no">Нет</string>
+
+    <!-- About View -->
+    <string name="about_app_version">Версия 1.0.0</string>
+    <string name="about_description_title">Описание</string>
+    <string name="about_description_text">Chaika - это мобильное приложение для проводников железнодорожного транспорта. Приложение позволяет управлять поездками, вести учет товаров и предоставляет удобный интерфейс для работы в пути.</string>
+    <string name="about_features_title">Основные функции</string>
+    <string name="about_feature_trips">• Управление поездками и маршрутами</string>
+    <string name="about_feature_products">• Каталог товаров с ценами</string>
+    <string name="about_feature_cart">• Корзина покупок</string>
+    <string name="about_feature_profile">• Персональный профиль</string>
+    <string name="about_feature_auth">• Безопасная аутентификация</string>
+    <string name="about_development_title">Разработка</string>
+    <string name="about_copyright">© 2025 ChaikaSoft\nВсе права защищены</string>
+
+    <!-- Settings View -->
+    <string name="settings_notifications_title">Уведомления</string>
+    <string name="settings_notifications_enable">Включить уведомления</string>
+    <string name="settings_notifications_description">Получать уведомления о новых поездках</string>
+    <string name="settings_sound_title">Звуковые уведомления</string>
+    <string name="settings_sound_description">Воспроизводить звук при уведомлениях</string>
+    <string name="settings_vibration_title">Вибрация</string>
+    <string name="settings_vibration_description">Вибрация при уведомлениях</string>
+    <string name="settings_appearance_title">Внешний вид</string>
+    <string name="settings_dark_theme">Темная тема</string>
+    <string name="settings_dark_theme_description">Использовать темную тему интерфейса</string>
+    <string name="settings_data_title">Данные</string>
+    <string name="settings_auto_sync">Автосинхронизация</string>
+    <string name="settings_auto_sync_description">Автоматически синхронизировать данные</string>
+    <string name="settings_clear_cache">Очистить кэш</string>
+
+    <!-- FAQs View -->
+    <string name="faqs_title">Часто задаваемые вопросы</string>
+    <string name="faqs_question_trip_add">Как добавить новую поездку?</string>
+    <string name="faqs_answer_trip_add">Нажмите на кнопку \"Добавить поездку\" на главном экране, введите название поездки и подтвердите создание.</string>
+    <string name="faqs_question_trip_finish">Как завершить поездку?</string>
+    <string name="faqs_answer_trip_finish">В разделе \"Поездки\" выберите активную поездку и нажмите кнопку \"ЗАВЕРШИТЬ\". Это сохранит все данные о поездке.</string>
+    <string name="faqs_question_product_add">Как добавить товар в корзину?</string>
+    <string name="faqs_answer_product_add">В разделе \"Товары\" найдите нужный товар и нажмите на кнопку \"+\" рядом с товаром. Товар автоматически добавится в корзину.</string>
+    <string name="faqs_question_trip_history">Где посмотреть историю поездок?</string>
+    <string name="faqs_answer_trip_history">В разделе \"Поездки\" прокрутите вниз до раздела \"История\". Там будут отображаться все завершенные поездки.</string>
+    <string name="faqs_question_personal_data">Как изменить персональные данные?</string>
+    <string name="faqs_answer_personal_data">Перейдите в раздел \"Профиль\" → \"Персональные данные\". Там вы сможете просмотреть и при необходимости изменить свои данные.</string>
+    <string name="faqs_question_app_loading">Что делать, если приложение не загружается?</string>
+    <string name="faqs_answer_app_loading">Проверьте подключение к интернету. Если проблема сохраняется, попробуйте перезапустить приложение или очистить кэш в настройках.</string>
+    <string name="faqs_question_logout">Как выйти из аккаунта?</string>
+    <string name="faqs_answer_logout">В разделе \"Профиль\" нажмите на кнопку \"Выйти\" в верхней части экрана. Это завершит текущую сессию.</string>
+    <string name="faqs_question_offline">Поддерживается ли офлайн режим?</string>
+    <string name="faqs_answer_offline">Да, приложение поддерживает работу в офлайн режиме. Данные будут синхронизированы при восстановлении подключения к интернету.</string>
+    <string name="faqs_not_found_title">Не нашли ответ?</string>
+    <string name="faqs_not_found_description">Если у вас есть дополнительные вопросы, используйте раздел \"Обратная связь\" для связи с поддержкой.</string>
+    <string name="faqs_expand">Развернуть</string>
+    <string name="faqs_collapse">Свернуть</string>
+
+    <!-- Feedback View -->
+    <string name="feedback_title">Обратная связь</string>
+    <string name="feedback_success_title">Спасибо за обратную связь!</string>
+    <string name="feedback_success_message">Мы получили ваше сообщение и ответим в ближайшее время.</string>
+    <string name="feedback_send_another">Отправить еще одно сообщение</string>
+    <string name="feedback_experience_title">Расскажите нам о вашем опыте</string>
+    <string name="feedback_category">Категория</string>
+    <string name="feedback_category_general">Общие вопросы</string>
+    <string name="feedback_category_support">Техническая поддержка</string>
+    <string name="feedback_category_suggestion">Предложения по улучшению</string>
+    <string name="feedback_category_bug">Сообщить об ошибке</string>
+    <string name="feedback_category_other">Другое</string>
+    <string name="feedback_name_label">Ваше имя</string>
+    <string name="feedback_email_label">Email</string>
+    <string name="feedback_subject_label">Тема сообщения</string>
+    <string name="feedback_message_label">Сообщение</string>
+    <string name="feedback_send_button">Отправить сообщение</string>
+    <string name="feedback_additional_info_title">Дополнительная информация</string>
+    <string name="feedback_additional_info_text">• Мы стремимся ответить на все сообщения в течение 24 часов\n• Для срочных вопросов используйте раздел \"FAQs\"\n• Ваши отзывы помогают нам улучшать приложение</string>
+    <string name="feedback_email_invalid">Введите корректный email адрес</string>
+
+    <!-- Personal Data View -->
+    <string name="personal_data_title">Персональные данные</string>
+    <string name="personal_data_basic_info">Основная информация</string>
+    <string name="personal_data_service_info">Служебная информация</string>
+    <string name="personal_data_additional_info">Дополнительная информация</string>
+    <string name="personal_data_employee_id_label">ID сотрудника</string>
+    <string name="personal_data_photo_loaded">Загружено</string>
+    <string name="personal_data_photo_not_loaded">Не загружено</string>
+
+    <string name="navigate">Navigate</string>
+
 </resources>

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
@@ -43,7 +44,9 @@ fun ProductListScreen(
             when (event) {
                 Lifecycle.Event.ON_START -> viewModel.observeCartChanges()
                 Lifecycle.Event.ON_STOP -> viewModel.clearState()
-                else -> {}
+                else -> {
+                    android.util.Log.d("ProductListScreen", "Unhandled lifecycle event: $event")
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -98,6 +101,15 @@ fun ProductListScreen(
                         .padding(innerPadding),
                     contentPadding = PaddingValues(16.dp)
                 ) {
+                    if (pagingData.itemCount == 0) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                text = "No products available",
+                                modifier = Modifier.fillMaxSize().wrapContentSize(),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                     items(
                         count = pagingData.itemCount,
                         key = pagingData.itemKey { it.id }

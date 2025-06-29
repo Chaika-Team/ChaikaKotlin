@@ -12,13 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.navigation.Routes
-import com.example.chaika.ui.viewModels.ProductViewModel
 
 
 @Composable
 fun ProductEntryScreen(
     navController: NavController,
-    viewModel: ProductViewModel
 ) {
     // TODO()
     Column(

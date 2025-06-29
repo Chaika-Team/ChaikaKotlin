@@ -9,7 +9,6 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun OperationScreen(
-    navController: NavHostController
 ) {
     // TODO()
     Text("Operation", modifier = Modifier.fillMaxSize().wrapContentSize())

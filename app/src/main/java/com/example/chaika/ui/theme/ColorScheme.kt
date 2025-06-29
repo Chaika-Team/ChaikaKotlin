@@ -12,6 +12,10 @@ val DangerRed = Color(0xFFD8472D)
 val RzdRed = Color(0xFFE21A1A)
 val Search = Color(0xFFF0F5FA)
 
+// Profile colors
+val ProfileBackground = Color(0xFF121223)
+val ProfileMenuItemBackground = Color(0xFFF6F8FA)
+
 val LightColorScheme = lightColorScheme(
     primary = RzdRed,
     onPrimary = Color.White,

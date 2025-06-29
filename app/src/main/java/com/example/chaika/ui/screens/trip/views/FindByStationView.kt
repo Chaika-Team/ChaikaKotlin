@@ -10,13 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.chaika.ui.viewModels.TripViewModel
 
 @Composable
 fun FindByStationView(
-    viewModel: TripViewModel,
-    navController: NavController
 ) {
     // TODO: Реализовать экран поиска по станции
         Column(
