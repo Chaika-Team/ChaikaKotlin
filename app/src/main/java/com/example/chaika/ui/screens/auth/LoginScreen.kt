@@ -77,7 +77,7 @@ fun LoginScreen(
             confirmButton = {
                 TextButton(onClick = {
                     showExitDialog = false
-                    exitProcess(0)
+                    exitProcess(0) // TODO: Пересмотреть жизненный цикл при выходе с экрана
                 }) {
                     Text(text = stringResource(R.string.exit_confirmation_yes))
                 }
