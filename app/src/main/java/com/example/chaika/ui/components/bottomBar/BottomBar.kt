@@ -80,7 +80,7 @@ fun BottomBar(
             selected = Routes.mainRoutes[Routes.PROFILE]?.contains(currentRoute) == true,
             onClick = {
                 navController.navigate(Routes.PROFILE) {
-                    popUpTo(Routes.PROFILE) { inclusive = true }
+                    popUpTo(Routes.PROFILE_GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
             }
