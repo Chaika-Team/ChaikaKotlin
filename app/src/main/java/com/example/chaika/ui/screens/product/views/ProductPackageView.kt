@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -39,9 +38,11 @@ fun ProductPackageView(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_START -> viewModel.observePackageChanges()
+                Lifecycle.Event.ON_START -> viewModel.observeCartChanges()
                 Lifecycle.Event.ON_STOP -> viewModel.clearPackageState()
-                else -> {}
+                else -> {
+                    android.util.Log.d("ProductListScreen", "Unhandled lifecycle event: $event")
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

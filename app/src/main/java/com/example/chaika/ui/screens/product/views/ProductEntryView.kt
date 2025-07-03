@@ -15,14 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.navigation.Routes
-import com.example.chaika.ui.viewModels.ProductViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductEntryView(
     navController: NavController,
-    viewModel: ProductViewModel
 ) {
     // TODO()
     val packageItems by viewModel.cartItems.collectAsState()

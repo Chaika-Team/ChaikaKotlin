@@ -5,9 +5,48 @@ import com.example.chaika.data.room.repo.RoomCartRepositoryInterface
 import com.example.chaika.domain.models.CartDomain
 import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartOperationDomain
+import com.example.chaika.domain.models.OperationTypeDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
+
+/** Юзкейс добавления товара */
+
+class AddOpUseCase @Inject constructor(
+    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+) {
+    suspend operator fun invoke(conductorId: Int) {
+        val opDomain = CartOperationDomain(OperationTypeDomain.ADD, conductorId)
+        saveOpUseCase(opDomain)
+    }
+}
+
+class SoldCashOpUseCase @Inject constructor(
+    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+) {
+    suspend operator fun invoke(conductorId: Int) {
+        val opDomain = CartOperationDomain(OperationTypeDomain.SOLD_CASH, conductorId)
+        saveOpUseCase(opDomain)
+    }
+}
+
+class SoldCardOpUseCase @Inject constructor(
+    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+) {
+    suspend operator fun invoke(conductorId: Int) {
+        val opDomain = CartOperationDomain(OperationTypeDomain.SOLD_CART, conductorId)
+        saveOpUseCase(opDomain)
+    }
+}
+
+class ReplenishUseCase @Inject constructor(
+    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+) {
+    suspend operator fun invoke(conductorId: Int) {
+        val opDomain = CartOperationDomain(OperationTypeDomain.REPLENISH, conductorId)
+        saveOpUseCase(opDomain)
+    }
+}
 
 // Сохранение операций и очистка корзины
 class SaveCartWithItemsAndOperationUseCase @Inject constructor(

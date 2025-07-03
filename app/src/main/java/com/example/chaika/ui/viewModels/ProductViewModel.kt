@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -174,7 +173,7 @@ class ProductViewModel @Inject constructor(
     fun observeCartChanges() {
         syncJob?.cancel()
         syncJob = viewModelScope.launch {
-            getCartItemsUseCase().collectLatest { cartItems ->
+            getCartItemsUseCase().collectLatest { _ ->
                 updateProductsState()
                 loadProducts()
             }

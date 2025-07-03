@@ -1,6 +1,7 @@
 package com.example.chaika.ui.navigation
 
 object Routes {
+    const val LOGIN = "login"
     const val TRIP = "trip"
     const val TRIP_NEW = "trip/graph/new"
     const val TRIP_BY_NUMBER = "trip/graph/by_number"
@@ -16,6 +17,16 @@ object Routes {
     const val PRODUCT_PACKAGE = "product/graph/package"
     const val OPERATION = "operation"
     const val PROFILE = "profile"
+    const val PROFILE_PERSONAL_DATA = "profile/personal_data"
+    const val PROFILE_SETTINGS = "profile/settings"
+    const val PROFILE_FAQS = "profile/faqs"
+    const val PROFILE_FEEDBACK = "profile/feedback"
+    const val PROFILE_ABOUT = "profile/about"
+    const val PROFILE_GRAPH = "profile/graph"
+
+    val routesWithoutBottomBar = setOf(
+        LOGIN
+    )
 
     val mainRoutes = mapOf(
         TRIP to listOf(
@@ -28,6 +39,10 @@ object Routes {
             PRODUCT_CART, PRODUCT_PACKAGE, PRODUCT_GRAPH
         ),
         OPERATION to listOf(OPERATION),
-        PROFILE to listOf(PROFILE)
+        PROFILE to listOf(
+            PROFILE, PROFILE_PERSONAL_DATA, PROFILE_SETTINGS,
+            PROFILE_FAQS, PROFILE_FEEDBACK, PROFILE_ABOUT,
+            PROFILE_GRAPH
+        )
     )
 }
