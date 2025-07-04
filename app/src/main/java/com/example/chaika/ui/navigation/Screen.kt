@@ -20,7 +20,13 @@ sealed class Screen(
     object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title)
 
     object Operation : Screen(Routes.OPERATION, R.string.operations_title)
+
     object Profile : Screen(Routes.PROFILE, R.string.profile_title)
+    object ProfilePersonalData : Screen(Routes.PROFILE_PERSONAL_DATA, R.string.profile_personal_data)
+    object ProfileSettings : Screen(Routes.PROFILE_SETTINGS, R.string.profile_settings)
+    object ProfileFaqs : Screen(Routes.PROFILE_FAQS, R.string.profile_faqs)
+    object ProfileFeedback : Screen(Routes.PROFILE_FEEDBACK, R.string.profile_feedback)
+    object ProfileAbout : Screen(Routes.PROFILE_ABOUT, R.string.profile_about)
 
     companion object {
         fun fromRoute(route: String?): Screen {
@@ -37,6 +43,11 @@ sealed class Screen(
                 Routes.PRODUCT_PACKAGE -> Package
                 Routes.OPERATION -> Operation
                 Routes.PROFILE -> Profile
+                Routes.PROFILE_PERSONAL_DATA -> ProfilePersonalData
+                Routes.PROFILE_SETTINGS -> ProfileSettings
+                Routes.PROFILE_FAQS -> ProfileFaqs
+                Routes.PROFILE_FEEDBACK -> ProfileFeedback
+                Routes.PROFILE_ABOUT -> ProfileAbout
                 else -> Trip
             }
         }

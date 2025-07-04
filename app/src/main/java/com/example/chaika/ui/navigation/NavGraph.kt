@@ -1,8 +1,5 @@
 package com.example.chaika.ui.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,6 +27,7 @@ import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
+import androidx.compose.runtime.*
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -153,7 +151,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             startDestination = Routes.PROFILE,
             route = Routes.PROFILE_GRAPH
         ) {
-            composable(route = Routes.PROFILE) { backStackEntry ->
+            composable(Routes.PROFILE) { backStackEntry ->
                 val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
                 ProfileScreen(
                     viewModel = profileViewModel,
@@ -161,21 +159,21 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController = navController
                 )
             }
-            composable(route = Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->
+            composable(Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->
                 val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
-                val conductor = profileViewModel.conductorState.collectAsState().value
+                val conductor by profileViewModel.conductorState.collectAsState()
                 PersonalDataView(conductor = conductor)
             }
-            composable(route = Routes.PROFILE_SETTINGS) {
+            composable(Routes.PROFILE_SETTINGS) { _ ->
                 SettingsView()
             }
-            composable(route = Routes.PROFILE_FAQS) {
+            composable(Routes.PROFILE_FAQS) { _ ->
                 FaqsView()
             }
-            composable(route = Routes.PROFILE_FEEDBACK) {
+            composable(Routes.PROFILE_FEEDBACK) { _ ->
                 FeedbackView()
             }
-            composable(route = Routes.PROFILE_ABOUT) {
+            composable(Routes.PROFILE_ABOUT) { _ ->
                 AboutView()
             }
         }

@@ -22,9 +22,6 @@ import com.example.chaika.ui.navigation.Routes
 fun ProductEntryView(
     navController: NavController,
 ) {
-    // TODO()
-    val packageItems by viewModel.cartItems.collectAsState()
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

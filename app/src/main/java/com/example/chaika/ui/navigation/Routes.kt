@@ -28,6 +28,10 @@ object Routes {
         LOGIN
     )
 
+    val routesWithoutTopBar = setOf(
+        LOGIN, PROFILE
+    )
+
     val mainRoutes = mapOf(
         TRIP to listOf(
             TRIP, TRIP_NEW, TRIP_GRAPH,
