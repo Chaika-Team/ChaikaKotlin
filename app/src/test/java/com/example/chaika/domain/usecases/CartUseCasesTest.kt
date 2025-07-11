@@ -4,6 +4,7 @@ package com.example.chaika.domain.usecases
 
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.room.repo.RoomCartRepositoryInterface
+import com.example.chaika.data.room.repo.RoomPackageItemRepositoryInterface
 import com.example.chaika.domain.models.CartDomain
 import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.CartOperationDomain
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,6 +37,10 @@ class CartUseCasesTest {
     @Mock
     lateinit var saveOpUseCaseMock: SaveCartWithItemsAndOperationUseCase
 
+    // Репозиторий для чтения текущего остатка из представления PackageItemView
+    @Mock
+    lateinit var packageItemRepo: RoomPackageItemRepositoryInterface
+
     private lateinit var saveCartUseCase: SaveCartWithItemsAndOperationUseCase
     private lateinit var addItemUseCase: AddItemToCartUseCase
     private lateinit var removeItemUseCase: RemoveItemFromCartUseCase
@@ -46,6 +52,11 @@ class CartUseCasesTest {
     private lateinit var soldCashOpUseCase: SoldCashOpUseCase
     private lateinit var soldCardOpUseCase: SoldCardOpUseCase
     private lateinit var replenishUseCase: ReplenishUseCase
+
+    // новые юзкейсы для работы с availableQuantity
+    private lateinit var getAvailableQuantityUseCase: GetAvailableQuantityUseCase
+    private lateinit var updateQuantityUnlimitedUseCase: UpdateQuantityUnlimitedUseCase
+    private lateinit var updateQuantityWithLimitUseCase: UpdateQuantityWithLimitUseCase
 
     // Пример доменных объектов для тестов
     private val dummyCartItems = listOf(
@@ -76,6 +87,10 @@ class CartUseCasesTest {
         soldCashOpUseCase = SoldCashOpUseCase(saveOpUseCaseMock)
         soldCardOpUseCase = SoldCardOpUseCase(saveOpUseCaseMock)
         replenishUseCase = ReplenishUseCase(saveOpUseCaseMock)
+
+        getAvailableQuantityUseCase = GetAvailableQuantityUseCase(packageItemRepo)
+        updateQuantityUnlimitedUseCase = UpdateQuantityUnlimitedUseCase(inMemoryCartRepo)
+        updateQuantityWithLimitUseCase = UpdateQuantityWithLimitUseCase(inMemoryCartRepo, getAvailableQuantityUseCase)
     }
 
     /**
@@ -151,6 +166,94 @@ class CartUseCasesTest {
         val result = getCartItemsUseCase.invoke().first()
         assertEquals(dummyCartItems, result)
     }
+
+    /**
+     * Тест для GetAvailableQuantityUseCase.
+     * Проверяется, что use case возвращает актуальное значение availableQuantity из репозитория.
+     */
+    @Test
+    fun `GetAvailableQuantityUseCase returns correct quantity`() = runTest {
+        val productId = 7
+        val expectedQty = 12
+        whenever(packageItemRepo.getCurrentQuantity(productId)).thenReturn(expectedQty)
+
+        val result = getAvailableQuantityUseCase.invoke(productId)
+
+        assertEquals(expectedQty, result)
+    }
+
+    /**
+     * Тест для UpdateQuantityUnlimitedUseCase.
+     * Проверяется, что при любом newQuantity метод inMemoryRepo.updateItemQuantity
+     * вызывается с Int.MAX_VALUE и возвращает true.
+     */
+    @Test
+    fun `UpdateQuantityUnlimitedUseCase updates with unlimited limit`() {
+        val itemId = 1
+        val newQuantity = 99
+        whenever(
+            inMemoryCartRepo.updateItemQuantity(
+                itemId,
+                newQuantity,
+                Int.MAX_VALUE
+            )
+        ).thenReturn(true)
+
+        val result = updateQuantityUnlimitedUseCase.invoke(itemId, newQuantity)
+
+        assertTrue(result)
+    }
+
+    /**
+     * Тест для UpdateQuantityWithLimitUseCase (успешный сценарий).
+     * Проверяется, что когда newQuantity <= availableQuantity,
+     * use case запрашивает available и возвращает true.
+     */
+    @Test
+    fun `UpdateQuantityWithLimitUseCase returns true when below available`() = runTest {
+        val itemId = 2
+        val newQuantity = 4
+        val available = 5
+
+        whenever(packageItemRepo.getCurrentQuantity(itemId)).thenReturn(available)
+        whenever(
+            inMemoryCartRepo.updateItemQuantity(
+                itemId,
+                newQuantity,
+                available
+            )
+        ).thenReturn(true)
+
+        val result = updateQuantityWithLimitUseCase.invoke(itemId, newQuantity)
+
+        assertTrue(result)
+    }
+
+    /**
+     * Тест для UpdateQuantityWithLimitUseCase (сценарий превышения).
+     * Проверяется, что когда newQuantity > availableQuantity,
+     * use case всё равно вызывает updateItemQuantity, и при false возвращает false.
+     */
+    @Test
+    fun `UpdateQuantityWithLimitUseCase returns false when above available`() = runTest {
+        val itemId = 3
+        val newQuantity = 10
+        val available = 8
+
+        whenever(packageItemRepo.getCurrentQuantity(itemId)).thenReturn(available)
+        whenever(
+            inMemoryCartRepo.updateItemQuantity(
+                itemId,
+                newQuantity,
+                available
+            )
+        ).thenReturn(false)
+
+        val result = updateQuantityWithLimitUseCase.invoke(itemId, newQuantity)
+
+        assertFalse(result)
+    }
+
 
     /**
      * Тест для AddOpUseCase.
