@@ -81,6 +81,29 @@ class RemoveItemFromCartUseCase @Inject constructor(
     }
 }
 
+/** Юзкейс изменения количества товара в корзине для операций ADD и REPLENISH, безлимитный */
+
+class UpdateQuantityUnlimitedUseCase @Inject constructor(
+    private val inMemoryCartRepository: InMemoryCartRepositoryInterface
+) {
+    /** Всегда передаём большой лимит */
+    operator fun invoke(itemId: Int, newQuantity: Int): Boolean =
+        inMemoryCartRepository.updateItemQuantity(itemId, newQuantity, Int.MAX_VALUE)
+}
+
+/** Юзкейс изменения количества товара в корзине для операций SOLD_CART и SOLD_CASH, базируется на количестве товара в пакете */
+class UpdateQuantityWithLimitUseCase @Inject constructor(
+    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
+    private val getAvailableQuantityUseCase: GetAvailableQuantityUseCase
+) {
+    suspend operator fun invoke(itemId: Int, newQuantity: Int): Boolean {
+        // 1. Узнаём остаток
+        val available = getAvailableQuantityUseCase(itemId)
+        // 2. Пытаемся обновить
+        return inMemoryCartRepository.updateItemQuantity(itemId, newQuantity, available)
+    }
+}
+
 // Изменение количества товара в корзине
 class UpdateItemQuantityInCartUseCase @Inject constructor(
     private val inMemoryCartRepository: InMemoryCartRepositoryInterface,

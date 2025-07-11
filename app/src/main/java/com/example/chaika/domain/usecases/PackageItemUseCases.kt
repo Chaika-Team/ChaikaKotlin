@@ -12,3 +12,10 @@ class GetPackageItemUseCase @Inject constructor(
         return repository.getAllPackageItems()
     }
 }
+
+class GetAvailableQuantityUseCase @Inject constructor(
+    private val repository: RoomPackageItemRepositoryInterface
+) {
+    suspend operator fun invoke(productId: Int): Int =
+        repository.getCurrentQuantity(productId)
+}
