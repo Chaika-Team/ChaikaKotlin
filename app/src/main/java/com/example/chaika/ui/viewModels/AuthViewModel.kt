@@ -8,10 +8,13 @@ import com.example.chaika.domain.usecases.CompleteAuthorizationFlowUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
+import com.example.chaika.domain.usecases.GetAllConductorsUseCase
+import com.example.chaika.domain.models.ConductorDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +23,8 @@ class AuthViewModel @Inject constructor(
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val getAllConductorsUseCase: GetAllConductorsUseCase
 ) : ViewModel() {
 
     companion object {
@@ -29,6 +33,9 @@ class AuthViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    private val _conductorState = MutableStateFlow<ConductorDomain?>(null)
+    val conductorState: StateFlow<ConductorDomain?> = _conductorState.asStateFlow()
 
     init {
         Log.d(TAG, "AuthViewModel initialized")
@@ -48,6 +55,11 @@ class AuthViewModel @Inject constructor(
                     isCheckingAuth = false,
                     isAuthenticated = hasToken
                 )
+                
+                // Если есть токен, загружаем проводника из базы данных
+                if (hasToken) {
+                    getCurrentConductor()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error checking initial auth state", e)
                 _uiState.value = _uiState.value.copy(
@@ -84,6 +96,8 @@ class AuthViewModel @Inject constructor(
                     isAuthenticated = true,
                     errorMessage = null
                 )
+
+                getCurrentConductor()
             } catch (e: Exception) {
                 Log.e(TAG, "Auth flow failed", e)
                 _uiState.value = _uiState.value.copy(
@@ -107,6 +121,20 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isAuthenticated = false)
             logoutUseCase()
+        }
+    }
+
+    fun getCurrentConductor() {
+        viewModelScope.launch {
+            try {
+                // Получаем проводника из базы данных
+                val conductors = getAllConductorsUseCase().first()
+                _conductorState.value = conductors.firstOrNull()
+                Log.d(TAG, "Loaded conductor from database: ${_conductorState.value?.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading conductor data from database", e)
+                _conductorState.value = null
+            }
         }
     }
 }
