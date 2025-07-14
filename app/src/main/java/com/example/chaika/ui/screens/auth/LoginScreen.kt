@@ -15,9 +15,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.chaika.R
 import com.example.chaika.ui.theme.LoginDimens
 import androidx.activity.compose.BackHandler
-import androidx.compose.ui.platform.LocalContext
-import android.app.Activity
-import androidx.compose.runtime.saveable.rememberSaveable
+import kotlin.system.exitProcess
 
 @Composable
 fun LoginScreen(
@@ -26,15 +24,13 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val context = LocalContext.current
-
     val authLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         Log.d("LoginScreen", "ActivityResultLauncher callback triggered")
         Log.d("LoginScreen", "Result code: ${result.resultCode}")
 
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
             Log.d("LoginScreen", "Result OK - processing auth result")
             result.data?.let { intent ->
                 viewModel.handleAuthResult(intent)
@@ -67,7 +63,7 @@ fun LoginScreen(
         return
     }
 
-    var showExitDialog by rememberSaveable { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
         showExitDialog = true
@@ -81,7 +77,7 @@ fun LoginScreen(
             confirmButton = {
                 TextButton(onClick = {
                     showExitDialog = false
-                    (context as? Activity)?.finishAffinity()
+                    exitProcess(0) // TODO: Пересмотреть жизненный цикл при выходе с экрана
                 }) {
                     Text(text = stringResource(R.string.exit_confirmation_yes))
                 }
