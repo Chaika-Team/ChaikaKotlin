@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface RoomPackageItemRepositoryInterface {
     fun getAllPackageItems(): Flow<List<PackageItemDomain>>
     suspend fun getPackageItemByProductId(productId: Int): PackageItemDomain?
+    suspend fun getCurrentQuantity(productId: Int): Int
 }

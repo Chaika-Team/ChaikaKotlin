@@ -33,4 +33,9 @@ class RoomPackageItemRepository @Inject constructor(
         val productInfoEntity = productInfoDao.getProductById(productId)
         return productInfoEntity?.toDomain()?.let { packageItemView?.toDomain(it) }
     }
+
+    override suspend fun getCurrentQuantity(productId: Int): Int {
+        val packageItemView = packageItemViewDao.getPackageItemByProductId(productId)
+        return packageItemView?.currentQuantity ?: 0
+    }
 }

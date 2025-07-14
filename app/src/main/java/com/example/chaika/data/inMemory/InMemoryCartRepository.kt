@@ -41,6 +41,8 @@ class InMemoryCartRepository @Inject constructor() : InMemoryCartRepositoryInter
         newQuantity: Int,
         availableQuantity: Int
     ): Boolean {
+        if (newQuantity > availableQuantity) return false
+
         val currentItems = _cartItems.value.toMutableList()
         val index = currentItems.indexOfFirst { it.product.id == itemId }
         if (index != -1) {
