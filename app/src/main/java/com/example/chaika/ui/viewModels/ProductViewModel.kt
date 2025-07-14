@@ -11,12 +11,18 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.chaika.domain.models.CartItemDomain
+import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.domain.models.ProductInfoDomain
 import com.example.chaika.domain.usecases.AddItemToCartUseCase
+import com.example.chaika.domain.usecases.AddOpUseCase
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
+import com.example.chaika.domain.usecases.GetAllConductorsUseCase
 import com.example.chaika.domain.usecases.GetCartItemsUseCase
+import com.example.chaika.domain.usecases.GetPackageItemUseCase
 import com.example.chaika.domain.usecases.GetPagedProductsUseCase
 import com.example.chaika.domain.usecases.RemoveItemFromCartUseCase
+import com.example.chaika.domain.usecases.SoldCardOpUseCase
+import com.example.chaika.domain.usecases.SoldCashOpUseCase
 import com.example.chaika.domain.usecases.UpdateItemQuantityInCartUseCase
 import com.example.chaika.ui.dto.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,10 +41,15 @@ import javax.inject.Inject
 class ProductViewModel @Inject constructor(
     private val getPagedProductsUseCase: GetPagedProductsUseCase,
     private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
+    private val addOpUseCase: AddOpUseCase,
     private val addItemToCartUseCase: AddItemToCartUseCase,
     private val removeItemFromCartUseCase: RemoveItemFromCartUseCase,
     private val updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase,
     private val getCartItemsUseCase: GetCartItemsUseCase,
+    private val getPackageItems: GetPackageItemUseCase,
+    private val soldCashOpUseCase: SoldCashOpUseCase,
+    private val soldCardOpUseCase: SoldCardOpUseCase,
+    private val getAllConductorsUseCase: GetAllConductorsUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -46,29 +57,29 @@ class ProductViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ScreenState>(ScreenState.Empty)
     private val _isLoading = MutableStateFlow(false)
     private val _cartItems = MutableStateFlow<List<Product>>(emptyList())
-    private val _packageItems = MutableStateFlow<List<Product>>(emptyList())
     private val _pagingDataFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
-    private val _pagingPackageDataFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
+    private val _conductors = MutableStateFlow<List<ConductorDomain>>(emptyList())
+    val conductors: StateFlow<List<ConductorDomain>> = _conductors.asStateFlow()
+    private val _packageItems = MutableStateFlow<List<Product>>(emptyList())
+    val packageItems: StateFlow<List<Product>> = _packageItems.asStateFlow()
 
     val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     val cartItems: StateFlow<List<Product>> = _cartItems.asStateFlow()
-    val packageItems: StateFlow<List<Product>> = _packageItems.asStateFlow()
-    val pagingPackageDataFlow: StateFlow<PagingData<Product>> = _pagingPackageDataFlow.asStateFlow()
     val pagingDataFlow: StateFlow<PagingData<Product>> = _pagingDataFlow.asStateFlow()
 
     private var syncJob: Job? = null
     private var loadProductsJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            if (_pagingDataFlow.value == PagingData.empty<Product>()) {
-                loadInitialData()
-            }
-        }
+        loadInitialData()
         loadProducts()
         observeCartChanges()
         loadCartItems()
+        loadPackageItems()
+        viewModelScope.launch {
+            getAllConductorsUseCase().collectLatest { _conductors.value = it }
+        }
     }
 
     fun setCart() {
@@ -76,11 +87,13 @@ class ProductViewModel @Inject constructor(
     }
 
     private fun loadInitialData() {
+        Log.d("ProductViewModel", "loadInitialData called")
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 fetchAndSaveProductsUseCase()
             } catch (e: Exception) {
+                Log.e("ProductViewModel", "loadInitialData: error:  [${e.message}]", e)
                 _uiState.update { ScreenState.Error }
             } finally {
                 _isLoading.value = false
@@ -130,44 +143,30 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun loadPackageItems() {
-        TODO("Not yet implemented")
-    }
-    
-    fun addToPackage(productId: Int) {
-        TODO()
-    }
-    
-    fun removeFromPackage(productId: Int) {
-        TODO()
-    }
-    
-    fun updatePackageQuantity(productId: Int, change: Int) {
+    private fun loadPackageItems() {
         viewModelScope.launch {
-            _packageItems.value.find { it.id == productId }?.let { current ->
-                val newQuantity = current.quantity + change
-                if (newQuantity > 0) {
-                    TODO("UC needs to be implemented")
-//                    updateItemQuantityInCartUseCase(
-//                        itemId = productId,
-//                        newQuantity = newQuantity,
-//                        availableQuantity = 50
-//                    )
-                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in package")
-                } else {
-                    removeFromPackage(productId)
-                    Log.d("ProductViewModel", "Removed $productId from package")
+            getPackageItems().collectLatest { packageItemDomains ->
+                val validPackageItems = packageItemDomains.filter { packageItemDomain ->
+                    packageItemDomain.currentQuantity > 0
                 }
-            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _packageItems")
+                
+                _packageItems.value = validPackageItems.map { packageItemDomain ->
+                    val product = packageItemDomain.productInfoDomain
+                    val cartItem = _cartItems.value.find { it.id == product.id }
+                    Product(
+                        id = product.id,
+                        name = product.name,
+                        description = product.description,
+                        image = product.image,
+                        price = product.price,
+                        isInPackage = true,
+                        isInCart = cartItem != null,
+                        quantity = cartItem?.quantity ?: 1,
+                        packageQuantity = packageItemDomain.currentQuantity
+                    )
+                }
+            }
         }
-    }
-
-    fun clearPackageState() {
-        //TODO()
-    }
-
-    fun observePackageChanges() {
-        //TODO()
     }
 
     fun observeCartChanges() {
@@ -176,6 +175,7 @@ class ProductViewModel @Inject constructor(
             getCartItemsUseCase().collectLatest { _ ->
                 updateProductsState()
                 loadProducts()
+                loadPackageItems()
             }
         }
     }
@@ -258,6 +258,34 @@ class ProductViewModel @Inject constructor(
             isInCart = false,
             quantity = 1
         )
+    }
+
+    fun payByCash(conductorId: Int) {
+        viewModelScope.launch {
+            if (_cartItems.value.isEmpty()) {
+                Log.w("ProductViewModel", "Попытка оплаты наличными при пустой корзине")
+                return@launch
+            }
+            try {
+                soldCashOpUseCase.invoke(conductorId)
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Ошибка при оплате наличными: ", e)
+            }
+        }
+    }
+
+    fun payByCard(conductorId: Int) {
+        viewModelScope.launch {
+            if (_cartItems.value.isEmpty()) {
+                Log.w("ProductViewModel", "Попытка оплаты картой при пустой корзине")
+                return@launch
+            }
+            try {
+                soldCardOpUseCase(conductorId)
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Ошибка при оплате картой: ", e)
+            }
+        }
     }
 
     sealed class ScreenState {
