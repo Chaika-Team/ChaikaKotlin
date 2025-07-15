@@ -197,8 +197,7 @@ private fun CartProductActionsRow(
                 onClick = onRemove,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .offset(x = (-ProductDimens.CartProductItem.QuantitySelectorWidth) - ProductDimens.CartProductItem.RemoveButtonPadding) // 8dp левее селектора
-            ) {
+                    .padding(end = ProductDimens.CartProductItem.QuantitySelectorWidth + ProductDimens.CartProductItem.RemoveButtonPadding)            ) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(id = R.string.cart_product_remove_from_cart),

@@ -41,12 +41,11 @@ import javax.inject.Inject
 class ProductViewModel @Inject constructor(
     private val getPagedProductsUseCase: GetPagedProductsUseCase,
     private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
-    private val addOpUseCase: AddOpUseCase,
     private val addItemToCartUseCase: AddItemToCartUseCase,
     private val removeItemFromCartUseCase: RemoveItemFromCartUseCase,
     private val updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase,
     private val getCartItemsUseCase: GetCartItemsUseCase,
-    private val getPackageItems: GetPackageItemUseCase,
+    private val getPackageItemsUseCase: GetPackageItemUseCase,
     private val soldCashOpUseCase: SoldCashOpUseCase,
     private val soldCardOpUseCase: SoldCardOpUseCase,
     private val getAllConductorsUseCase: GetAllConductorsUseCase,
@@ -145,7 +144,7 @@ class ProductViewModel @Inject constructor(
 
     private fun loadPackageItems() {
         viewModelScope.launch {
-            getPackageItems().collectLatest { packageItemDomains ->
+            getPackageItemsUseCase().collectLatest { packageItemDomains ->
                 val validPackageItems = packageItemDomains.filter { packageItemDomain ->
                     packageItemDomain.currentQuantity > 0
                 }
