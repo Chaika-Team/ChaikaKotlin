@@ -161,5 +161,19 @@
     <string name="personal_data_photo_not_loaded">Не загружено</string>
 
     <string name="navigate">Navigate</string>
+    <string name="arrow_fab_content_description">Next</string>
+    <string name="cart_fab_content_description">Перейти в корзину</string>
+    <string name="cart_fab_price_format">%1$s</string>
+
+    <string name="cart_payment_title">К ОПЛАТЕ</string>
+    <string name="cart_payment_conductor">ПРОВОДНИК</string>
+    <string name="cart_payment_select_conductor">Выберите проводника</string>
+    <string name="cart_payment_cash">НАЛИЧНЫМИ</string>
+    <string name="cart_payment_card">КАРТА</string>
+
+    <string name="cart_product_available">Доступно: %1$d</string>
+    <string name="cart_product_add_to_cart">Добавить в корзину</string>
+    <string name="cart_product_remove_from_cart">Удалить из корзины</string>
+    <string name="cart_product_remove_from_package">Удалить из пакета</string>
 
 </resources>

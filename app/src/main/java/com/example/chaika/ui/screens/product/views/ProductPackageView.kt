@@ -3,6 +3,7 @@ package com.example.chaika.ui.screens.product.views
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -27,7 +28,9 @@ import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.LightColorScheme
+import com.example.chaika.ui.theme.BarDimens
 import com.example.chaika.ui.viewModels.ProductViewModel
+import com.example.chaika.util.formatPriceOnly
 
 @Composable
 fun ProductPackageView(
@@ -39,7 +42,6 @@ fun ProductPackageView(
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> viewModel.observeCartChanges()
-                Lifecycle.Event.ON_STOP -> viewModel.clearPackageState()
                 else -> {
                     android.util.Log.d("ProductListScreen", "Unhandled lifecycle event: $event")
                 }
@@ -51,10 +53,12 @@ fun ProductPackageView(
         }
     }
 
-    val packageItems by viewModel.packageItems.collectAsState()
-    val pagingData = viewModel.pagingPackageDataFlow.collectAsLazyPagingItems()
+    val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
+    val totalPrice = cartItems.sumOf { it.price * it.quantity }
+    val itemsCount = cartItems.sumOf { it.quantity }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -83,35 +87,40 @@ fun ProductPackageView(
                         .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(packageItems.size) { index ->
-                        val product = packageItems[index]
-                        ProductComponent(
-                            modifier = Modifier.testTag("packageCard"),
-                            product = product,
-                            onAddToCart = {
-                                viewModel.addToPackage(product.id)
-                            },
-                            onQuantityIncrease = {
-                                viewModel.updatePackageQuantity(product.id, +1)
-                            },
-                            onQuantityDecrease = {
-                                viewModel.updatePackageQuantity(product.id, -1)
-                            },
-                        )
+                    items(pagingData.itemCount) { index ->
+                        val product = pagingData[index]
+                        if (product != null) {
+                            ProductComponent(
+                                modifier = Modifier.testTag("packageCard"),
+                                product = product,
+                                onAddToCart = {
+                                    viewModel.addToCart(product.id)
+                                },
+                                onQuantityIncrease = {
+                                    viewModel.updateCartQuantity(product.id, +1)
+                                },
+                                onQuantityDecrease = {
+                                    viewModel.updateCartQuantity(product.id, -1)
+                                },
+                            )
+                        }
                     }
                 }
             }
         }
         CartFAB(
-            totalPrice = "60 000",
-            itemsCount = 11,
+            totalPrice = formatPriceOnly(totalPrice),
+            itemsCount = itemsCount,
             onClick = {
                 viewModel.setCart()
                 navController.navigate(Routes.PRODUCT_CART) {
                     popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
                 }
             },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(end = 24.dp)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 24.dp, bottom = 0.dp)
+                .offset(y = 8.dp)
         )
     }
 }

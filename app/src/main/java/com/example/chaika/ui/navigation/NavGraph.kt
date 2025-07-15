@@ -128,7 +128,6 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
                 ProductListView(
                     viewModel = productViewModel,
-                    authViewModel = authViewModel,
                     navController = navController
                 )
             }
