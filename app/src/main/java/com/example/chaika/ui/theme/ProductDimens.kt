@@ -64,4 +64,5 @@ object ProductDimens {
     val ButtonHeightL = 64.dp // для крупных кнопок
     val TitleFontSizeL = 20.sp // для крупных заголовков
     val LabelFontSizeM = 14.sp // для подписей и кнопок
+    val CartPadding = 12.dp // для ProductCartView
 }

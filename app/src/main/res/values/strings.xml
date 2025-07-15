@@ -175,5 +175,7 @@
     <string name="cart_product_add_to_cart">Добавить в корзину</string>
     <string name="cart_product_remove_from_cart">Удалить из корзины</string>
     <string name="cart_product_remove_from_package">Удалить из пакета</string>
+    <string name="cart_empty">Корзина пуста</string>
+    <string name="cart_loading_error">Произошла ошибка при загрузке данных</string>
 
 </resources>
