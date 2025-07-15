@@ -7,11 +7,6 @@ import androidx.navigation.NavHostController
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import androidx.compose.runtime.*
-import com.example.chaika.ui.screens.profile.views.PersonalDataView
-import com.example.chaika.ui.screens.profile.views.AboutView
-import com.example.chaika.ui.screens.profile.views.SettingsView
-import com.example.chaika.ui.screens.profile.views.FaqsView
-import com.example.chaika.ui.screens.profile.views.FeedbackView
 import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.screens.profile.views.MainProfileView
 
@@ -33,7 +28,6 @@ fun ProfileScreen(
     }
 
     MainProfileView(
-        viewModel = viewModel,
         authViewModel = authViewModel,
         conductor = conductor,
         navController = navController

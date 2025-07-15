@@ -25,7 +25,7 @@ object Routes {
     const val PROFILE_GRAPH = "profile/graph"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN
+        LOGIN, PRODUCT_CART
     )
 
     val routesWithoutTopBar = setOf(

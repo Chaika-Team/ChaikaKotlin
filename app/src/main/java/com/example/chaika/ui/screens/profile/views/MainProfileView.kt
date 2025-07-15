@@ -23,13 +23,11 @@ import com.example.chaika.ui.components.profile.UserInfoSection
 import com.example.chaika.ui.theme.ProfileBackground
 import com.example.chaika.ui.theme.ProfileDimens
 import com.example.chaika.ui.viewModels.AuthViewModel
-import com.example.chaika.ui.viewModels.ProfileViewModel
 import androidx.navigation.NavHostController
 import com.example.chaika.ui.navigation.Routes
 
 @Composable
 fun MainProfileView(
-    viewModel: ProfileViewModel,
     authViewModel: AuthViewModel,
     conductor: ConductorDomain?,
     navController: NavHostController
