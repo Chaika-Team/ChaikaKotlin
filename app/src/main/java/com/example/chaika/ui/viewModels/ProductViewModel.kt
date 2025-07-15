@@ -14,7 +14,6 @@ import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.domain.models.ProductInfoDomain
 import com.example.chaika.domain.usecases.AddItemToCartUseCase
-import com.example.chaika.domain.usecases.AddOpUseCase
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
 import com.example.chaika.domain.usecases.GetAllConductorsUseCase
 import com.example.chaika.domain.usecases.GetCartItemsUseCase
@@ -76,9 +75,7 @@ class ProductViewModel @Inject constructor(
         observeCartChanges()
         loadCartItems()
         loadPackageItems()
-        viewModelScope.launch {
-            getAllConductorsUseCase().collectLatest { _conductors.value = it }
-        }
+        loadConductors()
     }
 
     fun setCart() {
@@ -144,26 +141,42 @@ class ProductViewModel @Inject constructor(
 
     private fun loadPackageItems() {
         viewModelScope.launch {
-            getPackageItemsUseCase().collectLatest { packageItemDomains ->
-                val validPackageItems = packageItemDomains.filter { packageItemDomain ->
-                    packageItemDomain.currentQuantity > 0
+            try {
+                getPackageItemsUseCase().collectLatest { packageItemDomains ->
+                    val validPackageItems = packageItemDomains.filter { packageItemDomain ->
+                        packageItemDomain.currentQuantity > 0
+                    }
+                    
+                    _packageItems.value = validPackageItems.map { packageItemDomain ->
+                        val product = packageItemDomain.productInfoDomain
+                        val cartItem = _cartItems.value.find { it.id == product.id }
+                        Product(
+                            id = product.id,
+                            name = product.name,
+                            description = product.description,
+                            image = product.image,
+                            price = product.price,
+                            isInPackage = true,
+                            isInCart = cartItem != null,
+                            quantity = cartItem?.quantity ?: 1,
+                            packageQuantity = packageItemDomain.currentQuantity
+                        )
+                    }
                 }
-                
-                _packageItems.value = validPackageItems.map { packageItemDomain ->
-                    val product = packageItemDomain.productInfoDomain
-                    val cartItem = _cartItems.value.find { it.id == product.id }
-                    Product(
-                        id = product.id,
-                        name = product.name,
-                        description = product.description,
-                        image = product.image,
-                        price = product.price,
-                        isInPackage = true,
-                        isInCart = cartItem != null,
-                        quantity = cartItem?.quantity ?: 1,
-                        packageQuantity = packageItemDomain.currentQuantity
-                    )
-                }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error loading package items:  [${e.message}]", e)
+                _uiState.update { ScreenState.Error }
+            }
+        }
+    }
+
+    private fun loadConductors() {
+        viewModelScope.launch {
+            try {
+                getAllConductorsUseCase().collectLatest { _conductors.value = it }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error loading conductors:  [ [${e.message}]", e)
+                _uiState.update { ScreenState.Error }
             }
         }
     }

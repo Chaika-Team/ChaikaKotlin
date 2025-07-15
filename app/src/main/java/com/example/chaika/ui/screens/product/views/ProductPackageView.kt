@@ -28,7 +28,6 @@ import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.theme.LightColorScheme
-import com.example.chaika.ui.theme.BarDimens
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.util.formatPriceOnly
 
