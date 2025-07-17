@@ -1,5 +1,6 @@
 package com.example.chaika.ui.screens.product.views
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,10 +33,12 @@ import com.example.chaika.ui.components.trip.dashedBorder
 import androidx.compose.ui.res.stringResource
 import com.example.chaika.ui.theme.ProductDimens
 import com.example.chaika.R
+import com.example.chaika.ui.viewModels.AuthViewModel
 
 @Composable
 fun ProductListView(
     viewModel: ProductViewModel,
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -54,17 +57,26 @@ fun ProductListView(
         }
     }
 
+    val conductor = authViewModel.conductorState.collectAsState()
     val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
+    val packageItems by viewModel.packageItems.collectAsState()
 
     Scaffold(
         floatingActionButton = {
             ArrowFAB(
                 modifier = Modifier.dashedBorder(cornerRadius = ProductDimens.ProductListView.FABCornerRadius),
                 onClick = {
-                    navController.navigate(Routes.PRODUCT_PACKAGE) {
-                        popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
+                    val conductorId = conductor.value?.id
+                    Log.i("ProductListView", "Conductor: ${conductor.value}")
+                    if (conductorId != null) {
+                        Log.i("ProductListView", "Conductor id: $conductorId")
+                        viewModel.addToPackage(conductorId)
+                        navController.navigate(Routes.PRODUCT_PACKAGE) {
+                            popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
+                        }
                     }
                 }
             )
@@ -105,12 +117,18 @@ fun ProductListView(
                         ) { index ->
                             val product = pagingData[index]
                             if (product != null) {
+                                val cartItem = cartItems.find { it.id == product.id }
+                                val productForDisplay = product.copy(
+                                    isInCart = cartItem != null,
+                                    quantity = cartItem?.quantity ?: 1,
+                                    isInPackage = packageItems.any { it.id == product.id }
+                                )
                                 ProductComponent(
                                     modifier = Modifier.testTag("productCard"),
-                                    product = product,
-                                    onAddToCart = { viewModel.addToCart(product.id) },
-                                    onQuantityIncrease = { viewModel.updateCartQuantity(product.id, +1) },
-                                    onQuantityDecrease = { viewModel.updateCartQuantity(product.id, -1) }
+                                    product = productForDisplay,
+                                    onAddToCart = { viewModel.addToCart(productForDisplay) },
+                                    onQuantityIncrease = { viewModel.changeCartQuantity(product.id, +1) },
+                                    onQuantityDecrease = { viewModel.changeCartQuantity(product.id, -1) }
                                 )
                             }
                         }

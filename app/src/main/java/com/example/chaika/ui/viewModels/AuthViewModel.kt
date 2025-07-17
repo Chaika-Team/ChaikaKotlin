@@ -10,6 +10,7 @@ import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
 import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
+import com.example.chaika.domain.usecases.SaveConductorLocallyUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ class AuthViewModel @Inject constructor(
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val fetchConductorByTokenUseCase: FetchConductorByTokenUseCase
+    private val fetchConductorByTokenUseCase: FetchConductorByTokenUseCase,
+    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase
 ) : ViewModel() {
 
     companion object {
@@ -55,10 +57,12 @@ class AuthViewModel @Inject constructor(
                 )
                 if (hasToken) {
                     try {
-                        _conductorState.value = fetchConductorByTokenUseCase(token!!)
-                        Log.d(TAG, "Conductor loaded successfully after token check")
+                        val conductorFromApi = fetchConductorByTokenUseCase(token!!)
+                        val conductorFromDb = saveConductorLocallyUseCase(conductorFromApi, conductorFromApi.image)
+                        _conductorState.value = conductorFromDb
+                        Log.d(TAG, "Conductor loaded and saved locally after token check (id=${conductorFromDb.id})")
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error fetching conductor after token check", e)
+                        Log.e(TAG, "Error fetching/saving conductor after token check", e)
                         _conductorState.value = null
                     }
                 } else {
@@ -104,10 +108,12 @@ class AuthViewModel @Inject constructor(
                 )
                 if (hasToken) {
                     try {
-                        _conductorState.value = fetchConductorByTokenUseCase(token!!)
-                        Log.d(TAG, "Conductor loaded successfully after auth")
+                        val conductorFromApi = fetchConductorByTokenUseCase(token!!)
+                        val conductorFromDb = saveConductorLocallyUseCase(conductorFromApi, conductorFromApi.image)
+                        _conductorState.value = conductorFromDb
+                        Log.d(TAG, "Conductor loaded and saved locally after auth (id=${conductorFromDb.id})")
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error fetching conductor after auth", e)
+                        Log.e(TAG, "Error fetching/saving conductor after auth", e)
                         _conductorState.value = null
                     }
                 } else {

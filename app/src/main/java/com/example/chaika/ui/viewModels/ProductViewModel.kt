@@ -14,6 +14,7 @@ import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.domain.models.ProductInfoDomain
 import com.example.chaika.domain.usecases.AddItemToCartUseCase
+import com.example.chaika.domain.usecases.AddOpUseCase
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
 import com.example.chaika.domain.usecases.GetAllConductorsUseCase
 import com.example.chaika.domain.usecases.GetCartItemsUseCase
@@ -22,7 +23,8 @@ import com.example.chaika.domain.usecases.GetPagedProductsUseCase
 import com.example.chaika.domain.usecases.RemoveItemFromCartUseCase
 import com.example.chaika.domain.usecases.SoldCardOpUseCase
 import com.example.chaika.domain.usecases.SoldCashOpUseCase
-import com.example.chaika.domain.usecases.UpdateItemQuantityInCartUseCase
+import com.example.chaika.domain.usecases.UpdateQuantityUnlimitedUseCase
+import com.example.chaika.domain.usecases.UpdateQuantityWithLimitUseCase
 import com.example.chaika.ui.dto.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -42,12 +44,14 @@ class ProductViewModel @Inject constructor(
     private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
     private val addItemToCartUseCase: AddItemToCartUseCase,
     private val removeItemFromCartUseCase: RemoveItemFromCartUseCase,
-    private val updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase,
+    private val updateQuantityUnlimitedUseCase: UpdateQuantityUnlimitedUseCase,
+    private val updateQuantityWithLimitUseCase: UpdateQuantityWithLimitUseCase,
     private val getCartItemsUseCase: GetCartItemsUseCase,
     private val getPackageItemsUseCase: GetPackageItemUseCase,
     private val soldCashOpUseCase: SoldCashOpUseCase,
     private val soldCardOpUseCase: SoldCardOpUseCase,
     private val getAllConductorsUseCase: GetAllConductorsUseCase,
+    private val addOpUseCase: AddOpUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -212,15 +216,13 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun addToCart(productId: Int) {
+    fun addToCart(product: Product) {
         viewModelScope.launch {
-            _productsCartState[productId]?.let { product ->
-                val cartItem = CartItemDomain(
-                    product = product.toDomain(),
-                    quantity = product.quantity
-                )
-                addItemToCartUseCase(cartItem)
-            }
+            val cartItem = CartItemDomain(
+                product = product.toDomain(),
+                quantity = 1
+            )
+            addItemToCartUseCase(cartItem)
         }
     }
 
@@ -230,22 +232,41 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun updateCartQuantity(productId: Int, change: Int) {
+    fun changeCartQuantity(productId: Int, change: Int) {
         viewModelScope.launch {
-            _cartItems.value.find { it.id == productId }?.let { current ->
-                val newQuantity = current.quantity + change
-                if (newQuantity > 0) {
-                    updateItemQuantityInCartUseCase(
-                        itemId = productId,
-                        newQuantity = newQuantity,
-                        availableQuantity = 50
-                    )
-                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in cart")
-                } else {
-                    removeFromCart(productId)
-                    Log.d("ProductViewModel", "Removed $productId from cart")
-                }
-            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _cartItems")
+            val cartItem = _cartItems.value.find { it.id == productId }
+            val newQuantity = (cartItem?.quantity ?: 0) + change
+
+            if (newQuantity <= 0) {
+                removeFromCart(productId)
+                Log.d("ProductViewModel", "Removed $productId from cart")
+                return@launch
+            }
+
+            val isPackage = _packageItems.value.any { it.id == productId }
+            val updated = if (isPackage) {
+                updateQuantityWithLimitUseCase(productId, newQuantity)
+            } else {
+                updateQuantityUnlimitedUseCase(productId, newQuantity)
+            }
+
+            if (updated) {
+                Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in cart")
+            } else {
+                Log.d("ProductViewModel", "Failed to update quantity for $productId")
+            }
+        }
+    }
+
+    fun addToPackage(conductorId: Int) {
+        viewModelScope.launch {
+            try {
+                addOpUseCase(conductorId)
+                Log.d("ProductViewModel", "Successfully added to package for conductor $conductorId")
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error adding to package for conductor $conductorId", e)
+                _uiState.update { ScreenState.Error }
+            }
         }
     }
 

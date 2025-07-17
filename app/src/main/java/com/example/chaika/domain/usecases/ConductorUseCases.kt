@@ -48,9 +48,12 @@ class SaveConductorLocallyUseCase @Inject constructor(
                 subDir = ImageSubDir.CONDUCTORS.folder,
             ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
 
-            val updatedConductor = conductor.copy(image = imagePath)
-            conductorRepository.insertConductor(updatedConductor)
-            updatedConductor
+            val toInsert = conductor.copy(image = imagePath)
+            conductorRepository.insertConductor(toInsert)
+
+            // Получаем уже сохранённого проводника из БД
+            conductorRepository.getConductorByEmployeeID(toInsert.employeeID)
+                ?: throw IllegalStateException("Вставленный проводник не найден")
         }
 }
 
