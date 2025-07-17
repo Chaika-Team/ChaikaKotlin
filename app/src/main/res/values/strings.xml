@@ -62,12 +62,6 @@
     <string name="login_ok">OK</string>
     <string name="login_error_title">Ошибка входа</string>
 
-    <!-- Exit Confirmation Dialog -->
-    <string name="exit_confirmation_title">Выход</string>
-    <string name="exit_confirmation_message">Вы действительно хотите выйти из приложения?</string>
-    <string name="exit_confirmation_yes">Да</string>
-    <string name="exit_confirmation_no">Нет</string>
-
     <!-- About View -->
     <string name="about_app_version">Версия 1.0.0</string>
     <string name="about_description_title">Описание</string>
