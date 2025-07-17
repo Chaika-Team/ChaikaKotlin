@@ -244,16 +244,21 @@ class ProductViewModel @Inject constructor(
             }
 
             val isPackage = _packageItems.value.any { it.id == productId }
-            val updated = if (isPackage) {
-                updateQuantityWithLimitUseCase(productId, newQuantity)
-            } else {
-                updateQuantityUnlimitedUseCase(productId, newQuantity)
-            }
+            try {
+                val updated = if (isPackage) {
+                    updateQuantityWithLimitUseCase(productId, newQuantity)
+                } else {
+                    updateQuantityUnlimitedUseCase(productId, newQuantity)
+                }
 
-            if (updated) {
-                Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in cart")
-            } else {
-                Log.d("ProductViewModel", "Failed to update quantity for $productId")
+                if (updated) {
+                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in cart")
+                } else {
+                    Log.d("ProductViewModel", "Failed to update quantity for $productId")
+                }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error updating quantity for $productId: ", e)
+                _uiState.update { ScreenState.Error }
             }
         }
     }
@@ -319,6 +324,10 @@ class ProductViewModel @Inject constructor(
                 Log.e("ProductViewModel", "Ошибка при оплате картой: ", e)
             }
         }
+    }
+
+    fun setErrorState() {
+        _uiState.update { ScreenState.Error }
     }
 
     sealed class ScreenState {

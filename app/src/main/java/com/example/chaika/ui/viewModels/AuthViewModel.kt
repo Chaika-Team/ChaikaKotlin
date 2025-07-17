@@ -9,8 +9,7 @@ import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
 import com.example.chaika.domain.models.ConductorDomain
-import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
-import com.example.chaika.domain.usecases.SaveConductorLocallyUseCase
+import com.example.chaika.domain.usecases.AuthorizeAndSaveConductorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +23,7 @@ class AuthViewModel @Inject constructor(
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val fetchConductorByTokenUseCase: FetchConductorByTokenUseCase,
-    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase
+    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase
 ) : ViewModel() {
 
     companion object {
@@ -57,8 +55,7 @@ class AuthViewModel @Inject constructor(
                 )
                 if (hasToken) {
                     try {
-                        val conductorFromApi = fetchConductorByTokenUseCase(token!!)
-                        val conductorFromDb = saveConductorLocallyUseCase(conductorFromApi, conductorFromApi.image)
+                        val conductorFromDb = authorizeAndSaveConductorUseCase(token!!)
                         _conductorState.value = conductorFromDb
                         Log.d(TAG, "Conductor loaded and saved locally after token check (id=${conductorFromDb.id})")
                     } catch (e: Exception) {
@@ -95,30 +92,16 @@ class AuthViewModel @Inject constructor(
                 errorMessage = null
             )
             try {
-                completeAuthorizationFlowUseCase(intent)
+                val (_, conductor) = completeAuthorizationFlowUseCase(intent)
                 Log.d(TAG, "Auth flow completed successfully")
-                val token = getAccessTokenUseCase()
-                val hasToken = token != null
-                Log.d(TAG, "Token check result after auth: hasToken = $hasToken")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    isAuthenticated = hasToken,
+                    isAuthenticated = true,
                     isCheckingAuth = false,
                     errorMessage = null
                 )
-                if (hasToken) {
-                    try {
-                        val conductorFromApi = fetchConductorByTokenUseCase(token!!)
-                        val conductorFromDb = saveConductorLocallyUseCase(conductorFromApi, conductorFromApi.image)
-                        _conductorState.value = conductorFromDb
-                        Log.d(TAG, "Conductor loaded and saved locally after auth (id=${conductorFromDb.id})")
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error fetching/saving conductor after auth", e)
-                        _conductorState.value = null
-                    }
-                } else {
-                    _conductorState.value = null
-                }
+                _conductorState.value = conductor
+                Log.d(TAG, "Conductor loaded and saved locally after auth (id=${conductor.id})")
             } catch (e: Exception) {
                 Log.e(TAG, "Auth flow failed", e)
                 _uiState.value = _uiState.value.copy(

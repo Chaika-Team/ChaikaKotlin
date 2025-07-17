@@ -77,6 +77,9 @@ fun ProductListView(
                         navController.navigate(Routes.PRODUCT_PACKAGE) {
                             popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
                         }
+                    } else {
+                        Log.w("ProductListView", "Conductor ID is null, cannot add to package")
+                        viewModel.setErrorState()
                     }
                 }
             )
