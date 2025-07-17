@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.example.chaika.ui.theme.ProductDimens.QuantitySelectorHeight
@@ -29,6 +30,8 @@ fun QuantitySelector(
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
+    colorBack: Color = MaterialTheme.colorScheme.primary,
+    colorText: Color = MaterialTheme.colorScheme.background,
     cornerRadius: Dp = QuantitySelectorHeight // Добавляем параметр для радиуса скругления
 ) {
     Row(
@@ -36,7 +39,7 @@ fun QuantitySelector(
             .fillMaxWidth()
             .height(QuantitySelectorHeight)
             .background(
-                color = MaterialTheme.colorScheme.primary,
+                color = colorBack,
                 shape = RoundedCornerShape(cornerRadius) // Скругляем углы фона
             )
             .clip(RoundedCornerShape(cornerRadius)), // Обрезаем контент по тем же скруглениям
@@ -47,13 +50,13 @@ fun QuantitySelector(
             onClick = onDecrease,
             modifier = Modifier.size(QuantitySelectorHeight * 1.2F),
             colors = IconButtonDefaults.iconButtonColors(
-                contentColor = MaterialTheme.colorScheme.background
+                contentColor = colorText
             )
         ) {
             Icon(
                 Icons.Default.Remove,
                 contentDescription = "Decrease",
-                tint = MaterialTheme.colorScheme.background
+                tint = colorText
             )
         }
 
@@ -61,20 +64,20 @@ fun QuantitySelector(
             text = quantity.toString(),
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.background
+            color = colorText
         )
 
         IconButton(
             onClick = onIncrease,
             modifier = Modifier.size(QuantitySelectorHeight * 1.2F),
             colors = IconButtonDefaults.iconButtonColors(
-                contentColor = MaterialTheme.colorScheme.background
+                contentColor = colorText
             )
         ) {
             Icon(
                 Icons.Default.Add,
                 contentDescription = "Increase",
-                tint = MaterialTheme.colorScheme.background
+                tint = colorText
             )
         }
     }

@@ -23,13 +23,14 @@ import com.example.chaika.ui.components.profile.UserInfoSection
 import com.example.chaika.ui.theme.ProfileBackground
 import com.example.chaika.ui.theme.ProfileDimens
 import com.example.chaika.ui.viewModels.AuthViewModel
-import com.example.chaika.ui.viewModels.ProfileViewModel
+import androidx.navigation.NavHostController
+import com.example.chaika.ui.navigation.Routes
 
 @Composable
 fun MainProfileView(
-    viewModel: ProfileViewModel,
     authViewModel: AuthViewModel,
-    conductor: ConductorDomain?
+    conductor: ConductorDomain?,
+    navController: NavHostController
 ) {
     Box(
         modifier = Modifier
@@ -69,13 +70,13 @@ fun MainProfileView(
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_personal_data),
                             text = stringResource(R.string.profile_personal_data),
-                            onClick = { viewModel.onPersonalDataClick() },
+                            onClick = { navController.navigate(Routes.PROFILE_PERSONAL_DATA) },
                             shape = ProfileMenuItemShape.Top
                         )
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_settings),
                             text = stringResource(R.string.profile_settings),
-                            onClick = { viewModel.onSettingsClick() },
+                            onClick = { navController.navigate(Routes.PROFILE_SETTINGS) },
                             shape = ProfileMenuItemShape.Bottom
                         )
                     }
@@ -86,19 +87,19 @@ fun MainProfileView(
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_faqs),
                             text = stringResource(R.string.profile_faqs),
-                            onClick = { viewModel.onFaqsClick() },
+                            onClick = { navController.navigate(Routes.PROFILE_FAQS) },
                             shape = ProfileMenuItemShape.Top
                         )
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_feedback),
                             text = stringResource(R.string.profile_feedback),
-                            onClick = { viewModel.onFeedbackClick() },
+                            onClick = { navController.navigate(Routes.PROFILE_FEEDBACK) },
                             shape = ProfileMenuItemShape.Middle
                         )
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_info),
                             text = stringResource(R.string.profile_about),
-                            onClick = { viewModel.onAboutClick() },
+                            onClick = { navController.navigate(Routes.PROFILE_ABOUT) },
                             shape = ProfileMenuItemShape.Bottom
                         )
                     }

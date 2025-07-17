@@ -23,6 +23,7 @@ fun ProductScreen(
             is ScreenState.ProductList -> Routes.PRODUCT_LIST
             is ScreenState.Empty -> Routes.PRODUCT_ENTRY
             is ScreenState.Cart -> Routes.PRODUCT_CART
+            is ScreenState.Package -> Routes.PRODUCT_PACKAGE
             is ScreenState.Error -> null
         }
 

@@ -54,7 +54,7 @@ fun LoginScreen(
         }
     }
 
-    if (uiState.isCheckingAuth) {
+if (uiState.isCheckingAuth) {
         Log.d("LoginScreen", "Showing initial loading screen")
         Box(
             modifier = Modifier.fillMaxSize(),

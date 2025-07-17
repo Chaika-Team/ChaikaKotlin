@@ -37,6 +37,16 @@
     <string name="cancel">Отмена</string>
     <string name="confirm">Подтвердить</string>
     <string name="btn_back">Назад</string>
+
+    <string name="trip_title">Поездки</string>
+    <string name="new_trip_title">Новая поездка</string>
+    <string name="products_title">Продукты</string>
+    <string name="product_entry_title">Добавление продуктов</string>
+    <string name="product_list_title">Список продуктов</string>
+    <string name="cart_title">Корзина</string>
+    <string name="package_title">Пакет</string>
+    <string name="operations_title">Операции</string>
+    <string name="profile_title">Профиль</string>
     <!-- Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -145,5 +155,21 @@
     <string name="personal_data_photo_not_loaded">Не загружено</string>
 
     <string name="navigate">Navigate</string>
+    <string name="arrow_fab_content_description">Next</string>
+    <string name="cart_fab_content_description">Перейти в корзину</string>
+    <string name="cart_fab_price_format">%1$s</string>
+
+    <string name="cart_payment_title">К ОПЛАТЕ</string>
+    <string name="cart_payment_conductor">ПРОВОДНИК</string>
+    <string name="cart_payment_select_conductor">Выберите проводника</string>
+    <string name="cart_payment_cash">НАЛИЧНЫМИ</string>
+    <string name="cart_payment_card">КАРТА</string>
+
+    <string name="cart_product_available">Доступно: %1$d</string>
+    <string name="cart_product_add_to_cart">Добавить в корзину</string>
+    <string name="cart_product_remove_from_cart">Удалить из корзины</string>
+    <string name="cart_product_remove_from_package">Удалить из пакета</string>
+    <string name="cart_empty">Корзина пуста</string>
+    <string name="cart_loading_error">Произошла ошибка при загрузке данных</string>
 
 </resources>

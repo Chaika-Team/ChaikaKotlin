@@ -22,9 +22,9 @@ import com.example.chaika.ui.theme.BarDimens
 @Composable
 fun BottomBar(
     navController: NavController,
+    currentRoute: String?
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    if (currentRoute == null || currentRoute in Routes.routesWithoutBottomBar) return
 
     BottomBarBackground(
         modifier = Modifier.shadow(

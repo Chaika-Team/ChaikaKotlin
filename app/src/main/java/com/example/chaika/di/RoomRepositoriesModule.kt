@@ -17,6 +17,8 @@ import com.example.chaika.data.room.repo.RoomConductorTripShiftRepository
 import com.example.chaika.data.room.repo.RoomConductorTripShiftRepositoryInterface
 import com.example.chaika.data.room.repo.RoomProductInfoRepository
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
+import com.example.chaika.data.room.repo.RoomPackageItemRepository
+import com.example.chaika.data.room.repo.RoomPackageItemRepositoryInterface
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,4 +62,12 @@ object RoomRepositoriesModule {
         conductorTripShiftDao: ConductorTripShiftDao
     ): RoomConductorTripShiftRepositoryInterface =
         RoomConductorTripShiftRepository(conductorTripShiftDao)
+
+    @Provides
+    @Singleton
+    fun provideRoomPackageItemRepository(
+        packageItemViewDao: com.example.chaika.data.room.dao.PackageItemViewDao,
+        productInfoDao: ProductInfoDao
+    ): com.example.chaika.data.room.repo.RoomPackageItemRepositoryInterface =
+        com.example.chaika.data.room.repo.RoomPackageItemRepository(packageItemViewDao, productInfoDao)
 }
