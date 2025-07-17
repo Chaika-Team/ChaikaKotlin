@@ -1,8 +1,5 @@
 package com.example.chaika.ui.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,9 +9,10 @@ import com.example.chaika.ui.screens.OperationScreen
 import com.example.chaika.ui.screens.profile.ProfileScreen
 import com.example.chaika.ui.screens.auth.LoginScreen
 import com.example.chaika.ui.screens.product.ProductScreen
-import com.example.chaika.ui.screens.product.views.CartScreen
-import com.example.chaika.ui.screens.product.views.ProductEntryScreen
-import com.example.chaika.ui.screens.product.views.ProductListScreen
+import com.example.chaika.ui.screens.product.views.ProductCartView
+import com.example.chaika.ui.screens.product.views.ProductEntryView
+import com.example.chaika.ui.screens.product.views.ProductListView
+import com.example.chaika.ui.screens.product.views.ProductPackageView
 import com.example.chaika.ui.screens.profile.views.AboutView
 import com.example.chaika.ui.screens.profile.views.FaqsView
 import com.example.chaika.ui.screens.profile.views.FeedbackView
@@ -29,6 +27,7 @@ import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
+import androidx.compose.runtime.*
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -112,11 +111,14 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                ProductScreen(viewModel = productViewModel, navController = navController)
+                ProductScreen(
+                    viewModel = productViewModel,
+                    navController = navController
+                )
             }
 
             composable(route = Routes.PRODUCT_ENTRY) { _ ->
-                ProductEntryScreen(navController = navController)
+                ProductEntryView(navController = navController)
             }
 
             composable(route = Routes.PRODUCT_LIST) { backStackEntry ->
@@ -124,7 +126,10 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                ProductListScreen(viewModel = productViewModel, navController = navController)
+                ProductListView(
+                    viewModel = productViewModel,
+                    navController = navController
+                )
             }
 
             composable(route = Routes.PRODUCT_CART) { backStackEntry ->
@@ -132,7 +137,15 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                CartScreen(viewModel = productViewModel)
+                ProductCartView(viewModel = productViewModel, authViewModel = authViewModel)
+            }
+
+            composable(route = Routes.PRODUCT_PACKAGE) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                ProductPackageView(viewModel = productViewModel, navController = navController)
             }
         }
 
@@ -144,7 +157,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             startDestination = Routes.PROFILE,
             route = Routes.PROFILE_GRAPH
         ) {
-            composable(route = Routes.PROFILE) { backStackEntry ->
+            composable(Routes.PROFILE) { backStackEntry ->
                 val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
                 ProfileScreen(
                     viewModel = profileViewModel,
@@ -152,21 +165,21 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController = navController
                 )
             }
-            composable(route = Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->
+            composable(Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->
                 val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
-                val conductor = profileViewModel.conductorState.collectAsState().value
+                val conductor by profileViewModel.conductorState.collectAsState()
                 PersonalDataView(conductor = conductor)
             }
-            composable(route = Routes.PROFILE_SETTINGS) {
+            composable(Routes.PROFILE_SETTINGS) { _ ->
                 SettingsView()
             }
-            composable(route = Routes.PROFILE_FAQS) {
+            composable(Routes.PROFILE_FAQS) { _ ->
                 FaqsView()
             }
-            composable(route = Routes.PROFILE_FEEDBACK) {
+            composable(Routes.PROFILE_FEEDBACK) { _ ->
                 FeedbackView()
             }
-            composable(route = Routes.PROFILE_ABOUT) {
+            composable(Routes.PROFILE_ABOUT) { _ ->
                 AboutView()
             }
         }

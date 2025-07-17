@@ -3,6 +3,7 @@ package com.example.chaika.ui.components.trip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -27,6 +28,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.example.chaika.R
 import com.example.chaika.domain.models.trip.StationDomain
 import com.example.chaika.domain.models.trip.TripDomain
+import com.example.chaika.ui.theme.ChaikaTheme
 import com.example.chaika.ui.theme.TripDimens
 
 @Composable
@@ -115,45 +117,30 @@ fun CurrentTripContent(
     }
 }
 
-fun Modifier.dashedBorder(
-    color: Color = Color.Gray,
-    cornerRadius: Dp = 8.dp,
-    pathEffect: PathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 5f), 0f)
-) = this.then(
-    Modifier.drawBehind {
-        drawRoundRect(
-            color = color,
-            cornerRadius = CornerRadius(cornerRadius.toPx()),
-            style = Stroke(
-                width = 1.dp.toPx(),
-                pathEffect = pathEffect
-            )
-        )
-    }
-)
-
 @Preview
 @Composable
 fun CurrentTripButtonPreview() {
-    CurrentTripContent(
-        modifier = Modifier,
-        tripRecord = TripDomain(
-            uuid = "12",
-            trainNumber = "120A",
-            departure = "2025-03-29T23:55:00+03:00",
-            arrival = "2025-03-30T09:47:00+03:00",
-            duration = "PT9H52M",
-            from = StationDomain(
-                code = 1,
-                name = "Московский вокзал",
-                city = "Санкт-Петербург-Главный"
+    ChaikaTheme {
+        CurrentTripContent(
+            modifier = Modifier,
+            tripRecord = TripDomain(
+                uuid = "12",
+                trainNumber = "120A",
+                departure = "2025-03-29T23:55:00+03:00",
+                arrival = "2025-03-30T09:47:00+03:00",
+                duration = "PT9H52M",
+                from = StationDomain(
+                    code = 1,
+                    name = "Московский вокзал",
+                    city = "Санкт-Петербург-Главный"
+                ),
+                to = StationDomain(
+                    code = 2,
+                    name = "ТПУ Черкизово",
+                    city = "Москва ВК Восточный"
+                )
             ),
-            to = StationDomain(
-                code = 2,
-                name = "ТПУ Черкизово",
-                city = "Москва ВК Восточный"
-            )
-        ),
-        onClick = { }
-    )
+            onClick = { }
+        )
+    }
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,11 +15,11 @@ import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.navigation.Routes
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductEntryScreen(
+fun ProductEntryView(
     navController: NavController,
 ) {
-    // TODO()
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -32,7 +33,7 @@ fun ProductEntryScreen(
             },
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "View products")
+            Text(text = "Create package")
         }
     }
 }

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 
 @Composable
 fun ProductImage(
@@ -13,7 +13,7 @@ fun ProductImage(
     modifier: Modifier = Modifier,
     contentDescription: String
 ) {
-    AsyncImage(
+    SubcomposeAsyncImage(
         model = imageUrl,
         contentScale = ContentScale.Crop,
         modifier = modifier.clip(MaterialTheme.shapes.large),
