@@ -24,8 +24,7 @@ fun LoginScreen(
     viewModel: AuthViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    val context = LocalContext.current as Activity
+    val ctx = LocalContext.current
 
     val authLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -66,8 +65,9 @@ fun LoginScreen(
         return
     }
 
-    BackHandler(enabled = true) {
-        context.finishAffinity()
+    BackHandler {
+        val activity = ctx as? Activity ?: return@BackHandler
+        activity.finishAffinity()
     }
 
     Column(
