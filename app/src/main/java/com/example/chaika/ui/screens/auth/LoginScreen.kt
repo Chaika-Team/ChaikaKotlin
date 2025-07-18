@@ -17,7 +17,6 @@ import com.example.chaika.ui.theme.LoginDimens
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.platform.LocalContext
 import android.app.Activity
-import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
 fun LoginScreen(
@@ -25,8 +24,7 @@ fun LoginScreen(
     viewModel: AuthViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    val context = LocalContext.current
+    val ctx = LocalContext.current
 
     val authLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -56,7 +54,7 @@ fun LoginScreen(
         }
     }
 
-    if (uiState.isCheckingAuth) {
+if (uiState.isCheckingAuth) {
         Log.d("LoginScreen", "Showing initial loading screen")
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -67,31 +65,9 @@ fun LoginScreen(
         return
     }
 
-    var showExitDialog by rememberSaveable { mutableStateOf(false) }
-
-    BackHandler(enabled = true) {
-        showExitDialog = true
-    }
-
-    if (showExitDialog) {
-        AlertDialog(
-            onDismissRequest = { showExitDialog = false },
-            title = { Text(text = stringResource(R.string.exit_confirmation_title)) },
-            text = { Text(text = stringResource(R.string.exit_confirmation_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    showExitDialog = false
-                    (context as? Activity)?.finishAffinity()
-                }) {
-                    Text(text = stringResource(R.string.exit_confirmation_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExitDialog = false }) {
-                    Text(text = stringResource(R.string.exit_confirmation_no))
-                }
-            }
-        )
+    BackHandler {
+        val activity = ctx as? Activity ?: return@BackHandler
+        activity.finishAffinity()
     }
 
     Column(
