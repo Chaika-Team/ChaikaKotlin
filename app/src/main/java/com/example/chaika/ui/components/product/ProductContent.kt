@@ -54,7 +54,7 @@ fun ProductContent(
             overflow = TextOverflow.Ellipsis,
         )
 
-        AnimatedVisibility(visible = !product.isInCart && !product.isInPackage) {
+        AnimatedVisibility(visible = !product.isInCart) {
             NotInCartContent(
                 price = product.price,
                 description = product.description,
@@ -65,14 +65,6 @@ fun ProductContent(
             InCartContent(
                 price = product.price,
                 quantity = product.quantity,
-                onQuantityIncrease = onQuantityIncrease,
-                onQuantityDecrease = onQuantityDecrease
-            )
-        }
-        AnimatedVisibility(visible = product.isInPackage && !product.isInCart) {
-            InPackageContent(
-                price = product.price,
-                quantity = product.packageQuantity,
                 onQuantityIncrease = onQuantityIncrease,
                 onQuantityDecrease = onQuantityDecrease
             )
@@ -142,31 +134,6 @@ private fun InCartContent(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        QuantitySelector(
-            quantity = quantity,
-            onIncrease = onQuantityIncrease,
-            onDecrease = onQuantityDecrease
-        )
-    }
-}
-
-@Composable
-private fun InPackageContent(
-    price: Double,
-    quantity: Int,
-    onQuantityIncrease: () -> Unit,
-    onQuantityDecrease: () -> Unit
-) {
-    Column {
-        Text(
-            text = formatPriceOnly(price),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.secondary
         )
 
         Spacer(modifier = Modifier.height(4.dp))

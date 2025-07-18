@@ -66,8 +66,8 @@ fun ProductCartView(
                                 CartProductItem(
                                     product = product,
                                     onAddToCart = { },
-                                    onQuantityIncrease = { viewModel.updateCartQuantity(product.id, +1) },
-                                    onQuantityDecrease = { viewModel.updateCartQuantity(product.id, -1) },
+                                    onQuantityIncrease = { viewModel.changeCartQuantity(product.id, +1) },
+                                    onQuantityDecrease = { viewModel.changeCartQuantity(product.id, -1) },
                                     onRemove = { viewModel.removeFromCart(product.id) }
                                 )
                             }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +24,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.navigation.Routes
@@ -52,7 +52,7 @@ fun ProductPackageView(
         }
     }
 
-    val pagingData = viewModel.pagingDataFlow.collectAsLazyPagingItems()
+    val packageItems = viewModel.packageItems.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
@@ -86,23 +86,25 @@ fun ProductPackageView(
                         .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(pagingData.itemCount) { index ->
-                        val product = pagingData[index]
-                        if (product != null) {
-                            ProductComponent(
-                                modifier = Modifier.testTag("packageCard"),
-                                product = product,
-                                onAddToCart = {
-                                    viewModel.addToCart(product.id)
-                                },
-                                onQuantityIncrease = {
-                                    viewModel.updateCartQuantity(product.id, +1)
-                                },
-                                onQuantityDecrease = {
-                                    viewModel.updateCartQuantity(product.id, -1)
-                                },
-                            )
-                        }
+                    items(packageItems.value, key = { it.id }) { product ->
+                        val cartItem = cartItems.find { it.id == product.id }
+                        val productForDisplay = product.copy(
+                            isInCart = cartItem != null,
+                            quantity = cartItem?.quantity ?: 1
+                        )
+                        ProductComponent(
+                            modifier = Modifier.testTag("packageCard"),
+                            product = productForDisplay,
+                            onAddToCart = {
+                                viewModel.addToCart(productForDisplay)
+                            },
+                            onQuantityIncrease = {
+                                viewModel.changeCartQuantity(product.id, +1)
+                            },
+                            onQuantityDecrease = {
+                                viewModel.changeCartQuantity(product.id, -1)
+                            },
+                        )
                     }
                 }
             }
