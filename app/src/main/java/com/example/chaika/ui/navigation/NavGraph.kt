@@ -27,7 +27,9 @@ import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
+import com.example.chaika.ui.viewModels.TemplateViewModel
 import androidx.compose.runtime.*
+import com.example.chaika.ui.screens.product.views.TemplateSearchView
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -121,6 +123,14 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 ProductEntryView(navController = navController)
             }
 
+            composable(route = Routes.TEMPLATE_SEARCH) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                TemplateSearchView(viewModel = templateViewModel, navController = navController)
+            }
+
             composable(route = Routes.PRODUCT_LIST) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
@@ -147,6 +157,14 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 }
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
                 ProductPackageView(viewModel = productViewModel, navController = navController)
+            }
+
+            composable(route = "template_search") { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                TemplateSearchView(viewModel = templateViewModel, navController = navController)
             }
         }
 

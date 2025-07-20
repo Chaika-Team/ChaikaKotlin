@@ -11,7 +11,7 @@ data class TemplateContentDto(
 // DTO для шаблона, получаемого через поиск (без контента или с пустым content)
 data class TemplateDto(
     val id: Int,
-    @SerializedName("template_name")
+    @SerializedName("templateName")
     val templateName: String,
     val description: String,
     val content: List<TemplateContentDto> = emptyList() // По умолчанию пустой
@@ -19,7 +19,7 @@ data class TemplateDto(
 
 // DTO для списка шаблонов
 data class TemplateListResponseDto(
-    @SerializedName("Templates")
+    @SerializedName("templates")
     val templates: List<TemplateDto>
 )
 

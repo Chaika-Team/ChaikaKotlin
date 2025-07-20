@@ -20,7 +20,7 @@ interface ChaikaSoftApiService {
     ): Response<ProductInfoListResponseDto>
 
     // Метод для получения списка шаблонов (без content)
-    @GET("api/v1/templates/search")
+    @GET("api/v1/product/template/search")
     suspend fun getTemplates(
         @Query("query") query: String = "",
         @Query("limit") limit: Int = 100,
@@ -29,7 +29,7 @@ interface ChaikaSoftApiService {
 
 
     // Метод для получения деталей конкретного шаблона (с content)
-    @GET("api/v1/templates/{id}")
+    @GET("api/v1/product/template/{id}")
     suspend fun getTemplateDetail(
         @Path("id") templateId: Int
     ): Response<TemplateDetailResponseDto>
