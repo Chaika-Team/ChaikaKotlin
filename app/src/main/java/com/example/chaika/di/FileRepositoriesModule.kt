@@ -1,11 +1,12 @@
 package com.example.chaika.di
 
 import android.content.Context
-import com.example.chaika.data.inMemory.InMemoryCartRepository
-import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
+import com.example.chaika.data.inMemory.CartRepositoryFactory
+import com.example.chaika.data.inMemory.CartRepositoryFactoryInterface
 import com.example.chaika.data.local.LocalImageRepository
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.local.LocalTripReportRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,20 +16,25 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object FileRepositoriesModule {
-    @Provides
+abstract class FileRepositoriesModule {
+
+    @Binds
     @Singleton
-    fun provideInMemoryCartRepository(): InMemoryCartRepositoryInterface = InMemoryCartRepository()
+    abstract fun bindCartRepositoryFactory(
+        impl: CartRepositoryFactory
+    ): CartRepositoryFactoryInterface
 
     @Provides
     @Singleton
     fun provideLocalImageRepository(
-        @ApplicationContext context: Context,
-    ): LocalImageRepositoryInterface = LocalImageRepository(context)
+        @ApplicationContext context: Context
+    ): LocalImageRepositoryInterface =
+        LocalImageRepository(context)
 
     @Provides
     @Singleton
     fun provideLocalTripReportRepository(
-        @ApplicationContext context: Context,
-    ): LocalTripReportRepository = LocalTripReportRepository(context)
+        @ApplicationContext context: Context
+    ): LocalTripReportRepository =
+        LocalTripReportRepository(context)
 }
