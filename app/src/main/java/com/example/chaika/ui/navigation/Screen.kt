@@ -28,6 +28,9 @@ sealed class Screen(
     object ProfileFeedback : Screen(Routes.PROFILE_FEEDBACK, R.string.profile_feedback)
     object ProfileAbout : Screen(Routes.PROFILE_ABOUT, R.string.profile_about)
 
+    object TemplateSearch : Screen(Routes.TEMPLATE_SEARCH, R.string.templates)
+    object TemplateDetail : Screen(Routes.TEMPLATE_DETAIL, R.string.templates)
+
     companion object {
         fun fromRoute(route: String?): Screen {
             return when (route) {
@@ -48,6 +51,8 @@ sealed class Screen(
                 Routes.PROFILE_FAQS -> ProfileFaqs
                 Routes.PROFILE_FEEDBACK -> ProfileFeedback
                 Routes.PROFILE_ABOUT -> ProfileAbout
+                Routes.TEMPLATE_SEARCH -> TemplateSearch
+                Routes.TEMPLATE_DETAIL -> TemplateDetail
                 else -> Trip
             }
         }

@@ -29,6 +29,7 @@ import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 import com.example.chaika.ui.viewModels.TemplateViewModel
 import androidx.compose.runtime.*
+import com.example.chaika.ui.screens.product.views.TemplateDetailView
 import com.example.chaika.ui.screens.product.views.TemplateSearchView
 
 @Composable
@@ -159,12 +160,23 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 ProductPackageView(viewModel = productViewModel, navController = navController)
             }
 
-            composable(route = "template_search") { backStackEntry ->
+            composable(route = Routes.TEMPLATE_SEARCH) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
                 val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
                 TemplateSearchView(viewModel = templateViewModel, navController = navController)
+            }
+
+            composable(route = Routes.TEMPLATE_DETAIL) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.TEMPLATE_SEARCH)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
+                if (templateId != null) {
+                    TemplateDetailView(templateId = templateId, viewModel = templateViewModel, navController = navController)
+                }
             }
         }
 

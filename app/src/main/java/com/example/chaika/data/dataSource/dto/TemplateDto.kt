@@ -3,7 +3,7 @@ package com.example.chaika.data.dataSource.dto
 import com.google.gson.annotations.SerializedName
 
 data class TemplateContentDto(
-    @SerializedName("product_id")
+    @SerializedName("productID")
     val productId: Int,
     val quantity: Int
 )
@@ -25,6 +25,6 @@ data class TemplateListResponseDto(
 
 // DTO для детальной информации о шаблоне (с заполненным content)
 data class TemplateDetailResponseDto(
-    @SerializedName("Template")
+    @SerializedName("template")
     val template: TemplateDto
 )
