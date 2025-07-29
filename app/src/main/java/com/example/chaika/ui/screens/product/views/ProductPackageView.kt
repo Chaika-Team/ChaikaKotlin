@@ -11,52 +11,34 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
+import com.example.chaika.ui.mappers.toCartItemDomain
+import com.example.chaika.ui.mappers.toProduct
 import com.example.chaika.ui.navigation.Routes
-import com.example.chaika.ui.theme.LightColorScheme
-import com.example.chaika.ui.viewModels.ProductViewModel
+import com.example.chaika.ui.viewModels.ReplenishViewModel
+import com.example.chaika.ui.viewModels.SaleViewModel
 import com.example.chaika.util.formatPriceOnly
 
 @Composable
 fun ProductPackageView(
-    viewModel: ProductViewModel,
-    navController: NavHostController
+    replenishViewModel: ReplenishViewModel,
+    saleViewModel: SaleViewModel,
+    navController: NavHostController,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_START -> viewModel.observeCartChanges()
-                else -> {
-                    android.util.Log.d("ProductListScreen", "Unhandled lifecycle event: $event")
-                }
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
+    val packageItems = replenishViewModel.items.collectAsState()
+    val cartItems by saleViewModel.items.collectAsState()
+    val isLoading = false
 
-    val packageItems = viewModel.packageItems.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val cartItems by viewModel.cartItems.collectAsState()
-    val totalPrice = cartItems.sumOf { it.price * it.quantity }
+    val totalPrice = cartItems.sumOf { it.product.price * it.quantity }
     val itemsCount = cartItems.sumOf { it.quantity }
 
     Box(
@@ -71,13 +53,6 @@ fun ProductPackageView(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            uiState == ProductViewModel.ScreenState.Error -> {
-                Text(
-                    text = "Error",
-                    color = LightColorScheme.error,
-                    modifier = Modifier.fillMaxSize().wrapContentSize()
-                )
-            }
             else -> {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -86,23 +61,20 @@ fun ProductPackageView(
                         .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(packageItems.value, key = { it.id }) { product ->
-                        val cartItem = cartItems.find { it.id == product.id }
-                        val productForDisplay = product.copy(
-                            isInCart = cartItem != null,
-                            quantity = cartItem?.quantity ?: 1
-                        )
+                    items(packageItems.value, key = { it.product.id }) { item ->
+                        val cartItem = cartItems.find { it.product.id == item.product.id }
+                        val productForDisplay = item.toProduct()
                         ProductComponent(
                             modifier = Modifier.testTag("packageCard"),
                             product = productForDisplay,
                             onAddToCart = {
-                                viewModel.addToCart(productForDisplay)
+                                saleViewModel.onAdd(productForDisplay.toCartItemDomain())
                             },
                             onQuantityIncrease = {
-                                viewModel.changeCartQuantity(product.id, +1)
+                                saleViewModel.onQuantityChange(productForDisplay.id, (cartItem?.quantity ?: 1) + 1)
                             },
                             onQuantityDecrease = {
-                                viewModel.changeCartQuantity(product.id, -1)
+                                saleViewModel.onQuantityChange(productForDisplay.id, (cartItem?.quantity ?: 1) - 1)
                             },
                         )
                     }
@@ -113,7 +85,6 @@ fun ProductPackageView(
             totalPrice = formatPriceOnly(totalPrice),
             itemsCount = itemsCount,
             onClick = {
-                viewModel.setCart()
                 navController.navigate(Routes.PRODUCT_CART) {
                     popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
                 }

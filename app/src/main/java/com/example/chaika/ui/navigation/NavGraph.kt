@@ -28,6 +28,9 @@ import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 import androidx.compose.runtime.*
+import com.example.chaika.ui.viewModels.FillViewModel
+import com.example.chaika.ui.viewModels.ReplenishViewModel
+import com.example.chaika.ui.viewModels.SaleViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -125,11 +128,11 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
                 ProductListView(
-                    viewModel = productViewModel,
+                    fillViewModel = fillViewModel,
                     authViewModel = authViewModel,
-                    navController = navController
+                    navController = navController,
                 )
             }
 
@@ -137,16 +140,24 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                ProductCartView(viewModel = productViewModel, authViewModel = authViewModel)
+                val saleViewModel = hiltViewModel<SaleViewModel>(parentEntry)
+                ProductCartView(
+                    saleViewModel = saleViewModel,
+                    authViewModel = authViewModel
+                )
             }
 
             composable(route = Routes.PRODUCT_PACKAGE) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                ProductPackageView(viewModel = productViewModel, navController = navController)
+                val replenishViewModel = hiltViewModel<ReplenishViewModel>(parentEntry)
+                val saleViewModel = hiltViewModel<SaleViewModel>(parentEntry)
+                ProductPackageView(
+                    replenishViewModel = replenishViewModel,
+                    saleViewModel = saleViewModel,
+                    navController = navController
+                )
             }
         }
 

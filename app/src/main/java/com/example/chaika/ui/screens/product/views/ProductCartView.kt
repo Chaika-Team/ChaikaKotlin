@@ -9,24 +9,42 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.chaika.ui.components.product.CartPaymentArea
 import com.example.chaika.ui.components.product.CartProductItem
 import com.example.chaika.ui.theme.ProductDimens
 import com.example.chaika.ui.viewModels.AuthViewModel
-import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.R
+import com.example.chaika.ui.mappers.toUiModel
+import com.example.chaika.ui.viewModels.SaleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductCartView(
-    viewModel: ProductViewModel,
+    saleViewModel: SaleViewModel,
     authViewModel: AuthViewModel
 ) {
-    val cartItems by viewModel.cartItems.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
-    val conductors by viewModel.conductors.collectAsState()
+    val cartItems by saleViewModel.items.collectAsState()
+    val conductors by authViewModel.conductors.collectAsState()
     val currentConductor by authViewModel.conductorState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                    authViewModel.loadConductors()
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     var selectedConductor by remember(conductors, currentConductor) {
         mutableStateOf(
@@ -34,59 +52,45 @@ fun ProductCartView(
         )
     }
 
-    val totalCost = cartItems.sumOf { it.price * it.quantity }
+    val totalCost = cartItems.sumOf { it.product.price * it.quantity }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        when {
-            isLoading -> {
+        Box(modifier = Modifier.weight(1f)) {
+            if (cartItems.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    Text(stringResource(id = R.string.cart_empty), style = MaterialTheme.typography.bodyLarge)
                 }
-            }
-            uiState is ProductViewModel.ScreenState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(id = R.string.cart_loading_error), color = MaterialTheme.colorScheme.error)
-                }
-            }
-            else -> {
-                Box(modifier = Modifier.weight(1f)) {
-                    if (cartItems.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(stringResource(id = R.string.cart_empty), style = MaterialTheme.typography.bodyLarge)
-                        }
-                    } else {
-                        LazyVerticalGrid (
-                            columns = GridCells.Fixed(1),
-                            contentPadding = PaddingValues(ProductDimens.CartPadding)
-                        ) {
-                            items(cartItems, key = { it.id }) { product ->
-                                CartProductItem(
-                                    product = product,
-                                    onAddToCart = { },
-                                    onQuantityIncrease = { viewModel.changeCartQuantity(product.id, +1) },
-                                    onQuantityDecrease = { viewModel.changeCartQuantity(product.id, -1) },
-                                    onRemove = { viewModel.removeFromCart(product.id) }
-                                )
-                            }
-                        }
+            } else {
+                LazyVerticalGrid (
+                    columns = GridCells.Fixed(1),
+                    contentPadding = PaddingValues(ProductDimens.CartPadding)
+                ) {
+                    items(cartItems, key = { it.product.id }) { product ->
+                        CartProductItem(
+                            product = product.product.toUiModel(),
+                            onAddToCart = { },
+                            onQuantityIncrease = { saleViewModel.onQuantityChange(product.product.id, product.quantity+1) },
+                            onQuantityDecrease = { saleViewModel.onQuantityChange(product.product.id, product.quantity-1) },
+                            onRemove = { saleViewModel.onRemove(product.product.id) }
+                        )
                     }
                 }
-                CartPaymentArea(
-                    totalCost = totalCost,
-                    conductors = conductors,
-                    selectedConductor = selectedConductor,
-                    onConductorSelected = { selectedConductor = it },
-                    onPayCash = {
-                        selectedConductor?.id?.let { viewModel.payByCash(it) }
-                    },
-                    onPayCard = {
-                        selectedConductor?.id?.let { viewModel.payByCard(it) }
-                    }
-                )
             }
         }
+        CartPaymentArea(
+            totalCost = totalCost,
+            conductors = conductors,
+            selectedConductor = selectedConductor,
+            onConductorSelected = { selectedConductor = it },
+            onPayCash = {
+                selectedConductor?.id?.let { saleViewModel.onSellCash(it) }
+            },
+            onPayCard = {
+                selectedConductor?.id?.let { saleViewModel.onSellCard(it) }
+            }
+        )
     }
 }

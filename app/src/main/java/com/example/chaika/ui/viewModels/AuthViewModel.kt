@@ -10,10 +10,12 @@ import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
 import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.domain.usecases.AuthorizeAndSaveConductorUseCase
+import com.example.chaika.domain.usecases.GetAllConductorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +25,8 @@ class AuthViewModel @Inject constructor(
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase
+    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase,
+    private val getAllConductorsUseCase: GetAllConductorsUseCase
 ) : ViewModel() {
 
     companion object {
@@ -35,6 +38,10 @@ class AuthViewModel @Inject constructor(
 
     private val _conductorState = MutableStateFlow<ConductorDomain?>(null)
     val conductorState: StateFlow<ConductorDomain?> = _conductorState.asStateFlow()
+
+    private val _conductors = MutableStateFlow<List<ConductorDomain>>(emptyList())
+    val conductors: StateFlow<List<ConductorDomain>> = _conductors.asStateFlow()
+
 
     init {
         Log.d(TAG, "AuthViewModel initialized")
@@ -132,6 +139,16 @@ class AuthViewModel @Inject constructor(
             } finally {
                 _uiState.value = _uiState.value.copy(isAuthenticated = false)
                 _conductorState.value = null
+            }
+        }
+    }
+
+    fun loadConductors() {
+        viewModelScope.launch {
+            try {
+                getAllConductorsUseCase().collectLatest { _conductors.value = it }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error loading conductors:  [ [${e.message}]", e)
             }
         }
     }
