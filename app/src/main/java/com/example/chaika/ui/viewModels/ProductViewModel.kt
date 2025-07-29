@@ -11,13 +11,20 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.chaika.domain.models.CartItemDomain
+import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.domain.models.ProductInfoDomain
 import com.example.chaika.domain.usecases.AddItemToCartUseCase
+import com.example.chaika.domain.usecases.AddOpUseCase
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
+import com.example.chaika.domain.usecases.GetAllConductorsUseCase
 import com.example.chaika.domain.usecases.GetCartItemsUseCase
+import com.example.chaika.domain.usecases.GetPackageItemUseCase
 import com.example.chaika.domain.usecases.GetPagedProductsUseCase
 import com.example.chaika.domain.usecases.RemoveItemFromCartUseCase
-import com.example.chaika.domain.usecases.UpdateItemQuantityInCartUseCase
+import com.example.chaika.domain.usecases.SoldCardOpUseCase
+import com.example.chaika.domain.usecases.SoldCashOpUseCase
+import com.example.chaika.domain.usecases.UpdateQuantityUnlimitedUseCase
+import com.example.chaika.domain.usecases.UpdateQuantityWithLimitUseCase
 import com.example.chaika.ui.dto.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,16 +44,26 @@ class ProductViewModel @Inject constructor(
     private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
     private val addItemToCartUseCase: AddItemToCartUseCase,
     private val removeItemFromCartUseCase: RemoveItemFromCartUseCase,
-    private val updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase,
+    private val updateQuantityUnlimitedUseCase: UpdateQuantityUnlimitedUseCase,
+    private val updateQuantityWithLimitUseCase: UpdateQuantityWithLimitUseCase,
     private val getCartItemsUseCase: GetCartItemsUseCase,
+    private val getPackageItemsUseCase: GetPackageItemUseCase,
+    private val soldCashOpUseCase: SoldCashOpUseCase,
+    private val soldCardOpUseCase: SoldCardOpUseCase,
+    private val getAllConductorsUseCase: GetAllConductorsUseCase,
+    private val addOpUseCase: AddOpUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _productsState = mutableStateMapOf<Int, Product>()
+    private val _productsCartState = mutableStateMapOf<Int, Product>()
     private val _uiState = MutableStateFlow<ScreenState>(ScreenState.Empty)
     private val _isLoading = MutableStateFlow(false)
     private val _cartItems = MutableStateFlow<List<Product>>(emptyList())
     private val _pagingDataFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
+    private val _conductors = MutableStateFlow<List<ConductorDomain>>(emptyList())
+    val conductors: StateFlow<List<ConductorDomain>> = _conductors.asStateFlow()
+    private val _packageItems = MutableStateFlow<List<Product>>(emptyList())
+    val packageItems: StateFlow<List<Product>> = _packageItems.asStateFlow()
 
     val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -57,22 +74,12 @@ class ProductViewModel @Inject constructor(
     private var loadProductsJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            if (_pagingDataFlow.value == PagingData.empty<Product>()) {
-                loadInitialData()
-            }
-        }
+        loadInitialData()
         loadProducts()
         observeCartChanges()
         loadCartItems()
-    }
-
-    fun clearState() {
-        _productsState.clear()
-    }
-
-    fun setProductList() {
-        _uiState.update { ScreenState.ProductList }
+        loadPackageItems()
+        loadConductors()
     }
 
     fun setCart() {
@@ -80,11 +87,13 @@ class ProductViewModel @Inject constructor(
     }
 
     private fun loadInitialData() {
+        Log.d("ProductViewModel", "loadInitialData called")
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 fetchAndSaveProductsUseCase()
             } catch (e: Exception) {
+                Log.e("ProductViewModel", "loadInitialData: error:  [${e.message}]", e)
                 _uiState.update { ScreenState.Error }
             } finally {
                 _isLoading.value = false
@@ -99,7 +108,7 @@ class ProductViewModel @Inject constructor(
                 pageSize = calculatePageSize(context = context)
             ).map { pagingData ->
                 pagingData.map { domainProduct ->
-                    _productsState.getOrPut(domainProduct.id) {
+                    _productsCartState.getOrPut(domainProduct.id) {
                         domainProduct.toUiModel()
                     }.copy(
                         isInCart = _cartItems.value.any { it.id == domainProduct.id },
@@ -134,30 +143,72 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    private fun loadPackageItems() {
+        viewModelScope.launch {
+            try {
+                getPackageItemsUseCase().collectLatest { packageItemDomains ->
+                    val validPackageItems = packageItemDomains.filter { packageItemDomain ->
+                        packageItemDomain.currentQuantity > 0
+                    }
+                    
+                    _packageItems.value = validPackageItems.map { packageItemDomain ->
+                        val product = packageItemDomain.productInfoDomain
+                        val cartItem = _cartItems.value.find { it.id == product.id }
+                        Product(
+                            id = product.id,
+                            name = product.name,
+                            description = product.description,
+                            image = product.image,
+                            price = product.price,
+                            isInPackage = true,
+                            isInCart = cartItem != null,
+                            quantity = cartItem?.quantity ?: 1,
+                            packageQuantity = packageItemDomain.currentQuantity
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error loading package items:  [${e.message}]", e)
+                _uiState.update { ScreenState.Error }
+            }
+        }
+    }
+
+    private fun loadConductors() {
+        viewModelScope.launch {
+            try {
+                getAllConductorsUseCase().collectLatest { _conductors.value = it }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error loading conductors:  [ [${e.message}]", e)
+                _uiState.update { ScreenState.Error }
+            }
+        }
+    }
+
     fun observeCartChanges() {
         syncJob?.cancel()
         syncJob = viewModelScope.launch {
             getCartItemsUseCase().collectLatest { _ ->
                 updateProductsState()
                 loadProducts()
+                loadPackageItems()
             }
         }
     }
 
     private fun updateProductsState() {
         _cartItems.value.forEach { cartItem ->
-            _productsState[cartItem.id]?.let { current ->
-                _productsState[cartItem.id] = current.copy(
+            _productsCartState[cartItem.id]?.let { current ->
+                _productsCartState[cartItem.id] = current.copy(
                     isInCart = true,
                     quantity = cartItem.quantity
                 )
             }
         }
 
-        // Обновляем продукты, которых нет в корзине
-        _productsState.forEach { (id, product) ->
+        _productsCartState.forEach { (id, product) ->
             if (!_cartItems.value.any { it.id == id }) {
-                _productsState[id] = product.copy(
+                _productsCartState[id] = product.copy(
                     isInCart = false,
                     quantity = 1
                 )
@@ -165,61 +216,62 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun addToCart(productId: Int) {
+    fun addToCart(product: Product) {
         viewModelScope.launch {
-            _productsState[productId]?.let { product ->
-                val cartItem = CartItemDomain(
-                    product = product.toDomain(),
-                    quantity = product.quantity
-                )
-                addItemToCartUseCase(cartItem)
-                // Изменения подхватятся через observeCartChanges
-            }
+            val cartItem = CartItemDomain(
+                product = product.toDomain(),
+                quantity = 1
+            )
+            addItemToCartUseCase(cartItem)
         }
     }
 
     fun removeFromCart(productId: Int) {
         viewModelScope.launch {
             removeItemFromCartUseCase(productId)
-            // Изменения подхватятся через observeCartChanges
         }
     }
 
-    fun updateCartQuantity(productId: Int, change: Int) {
+    fun changeCartQuantity(productId: Int, change: Int) {
         viewModelScope.launch {
-            _cartItems.value.find { it.id == productId }?.let { current ->
-                val newQuantity = current.quantity + change
-                if (newQuantity > 0) {
-                    updateItemQuantityInCartUseCase(
-                        itemId = productId,
-                        newQuantity = newQuantity,
-                        availableQuantity = 50
-                    )
-                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity")
-                    // Изменения подхватятся через observeCartChanges
+            val cartItem = _cartItems.value.find { it.id == productId }
+            val newQuantity = (cartItem?.quantity ?: 0) + change
+
+            if (newQuantity <= 0) {
+                removeFromCart(productId)
+                Log.d("ProductViewModel", "Removed $productId from cart")
+                return@launch
+            }
+
+            val isPackage = _packageItems.value.any { it.id == productId }
+            try {
+                val updated = if (isPackage) {
+                    updateQuantityWithLimitUseCase(productId, newQuantity)
                 } else {
-                    removeFromCart(productId)
-                    Log.d("ProductViewModel", "Removed $productId from cart")
+                    updateQuantityUnlimitedUseCase(productId, newQuantity)
                 }
-            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _cartItems")
+
+                if (updated) {
+                    Log.d("ProductViewModel", "Updated quantity of $productId to $newQuantity in cart")
+                } else {
+                    Log.d("ProductViewModel", "Failed to update quantity for $productId")
+                }
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error updating quantity for $productId: ", e)
+                _uiState.update { ScreenState.Error }
+            }
         }
     }
 
-    fun updateQuantity(productId: Int, change: Int) {
+    fun addToPackage(conductorId: Int) {
         viewModelScope.launch {
-            _productsState[productId]?.let { current ->
-                val newQuantity = current.quantity + change
-                if (newQuantity > 0) {
-                    updateItemQuantityInCartUseCase(
-                        itemId = productId,
-                        newQuantity = newQuantity,
-                        availableQuantity = 50
-                    )
-                    // Изменения подхватятся через observeCartChanges
-                } else {
-                    removeFromCart(productId)
-                }
-            } ?: Log.d("ProductViewModel", "Product with ID $productId not found in _productsState")
+            try {
+                addOpUseCase(conductorId)
+                Log.d("ProductViewModel", "Successfully added to package for conductor $conductorId")
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error adding to package for conductor $conductorId", e)
+                _uiState.update { ScreenState.Error }
+            }
         }
     }
 
@@ -246,9 +298,42 @@ class ProductViewModel @Inject constructor(
         )
     }
 
+    fun payByCash(conductorId: Int) {
+        viewModelScope.launch {
+            if (_cartItems.value.isEmpty()) {
+                Log.w("ProductViewModel", "Попытка оплаты наличными при пустой корзине")
+                return@launch
+            }
+            try {
+                soldCashOpUseCase.invoke(conductorId)
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Ошибка при оплате наличными: ", e)
+            }
+        }
+    }
+
+    fun payByCard(conductorId: Int) {
+        viewModelScope.launch {
+            if (_cartItems.value.isEmpty()) {
+                Log.w("ProductViewModel", "Попытка оплаты картой при пустой корзине")
+                return@launch
+            }
+            try {
+                soldCardOpUseCase(conductorId)
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Ошибка при оплате картой: ", e)
+            }
+        }
+    }
+
+    fun setErrorState() {
+        _uiState.update { ScreenState.Error }
+    }
+
     sealed class ScreenState {
         object Empty : ScreenState()
         object ProductList : ScreenState()
+        object Package: ScreenState()
         object Cart : ScreenState()
         object Error : ScreenState()
     }

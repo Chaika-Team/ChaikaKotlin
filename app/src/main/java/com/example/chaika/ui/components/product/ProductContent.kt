@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.chaika.ui.dto.Product
 import com.example.chaika.ui.theme.ProductDimens.PaddingL
 import com.example.chaika.ui.theme.ProductDimens.QuantitySelectorHeight
+import com.example.chaika.util.formatPriceOnly
 
 
 @Composable
@@ -96,7 +97,7 @@ private fun NotInCartContent(
             )
 
             Text(
-                text = "${"%.2f".format(price)} ₽",
+                text = formatPriceOnly(price),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -129,7 +130,7 @@ private fun InCartContent(
 ) {
     Column {
         Text(
-            text = "${"%.2f".format(price)} ₽",
+            text = formatPriceOnly(price),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary

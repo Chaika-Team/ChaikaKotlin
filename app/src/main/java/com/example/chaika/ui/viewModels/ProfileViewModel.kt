@@ -43,26 +43,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun onPersonalDataClick() {
-        _uiState.value = ScreenState.PersonalData
-    }
-
-    fun onSettingsClick() {
-        _uiState.value = ScreenState.Settings
-    }
-
-    fun onFaqsClick() {
-        _uiState.value = ScreenState.Faqs
-    }
-
-    fun onFeedbackClick() {
-        _uiState.value = ScreenState.Feedback
-    }
-
-    fun onAboutClick() {
-        _uiState.value = ScreenState.About
-    }
-
     sealed class ScreenState {
         object Profile : ScreenState()
         object PersonalData : ScreenState()

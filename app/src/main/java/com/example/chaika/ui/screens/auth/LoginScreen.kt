@@ -15,7 +15,8 @@ import androidx.compose.ui.res.stringResource
 import com.example.chaika.R
 import com.example.chaika.ui.theme.LoginDimens
 import androidx.activity.compose.BackHandler
-import kotlin.system.exitProcess
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
 
 @Composable
 fun LoginScreen(
@@ -23,6 +24,7 @@ fun LoginScreen(
     viewModel: AuthViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val ctx = LocalContext.current
 
     val authLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -30,7 +32,7 @@ fun LoginScreen(
         Log.d("LoginScreen", "ActivityResultLauncher callback triggered")
         Log.d("LoginScreen", "Result code: ${result.resultCode}")
 
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK) {
             Log.d("LoginScreen", "Result OK - processing auth result")
             result.data?.let { intent ->
                 viewModel.handleAuthResult(intent)
@@ -52,7 +54,7 @@ fun LoginScreen(
         }
     }
 
-    if (uiState.isCheckingAuth) {
+if (uiState.isCheckingAuth) {
         Log.d("LoginScreen", "Showing initial loading screen")
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -63,31 +65,9 @@ fun LoginScreen(
         return
     }
 
-    var showExitDialog by remember { mutableStateOf(false) }
-
-    BackHandler(enabled = true) {
-        showExitDialog = true
-    }
-
-    if (showExitDialog) {
-        AlertDialog(
-            onDismissRequest = { showExitDialog = false },
-            title = { Text(text = stringResource(R.string.exit_confirmation_title)) },
-            text = { Text(text = stringResource(R.string.exit_confirmation_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    showExitDialog = false
-                    exitProcess(0) // TODO: Пересмотреть жизненный цикл при выходе с экрана
-                }) {
-                    Text(text = stringResource(R.string.exit_confirmation_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExitDialog = false }) {
-                    Text(text = stringResource(R.string.exit_confirmation_no))
-                }
-            }
-        )
+    BackHandler {
+        val activity = ctx as? Activity ?: return@BackHandler
+        activity.finishAffinity()
     }
 
     Column(

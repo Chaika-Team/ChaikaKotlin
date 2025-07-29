@@ -8,6 +8,8 @@ import com.example.chaika.domain.usecases.CompleteAuthorizationFlowUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.LogoutUseCase
 import com.example.chaika.domain.usecases.StartAuthorizationUseCase
+import com.example.chaika.domain.models.ConductorDomain
+import com.example.chaika.domain.usecases.AuthorizeAndSaveConductorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +22,8 @@ class AuthViewModel @Inject constructor(
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
     private val startAuthorizationUseCase: StartAuthorizationUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase
 ) : ViewModel() {
 
     companion object {
@@ -30,6 +33,9 @@ class AuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
+    private val _conductorState = MutableStateFlow<ConductorDomain?>(null)
+    val conductorState: StateFlow<ConductorDomain?> = _conductorState.asStateFlow()
+
     init {
         Log.d(TAG, "AuthViewModel initialized")
         checkInitialAuthState()
@@ -38,22 +44,34 @@ class AuthViewModel @Inject constructor(
     private fun checkInitialAuthState() {
         Log.d(TAG, "Checking initial auth state...")
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isCheckingAuth = true)
-
+            _uiState.value = _uiState.value.copy(isCheckingAuth = true, isLoading = false)
             try {
-                val hasToken = getAccessTokenUseCase() != null
+                val token = getAccessTokenUseCase()
+                val hasToken = token != null
                 Log.d(TAG, "Token check result: hasToken = $hasToken")
-
                 _uiState.value = _uiState.value.copy(
                     isCheckingAuth = false,
                     isAuthenticated = hasToken
                 )
+                if (hasToken) {
+                    try {
+                        val conductorFromDb = authorizeAndSaveConductorUseCase(token!!)
+                        _conductorState.value = conductorFromDb
+                        Log.d(TAG, "Conductor loaded and saved locally after token check (id=${conductorFromDb.id})")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error fetching/saving conductor after token check", e)
+                        _conductorState.value = null
+                    }
+                } else {
+                    _conductorState.value = null
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error checking initial auth state", e)
                 _uiState.value = _uiState.value.copy(
                     isCheckingAuth = false,
                     isAuthenticated = false
                 )
+                _conductorState.value = null
             }
         }
     }
@@ -67,23 +85,23 @@ class AuthViewModel @Inject constructor(
 
     fun handleAuthResult(intent: Intent) {
         Log.d(TAG, "Handling auth result...")
-
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
+                isCheckingAuth = false,
                 errorMessage = null
             )
-
             try {
-                completeAuthorizationFlowUseCase(intent)
+                val (_, conductor) = completeAuthorizationFlowUseCase(intent)
                 Log.d(TAG, "Auth flow completed successfully")
-                Log.d(TAG, "Token received")
-
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isAuthenticated = true,
+                    isCheckingAuth = false,
                     errorMessage = null
                 )
+                _conductorState.value = conductor
+                Log.d(TAG, "Conductor loaded and saved locally after auth (id=${conductor.id})")
             } catch (e: Exception) {
                 Log.e(TAG, "Auth flow failed", e)
                 _uiState.value = _uiState.value.copy(
@@ -91,6 +109,7 @@ class AuthViewModel @Inject constructor(
                     isAuthenticated = false,
                     errorMessage = "Login error: ${e.message}"
                 )
+                _conductorState.value = null
             }
         }
     }
@@ -105,8 +124,15 @@ class AuthViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isAuthenticated = false)
-            logoutUseCase()
+            try {
+                logoutUseCase()
+                Log.d(TAG, "Logout use case completed successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Logout failed", e)
+            } finally {
+                _uiState.value = _uiState.value.copy(isAuthenticated = false)
+                _conductorState.value = null
+            }
         }
     }
 }
