@@ -1,12 +1,9 @@
 package com.example.chaika.di
 
 import android.content.Context
-import com.example.chaika.data.inMemory.CartRepositoryFactory
-import com.example.chaika.data.inMemory.CartRepositoryFactoryInterface
 import com.example.chaika.data.local.LocalImageRepository
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.data.local.LocalTripReportRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,13 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class FileRepositoriesModule {
-
-    @Binds
-    @Singleton
-    abstract fun bindCartRepositoryFactory(
-        impl: CartRepositoryFactory
-    ): CartRepositoryFactoryInterface
+object FileRepositoriesModule {
 
     @Provides
     @Singleton
