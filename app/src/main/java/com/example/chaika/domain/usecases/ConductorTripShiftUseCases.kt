@@ -6,6 +6,7 @@ import com.example.chaika.domain.models.trip.ConductorTripShiftDomain
 import com.example.chaika.domain.models.trip.TripDomain
 import com.example.chaika.domain.models.trip.TripShiftStatusDomain
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 /**
@@ -27,6 +28,21 @@ class GetActiveShiftUseCase @Inject constructor(
     operator fun invoke(): Flow<ConductorTripShiftDomain?> =
         repository.observeActiveShift()
 }
+
+/**
+ * Возвращает true, если есть активная смена в момент вызова.
+ */
+
+class HasActiveShiftUseCase @Inject constructor(
+    private val getActiveShiftUseCase: GetActiveShiftUseCase
+) {
+    suspend operator fun invoke(): Boolean {
+        return getActiveShiftUseCase()
+            .firstOrNull() != null
+    }
+}
+
+
 
 /**
  * Пытается создать новую смену (ACTIVE) из переданных TripDomain и CarriageDomain.
