@@ -54,17 +54,6 @@ fun LoginScreen(
         }
     }
 
-if (uiState.isCheckingAuth) {
-        Log.d("LoginScreen", "Showing initial loading screen")
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
     BackHandler {
         val activity = ctx as? Activity ?: return@BackHandler
         activity.finishAffinity()

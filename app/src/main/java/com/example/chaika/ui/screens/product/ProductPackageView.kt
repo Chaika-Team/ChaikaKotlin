@@ -1,4 +1,4 @@
-package com.example.chaika.ui.screens.product.views
+package com.example.chaika.ui.screens.product
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.mappers.toCartItemDomain
-import com.example.chaika.ui.mappers.toProduct
+import com.example.chaika.ui.mappers.toUiModel
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.ReplenishViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
@@ -63,7 +63,7 @@ fun ProductPackageView(
                 ) {
                     items(packageItems.value, key = { it.product.id }) { item ->
                         val cartItem = cartItems.find { it.product.id == item.product.id }
-                        val productForDisplay = item.toProduct()
+                        val productForDisplay = item.toUiModel()
                         ProductComponent(
                             modifier = Modifier.testTag("packageCard"),
                             product = productForDisplay,

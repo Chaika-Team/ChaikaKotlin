@@ -31,7 +31,7 @@ fun Product.toCartItemDomain(): CartItemDomain = CartItemDomain(
     quantity = this.quantity
 )
 
-fun CartItemDomain.toProduct(): Product {
+fun CartItemDomain.toUiModel(): Product {
     return Product(
         id = this.product.id,
         name = this.product.name,

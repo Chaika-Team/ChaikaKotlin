@@ -1,4 +1,4 @@
-package com.example.chaika.ui.screens.product.views
+package com.example.chaika.ui.screens.product
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,25 +17,27 @@ import com.example.chaika.ui.components.product.CartProductItem
 import com.example.chaika.ui.theme.ProductDimens
 import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.R
+import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.ui.mappers.toUiModel
+import com.example.chaika.ui.viewModels.ConductorViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductCartView(
     saleViewModel: SaleViewModel,
-    authViewModel: AuthViewModel
+    conductorViewModel: ConductorViewModel
 ) {
     val cartItems by saleViewModel.items.collectAsState()
-    val conductors by authViewModel.conductors.collectAsState()
-    val currentConductor by authViewModel.conductorState.collectAsState()
+    val conductors by conductorViewModel.allConductors.collectAsState()
+    val currentConductor by conductorViewModel.conductor.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> {
-                    authViewModel.loadConductors()
+                    conductorViewModel.refresh()
                 }
                 else -> {}
             }
@@ -48,7 +50,7 @@ fun ProductCartView(
 
     var selectedConductor by remember(conductors, currentConductor) {
         mutableStateOf(
-            conductors.firstOrNull { it.id == currentConductor?.id } ?: conductors.firstOrNull()
+            conductors.firstOrNull { it?.id == currentConductor?.id } ?: conductors.firstOrNull()
         )
     }
 

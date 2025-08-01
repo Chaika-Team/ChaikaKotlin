@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductViewModel @Inject constructor(
+class PackageViewModel @Inject constructor(
     private val getPagedProductsUseCase: GetPagedProductsUseCase,
     private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
     @ApplicationContext private val context: Context
@@ -55,11 +55,11 @@ class ProductViewModel @Inject constructor(
                 .cachedIn(viewModelScope)
                 .combine(cartItems) { pagingData, cartItemsList ->
                     pagingData.map { productDomain ->
-                        val cartItemDomain = cartItemsList.find { it.product.id == productDomain.id }
-                        if (cartItemDomain != null) {
+                        val cartItem = cartItemsList.find { it.product.id == productDomain.id }
+                        if (cartItem != null) {
                             // Если товар есть в корзине, проверяем количество
-                            if (cartItemDomain.quantity >= 1) {
-                                cartItemDomain.toUiModel()
+                            if (cartItem.quantity >= 1) {
+                                cartItem.toUiModel()
                             } else {
                                 // Если количество меньше 1, считаем что товара нет в корзине
                                 productDomain.toUiModel().copy(isInCart = false)
