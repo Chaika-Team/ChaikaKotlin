@@ -1,6 +1,7 @@
 package com.example.chaika.ui.mappers
 
 import com.example.chaika.domain.models.CartItemDomain
+import com.example.chaika.domain.models.PackageItemDomain
 import com.example.chaika.domain.models.ProductInfoDomain
 import com.example.chaika.ui.dto.Product
 
@@ -20,9 +21,7 @@ fun ProductInfoDomain.toUiModel(): Product {
         image = this.image,
         price = this.price,
         isInCart = false,
-        quantity = 1,
-        isInPackage = false,
-        packageQuantity = 1
+        quantity = 1
     )
 }
 
@@ -39,9 +38,7 @@ fun CartItemDomain.toUiModel(): Product {
         image = this.product.image,
         price = this.product.price,
         isInCart = true,
-        quantity = this.quantity,
-        isInPackage = false,
-        packageQuantity = 0
+        quantity = this.quantity
     )
 }
 
@@ -49,5 +46,17 @@ fun ProductInfoDomain.toCartItemDomain(): CartItemDomain {
     return CartItemDomain(
         product = this,
         quantity = 1
+    )
+}
+
+fun PackageItemDomain.toUiModel(): Product {
+    return Product(
+        id = this.productInfoDomain.id,
+        name = this.productInfoDomain.name,
+        description = this.productInfoDomain.description,
+        image = this.productInfoDomain.image,
+        price = this.productInfoDomain.price,
+        isInCart = true,
+        quantity = 0
     )
 }

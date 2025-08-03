@@ -1,5 +1,6 @@
 package com.example.chaika.ui.screens.product
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,21 +24,29 @@ import androidx.navigation.NavHostController
 import com.example.chaika.ui.components.product.CartFAB
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.mappers.toCartItemDomain
-import com.example.chaika.ui.mappers.toUiModel
 import com.example.chaika.ui.navigation.Routes
-import com.example.chaika.ui.viewModels.ReplenishViewModel
+import com.example.chaika.ui.viewModels.PackageViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
 import com.example.chaika.util.formatPriceOnly
 
 @Composable
 fun ProductPackageView(
-    replenishViewModel: ReplenishViewModel,
+    packageViewModel: PackageViewModel,
     saleViewModel: SaleViewModel,
     navController: NavHostController,
 ) {
-    val packageItems = replenishViewModel.items.collectAsState()
+    val packageItems = packageViewModel.productsFlow.collectAsState()
     val cartItems by saleViewModel.items.collectAsState()
     val isLoading = false
+
+    DisposableEffect(Unit) {
+        packageViewModel.loadProducts(saleViewModel.items)
+
+        onDispose {
+            packageViewModel.clearProductState()
+            Log.d("ProductListView", "State cleared on dispose")
+        }
+    }
 
     val totalPrice = cartItems.sumOf { it.product.price * it.quantity }
     val itemsCount = cartItems.sumOf { it.quantity }
@@ -61,20 +71,19 @@ fun ProductPackageView(
                         .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(packageItems.value, key = { it.product.id }) { item ->
-                        val cartItem = cartItems.find { it.product.id == item.product.id }
-                        val productForDisplay = item.toUiModel()
+                    items(packageItems.value, key = { it.id }) { item ->
+                        val cartItem = cartItems.find { it.product.id == item.id }
                         ProductComponent(
                             modifier = Modifier.testTag("packageCard"),
-                            product = productForDisplay,
+                            product = item,
                             onAddToCart = {
-                                saleViewModel.onAdd(productForDisplay.toCartItemDomain())
+                                saleViewModel.onAdd(item.toCartItemDomain())
                             },
                             onQuantityIncrease = {
-                                saleViewModel.onQuantityChange(productForDisplay.id, (cartItem?.quantity ?: 1) + 1)
+                                saleViewModel.onQuantityChange(item.id, (cartItem?.quantity ?: 1) + 1)
                             },
                             onQuantityDecrease = {
-                                saleViewModel.onQuantityChange(productForDisplay.id, (cartItem?.quantity ?: 1) - 1)
+                                saleViewModel.onQuantityChange(item.id, (cartItem?.quantity ?: 1) - 1)
                             },
                         )
                     }

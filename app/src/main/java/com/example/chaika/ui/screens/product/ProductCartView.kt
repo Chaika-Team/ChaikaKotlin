@@ -72,7 +72,7 @@ fun ProductCartView(
                 ) {
                     items(cartItems, key = { it.product.id }) { product ->
                         CartProductItem(
-                            product = product.product.toUiModel(),
+                            product = product.toUiModel(),
                             onAddToCart = { },
                             onQuantityIncrease = { saleViewModel.onQuantityChange(product.product.id, product.quantity+1) },
                             onQuantityDecrease = { saleViewModel.onQuantityChange(product.product.id, product.quantity-1) },

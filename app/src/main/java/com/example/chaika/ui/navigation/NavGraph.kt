@@ -27,12 +27,11 @@ import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 import androidx.compose.runtime.*
-import com.example.chaika.ui.screens.product.EmptyProductList
 import com.example.chaika.ui.screens.util.ErrorScreen
 import com.example.chaika.ui.screens.util.LoadingScreen
 import com.example.chaika.ui.viewModels.ConductorViewModel
 import com.example.chaika.ui.viewModels.FillViewModel
-import com.example.chaika.ui.viewModels.ReplenishViewModel
+import com.example.chaika.ui.viewModels.PackageViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
 
 @Composable
@@ -147,17 +146,13 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
-                val replenishViewModel = hiltViewModel<ReplenishViewModel>(parentEntry)
+                val packageViewModel = hiltViewModel<PackageViewModel>(parentEntry)
                 val saleViewModel = hiltViewModel<SaleViewModel>(parentEntry)
                 ProductPackageView(
-                    replenishViewModel = replenishViewModel,
+                    packageViewModel = packageViewModel,
                     saleViewModel = saleViewModel,
                     navController = navController
                 )
-            }
-
-            composable(route = Routes.PRODUCT_LIST_EMPTY) { backStackEntry ->
-                EmptyProductList()
             }
         }
 
@@ -179,7 +174,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
             composable(Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                    navController.getBackStackEntry(Routes.PROFILE_GRAPH)
                 }
                 val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
                 val conductor by conductorViewModel.conductor.collectAsState()

@@ -8,6 +8,4 @@ data class Product(
     val price: Double,
     val isInCart: Boolean = false,
     val quantity: Int = 1,
-    val isInPackage: Boolean = false,
-    val packageQuantity: Int = 1
 )

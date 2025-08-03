@@ -152,9 +152,9 @@ private fun CartProductActionsRow(
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = ProductDimens.CartProductItem.PriceFontSize
             )
-            if (product.isInPackage) {
+            if (product.isInCart) {
                 Text(
-                    text = stringResource(id = R.string.cart_product_available, product.packageQuantity),
+                    text = stringResource(id = R.string.cart_product_available, product.quantity),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = ProductDimens.TextSizeSmall
@@ -204,7 +204,7 @@ private fun CartProductActionsRow(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-        } else if (product.isInPackage && onRemoveFromPackage != null) {
+        } else if (product.isInCart && onRemoveFromPackage != null) {
             IconButton(
                 onClick = onRemoveFromPackage,
                 modifier = Modifier

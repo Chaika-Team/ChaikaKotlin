@@ -1,9 +1,6 @@
 package com.example.chaika.ui.viewModels
 
-import android.content.Context
-import android.util.DisplayMetrics
 import android.util.Log
-import androidx.annotation.Dimension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -15,13 +12,11 @@ import com.example.chaika.domain.usecases.GetPagedProductsUseCase
 import com.example.chaika.ui.dto.Product
 import com.example.chaika.ui.mappers.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,22 +24,41 @@ import javax.inject.Inject
 class ProductViewModel @Inject constructor(
     private val getPagedProductsUseCase: GetPagedProductsUseCase,
     private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
-    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _productsFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
     val productsFlow: StateFlow<PagingData<Product>> = _productsFlow.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     private var loadProductsJob: Job? = null
 
-    fun loadInitialData() {
-        Log.d("ProductViewModel", "loadInitialData called")
+    fun loadInitialData(cartItems: StateFlow<List<CartItemDomain>>) {
+        loadProductsJob?.cancel()
+        _isLoading.value = true
         viewModelScope.launch {
             try {
-                fetchAndSaveProductsUseCase()
+                fetchProducts().also {
+                    loadProducts(cartItems)
+                }
             } catch (e: Exception) {
-                Log.e("ProductViewModel", "loadInitialData: error:  [${e.message}]", e)
+                Log.e("ProductViewModel", "Error in loadInitialData: ${e.message}", e)
+            } finally {
+                _isLoading.value = false
             }
+        }
+    }
+
+    private suspend fun fetchProducts(): Boolean {
+        return try {
+            Log.d("ProductViewModel", "Fetching products started")
+            fetchAndSaveProductsUseCase()
+            Log.d("ProductViewModel", "Fetching products completed")
+            true
+        } catch (e: Exception) {
+            Log.e("ProductViewModel", "Error in fetchProducts: ${e.message}", e)
+            false
         }
     }
 
@@ -55,18 +69,10 @@ class ProductViewModel @Inject constructor(
                 .cachedIn(viewModelScope)
                 .combine(cartItems) { pagingData, cartItemsList ->
                     pagingData.map { productDomain ->
-                        val cartItemDomain = cartItemsList.find { it.product.id == productDomain.id }
-                        if (cartItemDomain != null) {
-                            // Если товар есть в корзине, проверяем количество
-                            if (cartItemDomain.quantity >= 1) {
-                                cartItemDomain.toUiModel()
-                            } else {
-                                // Если количество меньше 1, считаем что товара нет в корзине
-                                productDomain.toUiModel().copy(isInCart = false)
-                            }
-                        } else {
-                            productDomain.toUiModel()
-                        }
+                        cartItemsList.find { it.product.id == productDomain.id }
+                            ?.takeIf { it.quantity >= 1 }
+                            ?.toUiModel()
+                            ?: productDomain.toUiModel()
                     }
                 }
                 .collect { pagingData ->
@@ -76,19 +82,9 @@ class ProductViewModel @Inject constructor(
     }
 
     fun clearProductState() {
-        _productsFlow.update { PagingData.empty() }
+        _productsFlow.value = PagingData.empty()
+        _isLoading.value = false
         loadProductsJob?.cancel()
         loadProductsJob = null
-    }
-
-    private fun calculatePageSize(
-        context: Context,
-        @Dimension(unit = Dimension.DP) itemHeightDp: Int = 210
-    ): Int {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        val screenHeightPx = displayMetrics.heightPixels
-        val itemHeightPx = (itemHeightDp * displayMetrics.density).toInt()
-        val visibleItemsCount = (screenHeightPx / itemHeightPx) * 2
-        return visibleItemsCount * 3
     }
 }
