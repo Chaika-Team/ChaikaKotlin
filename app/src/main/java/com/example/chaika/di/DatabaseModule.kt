@@ -1,6 +1,7 @@
 package com.example.chaika.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.example.chaika.data.room.AppDatabase
 import com.example.chaika.data.room.dao.CartItemDao
@@ -14,6 +15,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -23,7 +25,9 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(
         @ApplicationContext context: Context,
-    ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "app_database").build()
+    ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
+        .setQueryCallback({ sql, args -> Log.d("ROOM-SQL-CHAIKA", "$sql -- $args") }, Executors.newSingleThreadExecutor())
+        .build()
 
     @Provides
     fun provideCartItemDao(db: AppDatabase): CartItemDao = db.cartItemDao()

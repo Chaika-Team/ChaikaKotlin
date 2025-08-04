@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.chaika.data.room.entities.ProductInfo
 import kotlinx.coroutines.flow.Flow
 
@@ -24,6 +25,10 @@ interface ProductInfoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProduct(product: ProductInfo)
+
+    @Upsert
+    suspend fun upsertProduct(product: ProductInfo)
+
 
     @Update
     suspend fun updateProduct(product: ProductInfo)
