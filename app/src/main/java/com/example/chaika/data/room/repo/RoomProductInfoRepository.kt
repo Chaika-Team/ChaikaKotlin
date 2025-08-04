@@ -19,7 +19,7 @@ class RoomProductInfoRepository @Inject constructor(
     }
 
     override suspend fun insertProduct(product: ProductInfoDomain) {
-        productInfoDao.insertProduct(product.toEntity())
+        productInfoDao.upsertProduct(product.toEntity())
     }
 
     override suspend fun updateProduct(product: ProductInfoDomain) {
