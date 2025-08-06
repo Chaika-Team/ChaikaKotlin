@@ -1,11 +1,11 @@
-@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-
 package com.example.chaika.domain.usecases
 
 import com.example.chaika.data.room.repo.RoomCartItemRepositoryInterface
 import com.example.chaika.data.room.repo.RoomCartOperationRepositoryInterface
 import com.example.chaika.data.room.repo.RoomConductorTripShiftRepositoryInterface
+import com.example.chaika.domain.models.report.CartIdReport
 import com.example.chaika.domain.models.report.CartItemReport
+import com.example.chaika.domain.models.report.CartReport
 import com.example.chaika.domain.models.report.CartOperationReport
 import com.example.chaika.domain.models.trip.CarriageDomain
 import com.example.chaika.domain.models.trip.ConductorTripShiftDomain
@@ -35,6 +35,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @ExtendWith(MockitoExtension::class)
 class ConductorTripShiftUseCasesTest {
 
@@ -46,6 +47,9 @@ class ConductorTripShiftUseCasesTest {
 
     @Mock
     lateinit var cartItemRepo: RoomCartItemRepositoryInterface
+
+    @Mock
+    lateinit var getCartReportsUseCase: GetCartReportsUseCase
 
     // Настоящий Moshi для сериализации
     private val moshi = Moshi.Builder()
@@ -155,15 +159,16 @@ class ConductorTripShiftUseCasesTest {
         whenever(shiftRepo.getActiveShift()).thenReturn(
             ConductorTripShiftDomain(trip, carriage, TripShiftStatusDomain.ACTIVE)
         )
-        // 2) Операции
-        whenever(cartOpRepo.getCartOperationReportsWithIds())
-            .thenReturn(flowOf(dummyOpList))
-        // 3) Товары для opId=1
-        whenever(cartItemRepo.getCartItemReportsByOperationId(1))
-            .thenReturn(flowOf(listOf(dummyCartItem)))
+        // 2) Сбор готовых отчётов из GetCartReportsUseCase
+        val expectedCartReport = CartReport(
+            cartId        = CartIdReport(dummyCartOp.employeeID, dummyCartOp.operationTime),
+            operationType = dummyCartOp.operationType,
+            items         = listOf(dummyCartItem)
+        )
+        whenever(getCartReportsUseCase.invoke()).thenReturn(listOf(expectedCartReport))
 
         val useCase = GenerateShiftReportUseCase(
-            shiftRepo, cartOpRepo, cartItemRepo, moshi
+            shiftRepo, getCartReportsUseCase, moshi
         )
         val json = useCase.invoke(uuid)
 
@@ -192,7 +197,7 @@ class ConductorTripShiftUseCasesTest {
         whenever(shiftRepo.getActiveShift()).thenReturn(null)
 
         val useCase = GenerateShiftReportUseCase(
-            shiftRepo, cartOpRepo, cartItemRepo, moshi
+            shiftRepo, getCartReportsUseCase, moshi
         )
         assertThrows<IllegalStateException> {
             useCase.invoke("missing-uuid")
@@ -256,5 +261,30 @@ class ConductorTripShiftUseCasesTest {
 
         verify(gen).invoke(uuid)
         verify(snd).invoke(uuid)
+    }
+
+    /**
+     * GetCartReportsUseCase должен собрать отчёты операций и товаров в список CartReport
+     */
+    @Test
+    fun `GetCartReportsUseCase returns list of CartReport`() = runTest {
+        // 1) операции с ID
+        whenever(cartOpRepo.getCartOperationReportsWithIds())
+            .thenReturn(flowOf(dummyOpList))
+        // 2) товары по операции
+        whenever(cartItemRepo.getCartItemReportsByOperationId(1))
+            .thenReturn(flowOf(listOf(dummyCartItem)))
+
+        val useCase = GetCartReportsUseCase(cartOpRepo, cartItemRepo)
+        val result = useCase.invoke()
+
+        val expected = listOf(
+            CartReport(
+                cartId        = CartIdReport(dummyCartOp.employeeID, dummyCartOp.operationTime),
+                operationType = dummyCartOp.operationType,
+                items         = listOf(dummyCartItem)
+            )
+        )
+        assertEquals(expected, result)
     }
 }

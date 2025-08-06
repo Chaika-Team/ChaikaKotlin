@@ -89,79 +89,82 @@ class CompleteShiftUseCase @Inject constructor(
  */
 class GenerateShiftReportUseCase @Inject constructor(
     private val shiftRepo: RoomConductorTripShiftRepositoryInterface,
-    private val cartOpRepo: RoomCartOperationRepositoryInterface,
-    private val cartItemRepo: RoomCartItemRepositoryInterface,
+    private val getCartReports: GetCartReportsUseCase,
     moshi: Moshi
 ) {
     private val jsonAdapter = moshi.adapter(ShiftReportReport::class.java)
 
-    /**
-     * @param uuid UUID смены (TripDomain.uuid)
-     * @return сгенерированный JSON
-     * @throws IllegalStateException если нет активной смены или не задан вагон
-     */
     suspend operator fun invoke(uuid: String): String {
-        // 1) Берём активную смену
         val shift = shiftRepo.getActiveShift()
             ?: throw IllegalStateException("Active shift with uuid=$uuid not found")
 
-        // 2) Собираем список CartReport
-        val carts: List<CartReport> = cartOpRepo
-            .getCartOperationReportsWithIds() // Flow<List<Pair<opId, CartOperationReport>>>
-            .first()
-            .map { (opId, opReport) ->
-                // 2.1) товары в операции
-                val items = cartItemRepo
-                    .getCartItemReportsByOperationId(opId) // Flow<List<CartItemReport>>
-                    .first()
-                    .map { itemReport ->
-                        CartItemReport(
-                            productId = itemReport.productId,
-                            quantity  = itemReport.quantity,
-                            price     = itemReport.price
-                        )
-                    }
+        // Вот здесь стало сразу по делу:
+        val carts = getCartReports()
 
-                // 2.2) один CartReport
-                CartReport(
-                    cartId        = CartIdReport(
-                        employeeId    = opReport.employeeID,
-                        operationTime = opReport.operationTime
-                    ),
-                    operationType = opReport.operationType,
-                    items         = items
-                )
-            }
-
-        // 3) Делаем корневой ShiftReportReport
         val report = ShiftReportReport(
-            tripId     = TripIdReport(
-                routeId   = shift.trip.trainNumber,
-                startTime = shift.trip.departure
-            ),
+            tripId     = TripIdReport(shift.trip.trainNumber, shift.trip.departure),
             endTime    = shift.trip.arrival,
             carriageId = shift.activeCarriage
-                ?.carNumber
-                ?.toIntOrNull()
-                ?: throw IllegalStateException("Active carriage is not set for shift $uuid"),
+                ?.carNumber?.toIntOrNull()
+                ?: throw IllegalStateException("Active carriage not set"),
             carts      = carts
         )
 
-        // 4) Сериализация и indent для читаемости
         val json = jsonAdapter.toJson(report)
-
-        // 5) Сохраняем JSON в БД и обновляем статус на FINISHED
-        val now = System.currentTimeMillis()
         shiftRepo.updateStatusAndReport(
             uuid       = uuid,
             newStatus  = TripShiftStatusDomain.FINISHED.ordinal,
             reportJson = json,
-            updatedAt  = now
+            updatedAt  = System.currentTimeMillis()
         )
-
         return json
     }
 }
+
+
+/**
+ * вспомогательный юзкейс сборки отчёта:
+ * 1) берёт из CartOperationRepository пары (opId, CartOperationReport);
+ * 2) для каждого opId запрашивает товары из CartItemRepository;
+ * 3) маппит всё в List<CartReport>.
+ */
+class GetCartReportsUseCase @Inject constructor(
+    private val cartOpRepo: RoomCartOperationRepositoryInterface,
+    private val cartItemRepo: RoomCartItemRepositoryInterface
+) {
+    suspend operator fun invoke(): List<CartReport> {
+        // 1) операции
+        val ops = cartOpRepo
+            .getCartOperationReportsWithIds()
+            .first()
+
+        // 2) маппим каждую
+        return ops.map { (opId, opReport) ->
+            // 2.1) товары
+            val items = cartItemRepo
+                .getCartItemReportsByOperationId(opId)
+                .first()
+                .map { itemReport ->
+                    CartItemReport(
+                        productId = itemReport.productId,
+                        quantity  = itemReport.quantity,
+                        price     = itemReport.price
+                    )
+                }
+
+            // 2.2) финальный CartReport
+            CartReport(
+                cartId        = CartIdReport(
+                    employeeId    = opReport.employeeID,
+                    operationTime = opReport.operationTime
+                ),
+                operationType = opReport.operationType,
+                items         = items
+            )
+        }
+    }
+}
+
 
 /**
  * Отправляет отчёт по поездке
