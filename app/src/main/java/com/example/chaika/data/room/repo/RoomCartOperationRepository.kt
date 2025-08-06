@@ -2,7 +2,7 @@ package com.example.chaika.data.room.repo
 
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.mappers.toReport
-import com.example.chaika.domain.models.CartOperationReport
+import com.example.chaika.domain.models.report.CartOperationReport
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

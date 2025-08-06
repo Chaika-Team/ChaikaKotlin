@@ -1,10 +1,10 @@
 package com.example.chaika.data.room.mappers
 
 import com.example.chaika.data.room.entities.CartOperation
-import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.CartOperationDomain
-import com.example.chaika.domain.models.CartOperationReport
+import com.example.chaika.domain.models.report.CartOperationReport
 import com.example.chaika.domain.models.OperationTypeDomain
+import com.example.chaika.domain.models.report.CartItemReport
 import java.text.SimpleDateFormat
 import java.util.Locale
 

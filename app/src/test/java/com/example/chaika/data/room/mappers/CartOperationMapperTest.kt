@@ -1,10 +1,10 @@
 package com.example.chaika.data.room.mappers
 
 import com.example.chaika.data.room.entities.CartOperation
-import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.CartOperationDomain
-import com.example.chaika.domain.models.CartOperationReport
+import com.example.chaika.domain.models.report.CartOperationReport
 import com.example.chaika.domain.models.OperationTypeDomain
+import com.example.chaika.domain.models.report.CartItemReport
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -159,8 +159,8 @@ class CartOperationMapperTest {
             )
         val reportItems =
             listOf<CartItemReport>(
-                CartItemReport(productID = 1, quantity = 5, price = 100.0),
-                CartItemReport(productID = 2, quantity = 3, price = 50.0),
+                CartItemReport(productId = 1, quantity = 5, price = 100.0),
+                CartItemReport(productId = 2, quantity = 3, price = 50.0),
             )
         // Act
         val report: CartOperationReport = operation.toReport(reportItems)

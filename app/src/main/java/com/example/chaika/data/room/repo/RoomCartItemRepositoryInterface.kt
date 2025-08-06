@@ -1,6 +1,6 @@
 package com.example.chaika.data.room.repo
 
-import com.example.chaika.domain.models.CartItemReport
+import com.example.chaika.domain.models.report.CartItemReport
 import kotlinx.coroutines.flow.Flow
 
 @Suppress("FunctionInterface")

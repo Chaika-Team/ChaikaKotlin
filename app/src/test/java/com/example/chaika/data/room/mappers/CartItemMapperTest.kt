@@ -3,9 +3,9 @@ package com.example.chaika.data.room.mappers
 import com.example.chaika.data.room.entities.CartItem
 import com.example.chaika.data.room.entities.ProductInfo
 import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.OperationTypeDomain
 import com.example.chaika.domain.models.ProductInfoDomain
+import com.example.chaika.domain.models.report.CartItemReport
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -227,7 +227,7 @@ class CartItemMapperTest {
         val result: CartItemReport = cartItem.toReport(productInfo)
 
         // Assert: проверяем корректность данных репорт-модели
-        assertEquals(productInfo.id, result.productID)
+        assertEquals(productInfo.id, result.productId)
         assertEquals(7, result.quantity)
         assertEquals(150.0, result.price)
     }
