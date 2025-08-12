@@ -61,10 +61,10 @@ class RoomCartItemRepositoryTest {
 
             // Assert
             assertEquals(2, result.size)
-            assertEquals(1, result[0].productID)
+            assertEquals(1, result[0].productId)
             assertEquals(5, result[0].quantity)
             assertEquals(10.0, result[0].price)
-            assertEquals(2, result[1].productID)
+            assertEquals(2, result[1].productId)
             assertEquals(3, result[1].quantity)
             assertEquals(20.0, result[1].price)
         }

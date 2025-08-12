@@ -5,7 +5,6 @@ import com.example.chaika.data.inMemory.InMemoryCartRepository
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.local.LocalImageRepository
 import com.example.chaika.data.local.LocalImageRepositoryInterface
-import com.example.chaika.data.local.LocalTripReportRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,10 +24,4 @@ object FileRepositoriesModule {
     fun provideLocalImageRepository(
         @ApplicationContext context: Context,
     ): LocalImageRepositoryInterface = LocalImageRepository(context)
-
-    @Provides
-    @Singleton
-    fun provideLocalTripReportRepository(
-        @ApplicationContext context: Context,
-    ): LocalTripReportRepository = LocalTripReportRepository(context)
 }

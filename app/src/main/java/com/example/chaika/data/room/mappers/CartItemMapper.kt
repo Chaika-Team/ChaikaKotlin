@@ -3,8 +3,8 @@ package com.example.chaika.data.room.mappers
 import com.example.chaika.data.room.entities.CartItem
 import com.example.chaika.data.room.entities.ProductInfo
 import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.models.CartItemReport
 import com.example.chaika.domain.models.OperationTypeDomain
+import com.example.chaika.domain.models.report.CartItemReport
 
 fun CartItem.toDomain(productInfo: ProductInfo): CartItemDomain =
     CartItemDomain(
@@ -34,7 +34,7 @@ fun CartItemDomain.toEntity(
 // Репорт-модель для отчётов
 fun CartItem.toReport(productInfo: ProductInfo): CartItemReport =
     CartItemReport(
-        productID = this.productId,
+        productId = this.productId,
         quantity = this.impact,
         price = productInfo.price,
     )

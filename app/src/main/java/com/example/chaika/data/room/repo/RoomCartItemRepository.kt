@@ -3,7 +3,7 @@ package com.example.chaika.data.room.repo
 import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.mappers.toReport
-import com.example.chaika.domain.models.CartItemReport
+import com.example.chaika.domain.models.report.CartItemReport
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
