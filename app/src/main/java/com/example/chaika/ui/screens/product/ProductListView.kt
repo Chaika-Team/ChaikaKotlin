@@ -27,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.ui.components.product.ArrowFAB
+import com.example.chaika.ui.components.product.CartProductItem
 import com.example.chaika.ui.components.product.ProductComponent
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.components.trip.dashedBorder
@@ -82,15 +83,6 @@ fun ProductListView(
                 isLoading.value -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-//                pagingItems.loadState.refresh is LoadState.Error -> {
-//                    val error = (pagingItems.loadState.refresh as LoadState.Error).error
-//                    ErrorView(error = error, onRetry = {
-//                        productViewModel.loadProducts(fillViewModel.items)
-//                    })
-//                }
-//                pagingItems.itemCount == 0 -> {
-//                    EmptyView()
-//                }
                 else -> {
                     Column(
                         modifier = Modifier
@@ -109,7 +101,8 @@ fun ProductListView(
                                 key = { index -> pagingItems[index]?.id ?: index }
                             ) { index ->
                                 pagingItems[index]?.let { product ->
-                                    ProductComponent(
+//                                    ProductComponent(
+                                    CartProductItem(
                                         modifier = Modifier.testTag("productCard"),
                                         product = product,
                                         onAddToCart = {
@@ -120,6 +113,9 @@ fun ProductListView(
                                         },
                                         onQuantityDecrease = {
                                             fillViewModel.onQuantityChange(product.id, product.quantity - 1)
+                                        },
+                                        onRemove = {
+                                            fillViewModel.onRemove(product.id)
                                         }
                                     )
                                 }

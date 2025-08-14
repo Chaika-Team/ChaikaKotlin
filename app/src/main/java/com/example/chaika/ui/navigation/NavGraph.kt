@@ -174,12 +174,14 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 }
                 val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
                 val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
                 val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
                 if (templateId != null) {
                     TemplateDetailView(
                         templateId = templateId,
                         viewModel = templateViewModel,
                         fillViewModel = fillViewModel,
+                        productViewModel = productViewModel,
                         navController = navController
                     )
                 }
@@ -191,11 +193,13 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 }
                 val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
                 val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
+                val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
                 val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
                 if (templateId != null) {
                     TemplateEditView(
                         productViewModel = productViewModel,
                         fillViewModel = fillViewModel,
+                        conductorViewModel = conductorViewModel,
                         navController = navController
                     )
                 }
@@ -206,10 +210,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
                 val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
-                val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
-                if (templateId != null) {
-                    TemplateCheckView(viewModel = templateViewModel, navController = navController)
-                }
+                TemplateCheckView(viewModel = templateViewModel, navController = navController)
             }
         }
 

@@ -9,6 +9,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,14 +28,20 @@ import com.example.chaika.ui.components.template.ButtonSurface
 import com.example.chaika.ui.components.trip.dashedBorder
 import com.example.chaika.ui.navigation.Routes
 import com.example.chaika.ui.viewModels.FillViewModel
+import com.example.chaika.ui.viewModels.ProductViewModel
 
 @Composable
 fun TemplateDetailView(
     templateId: Int,
     viewModel: TemplateViewModel,
+    productViewModel: ProductViewModel,
     fillViewModel: FillViewModel,
     navController: NavController,
 ) {
+    LaunchedEffect(Unit) {
+        productViewModel.loadInitialData(fillViewModel.items)
+    }
+
     val templateState = produceState<TemplateDomain?>(initialValue = null, templateId) {
         value = viewModel.getTemplateDetail(templateId)
         Log.i("TemplateDetailView", "Got value: $value")

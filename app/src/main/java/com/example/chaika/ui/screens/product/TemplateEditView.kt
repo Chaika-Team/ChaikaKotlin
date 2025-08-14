@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -33,15 +34,16 @@ import com.example.chaika.ui.viewModels.FillViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.ui.mappers.toCartItemDomain
 import com.example.chaika.ui.viewModels.ProductViewModel
+import com.example.chaika.ui.components.template.CheckDialog
+import com.example.chaika.ui.viewModels.ConductorViewModel
 
 @Composable
 fun TemplateEditView(
     productViewModel: ProductViewModel,
     fillViewModel: FillViewModel,
+    conductorViewModel: ConductorViewModel,
     navController: NavController,
 ) {
-    val pagingItems = productViewModel.productsFlow.collectAsLazyPagingItems()
-
     LaunchedEffect(Unit) {
         productViewModel.loadInitialData(fillViewModel.items)
     }
@@ -50,6 +52,10 @@ fun TemplateEditView(
         productViewModel.loadProducts(fillViewModel.items)
         onDispose { productViewModel.clearProductState() }
     }
+
+    val pagingItems = productViewModel.productsFlow.collectAsLazyPagingItems()
+    var showDialog by remember { mutableStateOf(false) }
+    val conductor = conductorViewModel.conductor.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -90,11 +96,30 @@ fun TemplateEditView(
         ButtonSurface(
             buttonText = "ДАЛЕЕ",
             onClick = {
-                navController.navigate(Routes.TEMPLATE_CHECK)
+                showDialog = true
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
         )
+
+        if (showDialog) {
+            CheckDialog(
+                text = "Вы уверены?\nПожалуйста, проверьте содержимое пакета",
+                onConfirm = {
+                    showDialog = false
+                    conductor.value?.let {
+                        it.id?.let {
+                            conductorId -> fillViewModel.onAddOperation(conductorId)
+                        }
+                    }
+                    navController.navigate(Routes.PRODUCT_PACKAGE)
+                },
+                onDismiss = {
+                    showDialog = false
+                    navController.navigate(Routes.TEMPLATE_EDIT)
+                }
+            )
+        }
     }
 }
