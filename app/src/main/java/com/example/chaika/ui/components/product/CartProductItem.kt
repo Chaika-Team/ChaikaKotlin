@@ -152,14 +152,6 @@ private fun CartProductActionsRow(
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = ProductDimens.CartProductItem.PriceFontSize
             )
-            if (product.isInCart) {
-                Text(
-                    text = stringResource(id = R.string.cart_product_available, product.quantity),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = ProductDimens.TextSizeSmall
-                )
-            }
         }
 
         if (product.isInCart) {

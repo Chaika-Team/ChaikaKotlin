@@ -1,5 +1,6 @@
 package com.example.chaika.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
@@ -61,7 +62,9 @@ class FillViewModel @Inject constructor(
      * очищает корзину и наполняет товарами из шаблона.
      */
     fun onApplyTemplate(template: TemplateDomain) = viewModelScope.launch {
-        applyTemplate(cart, template)
+        applyTemplate(cart, template).also {
+            Log.d("FillViewModel", "Cart size after apply: ${cart.getCart().items.size}")
+        }
     }
 
     /**

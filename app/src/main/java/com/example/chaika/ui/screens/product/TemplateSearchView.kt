@@ -1,4 +1,4 @@
-package com.example.chaika.ui.screens.product.views
+package com.example.chaika.ui.screens.product
 
 import android.util.Log
 import androidx.compose.foundation.layout.*

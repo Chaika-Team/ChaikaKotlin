@@ -32,7 +32,7 @@ object Routes {
     const val TEMPLATE_CHECK = "template/check"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL
+        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, TEMPLATE_CHECK
     )
 
     val routesWithoutTopBar = setOf(

@@ -1,4 +1,4 @@
-package com.example.chaika.ui.screens.product.views
+package com.example.chaika.ui.screens.product
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

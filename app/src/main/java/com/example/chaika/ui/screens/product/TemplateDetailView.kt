@@ -1,4 +1,4 @@
-package com.example.chaika.ui.screens.product.views
+package com.example.chaika.ui.screens.product
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -25,11 +25,13 @@ import com.example.chaika.domain.models.TemplateContentDomain
 import com.example.chaika.ui.components.template.ButtonSurface
 import com.example.chaika.ui.components.trip.dashedBorder
 import com.example.chaika.ui.navigation.Routes
+import com.example.chaika.ui.viewModels.FillViewModel
 
 @Composable
 fun TemplateDetailView(
     templateId: Int,
     viewModel: TemplateViewModel,
+    fillViewModel: FillViewModel,
     navController: NavController,
 ) {
     val templateState = produceState<TemplateDomain?>(initialValue = null, templateId) {
@@ -126,8 +128,8 @@ fun TemplateDetailView(
         ButtonSurface(
             buttonText = "ПРИМЕНИТЬ",
             onClick = {
-                viewModel.applyTemplate(template)
-                navController.navigate(Routes.TEMPLATE_EDIT)
+                fillViewModel.onApplyTemplate(template)
+                navController.navigate("template_edit/${template.id}")
                       },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
