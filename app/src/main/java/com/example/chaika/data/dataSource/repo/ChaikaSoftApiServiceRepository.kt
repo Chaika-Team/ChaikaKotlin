@@ -27,15 +27,30 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
         offset: Int
     ): List<TemplateDomain> {
         val response = apiService.getTemplates(query, limit, offset)
+        val rawBody = response.errorBody()?.string() ?: response.body()?.toString() ?: "null"
+        Log.d("ChaikaSoftApiServiceRepo", "fetchTemplates: query=$query, limit=$limit, offset=$offset, responseCode=${response.code()}, responseMessage=${response.message()}")
+        Log.d("ChaikaSoftApiServiceRepo", "Templates response raw body: ${response.raw()}")
+        Log.d("ChaikaSoftApiServiceRepo", "Templates response body: ${response.body()}")
+        Log.d("ChaikaSoftApiServiceRepo", "Templates response raw JSON: ${response.body()?.let { com.google.gson.Gson().toJson(it) } ?: rawBody}")
         if (response.isSuccessful) {
             val body = response.body()
+            Log.d("ChaikaSoftApiServiceRepo", "Templates response raw body: ${response.raw()}")
             Log.d("ChaikaSoftApiServiceRepo", "Templates response body: $body")
+            if (body == null) {
+                Log.e("ChaikaSoftApiServiceRepo", "Templates response body is null!")
+            } else {
+                Log.d("ChaikaSoftApiServiceRepo", "Templates count: ${body.templates.size}")
+                body.templates.forEachIndexed { i, t ->
+                    Log.d("ChaikaSoftApiServiceRepo", "Template[$i]: id=${t.id}, name=${t.templateName}, desc=${t.description}, contentSize=${t.content.size}")
+                }
+            }
             return body?.templates?.toDomainList() ?: emptyList()
         } else {
             Log.e(
                 "ChaikaSoftApiServiceRepo",
                 "Error fetching templates: ${response.code()} - ${response.message()}"
             )
+            Log.e("ChaikaSoftApiServiceRepo", "Error body: ${response.errorBody()?.string()}")
             throw Exception("Error fetching templates: ${response.code()} - ${response.message()}")
         }
     }

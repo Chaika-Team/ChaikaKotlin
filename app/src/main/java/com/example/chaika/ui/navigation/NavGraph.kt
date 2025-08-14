@@ -26,7 +26,12 @@ import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
+import com.example.chaika.ui.viewModels.TemplateViewModel
 import androidx.compose.runtime.*
+import com.example.chaika.ui.screens.product.views.TemplateCheckView
+import com.example.chaika.ui.screens.product.views.TemplateDetailView
+import com.example.chaika.ui.screens.product.views.TemplateEditView
+import com.example.chaika.ui.screens.product.views.TemplateSearchView
 import com.example.chaika.ui.screens.util.ErrorScreen
 import com.example.chaika.ui.screens.util.LoadingScreen
 import com.example.chaika.ui.viewModels.ConductorViewModel
@@ -153,6 +158,47 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     saleViewModel = saleViewModel,
                     navController = navController
                 )
+            }
+
+            composable(route = Routes.TEMPLATE_SEARCH) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                TemplateSearchView(viewModel = templateViewModel, navController = navController)
+            }
+
+            composable(route = Routes.TEMPLATE_DETAIL) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.TEMPLATE_SEARCH)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
+                if (templateId != null) {
+                    TemplateDetailView(templateId = templateId, viewModel = templateViewModel, navController = navController)
+                }
+            }
+
+            composable(route = Routes.TEMPLATE_EDIT) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.TEMPLATE_DETAIL)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
+                if (templateId != null) {
+                    TemplateEditView(templateId = templateId, viewModel = templateViewModel, navController = navController)
+                }
+            }
+
+            composable(route = Routes.TEMPLATE_CHECK) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.TEMPLATE_EDIT)
+                }
+                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
+                if (templateId != null) {
+                    TemplateCheckView(viewModel = templateViewModel, navController = navController)
+                }
             }
         }
 
