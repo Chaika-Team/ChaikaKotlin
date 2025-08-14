@@ -22,6 +22,9 @@
     <string name="loading_error_message">Ошибка загрузки: %1$s</string>
     <string name="empty_carriages_message">Нет доступных вагонов</string>
     <string name="train_ic">Иконка поезда</string>
+    <string name="templates">Шаблоны</string>
+    <string name="edit">Редактировать</string>
+    <string name="check">Проверка</string>
 
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>
