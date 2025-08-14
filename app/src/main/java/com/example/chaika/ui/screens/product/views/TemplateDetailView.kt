@@ -21,6 +21,7 @@ import com.example.chaika.R
 import com.example.chaika.domain.models.TemplateDomain
 import com.example.chaika.ui.viewModels.TemplateViewModel
 import androidx.navigation.NavController
+import com.example.chaika.domain.models.TemplateContentDomain
 import com.example.chaika.ui.components.template.ButtonSurface
 import com.example.chaika.ui.components.trip.dashedBorder
 import com.example.chaika.ui.navigation.Routes
@@ -30,7 +31,6 @@ fun TemplateDetailView(
     templateId: Int,
     viewModel: TemplateViewModel,
     navController: NavController,
-    modifier: Modifier = Modifier
 ) {
     val templateState = produceState<TemplateDomain?>(initialValue = null, templateId) {
         value = viewModel.getTemplateDetail(templateId)
@@ -45,7 +45,7 @@ fun TemplateDetailView(
         return
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -111,28 +111,8 @@ fun TemplateDetailView(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                 )
                 template.content.take(Int.MAX_VALUE).forEachIndexed { index, item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "ProductId: ${item.productId}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Text(
-                            text = "x${item.quantity}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(1f),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.End
-                        )
-                    }
+                    // TODO: Replace ItemInfo with actual realisation
+                    ItemInfo(item)
                     if (index < template.content.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
@@ -145,10 +125,40 @@ fun TemplateDetailView(
         }
         ButtonSurface(
             buttonText = "ПРИМЕНИТЬ",
-            onClick = { navController.navigate(Routes.PRODUCT_ENTRY) },
+            onClick = {
+                viewModel.applyTemplate(template)
+                navController.navigate(Routes.TEMPLATE_EDIT)
+                      },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+        )
+    }
+}
+
+// Временное отображение
+@Composable
+private fun ItemInfo(item: TemplateContentDomain) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "ProductId: ${item.productId}",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(2f)
+        )
+        Text(
+            text = "x${item.quantity}",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f),
+            textAlign = androidx.compose.ui.text.style.TextAlign.End
         )
     }
 }
