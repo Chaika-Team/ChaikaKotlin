@@ -31,7 +31,6 @@ sealed class Screen(
     object TemplateSearch : Screen(Routes.TEMPLATE_SEARCH, R.string.templates)
     object TemplateDetail : Screen(Routes.TEMPLATE_DETAIL, R.string.templates)
     object TemplateEdit : Screen(Routes.TEMPLATE_EDIT, R.string.edit)
-    object TemplateCheck : Screen(Routes.TEMPLATE_CHECK, R.string.check)
 
     companion object {
         fun fromRoute(route: String?): Screen {
@@ -56,7 +55,6 @@ sealed class Screen(
                 Routes.TEMPLATE_SEARCH -> TemplateSearch
                 Routes.TEMPLATE_DETAIL -> TemplateDetail
                 Routes.TEMPLATE_EDIT -> TemplateEdit
-                Routes.TEMPLATE_CHECK -> TemplateCheck
                 else -> Trip
             }
         }

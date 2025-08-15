@@ -28,11 +28,10 @@ object Routes {
     const val PROFILE_GRAPH = "profile/graph"
     const val TEMPLATE_SEARCH = "template/search"
     const val TEMPLATE_DETAIL = "template_detail/{templateId}"
-    const val TEMPLATE_EDIT = "template_edit/{templateId}"
-    const val TEMPLATE_CHECK = "template/check"
+    const val TEMPLATE_EDIT = "template/edit"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, TEMPLATE_CHECK
+        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, PRODUCT_LIST
     )
 
     val routesWithoutTopBar = setOf(

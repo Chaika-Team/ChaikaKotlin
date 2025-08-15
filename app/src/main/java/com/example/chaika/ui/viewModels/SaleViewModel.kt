@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.usecases.AddItemToCartUseCase
+import com.example.chaika.domain.usecases.AddItemToCartWithLimitUseCase
 import com.example.chaika.domain.usecases.GetCartItemsUseCase
 import com.example.chaika.domain.usecases.RemoveItemFromCartUseCase
 import com.example.chaika.domain.usecases.UpdateQuantityWithLimitUseCase
@@ -22,7 +23,7 @@ import javax.inject.Inject
 class SaleViewModel @Inject constructor(
     createCart: CreateCartUseCase,
     private val getCartItems: GetCartItemsUseCase,
-    private val addItemToCart: AddItemToCartUseCase,
+    private val addItemToCartWithLimitUseCase: AddItemToCartWithLimitUseCase,
     private val removeItemFromCart: RemoveItemFromCartUseCase,
     private val updateQuantityWithLimit: UpdateQuantityWithLimitUseCase,
     private val soldCashOp: SoldCashOpUseCase,
@@ -39,7 +40,9 @@ class SaleViewModel @Inject constructor(
 
     /** добавить в корзину */
     fun onAdd(item: CartItemDomain) {
-        addItemToCart(cart, item)
+        viewModelScope.launch {
+            addItemToCartWithLimitUseCase(cart, item)
+        }
     }
 
     /** убрать из корзины */

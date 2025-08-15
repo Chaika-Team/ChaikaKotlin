@@ -55,6 +55,7 @@ fun TemplateDetailView(
         return
     }
 
+    // TODO: Loading
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -137,7 +138,7 @@ fun TemplateDetailView(
             buttonText = "ПРИМЕНИТЬ",
             onClick = {
                 fillViewModel.onApplyTemplate(template)
-                navController.navigate("template_edit/${template.id}")
+                navController.navigate(Routes.TEMPLATE_EDIT)
                       },
             modifier = Modifier
                 .align(Alignment.BottomCenter)

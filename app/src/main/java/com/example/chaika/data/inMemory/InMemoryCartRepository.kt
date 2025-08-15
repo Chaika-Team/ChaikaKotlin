@@ -19,9 +19,15 @@ class InMemoryCartRepository @Inject constructor() : InMemoryCartRepositoryInter
         val currentItems = _cartItems.value.toMutableList()
         val existingItem = currentItems.find { it.product.id == item.product.id }
         return if (existingItem == null) {
-            currentItems.add(
-                item.copy(quantity = 1) //Только добавили в корзину
-            )
+            if (item.quantity > 0) {
+                currentItems.add(
+                    item.copy(quantity = item.quantity) //Добавляем из шаблона
+                )
+            } else {
+                currentItems.add(
+                    item.copy(quantity = 1) //Только добавили в корзину
+                )
+            }
             _cartItems.value = currentItems.toList() // Возвращаем неизменяемую копию
             true
         } else {

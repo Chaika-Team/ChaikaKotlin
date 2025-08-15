@@ -107,6 +107,24 @@ class AddItemToCartUseCase @Inject constructor() {
 }
 
 /**
+ * Добавление товара в корзину с проверкой остатка (для SOLD_* сценариев).
+ * Не добавляет товар, если доступный остаток == 0.
+ */
+class AddItemToCartWithLimitUseCase @Inject constructor(
+    private val getAvailableQuantity: GetAvailableQuantityUseCase
+) {
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        item: CartItemDomain
+    ): Boolean {
+        val available = getAvailableQuantity(item.product.id)
+        if (available <= 0) return false
+        // Репозиторий сам выставляет quantity = 1 и не добавляет дубликаты
+        return cart.addItemToCart(item)
+    }
+}
+
+/**
  * Удаление товара из корзины.
  */
 class RemoveItemFromCartUseCase @Inject constructor() {
