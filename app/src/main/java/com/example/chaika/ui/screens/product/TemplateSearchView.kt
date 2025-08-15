@@ -55,7 +55,7 @@ fun TemplateSearchView(
                     }
                     ButtonSurface(
                         buttonText = "ПРОПУСТИТЬ",
-                        onClick = { navController.navigate(Routes.PRODUCT_LIST) },
+                        onClick = { navController.navigate(Routes.TEMPLATE_EDIT) },
                         modifier = modifier
                     )
                 }

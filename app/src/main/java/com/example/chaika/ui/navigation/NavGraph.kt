@@ -10,7 +10,6 @@ import com.example.chaika.ui.screens.profile.ProfileScreen
 import com.example.chaika.ui.screens.auth.LoginScreen
 import com.example.chaika.ui.screens.product.ProductCartView
 import com.example.chaika.ui.screens.product.ProductEntryView
-import com.example.chaika.ui.screens.product.ProductListView
 import com.example.chaika.ui.screens.product.ProductPackageView
 import com.example.chaika.ui.screens.profile.views.AboutView
 import com.example.chaika.ui.screens.profile.views.FaqsView
@@ -117,21 +116,6 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         ) {
             composable(route = Routes.PRODUCT_ENTRY) { _ ->
                 ProductEntryView(navController = navController)
-            }
-
-            composable(route = Routes.PRODUCT_LIST) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
-                }
-                val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
-                ProductListView(
-                    productViewModel = productViewModel,
-                    fillViewModel = fillViewModel,
-                    conductorViewModel = conductorViewModel,
-                    navController = navController,
-                )
             }
 
             composable(route = Routes.PRODUCT_CART) { backStackEntry ->

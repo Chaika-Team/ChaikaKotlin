@@ -94,9 +94,7 @@ fun ProductPackageView(
             totalPrice = formatPriceOnly(totalPrice),
             itemsCount = itemsCount,
             onClick = {
-                navController.navigate(Routes.PRODUCT_CART) {
-                    popUpTo(Routes.PRODUCT_LIST) { inclusive = false }
-                }
+                navController.navigate(Routes.PRODUCT_CART)
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)

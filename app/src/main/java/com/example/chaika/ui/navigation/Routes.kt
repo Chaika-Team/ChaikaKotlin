@@ -14,7 +14,6 @@ object Routes {
     const val PRODUCT = "product"
     const val PRODUCT_GRAPH = "product/graph"
     const val PRODUCT_ENTRY = "product/graph/product_entry"
-    const val PRODUCT_LIST = "product/graph/product_list"
     const val PRODUCT_CART = "product/graph/cart"
     const val PRODUCT_PACKAGE = "product/graph/package"
     const val PRODUCT_LIST_EMPTY = "product/graph/product_list_empty"
@@ -31,7 +30,7 @@ object Routes {
     const val TEMPLATE_EDIT = "template/edit"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, PRODUCT_LIST
+        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT
     )
 
     val routesWithoutTopBar = setOf(
@@ -45,7 +44,7 @@ object Routes {
             TRIP_SELECT_CARRIAGE, TRIP_CURRENT
         ),
         PRODUCT to listOf(
-            PRODUCT_ENTRY, PRODUCT, PRODUCT_LIST,
+            PRODUCT_ENTRY, PRODUCT,
             PRODUCT_CART, PRODUCT_PACKAGE, PRODUCT_GRAPH,
             PRODUCT_LIST_EMPTY
         ),

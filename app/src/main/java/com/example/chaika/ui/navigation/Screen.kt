@@ -15,7 +15,6 @@ sealed class Screen(
 
     object Product : Screen(Routes.PRODUCT, R.string.products_title, false)
     object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title)
-    object ProductList : Screen(Routes.PRODUCT_LIST, R.string.product_list_title)
     object Cart : Screen(Routes.PRODUCT_CART, R.string.cart_title)
     object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title)
 
@@ -42,7 +41,6 @@ sealed class Screen(
                 Routes.TRIP_CURRENT -> CurrentTrip
                 Routes.PRODUCT -> Product
                 Routes.PRODUCT_ENTRY -> ProductEntry
-                Routes.PRODUCT_LIST -> ProductList
                 Routes.PRODUCT_CART -> Cart
                 Routes.PRODUCT_PACKAGE -> Package
                 Routes.OPERATION -> Operation
