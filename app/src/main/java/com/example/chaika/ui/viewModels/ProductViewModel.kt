@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.filter
-import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.example.chaika.domain.models.CartItemDomain
 import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase

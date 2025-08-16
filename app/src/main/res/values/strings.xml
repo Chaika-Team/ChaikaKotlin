@@ -46,6 +46,7 @@
     <string name="products_title">Продукты</string>
     <string name="product_entry_title">Добавление продуктов</string>
     <string name="product_list_title">Список продуктов</string>
+    <string name="product_replenish">Добор</string>
     <string name="cart_title">Корзина</string>
     <string name="package_title">Пакет</string>
     <string name="operations_title">Операции</string>

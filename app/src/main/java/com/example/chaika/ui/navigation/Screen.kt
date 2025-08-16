@@ -18,6 +18,7 @@ sealed class Screen(
     object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title)
     object Cart : Screen(Routes.PRODUCT_CART, R.string.cart_title)
     object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showMenuIcon = true)
+    object Replenish: Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
 
     object Operation : Screen(Routes.OPERATION, R.string.operations_title)
 
@@ -44,6 +45,7 @@ sealed class Screen(
                 Routes.PRODUCT_ENTRY -> ProductEntry
                 Routes.PRODUCT_CART -> Cart
                 Routes.PRODUCT_PACKAGE -> Package
+                Routes.PRODUCT_REPLENISH -> Replenish
                 Routes.OPERATION -> Operation
                 Routes.PROFILE -> Profile
                 Routes.PROFILE_PERSONAL_DATA -> ProfilePersonalData

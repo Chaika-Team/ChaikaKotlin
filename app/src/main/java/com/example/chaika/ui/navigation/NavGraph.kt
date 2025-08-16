@@ -27,6 +27,7 @@ import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 import com.example.chaika.ui.viewModels.TemplateViewModel
 import androidx.compose.runtime.*
+import com.example.chaika.ui.screens.product.ProductReplenishView
 import com.example.chaika.ui.screens.product.TemplateDetailView
 import com.example.chaika.ui.screens.product.TemplateEditView
 import com.example.chaika.ui.screens.product.TemplateSearchView
@@ -35,6 +36,7 @@ import com.example.chaika.ui.screens.util.LoadingScreen
 import com.example.chaika.ui.viewModels.ConductorViewModel
 import com.example.chaika.ui.viewModels.FillViewModel
 import com.example.chaika.ui.viewModels.PackageViewModel
+import com.example.chaika.ui.viewModels.ReplenishViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
 
 @Composable
@@ -139,6 +141,21 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 ProductPackageView(
                     packageViewModel = packageViewModel,
                     saleViewModel = saleViewModel,
+                    navController = navController
+                )
+            }
+
+            composable(route = Routes.PRODUCT_REPLENISH) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                val replenishViewModel = hiltViewModel<ReplenishViewModel>(parentEntry)
+                val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
+                ProductReplenishView(
+                    productViewModel = productViewModel,
+                    replenishViewModel = replenishViewModel,
+                    conductorViewModel = conductorViewModel,
                     navController = navController
                 )
             }

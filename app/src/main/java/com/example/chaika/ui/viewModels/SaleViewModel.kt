@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.usecases.AddItemToCartUseCase
 import com.example.chaika.domain.usecases.AddItemToCartWithLimitUseCase
 import com.example.chaika.domain.usecases.GetCartItemsUseCase
 import com.example.chaika.domain.usecases.RemoveItemFromCartUseCase

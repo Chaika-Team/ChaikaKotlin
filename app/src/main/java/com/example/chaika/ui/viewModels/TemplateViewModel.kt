@@ -7,12 +7,6 @@ import androidx.paging.cachedIn
 import com.example.chaika.domain.usecases.GetPagedTemplatesUseCase
 import com.example.chaika.domain.usecases.GetTemplateDetailUseCase
 import com.example.chaika.domain.models.TemplateDomain
-import com.example.chaika.domain.usecases.AddOpUseCase
-import com.example.chaika.domain.usecases.ApplyTemplateUseCase
-import com.example.chaika.domain.usecases.FetchAndSaveProductsUseCase
-import com.example.chaika.domain.usecases.GetAllProductsUseCase
-import com.example.chaika.domain.usecases.GetCartItemsUseCase
-import com.example.chaika.domain.usecases.GetPagedProductsUseCase
 import com.example.chaika.ui.dto.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,12 +18,6 @@ import javax.inject.Inject
 class TemplateViewModel @Inject constructor(
     private val getPagedTemplatesUseCase: GetPagedTemplatesUseCase,
     private val getTemplateDetailUseCase: GetTemplateDetailUseCase,
-    private val applyTemplateUseCase: ApplyTemplateUseCase,
-    private val getCartItemsUseCase: GetCartItemsUseCase,
-    private val getAllProductsUseCase: GetAllProductsUseCase,
-    private val addOpUseCase: AddOpUseCase,
-    private val getPagedProductsUseCase: GetPagedProductsUseCase,
-    private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
 ) : ViewModel() {
     val templatesPagingFlow = getPagedTemplatesUseCase().cachedIn(viewModelScope)
 

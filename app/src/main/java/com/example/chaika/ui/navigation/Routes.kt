@@ -17,6 +17,7 @@ object Routes {
     const val PRODUCT_CART = "product/graph/cart"
     const val PRODUCT_PACKAGE = "product/graph/package"
     const val PRODUCT_LIST_EMPTY = "product/graph/product_list_empty"
+    const val PRODUCT_REPLENISH = "product/replenish"
     const val OPERATION = "operation"
     const val PROFILE = "profile"
     const val PROFILE_PERSONAL_DATA = "profile/personal_data"
@@ -30,7 +31,7 @@ object Routes {
     const val TEMPLATE_EDIT = "template/edit"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT
+        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, PRODUCT_REPLENISH
     )
 
     val routesWithoutTopBar = setOf(

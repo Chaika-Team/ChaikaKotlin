@@ -15,9 +15,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.chaika.ui.components.product.CartPaymentArea
 import com.example.chaika.ui.components.product.CartProductItem
 import com.example.chaika.ui.theme.ProductDimens
-import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.R
-import com.example.chaika.domain.models.ConductorDomain
 import com.example.chaika.ui.mappers.toUiModel
 import com.example.chaika.ui.viewModels.ConductorViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
