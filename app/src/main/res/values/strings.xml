@@ -178,5 +178,7 @@
     <string name="empty_product_list">No products available</string>
     <string name="error_loading_products">Failed to load products</string>
     <string name="retry">Retry</string>
+    <string name="menu">Menu</string>
+    <string name="refill">Добор</string>
 
 </resources>

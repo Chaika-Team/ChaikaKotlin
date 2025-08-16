@@ -5,7 +5,8 @@ import com.example.chaika.R
 sealed class Screen(
     val route: String,
     val titleResId: Int,
-    val showBackButton: Boolean = true
+    val showBackButton: Boolean = true,
+    val showMenuIcon: Boolean = false
 ) {
     object Trip : Screen(Routes.TRIP, R.string.trip_title, false)
     object NewTrip : Screen(Routes.TRIP_NEW, R.string.trip_title, false)
@@ -16,7 +17,7 @@ sealed class Screen(
     object Product : Screen(Routes.PRODUCT, R.string.products_title, false)
     object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title)
     object Cart : Screen(Routes.PRODUCT_CART, R.string.cart_title)
-    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title)
+    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showMenuIcon = true)
 
     object Operation : Screen(Routes.OPERATION, R.string.operations_title)
 
