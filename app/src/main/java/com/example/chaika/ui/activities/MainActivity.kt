@@ -49,12 +49,12 @@ class MainActivity : ComponentActivity() {
                             currentScreen = currentScreen,
                             currentRoute = currentRoute,
                             navController = navController,
-                            menuItems = if (currentScreen.showMenuIcon) {
+                            menuItems = if (currentScreen.showMenuIcon == true) {
                                 menuItems
                             } else emptyList(),
                             onMenuItemClick = { item ->
                                 when (item) {
-                                    MenuItem.REFILL -> navController.navigate(Routes.TEMPLATE_EDIT)
+                                    MenuItem.REFILL -> navController.navigate(Routes.PRODUCT_REPLENISH)
                                 }
                             }
                         )

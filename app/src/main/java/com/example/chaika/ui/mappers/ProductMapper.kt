@@ -57,6 +57,6 @@ fun PackageItemDomain.toUiModel(): Product {
         image = this.productInfoDomain.image,
         price = this.productInfoDomain.price,
         isInCart = true,
-        quantity = 0
+        quantity = this.currentQuantity
     )
 }

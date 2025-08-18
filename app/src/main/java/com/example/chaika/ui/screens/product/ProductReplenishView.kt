@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
@@ -27,11 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.ui.components.product.CartProductItem
 import com.example.chaika.ui.components.template.ButtonSurface
 import com.example.chaika.ui.navigation.Routes
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.chaika.ui.mappers.toCartItemDomain
 import com.example.chaika.ui.viewModels.ProductViewModel
 import com.example.chaika.ui.components.template.CheckDialog
@@ -51,7 +49,6 @@ fun ProductReplenishView(
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        conductorViewModel.refresh()
         productViewModel.loadInitialData(replenishViewModel.items)
     }
 
@@ -112,35 +109,6 @@ fun ProductReplenishView(
                                         )
                                     }
                                 }
-
-                                when (pagingItems.loadState.append) {
-                                    is LoadState.Loading -> {
-                                        item {
-                                            Box(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                CircularProgressIndicator(
-                                                    modifier = Modifier.size(
-                                                        24.dp
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    is LoadState.Error -> {
-                                        item {
-                                            val error =
-                                                (pagingItems.loadState.append as LoadState.Error).error
-                                            ErrorItem(
-                                                error = error,
-                                                onRetry = { pagingItems.retry() })
-                                        }
-                                    }
-
-                                    else -> {}
-                                }
                             }
                         }
 
@@ -161,31 +129,18 @@ fun ProductReplenishView(
                 text = "Вы уверены?\nПожалуйста, проверьте содержимое пакета",
                 onConfirm = {
                     showDialog = false
-                    conductor.value?.let {
-                        it.id?.let { conductorId ->
-                            replenishViewModel.onReplenish(conductorId)
-                        }
-                    }.also {
+                    val conductorId = conductor.value?.id
+                    if (conductorId != null) {
+                        replenishViewModel.onReplenish(conductorId)
                         navController.navigate(Routes.PRODUCT_PACKAGE)
+                    } else {
+                        // TODO: показать ошибку (нет проводника) и не навигировать
                     }
                 },
                 onDismiss = {
                     showDialog = false
                 }
             )
-        }
-    }
-}
-
-@Composable
-private fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Ошибка подгрузки", color = MaterialTheme.colorScheme.error)
-        Button(onClick = onRetry) {
-            Text("Повторить")
         }
     }
 }

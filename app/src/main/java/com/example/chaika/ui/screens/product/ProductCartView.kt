@@ -9,9 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.chaika.ui.components.product.CartPaymentArea
 import com.example.chaika.ui.components.product.CartProductItem
 import com.example.chaika.ui.theme.ProductDimens
@@ -30,25 +27,11 @@ fun ProductCartView(
     val conductors by conductorViewModel.allConductors.collectAsState()
     val currentConductor by conductorViewModel.conductor.collectAsState()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_START -> {
-                    conductorViewModel.refresh()
-                }
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     var selectedConductor by remember(conductors, currentConductor) {
         mutableStateOf(
-            conductors.firstOrNull { it?.id == currentConductor?.id } ?: conductors.firstOrNull()
+            conductors.firstOrNull {
+                it.id == currentConductor?.id
+            } ?: conductors.firstOrNull()
         )
     }
 

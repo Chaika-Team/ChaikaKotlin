@@ -176,6 +176,9 @@
     <string name="cart_empty">Корзина пуста</string>
     <string name="cart_loading_error">Произошла ошибка при загрузке данных</string>
 
+    <string name="template_confirm">ПОДТВЕРДИТЬ</string>
+    <string name="template_cancel">ОТМЕНА</string>
+    
     <string name="empty_product_list">No products available</string>
     <string name="error_loading_products">Failed to load products</string>
     <string name="retry">Retry</string>

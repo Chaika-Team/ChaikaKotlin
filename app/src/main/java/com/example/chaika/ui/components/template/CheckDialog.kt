@@ -16,10 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chaika.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +31,7 @@ fun CheckDialog(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
             modifier = Modifier
@@ -41,7 +42,7 @@ fun CheckDialog(
             Text(
                 text = text,
                 fontSize = 16.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -55,10 +56,10 @@ fun CheckDialog(
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.surface
                     )
                 ) {
-                    Text("ПОДТВЕРДИТЬ")
+                    Text(text = stringResource(id = R.string.template_confirm))
                 }
 
                 Button(
@@ -66,10 +67,10 @@ fun CheckDialog(
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.surface
                     )
                 ) {
-                    Text("ОТМЕНА")
+                    Text(text = stringResource(id = R.string.template_cancel))
                 }
             }
 

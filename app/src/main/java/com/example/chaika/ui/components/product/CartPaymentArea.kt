@@ -93,7 +93,12 @@ fun CartPaymentArea(
                 ) {
                     conductors.forEach { conductor ->
                         DropdownMenuItem(
-                            text = { Text("${conductor?.familyName} ${conductor?.name}") },
+                            text = {
+                                Text(
+                                    conductor?.let { "${it.familyName} ${it.name}" }
+                                        ?: stringResource(id = R.string.cart_payment_select_conductor)
+                                )
+                            },
                             onClick = {
                                 onConductorSelected(conductor)
                                 dropdownExpanded = false

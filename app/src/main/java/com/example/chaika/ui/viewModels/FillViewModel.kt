@@ -64,7 +64,6 @@ class FillViewModel @Inject constructor(
     fun onApplyTemplate(template: TemplateDomain) = viewModelScope.launch {
         applyTemplate(cart, template).also {
             Log.d("FillViewModel", "Cart size after apply: ${cart.getCart().items.size}")
-            Log.d("FillViewModel", "Quantity: ${cart.getCart().items.first().quantity}")
         }
     }
 

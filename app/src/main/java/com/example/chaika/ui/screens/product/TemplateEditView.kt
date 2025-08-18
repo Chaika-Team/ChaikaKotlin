@@ -45,13 +45,11 @@ fun TemplateEditView(
     fillViewModel: FillViewModel,
     navController: NavHostController,
 ) {
-    val conductor = conductorViewModel.conductor.collectAsState()
     val pagingItems = productViewModel.productsFlow.collectAsLazyPagingItems()
     val isLoading = productViewModel.isLoading.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        conductorViewModel.refresh()
         productViewModel.loadInitialData(fillViewModel.items)
     }
 
@@ -161,12 +159,12 @@ fun TemplateEditView(
                 text = "Вы уверены?\nПожалуйста, проверьте содержимое пакета",
                 onConfirm = {
                     showDialog = false
-                    conductor.value?.let {
-                        it.id?.let { conductorId ->
-                            fillViewModel.onAddOperation(conductorId)
-                        }
-                    }.also {
+                    val conductorId = conductorViewModel.conductor.value?.id
+                    if (conductorId != null) {
+                        fillViewModel.onAddOperation(conductorId)
                         navController.navigate(Routes.PRODUCT_PACKAGE)
+                    } else {
+                        // TODO: показать ошибку (нет проводника) и не навигировать
                     }
                 },
                 onDismiss = {

@@ -71,10 +71,8 @@ class AuthViewModel @Inject constructor(
                         )
                     }
                 }
-            } catch (_: Exception) {
-                logout()
-                val intent = startAuth()
-                handleAuthResult(intent)
+            } catch (e: Exception) {
+                onException(e)
             }
         }
     }
