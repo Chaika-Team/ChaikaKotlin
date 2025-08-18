@@ -36,6 +36,7 @@ import com.example.chaika.ui.screens.util.LoadingScreen
 import com.example.chaika.ui.viewModels.ConductorViewModel
 import com.example.chaika.ui.viewModels.FillViewModel
 import com.example.chaika.ui.viewModels.PackageViewModel
+import com.example.chaika.ui.viewModels.ReplenishItemsViewModel
 import com.example.chaika.ui.viewModels.ReplenishViewModel
 import com.example.chaika.ui.viewModels.SaleViewModel
 
@@ -149,13 +150,13 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
                 }
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
                 val replenishViewModel = hiltViewModel<ReplenishViewModel>(parentEntry)
+                val replenishItemsViewModel = hiltViewModel<ReplenishItemsViewModel>(parentEntry)
                 val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
                 ProductReplenishView(
-                    productViewModel = productViewModel,
                     replenishViewModel = replenishViewModel,
                     conductorViewModel = conductorViewModel,
+                    replenishItemsViewModel = replenishItemsViewModel,
                     navController = navController
                 )
             }
