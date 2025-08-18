@@ -27,7 +27,7 @@ fun ProductInfoDomain.toUiModel(): Product {
 
 fun Product.toCartItemDomain(): CartItemDomain = CartItemDomain(
     product = this.toDomain(),
-    quantity = this.quantity
+    quantity = 1
 )
 
 fun CartItemDomain.toUiModel(): Product {
