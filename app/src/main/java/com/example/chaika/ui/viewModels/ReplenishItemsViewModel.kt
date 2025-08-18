@@ -33,11 +33,9 @@ class ReplenishItemsViewModel @Inject constructor(
             packageItems,
             cartItems
         ) { packageList, cartList ->
-            Log.d("PackageItemsViewModel", "Started combine")
             // Создаем мапу количеств из корзины по ID продукта
             val cartQuantities = cartList.associate { it.product.id to it.quantity }
 
-            Log.d("PackageItemsViewModel", "Made map")
             // Преобразуем packageItems в Product с учетом количеств из корзины
             packageList.map { packageItem ->
                 val cartQuantity = cartQuantities[packageItem.productInfoDomain.id] ?: 0
@@ -53,6 +51,6 @@ class ReplenishItemsViewModel @Inject constructor(
                     quantity = cartQuantity
                 )
             }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
     }
 }

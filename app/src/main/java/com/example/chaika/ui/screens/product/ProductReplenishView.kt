@@ -37,8 +37,9 @@ fun ProductReplenishView(
 ) {
     val conductor = conductorViewModel.conductor.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-    val displayProducts = replenishItemsViewModel.getDisplayProducts(replenishViewModel.items).collectAsState()
-
+    val displayProducts = remember(replenishViewModel.items) {
+        replenishItemsViewModel.getDisplayProducts(replenishViewModel.items)
+    }.collectAsState()
     Scaffold { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
