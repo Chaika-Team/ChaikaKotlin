@@ -16,6 +16,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,51 +30,40 @@ class ProductViewModel @Inject constructor(
     private val _productsFlow = MutableStateFlow<PagingData<Product>>(PagingData.empty())
     val productsFlow: StateFlow<PagingData<Product>> = _productsFlow.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    // Индикатор только для фоновой синхронизации, не для самого списка
+    private val _isSyncing = MutableStateFlow(false)
+    val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
 
-    private var loadProductsJob: Job? = null
+    private var syncJob: Job? = null
+
+    private val pagedDomainFlow = getPagedProductsUseCase()
+        .cachedIn(viewModelScope)
 
     fun loadInitialData(cartItems: StateFlow<List<CartItemDomain>>) {
-        loadProductsJob?.cancel()
-        _isLoading.value = true
+        // Запускаем один поток для пагинации (не пересоздаем каждый раз)
+        startProductsFlow(cartItems)
+
+        // Параллельно запускаем фоновую синхронизацию
+        syncProductsInBackground()
+    }
+
+    private fun startProductsFlow(cartItems: StateFlow<List<CartItemDomain>>) {
         viewModelScope.launch {
-            try {
-                fetchProducts().also {
-                    loadProducts(cartItems)
-                }
-            } catch (e: Exception) {
-                Log.e("ProductViewModel", "Error in loadInitialData: ${e.message}", e)
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    private suspend fun fetchProducts(): Boolean {
-        return try {
-            Log.d("ProductViewModel", "Fetching products started")
-            fetchAndSaveProductsUseCase()
-            Log.d("ProductViewModel", "Fetching products completed")
-            true
-        } catch (e: Exception) {
-            Log.e("ProductViewModel", "Error in fetchProducts: ${e.message}", e)
-            false
-        }
-    }
-
-    fun loadProducts(cartItems: StateFlow<List<CartItemDomain>>) {
-        loadProductsJob?.cancel()
-        loadProductsJob = viewModelScope.launch {
-            getPagedProductsUseCase()
-                .cachedIn(viewModelScope)
+            pagedDomainFlow
                 .combine(cartItems) { pagingData, cartItemsList ->
+                    val cartItemsMap = cartItemsList
+                        .filter { it.quantity >= 1 }
+                        .associateBy { it.product.id }
+
                     pagingData.map { productDomain ->
-                        cartItemsList.find { it.product.id == productDomain.id }
-                            ?.takeIf { it.quantity >= 1 }
-                            ?.toUiModel()
+                        cartItemsMap[productDomain.id]?.toUiModel()
                             ?: productDomain.toUiModel()
                     }
+                }
+                .catch { exception ->
+                    Log.e("ProductViewModel", "Error in products flow: ${exception.message}", exception)
+                    // Можно эмитить пустые данные или сохранить последнее состояние
+                    emit(PagingData.empty())
                 }
                 .collect { pagingData ->
                     _productsFlow.value = pagingData
@@ -81,10 +71,31 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    private fun syncProductsInBackground() {
+        syncJob?.cancel()
+        syncJob = viewModelScope.launch {
+            _isSyncing.value = true
+            try {
+                Log.d("ProductViewModel", "Background sync started")
+                fetchAndSaveProductsUseCase()
+                Log.d("ProductViewModel", "Background sync completed")
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Error in background sync: ${e.message}", e)
+            } finally {
+                _isSyncing.value = false
+            }
+        }
+    }
+
+    // Метод для принудительного обновления
+    fun refreshProducts() {
+        syncProductsInBackground()
+    }
+
     fun clearProductState() {
         _productsFlow.value = PagingData.empty()
-        _isLoading.value = false
-        loadProductsJob?.cancel()
-        loadProductsJob = null
+        _isSyncing.value = false
+        syncJob?.cancel()
+        syncJob = null
     }
 }
