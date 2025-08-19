@@ -73,30 +73,33 @@ class GetTemplateDetailUseCase @Inject constructor(
 /**
  * Use case для применения шаблона к корзине.
  *
- * Принимает полный объект шаблона (TemplateDomain) с заполненным content,
+ * Принимает корзину и полный объект шаблона (TemplateDomain) с заполненным content,
  * преобразует содержимое шаблона в элементы корзины (CartItemDomain) и обновляет in-memory корзину.
  *
- * @param productInfoRepository Репозиторий для работы с продуктами.
- * @param inMemoryCartRepository Репозиторий для работы с корзиной в оперативной памяти.
  */
 class ApplyTemplateUseCase @Inject constructor(
-    private val productInfoRepository: RoomProductInfoRepositoryInterface,
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
+    private val productInfoRepository: RoomProductInfoRepositoryInterface
 ) {
-    suspend operator fun invoke(template: TemplateDomain) = withContext(Dispatchers.IO) {
-        // Преобразование каждого элемента шаблона в элемент корзины
-        val cartItems = template.content.map { templateContent ->
-            val productInfo = productInfoRepository.getProductById(templateContent.productId)
-                ?: throw Exception("Product not found for id: ${templateContent.productId}")
-            CartItemDomain(
-                product = productInfo,
-                quantity = templateContent.quantity
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        template: TemplateDomain
+    ) {
+        // 1) Очищаем корзину
+        cart.clearCart()
+
+        // 2) Для каждого элемента шаблона подгружаем продукт из БД и добавляем
+        template.content.forEach { content ->
+            val product = productInfoRepository.getProductById(content.productId)
+                ?: throw IllegalArgumentException(
+                    "Product with id=${content.productId} not found in local DB"
+                )
+
+            cart.addItemToCart(
+                CartItemDomain(
+                    product = product,
+                    quantity = content.quantity
+                )
             )
-        }
-        // Обновляем in-memory корзину: очищаем и добавляем новые элементы
-        inMemoryCartRepository.clearCart()
-        cartItems.forEach { item ->
-            inMemoryCartRepository.addItemToCart(item)
         }
     }
 }

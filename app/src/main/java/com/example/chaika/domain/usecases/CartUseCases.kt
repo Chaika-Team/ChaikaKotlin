@@ -1,5 +1,6 @@
 package com.example.chaika.domain.usecases
 
+import com.example.chaika.data.inMemory.CartRepositoryFactoryInterface
 import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
 import com.example.chaika.data.room.repo.RoomCartRepositoryInterface
 import com.example.chaika.domain.models.CartDomain
@@ -10,120 +11,173 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-/** Юзкейс добавления товара */
 
-class AddOpUseCase @Inject constructor(
-    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+/**
+ * Use Case, отвечающий за выдачу новой in‑memory корзины.
+ * Инкапсулирует фабрику и скрывает её от ViewModel.
+ */
+class CreateCartUseCase @Inject constructor(
+    private val factory: CartRepositoryFactoryInterface
 ) {
-    suspend operator fun invoke(conductorId: Int) {
-        val opDomain = CartOperationDomain(OperationTypeDomain.ADD, conductorId)
-        saveOpUseCase(opDomain)
+    /**
+     * Возвращает свежий экземпляр корзины.
+     */
+    operator fun invoke(): InMemoryCartRepositoryInterface = factory.create()
+}
+
+/**
+ * Сохраняет список элементов из переданной корзины и операцию в БД,
+ * затем очищает саму корзину.
+ */
+class SaveCartWithItemsAndOperationUseCase @Inject constructor(
+    private val roomCartRepository: RoomCartRepositoryInterface
+) {
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        operation: CartOperationDomain
+    ) {
+        // 1) Получаем элементы из in‑memory корзины
+        val items = cart.getCartItems().first()
+        // 2) Сохраняем в БД
+        roomCartRepository.saveCartWithItemsAndOperation(
+            CartDomain(items.toMutableList()),
+            operation
+        )
+        // 3) Очищаем in‑memory корзину
+        cart.clearCart()
+    }
+}
+
+/**
+ * Operation‑use cases: обёртки над SaveCartWithItemsAndOperationUseCase
+ * Каждая устанавливает свой тип операции, и вызывает общий saveUC.
+ */
+class AddOpUseCase @Inject constructor(
+    private val saveOp: SaveCartWithItemsAndOperationUseCase
+) {
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        conductorId: Int
+    ) {
+        saveOp(cart, CartOperationDomain(OperationTypeDomain.ADD, conductorId))
     }
 }
 
 class SoldCashOpUseCase @Inject constructor(
-    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+    private val saveOp: SaveCartWithItemsAndOperationUseCase
 ) {
-    suspend operator fun invoke(conductorId: Int) {
-        val opDomain = CartOperationDomain(OperationTypeDomain.SOLD_CASH, conductorId)
-        saveOpUseCase(opDomain)
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        conductorId: Int
+    ) {
+        saveOp(cart, CartOperationDomain(OperationTypeDomain.SOLD_CASH, conductorId))
     }
 }
 
 class SoldCardOpUseCase @Inject constructor(
-    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+    private val saveOp: SaveCartWithItemsAndOperationUseCase
 ) {
-    suspend operator fun invoke(conductorId: Int) {
-        val opDomain = CartOperationDomain(OperationTypeDomain.SOLD_CART, conductorId)
-        saveOpUseCase(opDomain)
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        conductorId: Int
+    ) {
+        saveOp(cart, CartOperationDomain(OperationTypeDomain.SOLD_CART, conductorId))
     }
 }
 
 class ReplenishUseCase @Inject constructor(
-    private val saveOpUseCase: SaveCartWithItemsAndOperationUseCase
+    private val saveOp: SaveCartWithItemsAndOperationUseCase
 ) {
-    suspend operator fun invoke(conductorId: Int) {
-        val opDomain = CartOperationDomain(OperationTypeDomain.REPLENISH, conductorId)
-        saveOpUseCase(opDomain)
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        conductorId: Int
+    ) {
+        saveOp(cart, CartOperationDomain(OperationTypeDomain.REPLENISH, conductorId))
     }
 }
 
-// Сохранение операций и очистка корзины
-class SaveCartWithItemsAndOperationUseCase @Inject constructor(
-    private val roomCartRepository: RoomCartRepositoryInterface,
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface
+/**
+ * Добавление товара в корзину.
+ */
+class AddItemToCartUseCase @Inject constructor() {
+    operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        item: CartItemDomain
+    ): Boolean = cart.addItemToCart(item)
+}
+
+/**
+ * Добавление товара в корзину с проверкой остатка (для SOLD_* сценариев).
+ * Не добавляет товар, если доступный остаток == 0.
+ */
+class AddItemToCartWithLimitUseCase @Inject constructor(
+    private val getAvailableQuantity: GetAvailableQuantityUseCase
 ) {
-    suspend operator fun invoke(cartOperationDomain: CartOperationDomain) {
-        // Получаем текущий список товаров из in-memory корзины через Flow
-        val cart = CartDomain(inMemoryCartRepository.getCartItems().first().toMutableList())
-        // Сохраняем корзину и операцию в базе данных
-        roomCartRepository.saveCartWithItemsAndOperation(cart, cartOperationDomain)
-        // Очищаем in-memory корзину после сохранения
-        inMemoryCartRepository.clearCart()
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        item: CartItemDomain
+    ): Boolean {
+        val available = getAvailableQuantity(item.product.id)
+        if (available <= 0) return false
+        // Репозиторий сам выставляет quantity = 1 и не добавляет дубликаты
+        return cart.addItemToCart(item)
     }
 }
 
-// Добавление товара в корзину
-class AddItemToCartUseCase @Inject constructor(
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
-) {
-    operator fun invoke(item: CartItemDomain): Boolean {
-        return inMemoryCartRepository.addItemToCart(item)
-    }
+/**
+ * Удаление товара из корзины.
+ */
+class RemoveItemFromCartUseCase @Inject constructor() {
+    operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        itemId: Int
+    ): Boolean = cart.removeItemFromCart(itemId)
 }
 
-// Удаление товара из корзины
-class RemoveItemFromCartUseCase @Inject constructor(
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
-) {
-    operator fun invoke(itemId: Int): Boolean {
-        return inMemoryCartRepository.removeItemFromCart(itemId)
-    }
+/**
+ * Обновление количества товара без учёта лимита (для ADD и REPLENISH).
+ */
+class UpdateQuantityUnlimitedUseCase @Inject constructor() {
+    operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        itemId: Int,
+        newQuantity: Int
+    ): Boolean = cart.updateItemQuantity(itemId, newQuantity, Int.MAX_VALUE)
 }
 
-/** Юзкейс изменения количества товара в корзине для операций ADD и REPLENISH, безлимитный */
-
-class UpdateQuantityUnlimitedUseCase @Inject constructor(
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface
-) {
-    /** Всегда передаём большой лимит */
-    operator fun invoke(itemId: Int, newQuantity: Int): Boolean =
-        inMemoryCartRepository.updateItemQuantity(itemId, newQuantity, Int.MAX_VALUE)
-}
-
-/** Юзкейс изменения количества товара в корзине для операций SOLD_CART и SOLD_CASH, базируется на количестве товара в пакете */
+/**
+ * Обновление количества товара с проверкой остатка (для SOLD_CASH и SOLD_CART).
+ */
 class UpdateQuantityWithLimitUseCase @Inject constructor(
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
-    private val getAvailableQuantityUseCase: GetAvailableQuantityUseCase
+    private val getAvailableQuantity: GetAvailableQuantityUseCase
 ) {
-    suspend operator fun invoke(itemId: Int, newQuantity: Int): Boolean {
-        // 1. Узнаём остаток
-        val available = getAvailableQuantityUseCase(itemId)
-        // 2. Пытаемся обновить
-        return inMemoryCartRepository.updateItemQuantity(itemId, newQuantity, available)
+    suspend operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        itemId: Int,
+        newQuantity: Int
+    ): Boolean {
+        val available = getAvailableQuantity(itemId)
+        return cart.updateItemQuantity(itemId, newQuantity, available)
     }
 }
 
-// Изменение количества товара в корзине
-class UpdateItemQuantityInCartUseCase @Inject constructor(
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
-) {
-    operator fun invoke(itemId: Int, newQuantity: Int, availableQuantity: Int): Boolean {
-        // Обновляем количество товара в корзине, если оно не превышает доступное
-        return inMemoryCartRepository.updateItemQuantity(
-            itemId,
-            newQuantity,
-            availableQuantity,
-        )
-    }
+/**
+ * Явное обновление количества с передачей готового availableQuantity.
+ */
+class UpdateItemQuantityInCartUseCase @Inject constructor() {
+    operator fun invoke(
+        cart: InMemoryCartRepositoryInterface,
+        itemId: Int,
+        newQuantity: Int,
+        availableQuantity: Int
+    ): Boolean = cart.updateItemQuantity(itemId, newQuantity, availableQuantity)
 }
 
-// Получение товаров из корзины.
-class GetCartItemsUseCase @Inject constructor(
-    private val inMemoryCartRepository: InMemoryCartRepositoryInterface,
-) {
-    operator fun invoke(): Flow<List<CartItemDomain>> {
-        // Возвращаем список товаров в корзине
-        return inMemoryCartRepository.getCartItems()
-    }
+/**
+ * Получение потока элементов из переданной корзины.
+ */
+class GetCartItemsUseCase @Inject constructor() {
+    operator fun invoke(
+        cart: InMemoryCartRepositoryInterface
+    ): Flow<List<CartItemDomain>> = cart.getCartItems()
 }

@@ -5,7 +5,8 @@ import com.example.chaika.R
 sealed class Screen(
     val route: String,
     val titleResId: Int,
-    val showBackButton: Boolean = true
+    val showBackButton: Boolean = true,
+    val showMenuIcon: Boolean = false
 ) {
     object Trip : Screen(Routes.TRIP, R.string.trip_title, false)
     object NewTrip : Screen(Routes.TRIP_NEW, R.string.trip_title, false)
@@ -15,9 +16,9 @@ sealed class Screen(
 
     object Product : Screen(Routes.PRODUCT, R.string.products_title, false)
     object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title)
-    object ProductList : Screen(Routes.PRODUCT_LIST, R.string.product_list_title)
     object Cart : Screen(Routes.PRODUCT_CART, R.string.cart_title)
-    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title)
+    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showMenuIcon = true)
+    object Replenish: Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
 
     object Operation : Screen(Routes.OPERATION, R.string.operations_title)
 
@@ -27,6 +28,10 @@ sealed class Screen(
     object ProfileFaqs : Screen(Routes.PROFILE_FAQS, R.string.profile_faqs)
     object ProfileFeedback : Screen(Routes.PROFILE_FEEDBACK, R.string.profile_feedback)
     object ProfileAbout : Screen(Routes.PROFILE_ABOUT, R.string.profile_about)
+
+    object TemplateSearch : Screen(Routes.TEMPLATE_SEARCH, R.string.templates)
+    object TemplateDetail : Screen(Routes.TEMPLATE_DETAIL, R.string.templates)
+    object TemplateEdit : Screen(Routes.TEMPLATE_EDIT, R.string.edit)
 
     companion object {
         fun fromRoute(route: String?): Screen {
@@ -38,9 +43,9 @@ sealed class Screen(
                 Routes.TRIP_CURRENT -> CurrentTrip
                 Routes.PRODUCT -> Product
                 Routes.PRODUCT_ENTRY -> ProductEntry
-                Routes.PRODUCT_LIST -> ProductList
                 Routes.PRODUCT_CART -> Cart
                 Routes.PRODUCT_PACKAGE -> Package
+                Routes.PRODUCT_REPLENISH -> Replenish
                 Routes.OPERATION -> Operation
                 Routes.PROFILE -> Profile
                 Routes.PROFILE_PERSONAL_DATA -> ProfilePersonalData
@@ -48,6 +53,9 @@ sealed class Screen(
                 Routes.PROFILE_FAQS -> ProfileFaqs
                 Routes.PROFILE_FEEDBACK -> ProfileFeedback
                 Routes.PROFILE_ABOUT -> ProfileAbout
+                Routes.TEMPLATE_SEARCH -> TemplateSearch
+                Routes.TEMPLATE_DETAIL -> TemplateDetail
+                Routes.TEMPLATE_EDIT -> TemplateEdit
                 else -> Trip
             }
         }

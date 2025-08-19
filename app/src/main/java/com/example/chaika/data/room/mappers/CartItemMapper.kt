@@ -25,6 +25,7 @@ fun CartItemDomain.toEntity(
         }
 
     return CartItem(
+        id = 0,
         cartOperationId = cartOperationId, // Используем cartOperationId вместо cartId
         productId = this.product.id,
         impact = impact,

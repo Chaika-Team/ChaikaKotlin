@@ -20,9 +20,9 @@ import com.example.chaika.R
 @Composable
 fun CartPaymentArea(
     totalCost: Double,
-    conductors: List<ConductorDomain>,
+    conductors: List<ConductorDomain?>,
     selectedConductor: ConductorDomain?,
-    onConductorSelected: (ConductorDomain) -> Unit,
+    onConductorSelected: (ConductorDomain?) -> Unit,
     onPayCash: () -> Unit,
     onPayCard: () -> Unit,
     modifier: Modifier = Modifier
@@ -93,7 +93,12 @@ fun CartPaymentArea(
                 ) {
                     conductors.forEach { conductor ->
                         DropdownMenuItem(
-                            text = { Text("${conductor.familyName} ${conductor.name}") },
+                            text = {
+                                Text(
+                                    conductor?.let { "${it.familyName} ${it.name}" }
+                                        ?: stringResource(id = R.string.cart_payment_select_conductor)
+                                )
+                            },
                             onClick = {
                                 onConductorSelected(conductor)
                                 dropdownExpanded = false

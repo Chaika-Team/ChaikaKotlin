@@ -17,8 +17,10 @@ import com.example.chaika.ui.navigation.Screen
 import com.example.chaika.ui.theme.ChaikaTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.chaika.ui.components.topBar.MenuItem
 import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.components.topBar.TopBar
+import com.example.chaika.ui.navigation.Routes
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -32,16 +34,29 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
-                val currentBackStack by navController.currentBackStackEntryAsState()
-                val currentDestination = currentBackStack?.destination
-                val currentScreen = Screen.fromRoute(currentDestination?.route)
+                val currentScreen = Screen.fromRoute(currentRoute)
+
+                val menuItems = when (currentScreen) {
+                    is Screen.Package -> listOf(
+                        MenuItem.REFILL
+                    )
+                    else -> emptyList()
+                }
 
                 Scaffold(
                     topBar = {
                         TopBar(
                             currentScreen = currentScreen,
                             currentRoute = currentRoute,
-                            navController = navController
+                            navController = navController,
+                            menuItems = if (currentScreen.showMenuIcon == true) {
+                                menuItems
+                            } else emptyList(),
+                            onMenuItemClick = { item ->
+                                when (item) {
+                                    MenuItem.REFILL -> navController.navigate(Routes.PRODUCT_REPLENISH)
+                                }
+                            }
                         )
                     },
                     bottomBar = {
