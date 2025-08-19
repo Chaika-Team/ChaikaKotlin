@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
@@ -35,6 +36,7 @@ class ProductViewModel @Inject constructor(
     val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
 
     private var syncJob: Job? = null
+    private var productsJob: Job? = null
 
     private val pagedDomainFlow = getPagedProductsUseCase()
         .cachedIn(viewModelScope)
@@ -48,7 +50,8 @@ class ProductViewModel @Inject constructor(
     }
 
     private fun startProductsFlow(cartItems: StateFlow<List<CartItemDomain>>) {
-        viewModelScope.launch {
+        productsJob?.cancel()
+        productsJob = viewModelScope.launch {
             pagedDomainFlow
                 .combine(cartItems) { pagingData, cartItemsList ->
                     val cartItemsMap = cartItemsList
@@ -75,6 +78,7 @@ class ProductViewModel @Inject constructor(
         syncJob?.cancel()
         syncJob = viewModelScope.launch {
             _isSyncing.value = true
+            val myJob = coroutineContext[Job]
             try {
                 Log.d("ProductViewModel", "Background sync started")
                 fetchAndSaveProductsUseCase()
@@ -82,7 +86,9 @@ class ProductViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("ProductViewModel", "Error in background sync: ${e.message}", e)
             } finally {
-                _isSyncing.value = false
+                if (syncJob === myJob) {
+                    _isSyncing.value = false
+                }
             }
         }
     }
@@ -97,5 +103,7 @@ class ProductViewModel @Inject constructor(
         _isSyncing.value = false
         syncJob?.cancel()
         syncJob = null
+        productsJob?.cancel()
+        productsJob = null
     }
 }

@@ -114,17 +114,18 @@ class AuthViewModel @Inject constructor(
         Log.i("AuthViewModel", "finished onAuthenticated")
     }
 
-        private suspend fun onException(e: Exception) {
-            Log.e("AuthViewModel", "Authorization flow failed", e)
-            runCatching { logoutUseCase() }
-                .onFailure { Log.w("AuthViewModel", "Logout after auth failure failed", it) }
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Authorization failed"
-                )
-            }
+    private suspend fun onException(e: Exception) {
+        Log.e("AuthViewModel", "Authorization flow failed", e)
+        runCatching { logoutUseCase() }
+            .onFailure { Log.w("AuthViewModel", "Logout after auth failure failed", it) }
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isAuthenticated = false,
+                errorMessage = e.message ?: "Authorization failed"
+            )
         }
+    }
 
     private fun onLogoutException(e: Exception) {
         _uiState.update {
