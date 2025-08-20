@@ -23,7 +23,6 @@ import com.example.chaika.ui.screens.trip.views.NewTripView
 import com.example.chaika.ui.screens.trip.views.SelectCarriageView
 import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.viewModels.ProductViewModel
-import com.example.chaika.ui.viewModels.ProfileViewModel
 import com.example.chaika.ui.viewModels.TripViewModel
 import com.example.chaika.ui.viewModels.TemplateViewModel
 import androidx.compose.runtime.*
@@ -213,9 +212,12 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             route = Routes.PROFILE_GRAPH
         ) {
             composable(Routes.PROFILE) { backStackEntry ->
-                val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PROFILE_GRAPH)
+                }
+                val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
                 ProfileScreen(
-                    viewModel = profileViewModel,
+                    conductorViewModel = conductorViewModel,
                     authViewModel = authViewModel,
                     navController = navController
                 )

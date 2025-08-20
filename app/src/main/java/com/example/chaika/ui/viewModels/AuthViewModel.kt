@@ -4,6 +4,9 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chaika.domain.sealed.LogoutResult.ActiveShiftExists
+import com.example.chaika.domain.sealed.LogoutResult.Failure
+import com.example.chaika.domain.sealed.LogoutResult.Success
 import com.example.chaika.domain.usecases.CompleteAuthorizationFlowUseCase
 import com.example.chaika.domain.usecases.GetAccessTokenUseCase
 import com.example.chaika.domain.usecases.LogoutUseCase
@@ -82,17 +85,51 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                logoutUseCase()
-                _uiState.update {
-                    it.copy(
-                        isAuthenticated = false,
-                        isLoading = false
-                    )
+                val logoutResult = logoutUseCase()
+
+                when (logoutResult) {
+                    Success -> {
+                        _uiState.update {
+                            it.copy(
+                                isAuthenticated = false,
+                                isLoading = false,
+                                showLogoutErrorDialog = false,
+                                showActiveShiftDialog = false
+                            )
+                        }
+                    }
+                    ActiveShiftExists -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                showActiveShiftDialog = true,
+                                showLogoutErrorDialog = false
+                            )
+                        }
+                    }
+                    is Failure -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                showLogoutErrorDialog = true,
+                                logoutErrorMessage = logoutResult.reason,
+                                showActiveShiftDialog = false
+                            )
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 onLogoutException(e)
             }
         }
+    }
+
+    fun dismissLogoutErrorDialog() {
+        _uiState.update { it.copy(showLogoutErrorDialog = false, logoutErrorMessage = null) }
+    }
+
+    fun dismissActiveShiftDialog() {
+        _uiState.update { it.copy(showActiveShiftDialog = false) }
     }
 
     fun clearError() {
@@ -131,7 +168,9 @@ class AuthViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 isLoading = false,
-                errorMessage = e.message ?: "Unknown logout exception"
+                showLogoutErrorDialog = true,
+                logoutErrorMessage = e.message ?: "Logout failed",
+                showActiveShiftDialog = false
             )
         }
     }
@@ -140,5 +179,8 @@ class AuthViewModel @Inject constructor(
 data class AuthUiState(
     val isLoading: Boolean = false,
     val isAuthenticated: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val showLogoutErrorDialog: Boolean = false,
+    val showActiveShiftDialog: Boolean = false,
+    val logoutErrorMessage: String? = null
 )

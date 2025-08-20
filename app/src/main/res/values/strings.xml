@@ -184,5 +184,10 @@
     <string name="retry">Retry</string>
     <string name="menu">Menu</string>
     <string name="refill">Добор</string>
+    <string name="logout_error_title">Ошибка выхода</string>
+    <string name="logout_error_message">Неизвестная ошибка выхода. Обратитесь в поддержку</string>
+    <string name="logout_ok">OK</string>
+    <string name="active_shift_title">Поездка в процессе</string>
+    <string name="active_shift_message">Для выхода завершите поездку</string>
 
 </resources>
