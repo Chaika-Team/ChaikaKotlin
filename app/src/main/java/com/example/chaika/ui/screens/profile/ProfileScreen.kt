@@ -5,18 +5,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
 import com.example.chaika.ui.navigation.Routes
-import com.example.chaika.ui.viewModels.ProfileViewModel
 import androidx.compose.runtime.*
 import com.example.chaika.ui.viewModels.AuthViewModel
 import com.example.chaika.ui.screens.profile.views.MainProfileView
+import com.example.chaika.ui.viewModels.ConductorViewModel
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
-    viewModel: ProfileViewModel,
+    conductorViewModel: ConductorViewModel,
     authViewModel: AuthViewModel
 ) {
-    val conductor by viewModel.conductorState.collectAsState()
+    val conductor by conductorViewModel.conductor.collectAsState()
     val authUiState by authViewModel.uiState.collectAsState()
 
     LaunchedEffect(authUiState.isAuthenticated) {

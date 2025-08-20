@@ -7,7 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,6 +37,8 @@ fun MainProfileView(
     conductor: ConductorDomain?,
     navController: NavHostController
 ) {
+    val uiState by authViewModel.uiState.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -106,5 +113,46 @@ fun MainProfileView(
                 }
             }
         }
+    }
+
+    if (uiState.showLogoutErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { authViewModel.dismissLogoutErrorDialog() },
+            title = {
+                Text(text = stringResource(R.string.logout_error_title))
+            },
+            text = {
+                Text(
+                    text = uiState.logoutErrorMessage
+                        ?: stringResource(R.string.logout_error_message)
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { authViewModel.dismissLogoutErrorDialog() }
+                ) {
+                    Text(stringResource(R.string.logout_ok))
+                }
+            }
+        )
+    }
+
+    if (uiState.showActiveShiftDialog) {
+        AlertDialog(
+            onDismissRequest = { authViewModel.dismissActiveShiftDialog() },
+            title = {
+                Text(text = stringResource(R.string.active_shift_title))
+            },
+            text = {
+                Text(text = stringResource(R.string.active_shift_message))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { authViewModel.dismissActiveShiftDialog() }
+                ) {
+                    Text(stringResource(R.string.logout_ok))
+                }
+            }
+        )
     }
 }
