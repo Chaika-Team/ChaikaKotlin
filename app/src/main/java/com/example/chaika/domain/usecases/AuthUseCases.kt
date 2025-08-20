@@ -6,6 +6,7 @@ import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
 import com.example.chaika.data.local.ImageSubDir
 import com.example.chaika.data.local.LocalImageRepositoryInterface
 import com.example.chaika.domain.models.ConductorDomain
+import com.example.chaika.domain.sealed.LogoutResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -102,11 +103,20 @@ class LogoutUseCase
         private val tokenManager: EncryptedTokenManagerInterface,
         private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
         private val imageRepository: LocalImageRepositoryInterface,
+        private val hasActiveShiftUseCase: HasActiveShiftUseCase
     ) {
-        suspend operator fun invoke() =
-            withContext(Dispatchers.IO) {
+        suspend operator fun invoke(): LogoutResult = withContext(Dispatchers.IO) {
+            try {
+                if (hasActiveShiftUseCase()){
+                    return@withContext LogoutResult.ActiveShiftExists
+                }
                 tokenManager.clearToken()
                 deleteAllConductorsUseCase()
                 imageRepository.deleteImagesInSubDir(ImageSubDir.CONDUCTORS.folder)
+
+             LogoutResult.Success
+            } catch (e: Exception) {
+                LogoutResult.Failure(reason = e.message ?: "Unknown error")
             }
+        }
     }
