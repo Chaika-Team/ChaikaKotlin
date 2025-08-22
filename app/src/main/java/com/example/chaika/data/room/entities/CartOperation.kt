@@ -25,11 +25,12 @@ import androidx.room.PrimaryKey
     ],
     indices = [
         Index(value = ["conductor_id"]),
+        Index(value = ["operation_time", "id"])
     ],
 )
 data class CartOperation(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "operation_type") val operationType: Int,
     @ColumnInfo(name = "operation_time") val operationTime: String,
-    @ColumnInfo(name = "conductor_id") val conductorId: Int,
+    @ColumnInfo(name = "conductor_id") val conductorId: Int
 )

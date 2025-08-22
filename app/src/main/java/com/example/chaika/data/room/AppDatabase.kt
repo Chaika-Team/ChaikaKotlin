@@ -14,12 +14,13 @@ import com.example.chaika.data.room.entities.CartOperation
 import com.example.chaika.data.room.entities.Conductor
 import com.example.chaika.data.room.entities.ConductorTripShift
 import com.example.chaika.data.room.entities.FastReportView
+import com.example.chaika.data.room.entities.OperationInfoView
 import com.example.chaika.data.room.entities.PackageItemView
 import com.example.chaika.data.room.entities.ProductInfo
 
 @Database(
     entities = [ProductInfo::class, Conductor::class, CartItem::class, CartOperation::class, ConductorTripShift::class],
-    views = [PackageItemView::class, FastReportView::class],
+    views = [PackageItemView::class, FastReportView::class, OperationInfoView::class],
     version = 1, // Увеличить версию, если используем миграции
     exportSchema = false,
 )
