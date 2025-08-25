@@ -1,7 +1,11 @@
 package com.example.chaika.data.room.repo
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import androidx.paging.map
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.mappers.toDomain
 import com.example.chaika.data.room.mappers.toEntity
@@ -30,32 +34,13 @@ class RoomProductInfoRepository @Inject constructor(
         productInfoDao.deleteProduct(product.toEntity())
     }
 
-    override fun getPagedProducts(): PagingSource<Int, ProductInfoDomain> {
-        val originalSource = productInfoDao.getPagedProducts()
-        return object : PagingSource<Int, ProductInfoDomain>() {
-            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProductInfoDomain> {
-                return when (val result = originalSource.load(params)) {
-                    is LoadResult.Page -> LoadResult.Page(
-                        data = result.data.map { it.toDomain() },
-                        prevKey = result.prevKey,
-                        nextKey = result.nextKey,
-                        itemsBefore = result.itemsBefore,
-                        itemsAfter = result.itemsAfter
-                    )
-
-                    is LoadResult.Error -> LoadResult.Error(result.throwable)
-                    // Обрабатываем все остальные случаи (например, если будет добавлена новая ветка)
-                    else -> LoadResult.Error(Throwable("Unexpected load result: $result"))
-                }
-            }
-
-            override fun getRefreshKey(state: PagingState<Int, ProductInfoDomain>): Int? {
-                return state.anchorPosition?.let { anchorPosition ->
-                    state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                        ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
-                }
-            }
-        }
+    override fun getPagedProducts(config: PagingConfig): Flow<PagingData<ProductInfoDomain>> {
+        return Pager(
+            config = config,
+            pagingSourceFactory = { productInfoDao.getPagedProducts() }
+        )
+            .flow
+            .map { pagingData -> pagingData.map { it.toDomain() } }
     }
 
     override suspend fun getProductById(productId: Int): ProductInfoDomain? {

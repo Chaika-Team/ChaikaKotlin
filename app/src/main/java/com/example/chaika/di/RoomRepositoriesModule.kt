@@ -4,6 +4,8 @@ import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ConductorTripShiftDao
+import com.example.chaika.data.room.dao.FastReportViewDao
+import com.example.chaika.data.room.dao.PackageItemViewDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import com.example.chaika.data.room.repo.RoomCartItemRepository
 import com.example.chaika.data.room.repo.RoomCartItemRepositoryInterface
@@ -19,6 +21,8 @@ import com.example.chaika.data.room.repo.RoomProductInfoRepository
 import com.example.chaika.data.room.repo.RoomProductInfoRepositoryInterface
 import com.example.chaika.data.room.repo.RoomPackageItemRepository
 import com.example.chaika.data.room.repo.RoomPackageItemRepositoryInterface
+import com.example.chaika.data.room.repo.RoomReportRepository
+import com.example.chaika.data.room.repo.RoomReportRepositoryInterface
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,8 +70,15 @@ object RoomRepositoriesModule {
     @Provides
     @Singleton
     fun provideRoomPackageItemRepository(
-        packageItemViewDao: com.example.chaika.data.room.dao.PackageItemViewDao,
+        packageItemViewDao: PackageItemViewDao,
         productInfoDao: ProductInfoDao
-    ): com.example.chaika.data.room.repo.RoomPackageItemRepositoryInterface =
-        com.example.chaika.data.room.repo.RoomPackageItemRepository(packageItemViewDao, productInfoDao)
+    ): RoomPackageItemRepositoryInterface =
+        RoomPackageItemRepository(packageItemViewDao, productInfoDao)
+
+    @Provides
+    @Singleton
+    fun provideRoomReportRepository(
+        fastReportViewDao: FastReportViewDao
+    ): RoomReportRepositoryInterface =
+        RoomReportRepository(fastReportViewDao)
 }
