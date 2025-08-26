@@ -11,7 +11,7 @@ object TripDimens {
     val TimeDetailsHeight = 25.dp
     val ArrowBoxHeight = 24.dp
     val SideRectWidth = 24.dp
-    val CornerRadius = 15.dp
+    val CornerRadius = 16.dp
     val IconSize = 24.dp
     val NewTripButtonHeight = 129.dp
     val NewTripButtonWidth = 327.dp

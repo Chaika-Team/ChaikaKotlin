@@ -190,4 +190,15 @@
     <string name="active_shift_title">Поездка в процессе</string>
     <string name="active_shift_message">Для выхода завершите поездку</string>
 
+    <!-- Operation types -->
+    <string name="op_type_add">Добавление</string>
+    <string name="op_type_sold_cash">Продажа наличными</string>
+    <string name="op_type_sold_card">Продажа по карте</string>
+    <string name="op_type_replenish">Добор</string>
+
+    <!-- Units & formats -->
+    <string name="op_quantity_suffix">шт</string>
+    <string name="op_price_rub">%.2f руб</string>
+    <string name="op_total_price_rub">%.2f руб</string>
+
 </resources>
