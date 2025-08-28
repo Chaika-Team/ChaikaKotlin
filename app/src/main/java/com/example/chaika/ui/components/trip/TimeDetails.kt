@@ -45,9 +45,9 @@ fun TimeDetails(
                 bottom.linkTo(parent.bottom)
                 // height = Dimension.value(TripDimens.TimeDetailsHeight) // Убрано жёсткое задание высоты
             }
-            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+            .padding(end = 8.dp)
             .widthIn(max = 80.dp), // Ограничение максимальной ширины
-            verticalArrangement = Arrangement.Bottom,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -67,15 +67,16 @@ fun TimeDetails(
                     top.linkTo(parent.top)
                     bottom.linkTo(arrow.top)
                     width = Dimension.fillToConstraints
-                    height = Dimension.fillToConstraints
-                },
+                    height = Dimension.value(18.dp)
+                }
+                .padding(bottom = 2.dp),
             contentAlignment = Alignment.TopCenter
         ) {
             Text(
-                modifier = Modifier.padding(bottom = 2.dp),
                 text = "${tripDetails.durationHours} ч ${tripDetails.durationMinutes} мин",
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 12.sp
             )
         }
         Box(
@@ -86,8 +87,9 @@ fun TimeDetails(
                 bottom.linkTo(parent.bottom)
                 width = Dimension.fillToConstraints
                 // height = Dimension.percent(0.3f) // Убрано жёсткое задание высоты
-                height = Dimension.fillToConstraints // Растягиваем по высоте между time и bottom
-            },
+//                height = Dimension.fillToConstraints // Растягиваем по высоте между time и bottom
+            }
+                .padding(bottom = 8.dp),
             contentAlignment = Alignment.TopCenter
         ) {
             Arrow()
@@ -100,9 +102,9 @@ fun TimeDetails(
                 bottom.linkTo(parent.bottom)
                 // height = Dimension.value(TripDimens.TimeDetailsHeight) // Убрано жёсткое задание высоты
             }
-            .padding(end = 8.dp, top = 8.dp, bottom = 8.dp)
+            .padding(start = 8.dp)
             .widthIn(max = 80.dp), // Ограничение максимальной ширины
-            verticalArrangement = Arrangement.Bottom,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
             Text(
