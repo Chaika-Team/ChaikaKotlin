@@ -1,5 +1,6 @@
 package com.example.chaika.di
 
+import com.example.chaika.BuildConfig
 import com.example.chaika.data.dataSource.apiService.IAMApiService
 import com.example.chaika.data.dataSource.repo.IAMApiServiceRepository
 import com.example.chaika.data.dataSource.repo.IAMApiServiceRepositoryInterface
@@ -19,7 +20,7 @@ import javax.inject.Singleton
 open class IAMModule {
 
     // Функция для получения базового URL. При необходимости её можно переопределить.
-    protected open fun baseUrl(): HttpUrl = "https://iam.remystorage.ru/".toHttpUrl()
+    protected open fun baseUrl(): HttpUrl = BuildConfig.ZITADEL_URL.toHttpUrl()
 
     @Provides
     @Singleton

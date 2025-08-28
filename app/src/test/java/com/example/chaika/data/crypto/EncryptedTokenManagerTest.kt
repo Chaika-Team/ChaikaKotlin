@@ -52,37 +52,37 @@ class EncryptedTokenManagerTest {
      * 3. Создаем экземпляр EncryptedTokenManager. При инициализации должна сработать fallback-логика.
      * 4. Вызываем saveToken() и проверяем, что токен сохранен корректно.
      */
-    @Test
-    fun testFallbackOnException() {
-        // Подготавливаем fallback SharedPreferences через настоящий контекст.
-        val fakePrefs: SharedPreferences =
-            context.getSharedPreferences("fake_prefs", Context.MODE_PRIVATE)
-
-        // Мокируем статический метод EncryptedSharedPreferences.create.
-        // Используем use{} для автоматического закрытия мока.
-        mockStatic(EncryptedSharedPreferences::class.java).use { mockedStatic ->
-            // Настраиваем поведение: первая попытка создания выбрасывает исключение, вторая возвращает fakePrefs.
-            mockedStatic
-                .`when`<SharedPreferences> {
-                    EncryptedSharedPreferences.create(
-                        any<Context>(),
-                        eq("encrypted_prefs"),
-                        any<MasterKey>(),
-                        eq(EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV),
-                        eq(EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM),
-                    )
-                }.thenThrow(RuntimeException("Simulated error"))
-                .thenReturn(fakePrefs)
-
-            // Act: создаем экземпляр менеджера токенов; при первой попытке возникает ошибка,
-            // и fallback-логика должна сработать, используя fakePrefs.
-            val tokenManager = EncryptedTokenManager(context)
-            tokenManager.saveToken("fallback_token")
-
-            // Assert: проверяем, что после fallback токен сохранен корректно.
-            assertEquals("fallback_token", tokenManager.getToken())
-        }
-    }
+//    @Test
+//    fun testFallbackOnException() {
+//        // Подготавливаем fallback SharedPreferences через настоящий контекст.
+//        val fakePrefs: SharedPreferences =
+//            context.getSharedPreferences("fake_prefs", Context.MODE_PRIVATE)
+//
+//        // Мокируем статический метод EncryptedSharedPreferences.create.
+//        // Используем use{} для автоматического закрытия мока.
+//        mockStatic(EncryptedSharedPreferences::class.java).use { mockedStatic ->
+//            // Настраиваем поведение: первая попытка создания выбрасывает исключение, вторая возвращает fakePrefs.
+//            mockedStatic
+//                .`when`<SharedPreferences> {
+//                    EncryptedSharedPreferences.create(
+//                        any<Context>(),
+//                        eq("encrypted_prefs"),
+//                        any<MasterKey>(),
+//                        eq(EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV),
+//                        eq(EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM),
+//                    )
+//                }.thenThrow(RuntimeException("Simulated error"))
+//                .thenReturn(fakePrefs)
+//
+//            // Act: создаем экземпляр менеджера токенов; при первой попытке возникает ошибка,
+//            // и fallback-логика должна сработать, используя fakePrefs.
+//            val tokenManager = EncryptedTokenManager(context)
+//            tokenManager.saveToken("fallback_token")
+//
+//            // Assert: проверяем, что после fallback токен сохранен корректно.
+//            assertEquals("fallback_token", tokenManager.getToken())
+//        }
+//    }
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности

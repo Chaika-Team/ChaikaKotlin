@@ -13,14 +13,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ChaikaSoftApiService {
-    @GET("api/v1/product")
+    @GET("/api/v1/product")
     suspend fun getProducts(
         @Query("limit") limit: Int = 100,
         @Query("offset") offset: Int = 0
     ): Response<ProductInfoListResponseDto>
 
     // Метод для получения списка шаблонов (без content)
-    @GET("api/v1/product/template/search")
+    @GET("/api/v1/product/template/search")
     suspend fun getTemplates(
         @Query("query") query: String = "",
         @Query("limit") limit: Int = 100,
@@ -29,7 +29,7 @@ interface ChaikaSoftApiService {
 
 
     // Метод для получения деталей конкретного шаблона (с content)
-    @GET("api/v1/product/template/{id}")
+    @GET("/api/v1/product/template/{id}")
     suspend fun getTemplateDetail(
         @Path("id") templateId: Int
     ): Response<TemplateDetailResponseDto>
@@ -39,7 +39,7 @@ interface ChaikaSoftApiService {
     /**
      * Поиск подсказок по станциям.
      */
-    @GET("api/v1/route/station")
+    @GET("/api/v1/route/station")
     suspend fun findStations(
         @Query("query") query: String,
         @Query("limit") limit: Int = 10
@@ -48,7 +48,7 @@ interface ChaikaSoftApiService {
     /**
      * Поиск поездок с фильтрами.
      */
-    @GET("api/v1/route/trip")
+    @GET("/api/v1/route/trip")
     suspend fun findTrips(
         @Query("date") date: String,
         @Query("number") trainNumber: String? = null,
@@ -59,7 +59,7 @@ interface ChaikaSoftApiService {
     /**
      * Получить детали поездки по UUID.
      */
-    @GET("api/v1/route/trip/{trip_uuid}")
+    @GET("/api/v1/route/trip/{trip_uuid}")
     suspend fun getTripByUuid(
         @Path("trip_uuid") uuid: String
     ): Response<TripDetailResponseDto>
@@ -67,7 +67,7 @@ interface ChaikaSoftApiService {
     /**
      * Получить список вагонов по UUID поездки.
      */
-    @GET("api/v1/route/trip/{trip_uuid}/car")
+    @GET("/api/v1/route/trip/{trip_uuid}/car")
     suspend fun getCarsForTrip(
         @Path("trip_uuid") uuid: String
     ): Response<CarsResponseDto>

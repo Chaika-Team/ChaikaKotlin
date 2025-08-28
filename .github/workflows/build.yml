@@ -41,7 +41,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and run unit tests
-        run: ./gradlew clean build test jacocoTestReport
+        env:
+          STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL }}
+          STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN }}
+          STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL }}
+        run: ./gradlew clean buildStage testStage jacocoTestReportStage
 
       - name: Enable KVM
         run: |
