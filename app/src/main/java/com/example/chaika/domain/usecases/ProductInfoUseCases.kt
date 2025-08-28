@@ -1,6 +1,5 @@
 package com.example.chaika.domain.usecases
 
-import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
@@ -33,13 +32,11 @@ class GetPagedProductsUseCase @Inject constructor(
     private val repository: RoomProductInfoRepositoryInterface,
 ) {
     operator fun invoke(pageSize: Int = 20): Flow<PagingData<ProductInfoDomain>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = pageSize,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { repository.getPagedProducts() }
-        ).flow
+        val config = PagingConfig(
+            pageSize = pageSize,
+            enablePlaceholders = false // при необходимости добавьте prefetchDistance, initialLoadSize и т.д.
+        )
+        return repository.getPagedProducts(config)
     }
 }
 

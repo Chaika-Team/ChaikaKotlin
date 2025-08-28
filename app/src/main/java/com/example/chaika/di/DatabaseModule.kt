@@ -8,6 +8,7 @@ import com.example.chaika.data.room.dao.CartItemDao
 import com.example.chaika.data.room.dao.CartOperationDao
 import com.example.chaika.data.room.dao.ConductorDao
 import com.example.chaika.data.room.dao.ConductorTripShiftDao
+import com.example.chaika.data.room.dao.FastReportViewDao
 import com.example.chaika.data.room.dao.PackageItemViewDao
 import com.example.chaika.data.room.dao.ProductInfoDao
 import dagger.Module
@@ -46,5 +47,8 @@ object DatabaseModule {
         db.conductorTripShiftDao()
 
     @Provides
-    fun providePackageItemViewDao(db: AppDatabase): com.example.chaika.data.room.dao.PackageItemViewDao = db.packageItemViewDao()
+    fun providePackageItemViewDao(db: AppDatabase): PackageItemViewDao = db.packageItemViewDao()
+
+    @Provides
+    fun provideFastReportViewDao(db: AppDatabase): FastReportViewDao = db.fastReportViewDao()
 }
