@@ -11,6 +11,12 @@ android {
     namespace = "com.example.chaika"
     compileSdk = 34
 
+    buildFeatures {
+        viewBinding = true
+        compose = true
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.chaika"
         minSdk = 26
@@ -30,12 +36,34 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
             isMinifyEnabled = false
+            buildConfigField("String", "CLIENT_ID", "\"${System.getenv("REL_ZITADEL_TOKEN")}\"")
+            buildConfigField("String", "CHAIKA_SOFT_URL", "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\"")
+            buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("REL_ZITADEL_URL")}\"")
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
+            isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            buildConfigField("String", "CLIENT_ID", "\"${System.getenv("REL_ZITADEL_TOKEN")}\"")
+            buildConfigField("String", "CHAIKA_SOFT_URL", "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\"")
+            buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("REL_ZITADEL_URL")}\"")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
+        create("stage") {
+            isMinifyEnabled = false
+            isDebuggable = true
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-STAGING"
+            buildConfigField("String", "CLIENT_ID", "\"${System.getenv("STAGE_ZITADEL_TOKEN")}\"")
+            buildConfigField("String", "CHAIKA_SOFT_URL", "\"${System.getenv("STAGE_CHAIKA_SOFT_URL")}\"")
+            buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("STAGE_ZITADEL_URL")}\"")
         }
     }
     compileOptions {
@@ -59,11 +87,6 @@ android {
         }
     }
 
-    buildFeatures {
-        viewBinding = true
-        compose = true
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
     }
@@ -82,7 +105,7 @@ jacoco {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
-    dependsOn("testDebugUnitTest")
+    dependsOn("testStageUnitTest")
 
     reports {
         xml.required.set(true)
@@ -114,8 +137,8 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     executionData.setFrom(
         fileTree(layout.buildDirectory.dir("jacoco")) {
             include(
-                "testDebugUnitTest.exec",
-                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+                "testStageUnitTest.exec",
+                "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec",
             )
         },
     )

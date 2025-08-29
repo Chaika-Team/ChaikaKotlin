@@ -1,5 +1,6 @@
 package com.example.chaika.di
 
+import com.example.chaika.BuildConfig
 import com.example.chaika.data.dataSource.apiService.ChaikaSoftApiService
 import com.example.chaika.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
 import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepository
@@ -20,7 +21,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 open class ApiModule {
 
-    protected open fun baseUrl(): HttpUrl = "https://chaika-soft.ru/".toHttpUrl()
+    protected open fun baseUrl(): HttpUrl = BuildConfig.CHAIKA_SOFT_URL.toHttpUrl()
 
     @Provides
     @Singleton

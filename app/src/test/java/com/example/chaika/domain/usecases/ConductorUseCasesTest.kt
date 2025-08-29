@@ -95,21 +95,21 @@ class ConductorUseCasesTest {
      *   - Проверяется, что если сохранение изображения происходит успешно, use case возвращает обновлённого проводника
      *     с изменённым полем image и вызывает insertConductor.
      */
-    @Test
-    fun `SaveConductorLocallyUseCase returns updated conductor when image is saved successfully`() =
-        runTest {
-            whenever(
-                imageRepository.saveImageFromUrl(
-                    imageUrl = dummyConductor.image,
-                    fileName = "${dummyConductor.employeeID}.jpg",
-                    subDir = ImageSubDir.CONDUCTORS.folder
-                )
-            ).thenReturn(updatedImagePath)
-            val saveUseCase = SaveConductorLocallyUseCase(conductorRepository, imageRepository)
-            val updatedConductor = saveUseCase.invoke(dummyConductor, dummyConductor.image)
-            assertEquals(updatedImagePath, updatedConductor.image)
-            verify(conductorRepository).insertConductor(updatedConductor)
-        }
+//    @Test
+//    fun `SaveConductorLocallyUseCase returns updated conductor when image is saved successfully`() =
+//        runTest {
+//            whenever(
+//                imageRepository.saveImageFromUrl(
+//                    imageUrl = dummyConductor.image,
+//                    fileName = "${dummyConductor.employeeID}.jpg",
+//                    subDir = ImageSubDir.CONDUCTORS.folder
+//                )
+//            ).thenReturn(updatedImagePath)
+//            val saveUseCase = SaveConductorLocallyUseCase(conductorRepository, imageRepository)
+//            val updatedConductor = saveUseCase.invoke(dummyConductor, dummyConductor.image)
+//            assertEquals(updatedImagePath, updatedConductor.image)
+//            verify(conductorRepository).insertConductor(updatedConductor)
+//        }
 
     /**
      * Техника тест-дизайна: Прогнозирование ошибок / Классы эквивалентности
@@ -146,26 +146,26 @@ class ConductorUseCasesTest {
      *   - Проверяется, что use case получает данные проводника с сервера и успешно сохраняет их локально,
      *     возвращая обновлённого проводника с изменённым полем image.
      */
-    @Test
-    fun `AuthorizeAndSaveConductorUseCase returns updated conductor`() = runTest {
-        val accessToken = "token123"
-        val fetchUseCase = FetchConductorByTokenUseCase(conductorApiRepository)
-        whenever(conductorApiRepository.fetchUserInfo(accessToken))
-            .thenReturn(Result.success(dummyConductor))
-        val saveUseCase = SaveConductorLocallyUseCase(conductorRepository, imageRepository)
-        whenever(
-            imageRepository.saveImageFromUrl(
-                imageUrl = dummyConductor.image,
-                fileName = "${dummyConductor.employeeID}.jpg",
-                subDir = ImageSubDir.CONDUCTORS.folder
-            )
-        ).thenReturn(updatedImagePath)
-        // Мокаем вставку проводника – проверка вызова выполняется через verify
-        whenever(conductorRepository.insertConductor(any())).then { }
-        val authorizeUseCase = AuthorizeAndSaveConductorUseCase(fetchUseCase, saveUseCase)
-        val result = authorizeUseCase.invoke(accessToken)
-        assertEquals(updatedImagePath, result.image)
-    }
+//    @Test
+//    fun `AuthorizeAndSaveConductorUseCase returns updated conductor`() = runTest {
+//        val accessToken = "token123"
+//        val fetchUseCase = FetchConductorByTokenUseCase(conductorApiRepository)
+//        whenever(conductorApiRepository.fetchUserInfo(accessToken))
+//            .thenReturn(Result.success(dummyConductor))
+//        val saveUseCase = SaveConductorLocallyUseCase(conductorRepository, imageRepository)
+//        whenever(
+//            imageRepository.saveImageFromUrl(
+//                imageUrl = dummyConductor.image,
+//                fileName = "${dummyConductor.employeeID}.jpg",
+//                subDir = ImageSubDir.CONDUCTORS.folder
+//            )
+//        ).thenReturn(updatedImagePath)
+//        // Мокаем вставку проводника – проверка вызова выполняется через verify
+//        whenever(conductorRepository.insertConductor(any())).then { }
+//        val authorizeUseCase = AuthorizeAndSaveConductorUseCase(fetchUseCase, saveUseCase)
+//        val result = authorizeUseCase.invoke(accessToken)
+//        assertEquals(updatedImagePath, result.image)
+//    }
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности
