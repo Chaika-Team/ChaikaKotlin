@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.example.chaika.ui.screens.OperationScreen
+import com.example.chaika.ui.screens.operation.OperationScreen
 import com.example.chaika.ui.screens.profile.ProfileScreen
 import com.example.chaika.ui.screens.auth.LoginScreen
 import com.example.chaika.ui.screens.product.ProductCartView
