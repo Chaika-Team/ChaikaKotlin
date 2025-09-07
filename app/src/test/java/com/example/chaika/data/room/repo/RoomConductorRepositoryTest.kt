@@ -1,8 +1,8 @@
-package com.example.chaika.data.room.repo
+package com.chaikasoft.app.data.room.repo
 
-import com.example.chaika.data.room.dao.ConductorDao
-import com.example.chaika.data.room.entities.Conductor
-import com.example.chaika.domain.models.ConductorDomain
+import com.chaikasoft.app.data.room.dao.ConductorDao
+import com.chaikasoft.app.data.room.entities.Conductor
+import com.chaikasoft.app.domain.models.ConductorDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

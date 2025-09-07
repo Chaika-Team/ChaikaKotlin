@@ -1,4 +1,4 @@
-package com.example.chaika.data.crypto
+package com.chaikasoft.app.data.crypto
 
 import android.content.Context
 import android.content.SharedPreferences

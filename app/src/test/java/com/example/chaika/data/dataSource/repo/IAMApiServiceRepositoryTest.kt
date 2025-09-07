@@ -1,8 +1,8 @@
-package com.example.chaika.data.dataSource.repo
+package com.chaikasoft.app.data.dataSource.repo
 
-import com.example.chaika.data.dataSource.apiService.IAMApiService
-import com.example.chaika.data.dataSource.dto.ConductorDto
-import com.example.chaika.domain.models.ConductorDomain
+import com.chaikasoft.app.data.dataSource.apiService.IAMApiService
+import com.chaikasoft.app.data.dataSource.dto.ConductorDto
+import com.chaikasoft.app.domain.models.ConductorDomain
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody

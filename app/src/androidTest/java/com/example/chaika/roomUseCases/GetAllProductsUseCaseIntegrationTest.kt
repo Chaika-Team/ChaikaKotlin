@@ -1,11 +1,11 @@
-package com.example.chaika.roomUseCases
+package com.chaikasoft.app.roomUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.data.room.AppDatabase
-import com.example.chaika.data.room.dao.ProductInfoDao
-import com.example.chaika.data.room.entities.ProductInfo
-import com.example.chaika.domain.models.ProductInfoDomain
-import com.example.chaika.domain.usecases.GetAllProductsUseCase
+import com.chaikasoft.app.data.room.AppDatabase
+import com.chaikasoft.app.data.room.dao.ProductInfoDao
+import com.chaikasoft.app.data.room.entities.ProductInfo
+import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.usecases.GetAllProductsUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first

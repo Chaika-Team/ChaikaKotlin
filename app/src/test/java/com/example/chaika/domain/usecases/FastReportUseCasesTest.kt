@@ -1,9 +1,9 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.example.chaika.domain.usecases
+package com.chaikasoft.app.domain.usecases
 
-import com.example.chaika.data.room.repo.RoomReportRepositoryInterface
-import com.example.chaika.domain.models.FastReportDomain
+import com.chaikasoft.app.data.room.repo.RoomReportRepositoryInterface
+import com.chaikasoft.app.domain.models.FastReportDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest

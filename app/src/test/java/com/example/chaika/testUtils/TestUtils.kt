@@ -1,4 +1,4 @@
-package com.example.chaika.testUtils
+package com.chaikasoft.app.testUtils
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer

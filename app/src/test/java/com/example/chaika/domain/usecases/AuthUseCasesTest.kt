@@ -1,13 +1,13 @@
 //@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 //
-//package com.example.chaika.domain.usecases
+//package com.chaikasoft.app.domain.usecases
 //
 //import android.content.Intent
-//import com.example.chaika.auth.OAuthManager
-//import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
-//import com.example.chaika.data.local.ImageSubDir
-//import com.example.chaika.data.local.LocalImageRepositoryInterface
-//import com.example.chaika.domain.models.ConductorDomain
+//import com.chaikasoft.app.auth.OAuthManager
+//import com.chaikasoft.app.data.crypto.EncryptedTokenManagerInterface
+//import com.chaikasoft.app.data.local.ImageSubDir
+//import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
+//import com.chaikasoft.app.domain.models.ConductorDomain
 //import kotlinx.coroutines.test.runTest
 //import org.junit.jupiter.api.Assertions.assertEquals
 //import org.junit.jupiter.api.BeforeEach

@@ -1,4 +1,4 @@
-package com.example.chaika.di
+package com.chaikasoft.app.di
 
 import dagger.Module
 import dagger.hilt.components.SingletonComponent

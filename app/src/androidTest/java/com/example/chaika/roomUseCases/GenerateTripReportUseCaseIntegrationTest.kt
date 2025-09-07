@@ -1,17 +1,17 @@
-package com.example.chaika.roomUseCases
+package com.chaikasoft.app.roomUseCases
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.data.room.AppDatabase
-import com.example.chaika.data.room.dao.CartItemDao
-import com.example.chaika.data.room.dao.CartOperationDao
-import com.example.chaika.data.room.dao.ConductorDao
-import com.example.chaika.data.room.dao.ProductInfoDao
-import com.example.chaika.data.room.entities.CartOperation
-import com.example.chaika.data.room.entities.Conductor
-import com.example.chaika.data.room.entities.ProductInfo
-import com.example.chaika.domain.usecases.GenerateTripReportUseCase
+import com.chaikasoft.app.data.room.AppDatabase
+import com.chaikasoft.app.data.room.dao.CartItemDao
+import com.chaikasoft.app.data.room.dao.CartOperationDao
+import com.chaikasoft.app.data.room.dao.ConductorDao
+import com.chaikasoft.app.data.room.dao.ProductInfoDao
+import com.chaikasoft.app.data.room.entities.CartOperation
+import com.chaikasoft.app.data.room.entities.Conductor
+import com.chaikasoft.app.data.room.entities.ProductInfo
+import com.chaikasoft.app.domain.usecases.GenerateTripReportUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
@@ -109,7 +109,7 @@ class GenerateTripReportUseCaseIntegrationTest {
             ).toInt()
             // Вставляем элемент корзины для этой операции, ссылаясь на товар с id = 101.
             cartItemDao.insertCartItem(
-                com.example.chaika.data.room.entities.CartItem(
+                com.chaikasoft.app.data.room.entities.CartItem(
                     id = 0,
                     cartOperationId = operationId,
                     productId = 101,

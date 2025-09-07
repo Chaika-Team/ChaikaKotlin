@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalStdlibApi::class)
 
-package com.example.chaika.data.local
+package com.chaikasoft.app.data.local
 
 import android.content.Context
 import android.graphics.Bitmap

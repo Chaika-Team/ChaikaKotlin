@@ -1,11 +1,11 @@
-package com.example.chaika.di
+package com.chaikasoft.app.di
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.example.chaika.auth.AuthIntentProviderInterface
-import com.example.chaika.auth.OAuthConfig
-import com.example.chaika.auth.OAuthManager
+import com.chaikasoft.app.auth.AuthIntentProviderInterface
+import com.chaikasoft.app.auth.OAuthConfig
+import com.chaikasoft.app.auth.OAuthManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,7 +31,7 @@ object AndroidTestOAuthModule {
     fun provideTestOAuthConfig(): OAuthConfig =
         OAuthConfig(
             clientId = "test_client_id",
-            redirectUri = "com.example.chaika://testredirect",
+            redirectUri = "com.chaikasoft.app://testredirect",
             authEndpoint = "https://mocked.auth/authorize",
             tokenEndpoint = "https://mocked.auth/token",
             scopes = "openid profile email",

@@ -1,7 +1,7 @@
-package com.example.chaika.data.dataSource.mappers
+package com.chaikasoft.app.data.dataSource.mappers
 
-import com.example.chaika.data.dataSource.dto.ConductorDto
-import com.example.chaika.domain.models.ConductorDomain
+import com.chaikasoft.app.data.dataSource.dto.ConductorDto
+import com.chaikasoft.app.domain.models.ConductorDomain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

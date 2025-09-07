@@ -1,12 +1,12 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.example.chaika.domain.usecases
+package com.chaikasoft.app.domain.usecases
 
-import com.example.chaika.data.dataSource.repo.IAMApiServiceRepositoryInterface
-import com.example.chaika.data.local.ImageSubDir
-import com.example.chaika.data.local.LocalImageRepositoryInterface
-import com.example.chaika.data.room.repo.RoomConductorRepositoryInterface
-import com.example.chaika.domain.models.ConductorDomain
+import com.chaikasoft.app.data.dataSource.repo.IAMApiServiceRepositoryInterface
+import com.chaikasoft.app.data.local.ImageSubDir
+import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
+import com.chaikasoft.app.domain.models.ConductorDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest

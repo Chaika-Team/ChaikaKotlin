@@ -1,7 +1,7 @@
-package com.example.chaika.data.room.mappers
+package com.chaikasoft.app.data.room.mappers
 
-import com.example.chaika.data.room.entities.FastReportView
-import com.example.chaika.domain.models.FastReportDomain
+import com.chaikasoft.app.data.room.entities.FastReportView
+import com.chaikasoft.app.domain.models.FastReportDomain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

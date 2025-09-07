@@ -1,4 +1,4 @@
-package com.example.chaika.data.room.entities
+package com.chaikasoft.app.data.room.entities
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals

@@ -1,9 +1,9 @@
-package com.example.chaika.data.room.repo
+package com.chaikasoft.app.data.room.repo
 
-import com.example.chaika.data.room.dao.CartItemDao
-import com.example.chaika.data.room.dao.ProductInfoDao
-import com.example.chaika.data.room.entities.CartItem
-import com.example.chaika.data.room.entities.ProductInfo
+import com.chaikasoft.app.data.room.dao.CartItemDao
+import com.chaikasoft.app.data.room.dao.ProductInfoDao
+import com.chaikasoft.app.data.room.entities.CartItem
+import com.chaikasoft.app.data.room.entities.ProductInfo
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

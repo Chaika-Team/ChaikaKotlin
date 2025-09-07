@@ -1,13 +1,13 @@
-package com.example.chaika.data.room.repo
+package com.chaikasoft.app.data.room.repo
 
-import com.example.chaika.data.room.dao.CartItemDao
-import com.example.chaika.data.room.dao.CartOperationDao
-import com.example.chaika.data.room.entities.CartOperation
-import com.example.chaika.domain.models.CartDomain
-import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.models.CartOperationDomain
-import com.example.chaika.domain.models.OperationTypeDomain
-import com.example.chaika.domain.models.ProductInfoDomain
+import com.chaikasoft.app.data.room.dao.CartItemDao
+import com.chaikasoft.app.data.room.dao.CartOperationDao
+import com.chaikasoft.app.data.room.entities.CartOperation
+import com.chaikasoft.app.domain.models.CartDomain
+import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.CartOperationDomain
+import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test

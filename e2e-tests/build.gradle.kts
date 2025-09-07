@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chaika.e2eTests"
+    namespace = "com.chaikasoft.app.e2eTests"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 26
         targetSdk = 34
-        testInstrumentationRunner = "com.example.chaika.KaspressoHiltTestRunner"
+        testInstrumentationRunner = "com.chaikasoft.app.KaspressoHiltTestRunner"
     }
 
     targetProjectPath = ":app"

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chaika"
+    namespace = "com.chaikasoft.app"
     compileSdk = 34
 
     buildFeatures {
@@ -18,15 +18,15 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.chaika"
+        applicationId = "com.chaikasoft.app"
         minSdk = 26
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "0.0.2-alpha"
 
-        manifestPlaceholders["appAuthRedirectScheme"] = "com.example.chaika"
-        testInstrumentationRunner = "com.example.chaika.HiltTestRunner"
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.chaikasoft.app"
+        testInstrumentationRunner = "com.chaikasoft.app.HiltTestRunner"
     }
 
     lint {

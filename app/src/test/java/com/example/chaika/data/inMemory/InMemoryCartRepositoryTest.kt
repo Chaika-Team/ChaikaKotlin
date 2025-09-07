@@ -1,7 +1,7 @@
-package com.example.chaika.data.inMemory
+package com.chaikasoft.app.data.inMemory
 
-import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

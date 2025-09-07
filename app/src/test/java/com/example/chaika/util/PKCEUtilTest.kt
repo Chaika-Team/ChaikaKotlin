@@ -1,9 +1,9 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.example.chaika.util
+package com.chaikasoft.app.util
 
 import android.util.Base64
-import com.example.chaika.testUtils.InstantTaskExecutorExtension
+import com.chaikasoft.app.testUtils.InstantTaskExecutorExtension
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test

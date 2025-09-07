@@ -1,7 +1,7 @@
-package com.example.chaika.data.room.mappers
+package com.chaikasoft.app.data.room.mappers
 
-import com.example.chaika.data.room.entities.Conductor
-import com.example.chaika.domain.models.ConductorDomain
+import com.chaikasoft.app.data.room.entities.Conductor
+import com.chaikasoft.app.domain.models.ConductorDomain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

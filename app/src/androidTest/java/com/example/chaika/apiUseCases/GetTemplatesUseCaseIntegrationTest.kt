@@ -1,8 +1,8 @@
-package com.example.chaika.apiUseCases
+package com.chaikasoft.app.apiUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.domain.models.TemplateDomain
-import com.example.chaika.domain.usecases.GetTemplatesUseCase
+import com.chaikasoft.app.domain.models.TemplateDomain
+import com.chaikasoft.app.domain.usecases.GetTemplatesUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
