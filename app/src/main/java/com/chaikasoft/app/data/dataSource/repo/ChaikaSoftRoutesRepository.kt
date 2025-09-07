@@ -46,4 +46,12 @@ class ChaikaSoftRoutesRepository @Inject constructor(
         }
         throw Exception("Error fetching cars for trip: \${resp.code()} ${'$'}{resp.message()}")
     }
+
+    override suspend fun fetchAllStations(limit: Int): List<StationDomain> {
+        val resp = api.findStations(query = null, limit = limit)
+        if (resp.isSuccessful) {
+            return resp.body()?.stations?.map { it.toDomain() } ?: emptyList()
+        }
+        throw Exception("Error fetching all stations: ${resp.code()} ${resp.message()}")
+    }
 }

@@ -42,12 +42,11 @@ class GetActiveShiftUseCase @Inject constructor(
  * Возвращает true, если есть активная смена в момент вызова.
  */
 class HasActiveShiftUseCase @Inject constructor(
-    private val getActiveShiftUseCase: GetActiveShiftUseCase
+    private val repository: RoomConductorTripShiftRepositoryInterface
 ) {
-    suspend operator fun invoke(): Boolean {
-        return getActiveShiftUseCase()
-            .firstOrNull() != null
-    }
+    /** true, если в БД уже есть активная смена на момент вызова */
+    suspend operator fun invoke(): Boolean =
+        repository.getActiveShift() != null
 }
 
 /**
@@ -56,14 +55,15 @@ class HasActiveShiftUseCase @Inject constructor(
  * Иначе создаёт новую смену со статусом ACTIVE и возвращает true.
  */
 class StartShiftUseCase @Inject constructor(
-    private val repository: RoomConductorTripShiftRepositoryInterface
+    private val repository: RoomConductorTripShiftRepositoryInterface,
+    private val hasActiveShift: HasActiveShiftUseCase
 ) {
     suspend operator fun invoke(
         trip: TripDomain,
         activeCarriage: CarriageDomain?
     ): Boolean {
         // не допускаем более одной активной смены
-        if (repository.getActiveShift() != null) return false
+        if (hasActiveShift()) return false
 
         val newShift = ConductorTripShiftDomain(
             trip = trip,

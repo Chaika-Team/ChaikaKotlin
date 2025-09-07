@@ -3,8 +3,6 @@ package com.chaikasoft.app.data.room.repo
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import androidx.paging.map
 import com.chaikasoft.app.data.room.dao.ProductInfoDao
 import com.chaikasoft.app.data.room.mappers.toDomain
@@ -34,14 +32,16 @@ class RoomProductInfoRepository @Inject constructor(
         productInfoDao.deleteProduct(product.toEntity())
     }
 
-    override fun getPagedProducts(config: PagingConfig): Flow<PagingData<ProductInfoDomain>> {
-        return Pager(
-            config = config,
+    override fun getPagedProducts(pageSize: Int): Flow<PagingData<ProductInfoDomain>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = pageSize,
+                enablePlaceholders = false,
+                initialLoadSize = pageSize * 2,
+                prefetchDistance = pageSize
+            ),
             pagingSourceFactory = { productInfoDao.getPagedProducts() }
-        )
-            .flow
-            .map { pagingData -> pagingData.map { it.toDomain() } }
-    }
+        ).flow.map { data -> data.map { it.toDomain() } }
 
     override suspend fun getProductById(productId: Int): ProductInfoDomain? {
         return productInfoDao.getProductById(productId)?.toDomain()

@@ -51,6 +51,9 @@ class ConductorTripShiftUseCasesTest {
     @Mock
     lateinit var getCartReportsUseCase: GetCartReportsUseCase
 
+    @Mock
+    lateinit var hasActiveShiftUseCase: HasActiveShiftUseCase
+
     // Настоящий Moshi для сериализации
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -121,11 +124,11 @@ class ConductorTripShiftUseCasesTest {
      */
     @Test
     fun `StartShiftUseCase returns false when active shift exists`() = runTest {
-        whenever(shiftRepo.getActiveShift()).thenReturn(
-            ConductorTripShiftDomain(trip, null, TripShiftStatusDomain.ACTIVE)
-        )
-        val useCase = StartShiftUseCase(shiftRepo)
+        whenever(hasActiveShiftUseCase.invoke()).thenReturn(true)
+
+        val useCase = StartShiftUseCase(shiftRepo, hasActiveShiftUseCase)
         val created = useCase(trip, carriage)
+
         assertFalse(created)
         verify(shiftRepo, never()).insertOrUpdate(any())
     }
@@ -135,10 +138,11 @@ class ConductorTripShiftUseCasesTest {
      */
     @Test
     fun `StartShiftUseCase returns true and inserts when no active shift`() = runTest {
-        whenever(shiftRepo.getActiveShift()).thenReturn(null)
+        whenever(hasActiveShiftUseCase.invoke()).thenReturn(false)
 
-        val useCase = StartShiftUseCase(shiftRepo)
+        val useCase = StartShiftUseCase(shiftRepo, hasActiveShiftUseCase)
         val created = useCase(trip, carriage)
+
         assertTrue(created)
 
         val captor = argumentCaptor<ConductorTripShiftDomain>()

@@ -29,16 +29,12 @@ class GetAllProductsUseCase @Inject constructor(
  * Использует PagingSource, полученный из репозитория.
  */
 class GetPagedProductsUseCase @Inject constructor(
-    private val repository: RoomProductInfoRepositoryInterface,
+    private val repository: RoomProductInfoRepositoryInterface
 ) {
-    operator fun invoke(pageSize: Int = 20): Flow<PagingData<ProductInfoDomain>> {
-        val config = PagingConfig(
-            pageSize = pageSize,
-            enablePlaceholders = false // при необходимости добавьте prefetchDistance, initialLoadSize и т.д.
-        )
-        return repository.getPagedProducts(config)
-    }
+    operator fun invoke(pageSize: Int = 20): Flow<PagingData<ProductInfoDomain>> =
+        repository.getPagedProducts(pageSize)
 }
+
 
 // Юзкейс для удаления товара из базы данных
 class DeleteProductUseCase @Inject constructor(
