@@ -1,15 +1,15 @@
 //@file:OptIn(ExperimentalCoroutinesApi::class)
 //
-//package com.example.chaika.domain.usecases
+//package com.chaikasoft.app.domain.usecases
 //
-//import com.example.chaika.data.inMemory.InMemoryCartRepositoryInterface
-//import com.example.chaika.data.room.repo.RoomCartRepositoryInterface
-//import com.example.chaika.data.room.repo.RoomPackageItemRepositoryInterface
-//import com.example.chaika.domain.models.CartDomain
-//import com.example.chaika.domain.models.CartItemDomain
-//import com.example.chaika.domain.models.CartOperationDomain
-//import com.example.chaika.domain.models.OperationTypeDomain
-//import com.example.chaika.domain.models.ProductInfoDomain
+//import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
+//import com.chaikasoft.app.data.room.repo.RoomCartRepositoryInterface
+//import com.chaikasoft.app.data.room.repo.RoomPackageItemRepositoryInterface
+//import com.chaikasoft.app.domain.models.CartDomain
+//import com.chaikasoft.app.domain.models.CartItemDomain
+//import com.chaikasoft.app.domain.models.CartOperationDomain
+//import com.chaikasoft.app.domain.models.OperationTypeDomain
+//import com.chaikasoft.app.domain.models.ProductInfoDomain
 //import kotlinx.coroutines.ExperimentalCoroutinesApi
 //import kotlinx.coroutines.flow.first
 //import kotlinx.coroutines.flow.flowOf

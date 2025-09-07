@@ -1,4 +1,4 @@
-package com.example.chaika.testUtils
+package com.chaikasoft.app.testUtils
 
 /**
  * Вспомогательная функция для сбора Flow в список.

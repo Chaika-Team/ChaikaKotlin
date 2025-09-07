@@ -1,17 +1,17 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.example.chaika.domain.usecases
+package com.chaikasoft.app.domain.usecases
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
-import com.example.chaika.data.room.repo.RoomCartOperationRepositoryInterface
-import com.example.chaika.domain.models.CartDomain
-import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.models.ConductorDomain
-import com.example.chaika.domain.models.OperationSummaryDomain
-import com.example.chaika.domain.models.OperationTypeDomain
-import com.example.chaika.domain.models.ProductInfoDomain
+import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
+import com.chaikasoft.app.domain.models.CartDomain
+import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.ConductorDomain
+import com.chaikasoft.app.domain.models.OperationSummaryDomain
+import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest

@@ -1,8 +1,8 @@
-package com.example.chaika.data.room.repo
+package com.chaikasoft.app.data.room.repo
 
-import com.example.chaika.data.room.dao.FastReportViewDao
-import com.example.chaika.data.room.entities.FastReportView
-import com.example.chaika.domain.models.FastReportDomain
+import com.chaikasoft.app.data.room.dao.FastReportViewDao
+import com.chaikasoft.app.data.room.entities.FastReportView
+import com.chaikasoft.app.domain.models.FastReportDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

@@ -1,11 +1,11 @@
-package com.example.chaika.authUseCases
+package com.chaikasoft.app.authUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.data.crypto.EncryptedTokenManagerInterface
-import com.example.chaika.data.local.LocalImageRepositoryInterface
-import com.example.chaika.domain.usecases.DeleteAllConductorsUseCase
-import com.example.chaika.domain.usecases.GetAccessTokenUseCase
-import com.example.chaika.domain.usecases.LogoutUseCase
+import com.chaikasoft.app.data.crypto.EncryptedTokenManagerInterface
+import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
+import com.chaikasoft.app.domain.usecases.DeleteAllConductorsUseCase
+import com.chaikasoft.app.domain.usecases.GetAccessTokenUseCase
+import com.chaikasoft.app.domain.usecases.LogoutUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest

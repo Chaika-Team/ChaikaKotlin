@@ -1,8 +1,8 @@
-package com.example.chaika.apiUseCases
+package com.chaikasoft.app.apiUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.domain.models.ConductorDomain
-import com.example.chaika.domain.usecases.FetchConductorByTokenUseCase
+import com.chaikasoft.app.domain.models.ConductorDomain
+import com.chaikasoft.app.domain.usecases.FetchConductorByTokenUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest

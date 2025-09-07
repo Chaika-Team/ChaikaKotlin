@@ -1,7 +1,7 @@
-package com.example.chaika.data.room.mappers
+package com.chaikasoft.app.data.room.mappers
 
-import com.example.chaika.data.room.entities.OperationInfoView
-import com.example.chaika.domain.models.OperationTypeDomain
+import com.chaikasoft.app.data.room.entities.OperationInfoView
+import com.chaikasoft.app.domain.models.OperationTypeDomain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test

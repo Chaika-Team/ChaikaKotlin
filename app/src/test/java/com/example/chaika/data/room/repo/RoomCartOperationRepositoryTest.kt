@@ -1,19 +1,19 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.example.chaika.data.room.repo
+package com.chaikasoft.app.data.room.repo
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.testing.asSnapshot
-import com.example.chaika.data.room.dao.CartOperationDao
-import com.example.chaika.data.room.entities.CartItem
-import com.example.chaika.data.room.entities.CartOperation
-import com.example.chaika.data.room.entities.OperationInfoView
-import com.example.chaika.data.room.entities.ProductInfo
-import com.example.chaika.data.room.mappers.toInt
-import com.example.chaika.data.room.relations.CartItemWithProduct
-import com.example.chaika.domain.models.OperationTypeDomain
+import com.chaikasoft.app.data.room.dao.CartOperationDao
+import com.chaikasoft.app.data.room.entities.CartItem
+import com.chaikasoft.app.data.room.entities.CartOperation
+import com.chaikasoft.app.data.room.entities.OperationInfoView
+import com.chaikasoft.app.data.room.entities.ProductInfo
+import com.chaikasoft.app.data.room.mappers.toInt
+import com.chaikasoft.app.data.room.relations.CartItemWithProduct
+import com.chaikasoft.app.domain.models.OperationTypeDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

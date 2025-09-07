@@ -1,9 +1,9 @@
-package com.example.chaika.apiUseCases
+package com.chaikasoft.app.apiUseCases
 
 import androidx.paging.PagingSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
-import com.example.chaika.data.dataSource.repo.TemplatePagingSource
+import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.chaikasoft.app.data.dataSource.repo.TemplatePagingSource
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest

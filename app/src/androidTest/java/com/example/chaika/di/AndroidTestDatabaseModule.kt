@@ -1,13 +1,13 @@
-package com.example.chaika.di
+package com.chaikasoft.app.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.chaika.data.room.AppDatabase
-import com.example.chaika.data.room.dao.CartItemDao
-import com.example.chaika.data.room.dao.CartOperationDao
-import com.example.chaika.data.room.dao.ConductorDao
-import com.example.chaika.data.room.dao.ConductorTripShiftDao
-import com.example.chaika.data.room.dao.ProductInfoDao
+import com.chaikasoft.app.data.room.AppDatabase
+import com.chaikasoft.app.data.room.dao.CartItemDao
+import com.chaikasoft.app.data.room.dao.CartOperationDao
+import com.chaikasoft.app.data.room.dao.ConductorDao
+import com.chaikasoft.app.data.room.dao.ConductorTripShiftDao
+import com.chaikasoft.app.data.room.dao.ProductInfoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext

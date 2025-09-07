@@ -7,7 +7,7 @@
     <!-- Фрагмент для проверки авторизации -->
     <fragment
         android:id="@+id/authCheckFragment"
-        android:name="com.example.chaika.ui.fragments.AuthCheckFragment"
+        android:name="com.chaikasoft.app.ui.fragments.AuthCheckFragment"
         android:label="Проверка авторизации"
         tools:layout="@layout/fragment_auth_check">
         <action
@@ -21,7 +21,7 @@
     <!-- Фрагмент авторизации -->
     <fragment
         android:id="@+id/authFragment"
-        android:name="com.example.chaika.ui.fragments.AuthFragment"
+        android:name="com.chaikasoft.app.ui.fragments.AuthFragment"
         android:label="Авторизация"
         tools:layout="@layout/fragment_auth">
         <action
@@ -32,7 +32,7 @@
     <!-- Главный фрагмент -->
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.chaika.ui.fragments.MainFragment"
+        android:name="com.chaikasoft.app.ui.fragments.MainFragment"
         android:label="Главный экран"
         tools:layout="@layout/fragment_main">
 
@@ -44,7 +44,7 @@
     <!-- Фрагмент профиля -->
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.chaika.ui.fragments.ProfileFragment"
+        android:name="com.chaikasoft.app.ui.fragments.ProfileFragment"
         android:label="Профиль"
         tools:layout="@layout/fragment_profile">
         <action

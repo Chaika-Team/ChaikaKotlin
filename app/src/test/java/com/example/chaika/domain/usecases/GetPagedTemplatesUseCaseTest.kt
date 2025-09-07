@@ -1,4 +1,4 @@
-package com.example.chaika.domain.usecases
+package com.chaikasoft.app.domain.usecases
 
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.Pager
@@ -7,8 +7,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
-import com.example.chaika.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
-import com.example.chaika.domain.models.TemplateDomain
+import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.chaikasoft.app.domain.models.TemplateDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*

@@ -1,4 +1,4 @@
-package com.example.chaika
+package com.chaikasoft.app
 
 import com.kaspersky.kaspresso.runner.KaspressoRunner
 import dagger.hilt.android.testing.HiltTestApplication

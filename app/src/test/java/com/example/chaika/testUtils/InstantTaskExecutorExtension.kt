@@ -1,4 +1,4 @@
-package com.example.chaika.testUtils
+package com.chaikasoft.app.testUtils
 
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.TaskExecutor

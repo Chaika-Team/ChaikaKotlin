@@ -1,8 +1,8 @@
-package com.example.chaika.apiUseCases
+package com.chaikasoft.app.apiUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.chaika.domain.models.ProductInfoDomain
-import com.example.chaika.domain.usecases.FetchProductsFromServerUseCase
+import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.usecases.FetchProductsFromServerUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest

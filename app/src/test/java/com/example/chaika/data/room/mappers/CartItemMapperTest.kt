@@ -1,11 +1,11 @@
-package com.example.chaika.data.room.mappers
+package com.chaikasoft.app.data.room.mappers
 
-import com.example.chaika.data.room.entities.CartItem
-import com.example.chaika.data.room.entities.ProductInfo
-import com.example.chaika.domain.models.CartItemDomain
-import com.example.chaika.domain.models.OperationTypeDomain
-import com.example.chaika.domain.models.ProductInfoDomain
-import com.example.chaika.domain.models.report.CartItemReport
+import com.chaikasoft.app.data.room.entities.CartItem
+import com.chaikasoft.app.data.room.entities.ProductInfo
+import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.models.report.CartItemReport
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

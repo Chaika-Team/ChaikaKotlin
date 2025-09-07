@@ -1,10 +1,10 @@
-// src/test/java/com/example/chaika/domain/usecases/TripUseCasesTest.kt
-package com.example.chaika.domain.usecases
+// src/test/java/com.chaikasoft.app/domain/usecases/TripUseCasesTest.kt
+package com.chaikasoft.app.domain.usecases
 
-import com.example.chaika.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
-import com.example.chaika.domain.models.trip.CarriageDomain
-import com.example.chaika.domain.models.trip.StationDomain
-import com.example.chaika.domain.models.trip.TripDomain
+import com.chaikasoft.app.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
+import com.chaikasoft.app.domain.models.trip.CarriageDomain
+import com.chaikasoft.app.domain.models.trip.StationDomain
+import com.chaikasoft.app.domain.models.trip.TripDomain
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Test

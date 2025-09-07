@@ -1,4 +1,4 @@
-package com.example.chaika
+package com.chaikasoft.app
 
 import android.app.Application
 import android.content.Context
