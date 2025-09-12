@@ -7,9 +7,11 @@ import androidx.paging.map
 import com.chaikasoft.app.data.room.dao.CartOperationDao
 import com.chaikasoft.app.data.room.mappers.toCartDomain
 import com.chaikasoft.app.data.room.mappers.toDomain
+import com.chaikasoft.app.data.room.mappers.toInt
 import com.chaikasoft.app.data.room.mappers.toReport
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
+import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.domain.models.report.CartOperationReport
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -35,7 +37,24 @@ class RoomCartOperationRepository @Inject constructor(
     }
 
     override fun observeOperationItems(operationId: Int): Flow<CartDomain> {
-        return cartOperationDao.observeItemsWithProducts(operationId)
-            .map { it.toCartDomain() }
-    }
+            return cartOperationDao.observeItemsWithProducts(operationId)
+                .map { it.toCartDomain() }
+        }
+
+    override suspend fun countByType(type: OperationTypeDomain): Int =
+        cartOperationDao.countByType(type.toInt())
+
+    override fun getPagedOperationSummariesByType(
+        type: OperationTypeDomain,
+        pageSize: Int
+    ): Flow<PagingData<OperationSummaryDomain>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = pageSize,
+                enablePlaceholders = false,
+                initialLoadSize = pageSize * 2,
+                prefetchDistance = pageSize
+            ),
+            pagingSourceFactory = { cartOperationDao.getPagedOperationInfosByType(type.toInt()) }
+        ).flow.map { paging -> paging.map { it.toDomain() } }
 }

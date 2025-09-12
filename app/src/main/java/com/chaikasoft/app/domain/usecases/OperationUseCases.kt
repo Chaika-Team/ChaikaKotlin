@@ -5,6 +5,7 @@ import androidx.paging.PagingData
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
+import com.chaikasoft.app.domain.models.OperationTypeDomain
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -35,4 +36,27 @@ class ObserveOperationItemsUseCase @Inject constructor(
 ) {
     operator fun invoke(operationId: Int): Flow<CartDomain> =
         repository.observeOperationItems(operationId)
+}
+
+/**
+ * Единовременный подсчёт числа операций нужного типа
+ */
+class GetOperationCountByTypeUseCase @Inject constructor(
+    private val repo: RoomCartOperationRepositoryInterface
+) {
+    suspend operator fun invoke(type: OperationTypeDomain): Int =
+        repo.countByType(type)
+}
+
+/**
+ * Пагинированный список «шапок» операций нужного типа
+ */
+class GetPagedOperationSummariesByTypeUseCase @Inject constructor(
+    private val repo: RoomCartOperationRepositoryInterface
+) {
+    operator fun invoke(
+        type: OperationTypeDomain,
+        pageSize: Int = 20
+    ): Flow<PagingData<OperationSummaryDomain>> =
+        repo.getPagedOperationSummariesByType(type, pageSize)
 }

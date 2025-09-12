@@ -46,4 +46,18 @@ interface CartOperationDao {
     fun observeItemsWithProducts(
         operationId: Int
     ): Flow<List<CartItemWithProduct>>
+
+    /** Одноразовый счётчик по типу операции */
+    @Query("SELECT COUNT(*) FROM cart_operations WHERE operation_type = :type")
+    suspend fun countByType(type: Int): Int
+
+    /** Пагинированный список «шапок» по типу из VIEW (удобно для UI) */
+    @Query("""
+        SELECT * 
+        FROM operation_info_view
+        WHERE operation_type = :type
+        ORDER BY operation_time DESC, operation_id DESC
+    """)
+    fun getPagedOperationInfosByType(type: Int): PagingSource<Int, OperationInfoView>
+
 }
