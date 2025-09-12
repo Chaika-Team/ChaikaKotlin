@@ -1,0 +1,20 @@
+// data/room/dao/StationDao.kt
+package com.chaikasoft.app.data.room.dao
+
+import androidx.paging.PagingSource
+import androidx.room.*
+import com.chaikasoft.app.data.room.entities.Station
+
+@Dao
+interface StationDao {
+    @Upsert suspend fun upsertAll(stations: List<Station>)
+    @Query("""
+        SELECT * FROM stations
+        WHERE LOWER(name) LIKE LOWER(:pattern) OR LOWER(city) LIKE LOWER(:pattern)
+        ORDER BY name ASC
+    """)
+    fun pagingByQuery(pattern: String): PagingSource<Int, Station>
+
+    @Query("SELECT * FROM stations WHERE code=:code LIMIT 1")
+    suspend fun getByCode(code: Int): Station?
+}

@@ -10,7 +10,7 @@ interface RoomProductInfoRepositoryInterface {
     suspend fun insertProduct(product: ProductInfoDomain)
     suspend fun updateProduct(product: ProductInfoDomain)
     suspend fun deleteProduct(product: ProductInfoDomain)
-    fun getPagedProducts(config: PagingConfig): Flow<PagingData<ProductInfoDomain>>
+    fun getPagedProducts(pageSize: Int): Flow<PagingData<ProductInfoDomain>>
     suspend fun getProductById(productId: Int): ProductInfoDomain?
 
 }

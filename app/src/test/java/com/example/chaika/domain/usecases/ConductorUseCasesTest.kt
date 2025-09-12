@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.mockito.Mock
@@ -41,8 +40,6 @@ class ConductorUseCasesTest {
         employeeID = "123",
         image = "old_image_path"
     )
-
-    private val updatedImagePath = "new_image_path"
 
     /**
      * Техника тест-дизайна: #1 Классы эквивалентности

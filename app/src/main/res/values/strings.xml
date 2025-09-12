@@ -26,6 +26,34 @@
     <string name="edit">Редактировать</string>
     <string name="check">Проверка</string>
 
+    <!-- Автономные поездки -->
+    <string name="offline_trip_title">Автономная поездка</string>
+    <string name="train_number_label">Номер поезда</string>
+    <string name="from_station_header">Станция отправления</string>
+    <string name="to_station_header">Станция прибытия</string>
+    <string name="station_name_label">Название</string>
+    <string name="station_city_label">Город/регион</string>
+    <string name="pick_departure">Выбрать отправление</string>
+    <string name="pick_arrival">Выбрать прибытие</string>
+    <string name="carriage_header">Вагон</string>
+    <string name="carriage_number_label">№ вагона (обязательно)</string>
+    <string name="carriage_class_label_optional">Класс (опционально)</string>
+    <string name="carriage_class_unknown">Не указан</string>
+    <string name="start_shift_btn">Начать смену</string>
+    <string name="start_shift_success">Смена начата</string>
+    <string name="start_shift_failed">Не удалось начать смену</string>
+
+    <!-- Ошибки валидации -->
+    <string name="err_train_number_empty">Укажите номер поезда</string>
+    <string name="err_from_name_empty">Укажите станцию отправления (название)</string>
+    <string name="err_from_city_empty">Укажите станцию отправления (город)</string>
+    <string name="err_to_name_empty">Укажите станцию прибытия (название)</string>
+    <string name="err_to_city_empty">Укажите станцию прибытия (город)</string>
+    <string name="err_departure_missing">Укажите дату/время отправления</string>
+    <string name="err_arrival_missing">Укажите дату/время прибытия</string>
+    <string name="err_arrival_not_after_departure">Прибытие должно быть позже отправления</string>
+    <string name="err_carriage_number_empty">Укажите номер вагона</string>
+
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>
     <string name="trip_added">Поездка добавлена</string>

@@ -11,6 +11,7 @@ import com.chaikasoft.app.data.room.dao.ConductorTripShiftDao
 import com.chaikasoft.app.data.room.dao.FastReportViewDao
 import com.chaikasoft.app.data.room.dao.PackageItemViewDao
 import com.chaikasoft.app.data.room.dao.ProductInfoDao
+import com.chaikasoft.app.data.room.dao.StationDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +28,7 @@ object DatabaseModule {
     fun provideAppDatabase(
         @ApplicationContext context: Context,
     ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
+        .fallbackToDestructiveMigration()   // мы «переустанавливаем приложение», миграции не пишем
         .setQueryCallback({ sql, args -> Log.d("ROOM-SQL-CHAIKA", "$sql -- $args") }, Executors.newSingleThreadExecutor())
         .build()
 
@@ -45,6 +47,9 @@ object DatabaseModule {
     @Provides
     fun provideConductorTripShiftDao(db: AppDatabase): ConductorTripShiftDao =
         db.conductorTripShiftDao()
+
+    @Provides
+    fun provideStationDao(db: AppDatabase): StationDao = db.stationDao()
 
     @Provides
     fun providePackageItemViewDao(db: AppDatabase): PackageItemViewDao = db.packageItemViewDao()

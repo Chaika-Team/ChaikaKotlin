@@ -7,6 +7,7 @@ import com.chaikasoft.app.data.room.dao.ConductorTripShiftDao
 import com.chaikasoft.app.data.room.dao.FastReportViewDao
 import com.chaikasoft.app.data.room.dao.PackageItemViewDao
 import com.chaikasoft.app.data.room.dao.ProductInfoDao
+import com.chaikasoft.app.data.room.dao.StationDao
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepository
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepository
@@ -23,6 +24,8 @@ import com.chaikasoft.app.data.room.repo.RoomPackageItemRepository
 import com.chaikasoft.app.data.room.repo.RoomPackageItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomReportRepository
 import com.chaikasoft.app.data.room.repo.RoomReportRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomStationRepository
+import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,6 +77,11 @@ object RoomRepositoriesModule {
         productInfoDao: ProductInfoDao
     ): RoomPackageItemRepositoryInterface =
         RoomPackageItemRepository(packageItemViewDao, productInfoDao)
+
+    @Provides
+    @Singleton
+    fun provideRoomStationRepository(dao: StationDao): RoomStationRepositoryInterface =
+        RoomStationRepository(dao)
 
     @Provides
     @Singleton

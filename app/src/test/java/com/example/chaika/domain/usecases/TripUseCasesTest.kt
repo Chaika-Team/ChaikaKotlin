@@ -43,6 +43,10 @@ class TripUseCasesTest {
 
         override suspend fun getCarriagesForTrain(tripUuid: String) =
             carriages.takeIf { tripUuid == "uuid1" } ?: emptyList()
+
+        override suspend fun fetchAllStations(limit: Int): List<StationDomain> {
+            TODO("Not yet implemented")
+        }
     }
 
     // --- SuggestStationsUseCase tests ---

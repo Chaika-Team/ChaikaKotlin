@@ -1,11 +1,9 @@
 package com.chaikasoft.app.data.room.mappers
 
 import com.chaikasoft.app.data.room.entities.ConductorTripShift
-import com.chaikasoft.app.domain.models.trip.CarriageDomain
-import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
-import com.chaikasoft.app.domain.models.trip.TripDomain
-import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
-import com.chaikasoft.app.domain.models.trip.StationDomain
+import com.chaikasoft.app.data.room.relations.ConductorTripShiftWithStations
+import com.chaikasoft.app.data.room.mappers.toDomain as stationToDomain
+import com.chaikasoft.app.domain.models.trip.*
 
 /** Преобразование Int → TripShiftStatusDomain */
 fun Int.toTripShiftStatusDomain(): TripShiftStatusDomain =
@@ -16,46 +14,36 @@ fun Int.toTripShiftStatusDomain(): TripShiftStatusDomain =
 fun TripShiftStatusDomain.toInt(): Int = this.ordinal
 
 /** Entity → Domain */
-fun ConductorTripShift.toDomain(): ConductorTripShiftDomain =
+fun ConductorTripShiftWithStations.toDomain(): ConductorTripShiftDomain =
     ConductorTripShiftDomain(
         trip = TripDomain(
-            uuid = uuid,
-            trainNumber = trainNumber,
-            departure = departure,
-            arrival = arrival,
-            duration = duration,
-            from = StationDomain(from.code, from.name, from.city),
-            to = StationDomain(to.code, to.name, to.city)
+            uuid       = shift.uuid,
+            trainNumber= shift.trainNumber,
+            departure  = shift.departure,
+            arrival    = shift.arrival,
+            duration   = shift.duration,
+            from       = from.stationToDomain(),
+            to         = to.stationToDomain()
         ),
-        activeCarriage = activeCarriage?.let {
-            CarriageDomain(it.carNumber, it.classType)
-        },
-        status = status.toTripShiftStatusDomain()
+        activeCarriage = shift.activeCarriage,
+        status         = shift.status.toTripShiftStatusDomain()
     )
 
 /** Domain → Entity */
 fun ConductorTripShiftDomain.toEntity(): ConductorTripShift {
     val now = System.currentTimeMillis()
     return ConductorTripShift(
-        uuid = this.trip.uuid,
-        trainNumber = this.trip.trainNumber,
-        departure = this.trip.departure,
-        arrival = this.trip.arrival,
-        duration = this.trip.duration,
-        from = StationDomain(
-            code = this.trip.from.code,
-            name = this.trip.from.name,
-            city = this.trip.from.city
-        ),
-        to = StationDomain(
-            code = this.trip.to.code,
-            name = this.trip.to.name,
-            city = this.trip.to.city
-        ),
-        activeCarriage = this.activeCarriage,
-        status = this.status.toInt(),
-        report = null,
-        createdAt = now,
-        updatedAt = null
+        uuid         = trip.uuid,
+        trainNumber  = trip.trainNumber,
+        departure    = trip.departure,
+        arrival      = trip.arrival,
+        duration     = trip.duration,
+        fromCode     = trip.from.code,  // ← только коды
+        toCode       = trip.to.code,
+        activeCarriage = activeCarriage,
+        status       = status.toInt(),
+        report       = null,
+        createdAt    = now,
+        updatedAt    = null
     )
 }

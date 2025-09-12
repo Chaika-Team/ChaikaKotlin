@@ -1,42 +1,45 @@
 package com.chaikasoft.app.data.room.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
-import com.chaikasoft.app.domain.models.trip.StationDomain
 
 /**
  * Entity для хранения текущей смены проводника.
  */
-@Entity(tableName = "conductor_trip_shifts")
+@Entity(
+    tableName = "conductor_trip_shifts",
+    foreignKeys = [
+        ForeignKey(
+            entity = Station::class,
+            parentColumns = ["code"],
+            childColumns = ["from_code"],
+            onDelete = ForeignKey.RESTRICT
+        ),
+        ForeignKey(
+            entity = Station::class,
+            parentColumns = ["code"],
+            childColumns = ["to_code"],
+            onDelete = ForeignKey.RESTRICT
+        )
+    ],
+    indices = [Index("from_code"), Index("to_code")]
+)
 data class ConductorTripShift(
-    @PrimaryKey
-    val uuid: String,               // совпадает с uuid в TripDomain
-
-    // TripDomain
+    @PrimaryKey val uuid: String,
     val trainNumber: String,
     val departure: String,
     val arrival: String,
     val duration: String,
-
-    @Embedded(prefix = "from_")
-    val from: StationDomain,        // code, name, city
-
-    @Embedded(prefix = "to_")
-    val to: StationDomain,          // code, name, city
-
-    // CarriageDomain — может быть null (еще не выбран вагон)
-    @Embedded(prefix = "carriage_")
-    val activeCarriage: CarriageDomain?,
-
-    // Статус рейса: ACTIVE, FINISHED, SENT
-    val status: Int,
-
-    // JSON-отчет, сформированный при завершении (или null)
-    val report: String?,
-
-    // Временные метки (millis since epoch)
+    @ColumnInfo(name = "from_code") val fromCode: Int,
+    @ColumnInfo(name = "to_code")   val toCode: Int,
+    @Embedded(prefix = "carriage_") val activeCarriage: CarriageDomain?,
+    val status: Int,          // TripShiftStatusDomain.ordinal
+    val report: String?,      // JSON отчёта (или null)
     val createdAt: Long,
     val updatedAt: Long?
 )

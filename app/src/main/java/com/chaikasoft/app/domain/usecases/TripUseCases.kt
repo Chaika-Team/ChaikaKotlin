@@ -6,6 +6,7 @@ import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import javax.inject.Inject
 
+@Deprecated("Use GetPagedStationSuggestionsUseCase instead")
 class SuggestStationsUseCase @Inject constructor(
     private val repository: ChaikaRoutesAdapterApiServiceRepositoryInterface
 ) {

@@ -27,12 +27,12 @@ class RoomConductorTripShiftRepository @Inject constructor(
     }
 
     override suspend fun getActiveShift(): ConductorTripShiftDomain? =
-        dao.getActiveShift()?.toDomain()
+        dao.getActiveShiftWithStations()?.toDomain()
 
     override fun observeActiveShift(): Flow<ConductorTripShiftDomain?> =
-        dao.getActiveShiftFlow().map { it?.toDomain() }
+        dao.getActiveShiftWithStationsFlow().map { it?.toDomain() }
 
 
     override fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>> =
-        dao.getAll().map { list -> list.map { it.toDomain() } }
+        dao.getAllWithStations().map { list -> list.map { it.toDomain() } }
 }
