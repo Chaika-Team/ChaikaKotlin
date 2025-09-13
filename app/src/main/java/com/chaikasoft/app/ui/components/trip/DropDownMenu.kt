@@ -1,192 +1,185 @@
 package com.chaikasoft.app.ui.components.trip
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
+import androidx.compose.ui.window.PopupProperties
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.domain.models.trip.StationDomain
-import com.chaikasoft.app.ui.theme.TripDimens
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
-
-@Composable
-private fun StationSearchResults(
-    isLoading: Boolean,
-    error: String?,
-    query: String,
-    suggestions: List<StationDomain>,
-    onStationSelected: (StationDomain) -> Unit
-) {
-    when {
-        isLoading -> {
-            DropdownMenuItem(
-                text = { Text("Поиск...") },
-                onClick = {}
-            )
-        }
-        error != null -> {
-            DropdownMenuItem(
-                text = { Text(error) },
-                onClick = {}
-            )
-        }
-        query.length < 2 -> {
-            DropdownMenuItem(
-                text = { Text("Введите минимум 2 символа") },
-                onClick = {}
-            )
-        }
-        suggestions.isEmpty() && query.isNotEmpty() -> {
-            DropdownMenuItem(
-                text = { Text("Ничего не найдено") },
-                onClick = {}
-            )
-        }
-        suggestions.isNotEmpty() -> {
-            suggestions.forEach { station ->
-                DropdownMenuItem(
-                    text = { Text(station.name) },
-                    onClick = { onStationSelected(station) }
-                )
-            }
-        }
-    }
-}
+import kotlinx.coroutines.flow.Flow
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropDownMenu(
     modifier: Modifier = Modifier,
-    initialQuery: String = "",
+    query: String,
+    onQueryChange: (String) -> Unit,
+    suggestionsFlow: Flow<PagingData<StationDomain>>,
     onItemSelected: (StationDomain) -> Unit,
     placeholderText: String = "Выберите...",
-    cornerRadius: Dp = 10.dp,
-    suggestStations: suspend (String, Int) -> List<StationDomain>,
-    maxSuggestions: Int = 10
+    cornerRadius: Dp = 10.dp
 ) {
-    var query by rememberSaveable { mutableStateOf(initialQuery) }
     var expanded by rememberSaveable { mutableStateOf(false) }
-    var suggestions by rememberSaveable { mutableStateOf<List<StationDomain>>(emptyList()) }
-    var isLoading by rememberSaveable { mutableStateOf(false) }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
+    val lazyItems = suggestionsFlow.collectAsLazyPagingItems()
 
-    val colorScheme = MaterialTheme.colorScheme
-    val searchQuery = remember { MutableStateFlow("") }
+    // NEW: будем целенаправленно фокусить поле и открывать клавиатуру
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(query) {
-        searchQuery.update { query }
-    }
-
-    LaunchedEffect(searchQuery) {
-        searchQuery
-            .debounce(300)
-            .collectLatest { currentQuery ->
-                if (currentQuery.length >= 2) {
-                    try {
-                        isLoading = true
-                        error = null
-                        suggestions = withContext(Dispatchers.IO) {
-                            suggestStations(currentQuery, maxSuggestions)
-                        }
-                    } catch (e: Exception) {
-                        error = e.localizedMessage
-                        suggestions = emptyList()
-                    } finally {
-                        isLoading = false
-                    }
-                } else {
-                    suggestions = emptyList()
-                }
-            }
-    }
+    // координаты якоря (оставляем как у тебя)
+    var anchorRect by remember { mutableStateOf(IntRect(0, 0, 0, 0)) }
+    var anchorWidthPx by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TripDimens.SearchBarHeight)
+        onExpandedChange = { newExpanded ->
+            expanded = newExpanded
+            if (newExpanded) {
+                // при открытии меню сразу переводим фокус в поле + показываем ИМЕ
+                focusRequester.requestFocus()
+                keyboard?.show()
+            }
+        },
+        modifier = modifier.fillMaxWidth()
     ) {
         TextField(
             value = query,
             onValueChange = { newQuery ->
-                query = newQuery
-                expanded = newQuery.isNotEmpty()
+                if (newQuery != query) {
+                    onQueryChange(newQuery)
+                    if (newQuery.length >= 2) {
+                        expanded = true
+                        focusRequester.requestFocus()
+                        keyboard?.show()
+                    }
+                }
             },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
-                .testTag(
-                    if (placeholderText.contains("отправки")) "startStationField"
-                    else "finishStationField"
-                ),
-            placeholder = {
-                Text(
-                    text = placeholderText,
-                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                    fontSize = 16.sp
-                )
-            },
-            readOnly = false,
+                .focusRequester(focusRequester)
+                .onGloballyPositioned { coords ->
+                    val b = coords.boundsInWindow()
+                    anchorRect = IntRect(b.left.toInt(), b.top.toInt(), b.right.toInt(), b.bottom.toInt())
+                    anchorWidthPx = coords.size.width
+                },
+            singleLine = true,
+            placeholder = { Text(placeholderText) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = RoundedCornerShape(cornerRadius),
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
+                disabledIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent
             )
         )
+    }
 
-        if (expanded) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                StationSearchResults(
-                    isLoading = isLoading,
-                    error = error,
-                    query = query,
-                    suggestions = suggestions,
-                    onStationSelected = { station ->
-                        query = station.name
-                        onItemSelected(station)
-                        expanded = false
+    if (expanded) {
+        Popup(
+            properties = PopupProperties(
+                focusable = false,
+                clippingEnabled = false,
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            ),
+            onDismissRequest = { expanded = false },
+            popupPositionProvider = remember(anchorRect) {
+                object : PopupPositionProvider {
+                    override fun calculatePosition(
+                        anchorBounds: IntRect,
+                        windowSize: IntSize,
+                        layoutDirection: LayoutDirection,
+                        popupContentSize: IntSize
+                    ): IntOffset {
+                        val x = anchorRect.left
+                        val y = anchorRect.bottom
+                        return IntOffset(
+                            x.coerceIn(0, max(0, windowSize.width - popupContentSize.width)),
+                            y.coerceIn(0, max(0, windowSize.height - popupContentSize.height))
+                        )
                     }
-                )
+                }
+            }
+        ) {
+            Surface(
+                shape = RoundedCornerShape(cornerRadius),
+                tonalElevation = 4.dp,
+                shadowElevation = 6.dp,
+                modifier = Modifier
+                    .width(with(density) { anchorWidthPx.toDp() })
+                    .heightIn(max = 320.dp)           // фикс. высота → не переворачиваемся
+            ) {
+                // Рендер списка + состояния загрузки
+                val isInitialLoading = lazyItems.loadState.refresh is LoadState.Loading && lazyItems.itemCount == 0
+                val isAppending = lazyItems.loadState.append is LoadState.Loading
+
+                when {
+                    query.length < 2 -> DropdownMenuItem(text = { Text("Введите минимум 2 символа") }, onClick = {})
+                    isInitialLoading -> DropdownMenuItem(text = { Text("Поиск...") }, onClick = {})
+                    lazyItems.loadState.refresh is LoadState.Error -> {
+                        val msg = (lazyItems.loadState.refresh as LoadState.Error).error.localizedMessage ?: "Ошибка загрузки"
+                        DropdownMenuItem(text = { Text(msg) }, onClick = {})
+                    }
+                    lazyItems.itemCount == 0 -> DropdownMenuItem(text = { Text("Ничего не найдено") }, onClick = {})
+                    else -> {
+                        LazyColumn {
+                            items(lazyItems.itemCount) { i ->
+                                lazyItems[i]?.let { station ->
+                                    DropdownMenuItem(
+                                        text = { Text(station.name) },
+                                        onClick = {
+                                            onQueryChange(station.name)
+                                            onItemSelected(station)
+                                            expanded = false
+                                        }
+                                    )
+                                }
+                            }
+                            if (isAppending) {
+                                item { DropdownMenuItem(text = { Text("Загружаем ещё...") }, onClick = {}) }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-@Preview
-@Composable
-fun DropdownTripMenuPreview() {
-    DropDownMenu(
-        onItemSelected = {},
-        suggestStations = { _, _ -> emptyList() }
-    )
-}

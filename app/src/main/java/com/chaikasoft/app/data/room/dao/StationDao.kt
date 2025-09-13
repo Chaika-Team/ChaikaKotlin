@@ -9,10 +9,11 @@ import com.chaikasoft.app.data.room.entities.Station
 interface StationDao {
     @Upsert suspend fun upsertAll(stations: List<Station>)
     @Query("""
-        SELECT * FROM stations
-        WHERE LOWER(name) LIKE LOWER(:pattern) OR LOWER(city) LIKE LOWER(:pattern)
-        ORDER BY name ASC
-    """)
+    SELECT * FROM stations
+    WHERE name COLLATE NOCASE LIKE :pattern ESCAPE '\'
+       OR city COLLATE NOCASE LIKE :pattern ESCAPE '\'
+    ORDER BY name ASC, city ASC
+""")
     fun pagingByQuery(pattern: String): PagingSource<Int, Station>
 
     @Query("SELECT * FROM stations WHERE code=:code LIMIT 1")

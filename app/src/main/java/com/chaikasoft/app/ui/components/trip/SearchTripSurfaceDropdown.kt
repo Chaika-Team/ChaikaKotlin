@@ -12,20 +12,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
 import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(FlowPreview::class)
 @Composable
 fun SearchTripSurfaceDropdown(
     searchDate: String,
     onSearchDateChange: (String) -> Unit,
+
+    fromQuery: String,
+    onFromQueryChange: (String) -> Unit,
+    toQuery: String,
+    onToQueryChange: (String) -> Unit,
+
+    fromSuggestions: Flow<PagingData<StationDomain>>,
+    toSuggestions: Flow<PagingData<StationDomain>>,
+
     onStartStationChange: (StationDomain?) -> Unit,
     onFinishStationChange: (StationDomain?) -> Unit,
+
     modifier: Modifier = Modifier,
     height: Dp = TripDimens.SearchCardHeight,
-    suggestStations: suspend (String, Int) -> List<StationDomain>
 ) {
     Box(
         modifier = modifier
@@ -55,26 +66,28 @@ fun SearchTripSurfaceDropdown(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                query = fromQuery,
+                onQueryChange = onFromQueryChange,
+                suggestionsFlow = fromSuggestions,
                 onItemSelected = { station ->
                     onStartStationChange(station)
                 },
                 placeholderText = "Станция отправки",
-                cornerRadius = TripDimens.SearchBarCornerRadius,
-                initialQuery = "",
-                suggestStations = suggestStations
+                cornerRadius = TripDimens.SearchBarCornerRadius
             )
 
             DropDownMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                query = toQuery,
+                onQueryChange = onToQueryChange,
+                suggestionsFlow = toSuggestions,
                 onItemSelected = { station ->
                     onFinishStationChange(station)
                 },
                 placeholderText = "Станция прибытия",
-                cornerRadius = TripDimens.SearchBarCornerRadius,
-                initialQuery = "",
-                suggestStations = suggestStations
+                cornerRadius = TripDimens.SearchBarCornerRadius
             )
         }
     }
