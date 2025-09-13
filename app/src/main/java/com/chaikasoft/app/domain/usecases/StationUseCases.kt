@@ -18,15 +18,11 @@ import javax.inject.Inject
 class GetPagedStationSuggestionsUseCase @Inject constructor(
     private val repo: RoomStationRepositoryInterface
 ) {
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     operator fun invoke(
-        queryFlow: Flow<String>,
+        query: String,
         pageSize: Int = 20
     ): Flow<PagingData<StationDomain>> =
-        queryFlow
-            .debounce(200)
-            .distinctUntilChanged()
-            .flatMapLatest { q -> repo.pagedQuery(q, pageSize) }
+        repo.pagedQuery(query, pageSize)
 }
 
 class RefreshStationsOnLaunchUseCase @Inject constructor(

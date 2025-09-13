@@ -41,7 +41,7 @@ interface ChaikaSoftApiService {
      */
     @GET("/api/v1/route/station")
     suspend fun findStations(
-        @Query("query") query: String? = "М",   // ← можно вызывать без query
+        @Query("query") query: String? = null,   // ← можно вызывать без query
         @Query("limit") limit: Int = 10
     ): Response<StationsResponseDto>
 

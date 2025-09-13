@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.annotation.Dimension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
@@ -13,34 +15,64 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.usecases.CompleteShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetCarriagesForTrainUseCase
+import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
 import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
-import com.chaikasoft.app.domain.usecases.SuggestStationsUseCase
 import com.chaikasoft.app.ui.viewModels.tripMocks.fetchAndSaveHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class TripViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val getCarriagesForTrainUseCase: GetCarriagesForTrainUseCase,
     private val searchTripByStationUseCase: SearchTripsByStationsUseCase,
-    private val suggestStationsUseCase: SuggestStationsUseCase,
+    private val getPagedStationSuggestions: GetPagedStationSuggestionsUseCase,
     private val startShiftUseCase: StartShiftUseCase,
     private val getActiveShiftUseCase: GetActiveShiftUseCase,
     private val completeShiftUseCase: CompleteShiftUseCase
 ) : ViewModel() {
-    private val _selectedTripRecord = MutableStateFlow<TripDomain?>(null)
 
+    // --- New: query states for FROM/TO ---
+    private val _fromQuery = MutableStateFlow("")
+    private val _toQuery = MutableStateFlow("")
+
+    val fromSuggestions: Flow<PagingData<StationDomain>> =
+        _fromQuery
+            .map { it.trim() }
+            .filter { it.length >= 2 }
+            .debounce(500)
+            .distinctUntilChanged()
+            .flatMapLatest { query -> getPagedStationSuggestions(query, pageSize = 20) }
+            .cachedIn(viewModelScope)
+
+    val toSuggestions: Flow<PagingData<StationDomain>> =
+        _toQuery
+            .map { it.trim() }
+            .filter { it.length >= 2 }
+            .debounce(500)
+            .distinctUntilChanged()
+            .flatMapLatest { query -> getPagedStationSuggestions(query, pageSize = 20) }
+            .cachedIn(viewModelScope)
+
+    fun onFromQueryChanged(text: String) { _fromQuery.value = text }
+    fun onToQueryChanged(text: String) { _toQuery.value = text }
+
+    private val _selectedTripRecord = MutableStateFlow<TripDomain?>(null)
     private val _selectedCarriage = MutableStateFlow<CarriageDomain?>(null)
 
     private val _shiftStatus = MutableStateFlow<Boolean?>(null)
@@ -86,13 +118,8 @@ class TripViewModel @Inject constructor(
         }
     }
 
-    fun setFindByNumber() {
-        _uiState.value = ScreenState.FindByNumber
-    }
-
-    fun setFindByStation() {
-        _uiState.value = ScreenState.FindByStation
-    }
+    fun setFindByNumber() { _uiState.value = ScreenState.FindByNumber }
+    fun setFindByStation() { _uiState.value = ScreenState.FindByStation }
 
     fun setSelectCarriage(tripRecord: TripDomain) {
         viewModelScope.launch {
@@ -108,7 +135,6 @@ class TripViewModel @Inject constructor(
             }
         }
     }
-
 
     fun setCurrentTrip(carriage: CarriageDomain) {
         viewModelScope.launch {
@@ -168,9 +194,7 @@ class TripViewModel @Inject constructor(
         }
     }
 
-    fun getSelectedTrip(): TripDomain? {
-        return _selectedTripRecord.value
-    }
+    fun getSelectedTrip(): TripDomain? = _selectedTripRecord.value
 
     fun loadHistoryData() {
         viewModelScope.launch {
@@ -188,23 +212,12 @@ class TripViewModel @Inject constructor(
     }
 
     private fun getHistory() {
-        viewModelScope.launch {
-            _pagingHistoryFlow.value = fetchAndSaveHistoryUseCase()
-
-        }
+        viewModelScope.launch { _pagingHistoryFlow.value = fetchAndSaveHistoryUseCase() }
     }
 
     fun getTrips(searchDate: String, searchStart: Int, searchFinish: Int) {
         viewModelScope.launch {
-            _foundTripsList.value = searchTripByStationUseCase(
-                searchDate, searchStart, searchFinish
-            )
-        }
-    }
-
-    suspend fun suggestStations(query: String, limit: Int): List<StationDomain> {
-        return withContext(Dispatchers.IO) {
-            suggestStationsUseCase(query, limit)
+            _foundTripsList.value = searchTripByStationUseCase(searchDate, searchStart, searchFinish)
         }
     }
 
