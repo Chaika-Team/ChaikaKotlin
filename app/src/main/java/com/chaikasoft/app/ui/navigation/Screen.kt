@@ -20,6 +20,8 @@ sealed class Screen(
     object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showMenuIcon = true)
     object Replenish: Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
 
+    object Statistics : Screen(Routes.STATISTICS, R.string.statistics_title)
+
     object Operation : Screen(Routes.OPERATION, R.string.operations_title)
 
     object Profile : Screen(Routes.PROFILE, R.string.profile_title)
@@ -56,6 +58,7 @@ sealed class Screen(
                 Routes.TEMPLATE_SEARCH -> TemplateSearch
                 Routes.TEMPLATE_DETAIL -> TemplateDetail
                 Routes.TEMPLATE_EDIT -> TemplateEdit
+                Routes.STATISTICS -> Statistics
                 else -> Trip
             }
         }

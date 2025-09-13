@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.components.bottomBar
+package com.example.chaika.ui.components.bottomBar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -14,8 +13,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.components.bottomBar.BottomBarBackground
+import com.chaikasoft.app.ui.components.bottomBar.BottomBarIcon
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.BarDimens
 
@@ -61,6 +61,16 @@ fun BottomBar(
             onClick = {
                 navController.navigate(Routes.PRODUCT_GRAPH) {
                     popUpTo(Routes.PRODUCT_GRAPH) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
+        BottomBarIcon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_statistics),
+            selected = Routes.mainRoutes[Routes.STATISTICS]?.contains(currentRoute) == true,
+            onClick = {
+                navController.navigate(Routes.STATISTICS) {
+                    popUpTo(Routes.STATISTICS) { inclusive = true }
                     launchSingleTop = true
                 }
             }

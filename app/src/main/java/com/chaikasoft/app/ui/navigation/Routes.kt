@@ -18,7 +18,10 @@ object Routes {
     const val PRODUCT_PACKAGE = "product/graph/package"
     const val PRODUCT_LIST_EMPTY = "product/graph/product_list_empty"
     const val PRODUCT_REPLENISH = "product/replenish"
+    const val STATISTICS = "statistics"
+    const val STATISTICS_GRAPH = "statistics/graph"
     const val OPERATION = "operation"
+    const val OPERATION_GRAPH = "operation/graph"
     const val PROFILE = "profile"
     const val PROFILE_PERSONAL_DATA = "profile/personal_data"
     const val PROFILE_SETTINGS = "profile/settings"
@@ -50,6 +53,7 @@ object Routes {
             PRODUCT_CART, PRODUCT_PACKAGE, PRODUCT_GRAPH,
             PRODUCT_LIST_EMPTY
         ),
+        STATISTICS to listOf(STATISTICS, STATISTICS_GRAPH),
         OPERATION to listOf(OPERATION),
         PROFILE to listOf(
             PROFILE, PROFILE_PERSONAL_DATA, PROFILE_SETTINGS,

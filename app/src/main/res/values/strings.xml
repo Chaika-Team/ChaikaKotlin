@@ -229,4 +229,6 @@
     <string name="op_price_rub">%.2f руб</string>
     <string name="op_total_price_rub">%.2f руб</string>
 
+    <string name="statistics_title">Статистика</string>
+
 </resources>

@@ -11,8 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.chaikasoft.app.ui.components.bottomBar.BottomBar
-import com.chaikasoft.app.ui.navigation.NavGraph
 import com.chaikasoft.app.ui.navigation.Screen
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,6 +19,8 @@ import com.chaikasoft.app.ui.components.topBar.MenuItem
 import com.chaikasoft.app.ui.viewModels.AuthViewModel
 import com.chaikasoft.app.ui.components.topBar.TopBar
 import com.chaikasoft.app.ui.navigation.Routes
+import com.example.chaika.ui.components.bottomBar.BottomBar
+import com.chaikasoft.app.ui.navigation.NavGraph
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
