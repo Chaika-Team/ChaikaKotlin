@@ -1,9 +1,6 @@
 package com.chaikasoft.app.ui.viewModels
 
-import android.content.Context
-import android.util.DisplayMetrics
 import android.util.Log
-import androidx.annotation.Dimension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -73,15 +70,14 @@ class TripViewModel @Inject constructor(
     fun onToQueryChanged(text: String) { _toQuery.value = text }
 
     private val _selectedTripRecord = MutableStateFlow<TripDomain?>(null)
+    val selectedTripRecord: StateFlow<TripDomain?> = _selectedTripRecord.asStateFlow()
+
     private val _selectedCarriage = MutableStateFlow<CarriageDomain?>(null)
 
     private val _shiftStatus = MutableStateFlow<Boolean?>(null)
     val shiftStatus: StateFlow<Boolean?> = _shiftStatus.asStateFlow()
 
     private val _activeShift = MutableStateFlow<ConductorTripShiftDomain?>(null)
-
-    private val _uiState = MutableStateFlow<ScreenState>(ScreenState.NewTrip)
-    val uiState: StateFlow<ScreenState> = _uiState.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -99,27 +95,17 @@ class TripViewModel @Inject constructor(
         loadHistoryData()
     }
 
-    fun setNewTrip() {
-        viewModelScope.launch {
-            try {
-                _selectedTripRecord.value?.let { trip ->
-                    val isReportSent = completeShiftUseCase(trip.uuid)
-                    Log.d("TripViewModel", "Shift completed. Report sent: $isReportSent")
-                }
-                _selectedTripRecord.update { null }
-                _selectedCarriage.update { null }
-                _uiState.update { ScreenState.NewTrip }
-            } catch (e: Exception) {
-                Log.e("TripViewModel", "Error completing shift", e)
-                _selectedTripRecord.update { null }
-                _selectedCarriage.update { null }
-                _uiState.update { ScreenState.NewTrip }
-            }
+    fun finishCurrentTrip() = viewModelScope.launch {
+        val trip = _selectedTripRecord.value ?: return@launch
+        _selectedTripRecord.value = null
+        _selectedCarriage.value = null
+        try {
+            completeShiftUseCase(trip.uuid)
+        } catch (e: Exception) {
+            Log.e("TripViewModel", "Error finishing trip", e)
         }
     }
 
-    fun setFindByNumber() { _uiState.value = ScreenState.FindByNumber }
-    fun setFindByStation() { _uiState.value = ScreenState.FindByStation }
 
     fun setSelectCarriage(tripRecord: TripDomain) {
         viewModelScope.launch {
@@ -164,7 +150,6 @@ class TripViewModel @Inject constructor(
         } catch (e: Exception) {
             _shiftStatus.value = false
             Log.e("TripViewModel", "Failed to start shift with error", e)
-            _uiState.update { ScreenState.Error }
         }
     }
 
@@ -175,13 +160,11 @@ class TripViewModel @Inject constructor(
                 val shift = getActiveShiftUseCase().first()
                 _activeShift.value = shift
                 if (shift == null) {
-                    _uiState.update { ScreenState.NewTrip }
                     _selectedTripRecord.update { null }
                     _selectedCarriage.update { null }
                     _shiftStatus.update { false }
                     Log.d("TripViewModel", "No active shift")
                 } else {
-                    _uiState.update { ScreenState.CurrentTrip }
                     _selectedTripRecord.update { shift.trip }
                     _selectedCarriage.update { shift.activeCarriage }
                     _shiftStatus.update { true }
@@ -189,7 +172,6 @@ class TripViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("TripViewModel", "Failed to check active shift", e)
-                _uiState.update { ScreenState.Error }
             }
         }
     }
@@ -204,7 +186,6 @@ class TripViewModel @Inject constructor(
                 getHistory()
             } catch (e: Exception) {
                 Log.e("TripViewModel", "Failed to load history", e)
-                _uiState.update { ScreenState.Error }
             } finally {
                 _isLoading.value = false
             }
@@ -219,25 +200,5 @@ class TripViewModel @Inject constructor(
         viewModelScope.launch {
             _foundTripsList.value = searchTripByStationUseCase(searchDate, searchStart, searchFinish)
         }
-    }
-
-    fun calculatePageSize(
-        context: Context,
-        @Dimension(unit = Dimension.DP) itemHeightDp: Int = 100
-    ): Int {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        val screenHeightPx = displayMetrics.heightPixels
-        val itemHeightPx = (itemHeightDp * displayMetrics.density).toInt()
-        val visibleItemsCount = (screenHeightPx / itemHeightPx) * 2
-        return visibleItemsCount * 3
-    }
-
-    sealed class ScreenState {
-        object NewTrip : ScreenState()
-        object FindByNumber : ScreenState()
-        object FindByStation : ScreenState()
-        object SelectCarriage : ScreenState()
-        object CurrentTrip: ScreenState()
-        object Error: ScreenState()
     }
 }

@@ -9,10 +9,10 @@ sealed class Screen(
     val showMenuIcon: Boolean = false
 ) {
     object Trip : Screen(Routes.TRIP, R.string.trip_title, false)
-    object NewTrip : Screen(Routes.TRIP_NEW, R.string.trip_title, false)
-    object FindTripByNumber : Screen(Routes.TRIP_BY_NUMBER, R.string.new_trip_title)
+    object MainTrip : Screen(Routes.TRIP_MAIN, R.string.trip_title, showBackButton =  false)
+    object AutonomousTrip : Screen(Routes.TRIP_AUTONOMOUS, R.string.offline_trip_title)
+    object FindTripByNumber : Screen(Routes.TRIP_BY_NUMBER, R.string.new_trip_title, showMenuIcon = true)
     object SelectCarriage : Screen(Routes.TRIP_SELECT_CARRIAGE, R.string.new_trip_title)
-    object CurrentTrip : Screen(Routes.TRIP_CURRENT, R.string.trip_title)
 
     object Product : Screen(Routes.PRODUCT, R.string.products_title, false)
     object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title)
@@ -37,10 +37,10 @@ sealed class Screen(
         fun fromRoute(route: String?): Screen {
             return when (route) {
                 Routes.TRIP -> Trip
-                Routes.TRIP_NEW -> NewTrip
+                Routes.TRIP_MAIN -> MainTrip
+                Routes.TRIP_AUTONOMOUS -> AutonomousTrip
                 Routes.TRIP_BY_NUMBER -> FindTripByNumber
                 Routes.TRIP_SELECT_CARRIAGE -> SelectCarriage
-                Routes.TRIP_CURRENT -> CurrentTrip
                 Routes.PRODUCT -> Product
                 Routes.PRODUCT_ENTRY -> ProductEntry
                 Routes.PRODUCT_CART -> Cart

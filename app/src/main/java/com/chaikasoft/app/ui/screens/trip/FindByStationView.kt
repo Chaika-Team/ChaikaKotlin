@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.screens.trip.views
+package com.chaikasoft.app.ui.screens.trip
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

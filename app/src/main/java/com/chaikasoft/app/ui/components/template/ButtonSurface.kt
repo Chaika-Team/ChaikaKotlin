@@ -16,9 +16,10 @@ import com.chaikasoft.app.ui.theme.ProductDimens
 
 @Composable
 fun ButtonSurface(
+    modifier: Modifier = Modifier,
     buttonText: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    enabled: Boolean = true
 ) {
     Surface(
         modifier = modifier
@@ -43,7 +44,8 @@ fun ButtonSurface(
             Button(
                 onClick = onClick,
                 modifier = Modifier.height(ProductDimens.ButtonHeightL).fillMaxWidth(),
-                shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
+                shape = RoundedCornerShape(ProductDimens.CornerRadiusM),
+                enabled = enabled
             ) {
                 Text(
                     text = buttonText,
