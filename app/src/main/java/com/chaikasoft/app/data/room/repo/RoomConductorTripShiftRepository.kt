@@ -4,6 +4,7 @@ package com.chaikasoft.app.data.room.repo
 import com.chaikasoft.app.data.room.dao.ConductorTripShiftDao
 import com.chaikasoft.app.data.room.mappers.toDomain
 import com.chaikasoft.app.data.room.mappers.toEntity
+import com.chaikasoft.app.data.room.mappers.toTripShiftStatusDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -35,4 +36,12 @@ class RoomConductorTripShiftRepository @Inject constructor(
 
     override fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>> =
         dao.getAllWithStations().map { list -> list.map { it.toDomain() } }
+
+    override suspend fun getStatusAndReport(
+        uuid: String
+    ): Pair<com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain, String?> {
+        val e = dao.getByUuid(uuid)
+            ?: throw IllegalStateException("Shift not found: $uuid")
+        return e.status.toTripShiftStatusDomain() to e.report
+    }
 }

@@ -1,5 +1,6 @@
 package com.chaikasoft.app.domain.usecases
 
+import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftReportsRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
@@ -12,11 +13,15 @@ import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
+import com.chaikasoft.app.domain.sealed.SendReportResult
+import com.chaikasoft.app.domain.sealed.UploadResult
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
+import android.util.Log
+
+private const val SEND_TAG = "SHIFT-REPORT"
 
 /**
  * Возвращает поток со всеми сменами проводника.
@@ -76,24 +81,52 @@ class StartShiftUseCase @Inject constructor(
 }
 
 /**
- * CompleteShiftUseCase — объединяет оба шага: генерация + попытка отправки
+ * Редакция от 14.09.2025
+ * CompleteShiftUseCase -- адаптер: он делегирует вызов новому оркестратору,
+ * затем мапит результат в старый Boolean
+ *
+ * Ожидается переход на новый CompleteShiftAndSendUseCase ASAP
  */
+@Deprecated("Use CompleteShiftAndSendUseCase instead")
 class CompleteShiftUseCase @Inject constructor(
+    private val delegate: CompleteShiftAndSendUseCase
+) {
+    /**
+     * Маппинг в старую семантику:
+     *  - Success/AlreadySent → true
+     *  - остальное → false
+     * Исключения генерации по-прежнему всплывают.
+     */
+    suspend operator fun invoke(uuid: String): Boolean {
+        Log.d(SEND_TAG, "CompleteShiftUseCase: start, uuid=$uuid")
+        val r = delegate(uuid)
+        val ok = r is SendReportResult.Success || r is SendReportResult.AlreadySent
+        Log.d(SEND_TAG, "CompleteShiftUseCase: result=$r, mappedToBoolean=$ok")
+        return ok
+    }
+
+}
+
+/**
+ * Генерирует отчёт и сразу пытается его отправить.
+ * Возвращает структурированный результат отправки (без UI-строк).
+ */
+class CompleteShiftAndSendUseCase @Inject constructor(
     private val generate: GenerateShiftReportUseCase,
     private val send: SendShiftReportUseCase
 ) {
-    /**
-     * Завершает смену проводника:
-     * 1) генерирует отчёт и переводит в FINISHED,
-     * 2) пытается отправить отчёт и, если удалось, переводит в SENT.
-     *
-     * @return true — если отчёт отправлен; false — если отправка не удалась.
-     */
-    suspend operator fun invoke(uuid: String): Boolean {
-        // 1) генерим и сохраняем отчёт
-        generate(uuid)
-        // 2) пробуем отправить
-        return send(uuid)
+    suspend operator fun invoke(uuid: String): SendReportResult {
+        Log.d(SEND_TAG, "CompleteShiftAndSendUseCase: start, uuid=$uuid")
+        try {
+            generate(uuid)
+            Log.d(SEND_TAG, "CompleteShiftAndSendUseCase: report generated for uuid=$uuid")
+        } catch (t: Throwable) {
+            Log.e(SEND_TAG, "CompleteShiftAndSendUseCase: generation FAILED for uuid=$uuid, ${t.message}", t)
+            throw t
+        }
+        val res = send(uuid)
+        Log.d(SEND_TAG, "CompleteShiftAndSendUseCase: send() returned $res for uuid=$uuid")
+        return res
     }
 }
 
@@ -180,26 +213,103 @@ class GetCartReportsUseCase @Inject constructor(
 
 
 /**
+ * Получить отчёт по поездке из базы данных
+ */
+class GetShiftReportJsonUseCase @Inject constructor(
+    private val repo: RoomConductorTripShiftRepositoryInterface
+) {
+    suspend operator fun invoke(uuid: String): Pair<TripShiftStatusDomain, String?> {
+        val (status, json) = repo.getStatusAndReport(uuid)
+        Log.d(SEND_TAG, "GetShiftReportJsonUseCase: uuid=$uuid, status=$status, reportPresent=${!json.isNullOrBlank()}, reportLen=${json?.length ?: 0}")
+        return status to json
+    }
+}
+
+/**
+ * Отправить JSON в API, разрулить коды
+ */
+class UploadShiftReportUseCase @Inject constructor(
+    private val repo: ChaikaSoftReportsRepositoryInterface
+) {
+    suspend operator fun invoke(json: String): SendReportResult {
+        Log.d(SEND_TAG, "UploadShiftReportUseCase: uploading jsonLen=${json.length}")
+        val r = when (val repoRes = repo.uploadShiftReport(json)) {
+            is UploadResult.Ok -> {
+                Log.d(SEND_TAG, "UploadShiftReportUseCase: server OK (2xx)")
+                SendReportResult.Success
+            }
+            is UploadResult.HttpError -> {
+                val bodySnippet = repoRes.body?.take(256)
+                Log.w(SEND_TAG, "UploadShiftReportUseCase: HTTP ${repoRes.code}, errSnippet=$bodySnippet")
+                when (repoRes.code) {
+                    409 -> SendReportResult.Success // идемпотентность
+                    in 400..499 -> SendReportResult.PermanentFailure(repoRes.code, repoRes.body)
+                    else -> SendReportResult.TemporaryFailure(httpCode = repoRes.code)
+                }
+            }
+            is UploadResult.NetworkError -> {
+                Log.w(SEND_TAG, "UploadShiftReportUseCase: network error: $repoRes")
+                SendReportResult.TemporaryFailure(isNetwork = true)
+            }
+        }
+        Log.d(SEND_TAG, "UploadShiftReportUseCase: mapped result=$r")
+        return r
+    }
+}
+
+/**
+ * Пометить смену «отправлено»
+ */
+class MarkShiftSentUseCase @Inject constructor(
+    private val repo: RoomConductorTripShiftRepositoryInterface
+) {
+    suspend operator fun invoke(uuid: String) {
+        Log.d(SEND_TAG, "MarkShiftSentUseCase: marking SENT, uuid=$uuid")
+        repo.updateStatusAndReport(
+            uuid = uuid,
+            newStatus = TripShiftStatusDomain.SENT.ordinal,
+            reportJson = null,
+            updatedAt = System.currentTimeMillis()
+        )
+        Log.d(SEND_TAG, "MarkShiftSentUseCase: done, uuid=$uuid")
+    }
+}
+/**
  * Отправляет отчёт по поездке
  */
 class SendShiftReportUseCase @Inject constructor(
-    private val repository: RoomConductorTripShiftRepositoryInterface
+    private val getReport: GetShiftReportJsonUseCase,
+    private val upload: UploadShiftReportUseCase,
+    private val markSent: MarkShiftSentUseCase
 ) {
-    suspend operator fun invoke(uuid: String): Boolean {
-        //TODO: Здесь будет настоящий сетевой слой; пока–что просто мокаем «успех»
-        val success = true
+    /**
+     * @return SendReportResult:
+     *  - Success / AlreadySent / MissingReport / TemporaryFailure / PermanentFailure
+     */
+    suspend operator fun invoke(uuid: String): SendReportResult {
+        Log.d(SEND_TAG, "SendShiftReportUseCase: start, uuid=$uuid")
+        val (status, reportJson) = getReport(uuid)
+        Log.d(SEND_TAG, "SendShiftReportUseCase: currentStatus=$status, hasReport=${!reportJson.isNullOrBlank()}, reportLen=${reportJson?.length ?: 0}")
 
-        if (success) {
-            val now = System.currentTimeMillis()
-            // При успешной «отправке» переводим статус в SENT, reportJson = null => оставляем старый отчёт
-            repository.updateStatusAndReport(
-                uuid = uuid,
-                newStatus = TripShiftStatusDomain.SENT.ordinal,
-                reportJson = null,
-                updatedAt = now
-            )
+        if (status == TripShiftStatusDomain.SENT) {
+            Log.d(SEND_TAG, "SendShiftReportUseCase: already SENT, skipping upload, uuid=$uuid")
+            return SendReportResult.AlreadySent
+        }
+        if (reportJson.isNullOrBlank()) {
+            Log.w(SEND_TAG, "SendShiftReportUseCase: Missing report, uuid=$uuid")
+            return SendReportResult.MissingReport
         }
 
-        return success
+        Log.d(SEND_TAG, "SendShiftReportUseCase: calling upload..., uuid=$uuid")
+        val result = upload(reportJson)
+        Log.d(SEND_TAG, "SendShiftReportUseCase: upload result=$result, uuid=$uuid")
+
+        if (result is SendReportResult.Success) {
+            Log.d(SEND_TAG, "SendShiftReportUseCase: marking SENT, uuid=$uuid")
+            markSent(uuid)
+            Log.d(SEND_TAG, "SendShiftReportUseCase: SENT marked, uuid=$uuid")
+        }
+        return result
     }
+
 }
