@@ -1,6 +1,7 @@
 package com.chaikasoft.app.data.room.repo
 
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
+import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -32,4 +33,8 @@ interface RoomConductorTripShiftRepositoryInterface {
 
     /** Наблюдать за всеми сменами проводника */
     fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>>
+
+    /** Получить пару "статус смены и отчёт" */
+    suspend fun getStatusAndReport(uuid: String): Pair<TripShiftStatusDomain, String?>
+
 }

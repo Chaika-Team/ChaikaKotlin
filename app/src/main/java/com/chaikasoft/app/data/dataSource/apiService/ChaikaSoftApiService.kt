@@ -7,8 +7,11 @@ import com.chaikasoft.app.data.dataSource.dto.TemplateDetailResponseDto
 import com.chaikasoft.app.data.dataSource.dto.TemplateListResponseDto
 import com.chaikasoft.app.data.dataSource.dto.TripDetailResponseDto
 import com.chaikasoft.app.data.dataSource.dto.TripsResponseDto
+import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -34,7 +37,7 @@ interface ChaikaSoftApiService {
         @Path("id") templateId: Int
     ): Response<TemplateDetailResponseDto>
 
-// ==== Новые эндпоинты для маршрутов ====
+// ==== эндпоинты для маршрутов ====
 
     /**
      * Поиск подсказок по станциям.
@@ -71,4 +74,12 @@ interface ChaikaSoftApiService {
     suspend fun getCarsForTrip(
         @Path("trip_uuid") uuid: String
     ): Response<CarsResponseDto>
+
+    // ==== эндпоинты ChaikaReports ====
+
+    @POST("/api/v1/report/sale")
+    suspend fun sendShiftReport(
+        @Body body: RequestBody
+    ): Response<Unit>
+
 }

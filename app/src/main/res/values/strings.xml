@@ -54,6 +54,13 @@
     <string name="err_arrival_not_after_departure">Прибытие должно быть позже отправления</string>
     <string name="err_carriage_number_empty">Укажите номер вагона</string>
 
+    <!-- Ошибки отправки отчёта -->
+    <string name="report_sent_success">Отчёт отправлен</string>
+    <string name="report_already_sent">Отчёт уже был отправлен</string>
+    <string name="no_report_found">Отчёт отсутствует, необходимо сгенерировать</string>
+    <string name="report_send_failed_retry">Не удалось отправить, попробуйте позже</string>
+    <string name="report_send_failed_permanent">Ошибка отправки на стороне сервера</string>
+
     <!-- Диалог AddRenameTripDialog -->
     <string name="enter_trip_name">Введите название поездки</string>
     <string name="trip_added">Поездка добавлена</string>
