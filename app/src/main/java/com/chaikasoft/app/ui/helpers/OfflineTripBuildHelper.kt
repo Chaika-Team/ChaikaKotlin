@@ -5,8 +5,8 @@ import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.util.generateLocalUuid
-import com.chaikasoft.app.util.isoDuration
-import com.chaikasoft.app.util.localToRfc3339
+import com.chaikasoft.app.util.durationHms
+import com.chaikasoft.app.util.localToRfc3339Utc
 import com.chaikasoft.app.util.normalizeForDisplay
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -66,9 +66,9 @@ object OfflineTripBuildHelper {
             val trip = TripDomain(
                 uuid        = generateLocalUuid(),
                 trainNumber = normalizeForDisplay(input.trainNumber),
-                departure   = localToRfc3339(dep, zone),
-                arrival     = localToRfc3339(arr, zone),
-                duration    = isoDuration(dep, arr, zone),
+                departure   = localToRfc3339Utc(dep, zone),
+                arrival     = localToRfc3339Utc(arr, zone),
+                duration    = durationHms(dep, arr, zone),
                 from        = from,
                 to          = to
             )

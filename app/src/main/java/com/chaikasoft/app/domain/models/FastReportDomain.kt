@@ -14,10 +14,10 @@ package com.chaikasoft.app.domain.models
  */
 data class FastReportDomain(
     val productName: String,
-    val productPrice: Double,
+    val productPrice: Int,
     val addedQuantity: Int,
     val replenishedQuantity: Int,
     val soldCashQuantity: Int,
     val soldCartQuantity: Int,
-    val revenue: Double,
+    val revenue: Int,
 )

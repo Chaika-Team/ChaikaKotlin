@@ -28,6 +28,7 @@ import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.theme.OperationDimens
 import com.chaikasoft.app.ui.viewModels.OperationViewModel
+import com.chaikasoft.app.util.formatPriceOnly
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -125,7 +126,7 @@ fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel
                     summary.type == OperationTypeDomain.SOLD_CART
                 ) {
                     Text(
-                        text = stringResource(R.string.op_total_price_rub, summary.totalPrice),
+                        text = formatPriceOnly(summary.totalPrice),
                         fontWeight = FontWeight.Bold,
                         fontSize = OperationDimens.FooterFontSize,
                         color = Color.Black
@@ -166,7 +167,7 @@ fun ProductRow(item: CartItemDomain, isSale: Boolean) {
         if (isSale) {
             Spacer(modifier = Modifier.width(OperationDimens.QuantityGap))
             Text(
-                text = stringResource(R.string.op_price_rub, item.product.price),
+                text = formatPriceOnly(item.product.price),
                 color = MaterialTheme.colorScheme.secondary
             )
         }

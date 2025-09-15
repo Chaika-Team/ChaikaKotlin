@@ -96,7 +96,7 @@ fun PreviewProductItem() {
             name = "Black Tea",
             description = "Greenfield",
             image = R.drawable.black_tea.toString(),
-            price = 20000.0,
+            price = 20000,
             isInCart = false,
             quantity = 0
         ),

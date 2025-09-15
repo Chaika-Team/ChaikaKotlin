@@ -7,8 +7,13 @@ package com.chaikasoft.app.util
  * @param quantity Количество товара (по умолчанию 1)
  * @return Отформатированная строка с ценой
  */
-fun formatPrice(price: Double, quantity: Int = 1): String {
-    return "%.2f ₽".format(price * quantity)
+
+    //TODO: Согласовать с фронтендером
+fun formatPrice(priceKopecks: Int, quantity: Int = 1): String {
+    val total = priceKopecks.toLong() * quantity.toLong()
+    val rub = total / 100
+    val kop = total % 100
+    return "%d.%02d ₽".format(rub, kop)
 }
 
 /**
@@ -17,6 +22,9 @@ fun formatPrice(price: Double, quantity: Int = 1): String {
  * @param price Цена в рублях
  * @return Отформатированная строка с ценой
  */
-fun formatPriceOnly(price: Double): String {
-    return "%.2f ₽".format(price)
-} 
+    //TODO: Согласовать с фронтендером
+fun formatPriceOnly(priceKopecks: Int): String {
+    val rub = priceKopecks / 100
+    val kop = priceKopecks % 100
+    return "%d.%02d ₽".format(rub, kop)
+}

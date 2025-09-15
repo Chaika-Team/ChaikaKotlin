@@ -33,10 +33,10 @@ import androidx.room.DatabaseView
 )
 data class FastReportView(
     @ColumnInfo(name = "product_name") val productName: String,
-    @ColumnInfo(name = "product_price") val productPrice: Double,
+    @ColumnInfo(name = "product_price") val productPrice: Int,
     @ColumnInfo(name = "added_quantity") val addedQuantity: Int,
     @ColumnInfo(name = "replenished_quantity") val replenishedQuantity: Int,
     @ColumnInfo(name = "sold_cash_quantity") val soldCashQuantity: Int,
     @ColumnInfo(name = "sold_cart_quantity") val soldCartQuantity: Int,
-    @ColumnInfo(name = "revenue") val revenue: Double,
+    @ColumnInfo(name = "revenue") val revenue: Int,
 )

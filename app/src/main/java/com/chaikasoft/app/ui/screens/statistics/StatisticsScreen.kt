@@ -90,7 +90,7 @@ fun StatisticsScreen(
 
 @Composable
 private fun CashSummarySheet(
-    cashRevenue: Double,
+    cashRevenue: Int,
     checks: Int,
     showChecks: Boolean,
     showLabels: Boolean,
@@ -268,11 +268,11 @@ private fun NumericCell(text: String, color: Color, width: Dp, style: TextStyle)
 private fun formatNumber(number: Number): String {
     val nf = NumberFormat.getNumberInstance(Locale.getDefault())
     nf.maximumFractionDigits = 2
-    nf.minimumFractionDigits = if (number is Float || number is Double) 2 else 0
+    nf.minimumFractionDigits = if (number is Int) 2 else 0
     return nf.format(number)
 }
 
-private fun formatCurrency(value: Double): String {
+private fun formatCurrency(value: Int): String {
     val nf = NumberFormat.getCurrencyInstance(Locale("ru", "RU"))
     return nf.format(value)
 }

@@ -28,7 +28,7 @@ import androidx.room.DatabaseView
             c.familyName                  AS conductor_family_name,
             c.givenName                   AS conductor_given_name,
             COALESCE(COUNT(DISTINCT ci.product_id), 0)                   AS product_line_quantity,
-            COALESCE(SUM(ABS(ci.impact) * p.price), 0.0)                 AS total_price
+            COALESCE(SUM(ABS(ci.impact) * p.price), 0)                   AS total_price
         FROM cart_operations o
         LEFT JOIN conductors   c  ON c.id = o.conductor_id
         LEFT JOIN cart_items   ci ON ci.cart_operation_id = o.id
@@ -45,5 +45,5 @@ data class OperationInfoView(
     @ColumnInfo(name = "conductor_family_name") val conductorFamilyName: String,
     @ColumnInfo(name = "conductor_given_name") val conductorGivenName: String,
     @ColumnInfo(name = "product_line_quantity") val productLineQuantity: Int,
-    @ColumnInfo(name = "total_price") val totalPrice: Double,
+    @ColumnInfo(name = "total_price") val totalPrice: Int,
 )
