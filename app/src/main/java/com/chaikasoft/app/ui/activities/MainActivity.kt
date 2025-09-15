@@ -40,6 +40,9 @@ class MainActivity : ComponentActivity() {
                     is Screen.Package -> listOf(
                         MenuItem.REFILL
                     )
+                    is Screen.FindTripByNumber -> listOf(
+                        MenuItem.AUTONOMOUS_TRIP
+                    )
                     else -> emptyList()
                 }
 
@@ -55,6 +58,7 @@ class MainActivity : ComponentActivity() {
                             onMenuItemClick = { item ->
                                 when (item) {
                                     MenuItem.REFILL -> navController.navigate(Routes.PRODUCT_REPLENISH)
+                                    MenuItem.AUTONOMOUS_TRIP -> navController.navigate(Routes.TRIP_AUTONOMOUS)
                                 }
                             }
                         )

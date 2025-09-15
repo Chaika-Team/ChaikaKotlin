@@ -5,11 +5,11 @@ object Routes {
     const val LOADING = "loading"
     const val LOGIN = "login"
     const val TRIP = "trip"
-    const val TRIP_NEW = "trip/graph/new"
+    const val TRIP_MAIN = "trip/graph/main"
+    const val TRIP_AUTONOMOUS = "trip/graph/autonomous"
     const val TRIP_BY_NUMBER = "trip/graph/by_number"
     const val TRIP_BY_STATION = "trip/graph/by_station"
     const val TRIP_SELECT_CARRIAGE = "trip/graph/select_carriage"
-    const val TRIP_CURRENT = "trip/graph/current"
     const val TRIP_GRAPH = "trip/graph"
     const val PRODUCT = "product"
     const val PRODUCT_GRAPH = "product/graph"
@@ -31,7 +31,8 @@ object Routes {
     const val TEMPLATE_EDIT = "template/edit"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, PRODUCT_REPLENISH
+        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, PRODUCT_REPLENISH,
+        TRIP_AUTONOMOUS
     )
 
     val routesWithoutTopBar = setOf(
@@ -40,9 +41,9 @@ object Routes {
 
     val mainRoutes = mapOf(
         TRIP to listOf(
-            TRIP, TRIP_NEW, TRIP_GRAPH,
+            TRIP, TRIP_MAIN, TRIP_GRAPH,
             TRIP_BY_NUMBER, TRIP_BY_STATION,
-            TRIP_SELECT_CARRIAGE, TRIP_CURRENT
+            TRIP_SELECT_CARRIAGE, TRIP_AUTONOMOUS
         ),
         PRODUCT to listOf(
             PRODUCT_ENTRY, PRODUCT,

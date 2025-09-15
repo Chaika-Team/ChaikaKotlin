@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.screens.trip.views
+package com.chaikasoft.app.ui.screens.trip
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,7 +77,7 @@ fun SelectCarriageView(
                                     carriageId = carriage.carNumber.toInt(),
                                     onClick = {
                                         viewModel.setCurrentTrip(carriage = carriage)
-                                        navController.navigate(Routes.TRIP_CURRENT)
+                                        navController.navigate(Routes.TRIP_MAIN)
                                     }
                                 )
                             }

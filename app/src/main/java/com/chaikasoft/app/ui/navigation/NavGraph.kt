@@ -16,11 +16,8 @@ import com.chaikasoft.app.ui.screens.profile.views.FaqsView
 import com.chaikasoft.app.ui.screens.profile.views.FeedbackView
 import com.chaikasoft.app.ui.screens.profile.views.PersonalDataView
 import com.chaikasoft.app.ui.screens.profile.views.SettingsView
-import com.chaikasoft.app.ui.screens.trip.TripScreen
-import com.chaikasoft.app.ui.screens.trip.views.CurrentTripView
-import com.chaikasoft.app.ui.screens.trip.views.FindByNumberView
-import com.chaikasoft.app.ui.screens.trip.views.NewTripView
-import com.chaikasoft.app.ui.screens.trip.views.SelectCarriageView
+import com.chaikasoft.app.ui.screens.trip.FindByNumberView
+import com.chaikasoft.app.ui.screens.trip.SelectCarriageView
 import com.chaikasoft.app.ui.viewModels.AuthViewModel
 import com.chaikasoft.app.ui.viewModels.ProductViewModel
 import com.chaikasoft.app.ui.viewModels.TripViewModel
@@ -30,8 +27,11 @@ import com.chaikasoft.app.ui.screens.product.ProductReplenishView
 import com.chaikasoft.app.ui.screens.product.TemplateDetailView
 import com.chaikasoft.app.ui.screens.product.TemplateEditView
 import com.chaikasoft.app.ui.screens.product.TemplateSearchView
+import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
+import com.chaikasoft.app.ui.screens.trip.MainTripView
 import com.chaikasoft.app.ui.screens.util.ErrorScreen
 import com.chaikasoft.app.ui.screens.util.LoadingScreen
+import com.chaikasoft.app.ui.viewModels.AutonomousViewModel
 import com.chaikasoft.app.ui.viewModels.ConductorViewModel
 import com.chaikasoft.app.ui.viewModels.FillViewModel
 import com.chaikasoft.app.ui.viewModels.PackageViewModel
@@ -53,27 +53,27 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         }
 
         navigation(
-            startDestination = Routes.TRIP,
+            startDestination = Routes.TRIP_MAIN,
             route = Routes.TRIP_GRAPH
         ) {
-            composable(Routes.TRIP) { backStackEntry ->
+            composable(Routes.TRIP_MAIN) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.TRIP_GRAPH)
                 }
                 val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
-                TripScreen(
+                MainTripView(
                     viewModel = tripViewModel,
                     navController = navController
                 )
             }
 
-            composable(Routes.TRIP_NEW) { backStackEntry ->
+            composable(Routes.TRIP_AUTONOMOUS) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.TRIP_GRAPH)
                 }
-                val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
-                NewTripView(
-                    viewModel = tripViewModel,
+                val autonomousViewModel = hiltViewModel<AutonomousViewModel>(parentEntry)
+                AutonomousTripScreen(
+                    viewModel = autonomousViewModel,
                     navController = navController
                 )
             }
@@ -95,17 +95,6 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 }
                 val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
                 SelectCarriageView(
-                    viewModel = tripViewModel,
-                    navController = navController
-                )
-            }
-
-            composable(route = Routes.TRIP_CURRENT) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.TRIP_GRAPH)
-                }
-                val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
-                CurrentTripView(
                     viewModel = tripViewModel,
                     navController = navController
                 )
