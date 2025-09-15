@@ -223,7 +223,7 @@ fun CartProductItemPreview() {
                 name = "Яблочный сок",
                 description = "Свежий яблочный сок",
                 image = "",
-                price = 120.0,
+                price = 120,
                 isInCart = true,
                 quantity = 2
             ),
@@ -246,7 +246,7 @@ fun CartProductItemNotInCartPreview() {
                 name = "Черный чай",
                 description = "Ароматный черный чай",
                 image = "",
-                price = 85.0,
+                price = 85,
                 isInCart = false,
                 quantity = 1
             ),

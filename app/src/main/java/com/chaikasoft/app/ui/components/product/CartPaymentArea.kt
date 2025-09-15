@@ -15,11 +15,12 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.ProductDimens
 import androidx.compose.ui.res.stringResource
 import com.chaikasoft.app.R
+import com.chaikasoft.app.util.formatPriceOnly
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartPaymentArea(
-    totalCost: Double,
+    totalCost: Int,
     conductors: List<ConductorDomain?>,
     selectedConductor: ConductorDomain?,
     onConductorSelected: (ConductorDomain?) -> Unit,
@@ -56,7 +57,7 @@ fun CartPaymentArea(
                 )
 
                 Text(
-                    text = "%.2f ₽".format(totalCost),
+                    text = formatPriceOnly(totalCost),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = ProductDimens.TitleFontSizeL
@@ -146,7 +147,7 @@ fun CartPaymentAreaPreview() {
     var selected by remember { mutableStateOf<ConductorDomain?>(conductors.first()) }
     ChaikaTheme {
         CartPaymentArea(
-            totalCost = 240.0,
+            totalCost = 240,
             conductors = conductors,
             selectedConductor = selected,
             onConductorSelected = { selected = it },

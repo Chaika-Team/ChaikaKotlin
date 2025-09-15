@@ -6,6 +6,9 @@ import com.chaikasoft.app.domain.models.report.CartOperationReport
 import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.domain.models.report.CartItemReport
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 // Преобразование Int в OperationType с использованием ordinal
@@ -16,11 +19,11 @@ fun Int.toOperationType(): OperationTypeDomain =
 // Преобразование OperationType в Int с использованием ordinal
 fun OperationTypeDomain.toInt(): Int = this.ordinal
 
-// Утилита для получения текущего времени в формате ISO 8601
-fun getCurrentTime(): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-    return dateFormat.format(System.currentTimeMillis())
-}
+// Утилита для получения текущего времени
+fun getCurrentTime(): String =
+    DateTimeFormatter.ISO_INSTANT.format(
+        Instant.now().truncatedTo(ChronoUnit.SECONDS)
+    )
 
 fun CartOperation.toDomain(): CartOperationDomain =
     CartOperationDomain(

@@ -22,10 +22,10 @@ class StatisticsViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     /** Выручка по наличным = сумма (цена * продано наличными) */
-    val cashRevenue: StateFlow<Double> =
+    val cashRevenue: StateFlow<Int> =
         reports
             .map { list -> list.sumOf { it.productPrice * it.soldCashQuantity } }
-            .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+            .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
     private val _cashChecksCount = MutableStateFlow(0)
     val cashChecksCount: StateFlow<Int> = _cashChecksCount.asStateFlow()

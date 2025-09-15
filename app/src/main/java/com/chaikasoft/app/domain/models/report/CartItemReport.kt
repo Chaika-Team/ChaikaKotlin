@@ -14,5 +14,5 @@ import com.squareup.moshi.JsonClass
 data class CartItemReport(
     @Json(name = "product_id") val productId: Int,
     @Json(name = "quantity") val quantity: Int,
-    @Json(name = "price") val price: Double
+    @Json(name = "price") val price: Int
 )

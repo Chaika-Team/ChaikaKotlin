@@ -6,5 +6,5 @@ data class OperationSummaryDomain(
     val timeIso: String,
     val conductor: ConductorDomain,
     val productLineQuantity: Int, // <-- число РАЗНЫХ товаров в операции
-    val totalPrice: Double        // сумма |impact| * price (для быстрого отображения)
+    val totalPrice: Int        // сумма |impact| * price (для быстрого отображения)
 )

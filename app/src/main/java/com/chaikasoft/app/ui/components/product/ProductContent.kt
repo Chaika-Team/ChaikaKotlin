@@ -75,7 +75,7 @@ fun ProductContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotInCartContent(
-    price: Double,
+    price: Int,
     description: String,
     onAddToCart: () -> Unit,
 ) {
@@ -123,7 +123,7 @@ private fun NotInCartContent(
 
 @Composable
 private fun InCartContent(
-    price: Double,
+    price: Int,
     quantity: Int,
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit
