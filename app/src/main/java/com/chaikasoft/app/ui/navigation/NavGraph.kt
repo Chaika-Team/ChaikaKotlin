@@ -1,16 +1,23 @@
 package com.chaikasoft.app.ui.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.chaikasoft.app.ui.screens.operation.OperationScreen
-import com.chaikasoft.app.ui.screens.profile.ProfileScreen
 import com.chaikasoft.app.ui.screens.auth.LoginScreen
+import com.chaikasoft.app.ui.screens.operation.OperationScreen
 import com.chaikasoft.app.ui.screens.product.ProductCartView
 import com.chaikasoft.app.ui.screens.product.ProductEntryView
 import com.chaikasoft.app.ui.screens.product.ProductPackageView
+import com.chaikasoft.app.ui.screens.product.ProductReplenishView
+import com.chaikasoft.app.ui.screens.product.TemplateDetailView
+import com.chaikasoft.app.ui.screens.product.TemplateEditView
+import com.chaikasoft.app.ui.screens.product.TemplateSearchView
+import com.chaikasoft.app.ui.screens.profile.ProfileScreen
 import com.chaikasoft.app.ui.screens.profile.views.AboutView
 import com.chaikasoft.app.ui.screens.profile.views.FaqsView
 import com.chaikasoft.app.ui.screens.profile.views.FeedbackView
@@ -18,26 +25,25 @@ import com.chaikasoft.app.ui.screens.profile.views.PersonalDataView
 import com.chaikasoft.app.ui.screens.profile.views.SettingsView
 import com.chaikasoft.app.ui.screens.trip.FindByNumberView
 import com.chaikasoft.app.ui.screens.trip.SelectCarriageView
-import com.chaikasoft.app.ui.viewModels.AuthViewModel
-import com.chaikasoft.app.ui.viewModels.ProductViewModel
-import com.chaikasoft.app.ui.viewModels.TripViewModel
-import com.chaikasoft.app.ui.viewModels.TemplateViewModel
-import androidx.compose.runtime.*
-import com.chaikasoft.app.ui.screens.product.ProductReplenishView
-import com.chaikasoft.app.ui.screens.product.TemplateDetailView
-import com.chaikasoft.app.ui.screens.product.TemplateEditView
-import com.chaikasoft.app.ui.screens.product.TemplateSearchView
 import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
 import com.chaikasoft.app.ui.screens.trip.MainTripView
 import com.chaikasoft.app.ui.screens.util.ErrorScreen
 import com.chaikasoft.app.ui.screens.util.LoadingScreen
+import com.chaikasoft.app.ui.viewModels.AuthViewModel
+import com.chaikasoft.app.ui.viewModels.StatisticsViewModel
+import com.chaikasoft.app.ui.viewModels.TripViewModel
 import com.chaikasoft.app.ui.viewModels.AutonomousViewModel
 import com.chaikasoft.app.ui.viewModels.ConductorViewModel
 import com.chaikasoft.app.ui.viewModels.FillViewModel
+import com.chaikasoft.app.ui.viewModels.OperationViewModel
 import com.chaikasoft.app.ui.viewModels.PackageViewModel
+import com.chaikasoft.app.ui.viewModels.ProductViewModel
 import com.chaikasoft.app.ui.viewModels.ReplenishItemsViewModel
 import com.chaikasoft.app.ui.viewModels.ReplenishViewModel
 import com.chaikasoft.app.ui.viewModels.SaleViewModel
+import com.chaikasoft.app.ui.viewModels.TemplateViewModel
+import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
+import androidx.compose.runtime.*
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -192,8 +198,30 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
 
-        composable(route = Routes.OPERATION) {
-            OperationScreen()
+        navigation(
+            startDestination = Routes.STATISTICS,
+            route = Routes.STATISTICS_GRAPH
+        ) {
+            composable(route = Routes.STATISTICS) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.STATISTICS_GRAPH)
+                }
+                val statisticsViewModel = hiltViewModel<StatisticsViewModel>(parentEntry)
+                StatisticsScreen(viewModel = statisticsViewModel)
+            }
+        }
+
+        navigation(
+            startDestination = Routes.OPERATION,
+            route = Routes.OPERATION_GRAPH
+        ) {
+            composable(route = Routes.OPERATION) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.OPERATION_GRAPH)
+                }
+                val operationViewModel = hiltViewModel<OperationViewModel>(parentEntry)
+                OperationScreen(viewModel = operationViewModel)
+            }
         }
 
         navigation(

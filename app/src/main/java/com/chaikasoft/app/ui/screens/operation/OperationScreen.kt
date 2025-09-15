@@ -13,7 +13,9 @@ import com.chaikasoft.app.ui.components.operation.OperationCard
 import com.chaikasoft.app.ui.viewModels.OperationViewModel
 
 @Composable
-fun OperationScreen(viewModel: OperationViewModel = hiltViewModel()) {
+fun OperationScreen(
+    viewModel: OperationViewModel
+) {
     val operations = viewModel.operations.collectAsLazyPagingItems()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
