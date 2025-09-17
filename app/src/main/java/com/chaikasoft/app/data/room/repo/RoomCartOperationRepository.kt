@@ -8,7 +8,7 @@ import com.chaikasoft.app.data.room.dao.CartOperationDao
 import com.chaikasoft.app.data.room.mappers.toCartDomain
 import com.chaikasoft.app.data.room.mappers.toDomain
 import com.chaikasoft.app.data.room.mappers.toInt
-import com.chaikasoft.app.data.room.mappers.toReport
+import com.chaikasoft.app.data.room.mappers.toReportPair
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
@@ -22,11 +22,9 @@ class RoomCartOperationRepository @Inject constructor(
 ) : RoomCartOperationRepositoryInterface {
 
     override fun getCartOperationReportsWithIds(): Flow<List<Pair<Int, CartOperationReport>>> {
-        return cartOperationDao.getAllOperations().map { operations ->
-            operations.map { operation ->
-                operation.id to operation.toReport(emptyList())
-            }
-        }
+        return cartOperationDao
+            .getOperationsWithConductorForReport()
+            .map { rows -> rows.map { it.toReportPair() } } // <- маппер
     }
 
     override fun getPagedOperationSummaries(config: PagingConfig): Flow<PagingData<OperationSummaryDomain>> {

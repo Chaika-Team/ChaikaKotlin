@@ -10,6 +10,7 @@ import androidx.room.Transaction
 import com.chaikasoft.app.data.room.entities.CartOperation
 import com.chaikasoft.app.data.room.entities.OperationInfoView
 import com.chaikasoft.app.data.room.relations.CartItemWithProduct
+import com.chaikasoft.app.data.room.relations.CartOperationWithConductor
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -46,6 +47,15 @@ interface CartOperationDao {
     fun observeItemsWithProducts(
         operationId: Int
     ): Flow<List<CartItemWithProduct>>
+
+    /** Шапки для отчёта: операция + её проводник (через @Relation). */
+    @Transaction
+    @Query("""
+        SELECT *
+        FROM cart_operations
+        ORDER BY operation_time ASC, id ASC
+    """)
+    fun getOperationsWithConductorForReport(): Flow<List<CartOperationWithConductor>>
 
     /** Одноразовый счётчик по типу операции */
     @Query("SELECT COUNT(*) FROM cart_operations WHERE operation_type = :type")

@@ -1,6 +1,7 @@
 package com.chaikasoft.app.data.room.mappers
 
 import com.chaikasoft.app.data.room.entities.CartOperation
+import com.chaikasoft.app.data.room.relations.CartOperationWithConductor
 import com.chaikasoft.app.domain.models.CartOperationDomain
 import com.chaikasoft.app.domain.models.report.CartOperationReport
 import com.chaikasoft.app.domain.models.OperationTypeDomain
@@ -39,11 +40,17 @@ fun CartOperationDomain.toEntity(): CartOperation =
         conductorId = this.conductorId,
     )
 
-// Репорт-модель для отчётов
-fun CartOperation.toReport(items: List<CartItemReport>): CartOperationReport =
-    CartOperationReport(
-        employeeID = this.conductorId.toString(), // Временно передаём conductorId, заменим позже
-        operationType = this.operationType,
-        operationTime = this.operationTime,
-        items = items,
+/** Новый «правильный» отчётный маппинг с внешним employee_id из Relation. */
+fun CartOperationWithConductor.toReportHeader(): CartOperationReport {
+    val employeeId = conductor?.employeeID ?: operation.conductorId.toString()
+    return CartOperationReport(
+        employeeID    = employeeId,
+        operationType = operation.operationType,
+        operationTime = operation.operationTime,
+        items         = emptyList() // см. пояснение ниже
     )
+}
+
+/** Помощник для сохранения старого контракта репозитория (id + шапка). */
+fun CartOperationWithConductor.toReportPair(): Pair<Int, CartOperationReport> =
+    operation.id to this.toReportHeader()
