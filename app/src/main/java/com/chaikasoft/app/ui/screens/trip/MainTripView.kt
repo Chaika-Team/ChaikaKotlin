@@ -9,10 +9,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.CurrentTripCard
 import com.chaikasoft.app.ui.components.trip.HistoryRecordCard
@@ -26,8 +26,8 @@ fun MainTripView(
     viewModel: TripViewModel,
     navController: NavController,
 ) {
-    val history by viewModel.pagingHistoryFlow.collectAsState()
-    val selectedTrip by viewModel.selectedTripRecord.collectAsState()
+    val history by viewModel.pagingHistoryFlow.collectAsStateWithLifecycle()
+    val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadHistory()

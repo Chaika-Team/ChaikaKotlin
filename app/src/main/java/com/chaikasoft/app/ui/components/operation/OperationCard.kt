@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
@@ -36,8 +37,8 @@ import kotlin.math.abs
 
 @Composable
 fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel) {
-    val itemsFlow = remember { viewModel.getItems(summary.id) }
-    val cart by itemsFlow.collectAsState(initial = null)
+    val itemsFlow = remember(summary.id) { viewModel.getItems(summary.id) }
+    val cart by itemsFlow.collectAsStateWithLifecycle(initialValue = null)
 
     Card(
         modifier = Modifier

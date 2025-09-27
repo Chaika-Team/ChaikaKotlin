@@ -58,25 +58,28 @@ class StartAuthorizationUseCase
  * сохраняет его через tokenManager и возвращает access token.
  */
 class HandleAuthorizationResponseUseCase
-    @Inject
-    constructor(
-        private val oAuthManager: OAuthManager,
-        private val tokenManager: EncryptedTokenManagerInterface,
-    ) {
-        suspend operator fun invoke(intent: Intent): String =
-            suspendCancellableCoroutine { cont ->
-                oAuthManager.handleAuthorizationResponse(intent) { token ->
-                    if (token.isNotEmpty()) {
-                        // Сохраняем полученный токен
-                        tokenManager.saveToken(token)
-                        cont.resume(token)
-                    } else {
-                        cont.resumeWithException(Exception("Получен пустой токен"))
-                    }
-                }
-                // При отмене корутины можно добавить обработку отмены, если необходимо.
+@Inject constructor(
+    private val oAuthManager: OAuthManager,
+    private val tokenManager: EncryptedTokenManagerInterface,
+) {
+    suspend operator fun invoke(intent: Intent): String {
+        // 1) Получаем токен из OAuth асинхронно, без диска/сети здесь
+        val token = suspendCancellableCoroutine { cont ->
+            oAuthManager.handleAuthorizationResponse(intent) { t ->
+                if (!cont.isActive) return@handleAuthorizationResponse
+                if (t.isNotEmpty()) cont.resume(t)
+                else cont.resumeWithException(IllegalStateException("Получен пустой токен"))
             }
+            // cont.invokeOnCancellation { ... } — при необходимости отмены
+        }
+
+        // 2) Сохраняем токен на IO
+        return withContext(Dispatchers.IO) {
+            tokenManager.saveToken(token)
+            token
+        }
     }
+}
 
 /**
  * Use case для получения сохранённого access token.

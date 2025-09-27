@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+
 
 package com.chaikasoft.app.ui.screens.trip
 
@@ -27,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.navigation.Routes
 import java.time.LocalDate
@@ -39,7 +40,7 @@ fun AutonomousTripScreen(
     viewModel: AutonomousViewModel,
     navController: NavController
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {

@@ -3,6 +3,7 @@ package com.chaikasoft.app.ui.navigation
 object Routes {
     const val ERROR = "error"
     const val LOADING = "loading"
+    const val AUTH_GRAPH = "auth/graph"
     const val LOGIN = "login"
     const val TRIP = "trip"
     const val TRIP_MAIN = "trip/graph/main"
@@ -34,7 +35,7 @@ object Routes {
     const val TEMPLATE_EDIT = "template/edit"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, PRODUCT_REPLENISH,
+        LOGIN,LOADING, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, PRODUCT_REPLENISH,
         TRIP_AUTONOMOUS
     )
 

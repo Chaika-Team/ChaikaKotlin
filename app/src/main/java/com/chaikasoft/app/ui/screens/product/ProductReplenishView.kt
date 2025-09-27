@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
@@ -35,11 +35,11 @@ fun ProductReplenishView(
     replenishItemsViewModel: ReplenishItemsViewModel,
     navController: NavHostController,
 ) {
-    val conductor = conductorViewModel.conductor.collectAsState()
+    val conductor = conductorViewModel.conductor.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     val displayProducts = remember(replenishViewModel.items) {
         replenishItemsViewModel.getDisplayProducts(replenishViewModel.items)
-    }.collectAsState()
+    }.collectAsStateWithLifecycle()
     Scaffold { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             Column(

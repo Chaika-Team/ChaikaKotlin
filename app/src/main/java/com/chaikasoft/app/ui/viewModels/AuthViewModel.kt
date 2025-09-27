@@ -12,12 +12,29 @@ import com.chaikasoft.app.domain.usecases.GetAccessTokenUseCase
 import com.chaikasoft.app.domain.usecases.LogoutUseCase
 import com.chaikasoft.app.domain.usecases.StartAuthorizationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+// ---- Машина состояний авторизации ----
+sealed interface AuthState {
+    data object Checking : AuthState
+    data object Unauthenticated : AuthState
+    data object Authenticated : AuthState
+}
+
+// ---- UI-состояние для экрана(ов) авторизации/профиля ----
+data class AuthUiState(
+    val state: AuthState = AuthState.Checking,
+    val errorMessage: String? = null,
+    val showLogoutErrorDialog: Boolean = false,
+    val showActiveShiftDialog: Boolean = false,
+    val logoutErrorMessage: String? = null
+)
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -31,95 +48,117 @@ class AuthViewModel @Inject constructor(
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     init {
-        Log.i("AuthViewModel", "AuthViewModel launched")
+        Log.i("AuthViewModel", "init -> checkAuthStatus")
         checkAuthStatus()
     }
 
+    // -------- Публичные API --------
+
+    /** Запускает внешнюю активити/интент авторизации. Состояние тут не меняем. */
     fun startAuth(): Intent {
-        Log.i("AuthViewModel", "startAuth")
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        _uiState.update { it.copy(errorMessage = null) }
         return startAuthorizationUseCase()
     }
 
+    /** Обрабатывает результат авторизации. Корень приложения сам переключит граф по state. */
     fun handleAuthResult(intent: Intent) {
-        Log.i("AuthViewModel", "handleAuthResult")
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                val (_, conductor) = completeAuthorizationFlowUseCase(intent)
+            setState(AuthState.Checking)
+            runCatching {
+                completeAuthorizationFlowUseCase(intent)
+            }.onSuccess { (_, conductor) ->
                 if (conductor.id != null) {
-                    onAuthenticated()
-                    Log.i("AuthViewModel", "finished handleAuthResult")
+                    setState(AuthState.Authenticated)
+                    Log.i("AuthViewModel", "Authorization completed, state=Authenticated")
                 } else {
-                    throw IllegalStateException("Conductor data not saved properly")
+                    setState(AuthState.Unauthenticated)
+                    _uiState.update { it.copy(errorMessage = "Conductor data not saved properly") }
+                    Log.w("AuthViewModel", "Authorization completed but conductor.id == null")
                 }
-            } catch (e: Exception) {
-                onException(e)
+            }.onFailure { e ->
+                if (e is CancellationException) throw e
+                // best-effort очистка, не эскалируем ошибку этой операции
+                runCatching { logoutUseCase() }
+                    .onFailure { Log.w("AuthViewModel", "logoutUseCase after auth failure failed", it) }
+
+                setState(AuthState.Unauthenticated)
+                _uiState.update { it.copy(errorMessage = e.message ?: "Authorization failed") }
+                Log.e("AuthViewModel", "Authorization flow failed", e)
             }
         }
     }
 
+    /** Проверка токена при старте приложения. */
     private fun checkAuthStatus() {
-        Log.i("AuthViewModel", "checkAuthStatus")
         viewModelScope.launch {
-            try {
-                val token = getAccessTokenUseCase()
+            setState(AuthState.Checking)
+            runCatching {
+                getAccessTokenUseCase()
+            }.onSuccess { token ->
                 if (token != null) {
-                    onAuthenticated()
+                    setState(AuthState.Authenticated)
+                    Log.i("AuthViewModel", "Token found -> Authenticated")
                 } else {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            isAuthenticated = false
-                        )
-                    }
+                    setState(AuthState.Unauthenticated)
+                    Log.i("AuthViewModel", "No token -> Unauthenticated")
                 }
-            } catch (e: Exception) {
-                onException(e)
+            }.onFailure { e ->
+                if (e is CancellationException) throw e
+                setState(AuthState.Unauthenticated)
+                _uiState.update { it.copy(errorMessage = e.message ?: "Authorization check failed") }
+                Log.e("AuthViewModel", "checkAuthStatus failed", e)
             }
         }
     }
 
+    /** Логаут пользователя. Ветвление по результату (shift/ошибка) сохраняем. */
     fun logout() {
-        Log.i("AuthViewModel", "logout")
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                val logoutResult = logoutUseCase()
-
-                when (logoutResult) {
+            runCatching {
+                logoutUseCase()
+            }.onSuccess { result ->
+                when (result) {
                     Success -> {
+                        setState(AuthState.Unauthenticated)
                         _uiState.update {
                             it.copy(
-                                isAuthenticated = false,
-                                isLoading = false,
                                 showLogoutErrorDialog = false,
-                                showActiveShiftDialog = false
+                                showActiveShiftDialog = false,
+                                logoutErrorMessage = null
                             )
                         }
+                        Log.i("AuthViewModel", "Logout success -> Unauthenticated")
                     }
                     ActiveShiftExists -> {
                         _uiState.update {
                             it.copy(
-                                isLoading = false,
                                 showActiveShiftDialog = true,
                                 showLogoutErrorDialog = false
                             )
                         }
+                        Log.i("AuthViewModel", "Logout blocked: active shift exists")
                     }
                     is Failure -> {
                         _uiState.update {
                             it.copy(
-                                isLoading = false,
                                 showLogoutErrorDialog = true,
-                                logoutErrorMessage = logoutResult.reason,
+                                logoutErrorMessage = result.reason,
                                 showActiveShiftDialog = false
                             )
                         }
+                        Log.w("AuthViewModel", "Logout failure: ${result.reason}")
                     }
                 }
-            } catch (e: Exception) {
-                onLogoutException(e)
+            }.onFailure { e ->
+                if (e is CancellationException) throw e
+                _uiState.update {
+                    it.copy(
+                        showLogoutErrorDialog = true,
+                        logoutErrorMessage = e.message ?: "Logout failed",
+                        showActiveShiftDialog = false
+                    )
+                }
+                Log.e("AuthViewModel", "Logout exception", e)
             }
         }
     }
@@ -136,51 +175,8 @@ class AuthViewModel @Inject constructor(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onNavigationHandled() {
-        _uiState.update { it.copy(isAuthenticated = true) }
-    }
-
-    private fun onAuthenticated() {
-        Log.i("AuthViewModel", "onAuthenticated")
-        _uiState.update {
-            it.copy(
-                isAuthenticated = true,
-                isLoading = false
-            )
-        }
-        Log.i("AuthViewModel", "finished onAuthenticated")
-    }
-
-    private suspend fun onException(e: Exception) {
-        Log.e("AuthViewModel", "Authorization flow failed", e)
-        runCatching { logoutUseCase() }
-            .onFailure { Log.w("AuthViewModel", "Logout after auth failure failed", it) }
-        _uiState.update {
-            it.copy(
-                isLoading = false,
-                isAuthenticated = false,
-                errorMessage = e.message ?: "Authorization failed"
-            )
-        }
-    }
-
-    private fun onLogoutException(e: Exception) {
-        _uiState.update {
-            it.copy(
-                isLoading = false,
-                showLogoutErrorDialog = true,
-                logoutErrorMessage = e.message ?: "Logout failed",
-                showActiveShiftDialog = false
-            )
-        }
+    // -------- Вспомогательное --------
+    private fun setState(newState: AuthState) {
+        _uiState.update { it.copy(state = newState) }
     }
 }
-
-data class AuthUiState(
-    val isLoading: Boolean = false,
-    val isAuthenticated: Boolean = false,
-    val errorMessage: String? = null,
-    val showLogoutErrorDialog: Boolean = false,
-    val showActiveShiftDialog: Boolean = false,
-    val logoutErrorMessage: String? = null
-)

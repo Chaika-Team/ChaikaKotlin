@@ -11,13 +11,13 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.ui.components.profile.ProfileMenuItem
@@ -37,7 +37,7 @@ fun MainProfileView(
     conductor: ConductorDomain?,
     navController: NavHostController
 ) {
-    val uiState by authViewModel.uiState.collectAsState()
+    val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier

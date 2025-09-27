@@ -19,7 +19,7 @@ import com.chaikasoft.app.ui.components.topBar.MenuItem
 import com.chaikasoft.app.ui.viewModels.AuthViewModel
 import com.chaikasoft.app.ui.components.topBar.TopBar
 import com.chaikasoft.app.ui.navigation.Routes
-import com.example.chaika.ui.components.bottomBar.BottomBar
+import com.chaikasoft.app.ui.components.bottomBar.BottomBar
 import com.chaikasoft.app.ui.navigation.NavGraph
 
 @AndroidEntryPoint
@@ -33,16 +33,11 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
-
                 val currentScreen = Screen.fromRoute(currentRoute)
 
                 val menuItems = when (currentScreen) {
-                    is Screen.Package -> listOf(
-                        MenuItem.REFILL
-                    )
-                    is Screen.FindTripByNumber -> listOf(
-                        MenuItem.AUTONOMOUS_TRIP
-                    )
+                    is Screen.Package -> listOf(MenuItem.REFILL)
+                    is Screen.FindTripByNumber -> listOf(MenuItem.AUTONOMOUS_TRIP)
                     else -> emptyList()
                 }
 
@@ -52,9 +47,7 @@ class MainActivity : ComponentActivity() {
                             currentScreen = currentScreen,
                             currentRoute = currentRoute,
                             navController = navController,
-                            menuItems = if (currentScreen.showMenuIcon == true) {
-                                menuItems
-                            } else emptyList(),
+                            menuItems = if (currentScreen.showMenuIcon) menuItems else emptyList(),
                             onMenuItemClick = { item ->
                                 when (item) {
                                     MenuItem.REFILL -> navController.navigate(Routes.PRODUCT_REPLENISH)
