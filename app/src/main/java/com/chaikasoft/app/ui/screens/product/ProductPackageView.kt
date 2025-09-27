@@ -14,12 +14,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.chaikasoft.app.ui.components.product.CartFAB
 import com.chaikasoft.app.ui.components.product.ProductComponent
@@ -35,8 +35,8 @@ fun ProductPackageView(
     saleViewModel: SaleViewModel,
     navController: NavHostController,
 ) {
-    val packageItems = packageViewModel.productsFlow.collectAsState()
-    val cartItems by saleViewModel.items.collectAsState()
+    val packageItems = packageViewModel.productsFlow.collectAsStateWithLifecycle()
+    val cartItems by saleViewModel.items.collectAsStateWithLifecycle()
     val isLoading = false
 
     DisposableEffect(Unit) {

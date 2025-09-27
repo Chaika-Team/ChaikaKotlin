@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.FastReportDomain
 import com.chaikasoft.app.ui.components.statistics.HeaderIconCell
@@ -42,9 +43,9 @@ fun StatisticsScreen(
     modifier: Modifier = Modifier,
     viewModel: StatisticsViewModel = hiltViewModel()
 ) {
-    val reports by viewModel.reports.collectAsState()
-    val cashRevenue by viewModel.cashRevenue.collectAsState()
-    val cashChecks by viewModel.cashChecksCount.collectAsState()
+    val reports by viewModel.reports.collectAsStateWithLifecycle()
+    val cashRevenue by viewModel.cashRevenue.collectAsStateWithLifecycle()
+    val cashChecks by viewModel.cashChecksCount.collectAsStateWithLifecycle()
 
     val sharedHScroll = rememberScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()

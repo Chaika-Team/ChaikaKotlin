@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.FoundTripCard
 import com.chaikasoft.app.ui.viewModels.TripViewModel
@@ -37,7 +38,7 @@ fun FindByNumberView(
         mutableStateOf<StationDomain?>(null)
     }
 
-    val foundTrips by viewModel.foundTripsList.collectAsState()
+    val foundTrips by viewModel.foundTripsList.collectAsStateWithLifecycle()
 
     LaunchedEffect(searchDate, searchStart, searchFinish) {
         delay(500)

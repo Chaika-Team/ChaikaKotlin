@@ -1,9 +1,12 @@
 package com.chaikasoft.app.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,35 +32,66 @@ import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
 import com.chaikasoft.app.ui.screens.trip.MainTripView
 import com.chaikasoft.app.ui.screens.util.ErrorScreen
 import com.chaikasoft.app.ui.screens.util.LoadingScreen
-import com.chaikasoft.app.ui.viewModels.AuthViewModel
-import com.chaikasoft.app.ui.viewModels.StatisticsViewModel
-import com.chaikasoft.app.ui.viewModels.TripViewModel
-import com.chaikasoft.app.ui.viewModels.AutonomousViewModel
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.viewModels.FillViewModel
-import com.chaikasoft.app.ui.viewModels.OperationViewModel
-import com.chaikasoft.app.ui.viewModels.PackageViewModel
-import com.chaikasoft.app.ui.viewModels.ProductViewModel
-import com.chaikasoft.app.ui.viewModels.ReplenishItemsViewModel
-import com.chaikasoft.app.ui.viewModels.ReplenishViewModel
-import com.chaikasoft.app.ui.viewModels.SaleViewModel
-import com.chaikasoft.app.ui.viewModels.TemplateViewModel
 import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
-import androidx.compose.runtime.*
+import com.chaikasoft.app.ui.viewModels.*
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
+fun NavGraph(
+    navController: NavHostController,
+    authViewModel: AuthViewModel
+) {
+    // 1) Слушаем единое состояние авторизации
+    val ui by authViewModel.uiState.collectAsStateWithLifecycle()
+
+    // 2) При смене state — переключаем стек на нужный корневой граф
+    LaunchedEffect(ui.state) {
+        when (ui.state) {
+            AuthState.Checking -> {
+                navController.navigate(Routes.LOADING) {
+                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            AuthState.Unauthenticated -> {
+                navController.navigate(Routes.AUTH_GRAPH) {
+                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            AuthState.Authenticated -> {
+                navController.navigate(Routes.TRIP_GRAPH) {
+                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
+
+    // 3) Единый NavHost со стабильным стартом LOADING
     NavHost(
         navController = navController,
-        startDestination = Routes.LOGIN
+        startDestination = Routes.LOADING
     ) {
-        composable(Routes.LOGIN) { _ ->
-            LoginScreen(
-                navController = navController,
-                viewModel = authViewModel
-            )
+        // --- LOADING (пока идёт проверка токена) ---
+        composable(Routes.LOADING) {
+            LoadingScreen()
         }
 
+        // --- AUTH GRAPH ---
+        navigation(
+            startDestination = Routes.LOGIN,
+            route = Routes.AUTH_GRAPH
+        ) {
+            composable(Routes.LOGIN) {
+                // ВАЖНО: LoginScreen больше не знает про navController
+                LoginScreen(
+                    viewModel = authViewModel
+                )
+            }
+        }
+
+        // --- MAIN / TRIP GRAPH ---
         navigation(
             startDestination = Routes.TRIP_MAIN,
             route = Routes.TRIP_GRAPH
@@ -107,11 +141,12 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
 
+        // --- PRODUCT GRAPH ---
         navigation(
             startDestination = Routes.PRODUCT_ENTRY,
             route = Routes.PRODUCT_GRAPH
         ) {
-            composable(route = Routes.PRODUCT_ENTRY) { _ ->
+            composable(route = Routes.PRODUCT_ENTRY) {
                 ProductEntryView(navController = navController)
             }
 
@@ -198,6 +233,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
 
+        // --- STATISTICS GRAPH ---
         navigation(
             startDestination = Routes.STATISTICS,
             route = Routes.STATISTICS_GRAPH
@@ -211,6 +247,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
 
+        // --- OPERATION GRAPH ---
         navigation(
             startDestination = Routes.OPERATION,
             route = Routes.OPERATION_GRAPH
@@ -224,6 +261,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
 
+        // --- PROFILE GRAPH ---
         navigation(
             startDestination = Routes.PROFILE,
             route = Routes.PROFILE_GRAPH
@@ -244,29 +282,16 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     navController.getBackStackEntry(Routes.PROFILE_GRAPH)
                 }
                 val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
-                val conductor by conductorViewModel.conductor.collectAsState()
+                val conductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
                 PersonalDataView(conductor = conductor)
             }
-            composable(Routes.PROFILE_SETTINGS) { _ ->
-                SettingsView()
-            }
-            composable(Routes.PROFILE_FAQS) { _ ->
-                FaqsView()
-            }
-            composable(Routes.PROFILE_FEEDBACK) { _ ->
-                FeedbackView()
-            }
-            composable(Routes.PROFILE_ABOUT) { _ ->
-                AboutView()
-            }
+            composable(Routes.PROFILE_SETTINGS) { SettingsView() }
+            composable(Routes.PROFILE_FAQS) { FaqsView() }
+            composable(Routes.PROFILE_FEEDBACK) { FeedbackView() }
+            composable(Routes.PROFILE_ABOUT) { AboutView() }
         }
 
-        composable(route = Routes.ERROR) { backStackEntry ->
-            ErrorScreen()
-        }
-
-        composable(route = Routes.LOADING) { backStackEntry ->
-            LoadingScreen()
-        }
+        // --- ERROR ---
+        composable(route = Routes.ERROR) { ErrorScreen() }
     }
 }

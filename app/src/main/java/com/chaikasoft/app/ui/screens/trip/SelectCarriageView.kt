@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,14 +22,15 @@ import com.chaikasoft.app.ui.viewModels.TripViewModel
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun SelectCarriageView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
-    val isLoading by viewModel.isLoading.collectAsState()
-    val carriages by viewModel.carriageList.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val carriages by viewModel.carriageList.collectAsStateWithLifecycle()
     val selectedTrip by remember { derivedStateOf { viewModel.getSelectedTrip() } }
 
 

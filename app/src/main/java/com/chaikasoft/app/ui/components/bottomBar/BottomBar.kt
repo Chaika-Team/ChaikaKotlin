@@ -1,4 +1,4 @@
-package com.example.chaika.ui.components.bottomBar
+package com.chaikasoft.app.ui.components.bottomBar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -50,7 +50,7 @@ fun BottomBar(
             selected = Routes.mainRoutes[Routes.TRIP]?.contains(currentRoute) == true,
             onClick = {
                 navController.navigate(Routes.TRIP_GRAPH) {
-                    popUpTo(Routes.TRIP) { inclusive = true }
+                    popUpTo(Routes.TRIP_GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
             }
@@ -69,8 +69,8 @@ fun BottomBar(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_statistics),
             selected = Routes.mainRoutes[Routes.STATISTICS]?.contains(currentRoute) == true,
             onClick = {
-                navController.navigate(Routes.STATISTICS) {
-                    popUpTo(Routes.STATISTICS) { inclusive = true }
+                navController.navigate(Routes.STATISTICS_GRAPH) {
+                    popUpTo(Routes.STATISTICS_GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
             }
@@ -79,8 +79,8 @@ fun BottomBar(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_time),
             selected = Routes.mainRoutes[Routes.OPERATION]?.contains(currentRoute) == true,
             onClick = {
-                navController.navigate(Routes.OPERATION) {
-                    popUpTo(Routes.OPERATION) { inclusive = true }
+                navController.navigate(Routes.OPERATION_GRAPH) {
+                    popUpTo(Routes.OPERATION_GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
             }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.ui.components.product.CartPaymentArea
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.theme.ProductDimens
@@ -23,9 +24,9 @@ fun ProductCartView(
     saleViewModel: SaleViewModel,
     conductorViewModel: ConductorViewModel
 ) {
-    val cartItems by saleViewModel.items.collectAsState()
-    val conductors by conductorViewModel.allConductors.collectAsState()
-    val currentConductor by conductorViewModel.conductor.collectAsState()
+    val cartItems by saleViewModel.items.collectAsStateWithLifecycle()
+    val conductors by conductorViewModel.allConductors.collectAsStateWithLifecycle()
+    val currentConductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
 
     var selectedConductor by remember(conductors, currentConductor) {
         mutableStateOf(
