@@ -12,19 +12,13 @@ class ChaikaSoftRoutesRepository @Inject constructor(
 ) : ChaikaRoutesAdapterApiServiceRepositoryInterface {
 
     override suspend fun suggestStations(query: String, limit: Int): List<StationDomain> {
-        val resp = api.findStations(query, limit)
-        if (resp.isSuccessful) {
-            return resp.body()?.stations?.map { it.toDomain() } ?: emptyList()
-        }
-        throw Exception("Error suggesting stations: \${resp.code()} ${'$'}{resp.message()}")
+        val body = api.findStations(query, limit)
+        return body.stations.map { it.toDomain() }
     }
 
     override suspend fun searchTripsByRoute(date: String, trainNumber: String): List<TripDomain> {
-        val resp = api.findTrips(date = date, trainNumber = trainNumber)
-        if (resp.isSuccessful) {
-            return resp.body()?.trips?.map { it.toDomain() } ?: emptyList()
-        }
-        throw Exception("Error searching trips by route: \${resp.code()} ${'$'}{resp.message()}")
+        val body = api.findTrips(date = date, trainNumber = trainNumber)
+        return body.trips.map { it.toDomain() }
     }
 
     override suspend fun searchTripsByStations(
@@ -32,26 +26,17 @@ class ChaikaSoftRoutesRepository @Inject constructor(
         fromCode: Int,
         toCode: Int
     ): List<TripDomain> {
-        val resp = api.findTrips(date = date, fromCode = fromCode, toCode = toCode)
-        if (resp.isSuccessful) {
-            return resp.body()?.trips?.map { it.toDomain() } ?: emptyList()
-        }
-        throw Exception("Error searching trips by stations: \${resp.code()} ${'$'}{resp.message()}")
+        val body = api.findTrips(date = date, fromCode = fromCode, toCode = toCode)
+        return body.trips.map { it.toDomain() }
     }
 
     override suspend fun getCarriagesForTrain(tripUuid: String): List<CarriageDomain> {
-        val resp = api.getCarsForTrip(tripUuid)
-        if (resp.isSuccessful) {
-            return resp.body()?.cars?.map { it.toDomain() } ?: emptyList()
-        }
-        throw Exception("Error fetching cars for trip: \${resp.code()} ${'$'}{resp.message()}")
+        val body = api.getCarsForTrip(tripUuid)
+        return body.cars.map { it.toDomain() }
     }
 
     override suspend fun fetchAllStations(limit: Int): List<StationDomain> {
-        val resp = api.findStations(query = null, limit = limit)
-        if (resp.isSuccessful) {
-            return resp.body()?.stations?.map { it.toDomain() } ?: emptyList()
-        }
-        throw Exception("Error fetching all stations: ${resp.code()} ${resp.message()}")
+        val body = api.findStations(query = null, limit = limit)
+        return body.stations.map { it.toDomain() }
     }
 }

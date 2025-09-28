@@ -44,8 +44,9 @@ android {
         }
 
         getByName("release") {
-            isMinifyEnabled = false
-            isDebuggable = true
+            isMinifyEnabled = true          // было false
+            isShrinkResources = true          // добавь
+            isDebuggable = false            // было true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -170,7 +171,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.12.0")
     ksp("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.3.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.3.0")
 
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
@@ -249,7 +250,6 @@ dependencies {
     implementation("androidx.compose.animation:animation")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.paging:paging-compose:3.3.0") // or 3.2.1
-    implementation("androidx.paging:paging-runtime-ktx:3.3.0") // Required for Paging
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
