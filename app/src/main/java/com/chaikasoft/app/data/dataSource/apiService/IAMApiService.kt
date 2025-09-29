@@ -12,5 +12,5 @@ interface IAMApiService {
     @GET("/oidc/v1/userinfo")
     suspend fun getUserInfo(
         @Header("Authorization") token: String,
-    ): Response<ConductorDto>
+    ): ConductorDto
 }

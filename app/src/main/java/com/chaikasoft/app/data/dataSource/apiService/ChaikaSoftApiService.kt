@@ -20,7 +20,7 @@ interface ChaikaSoftApiService {
     suspend fun getProducts(
         @Query("limit") limit: Int = 100,
         @Query("offset") offset: Int = 0
-    ): Response<ProductInfoListResponseDto>
+    ): ProductInfoListResponseDto
 
     // Метод для получения списка шаблонов (без content)
     @GET("/api/v1/product/template/search")
@@ -28,14 +28,14 @@ interface ChaikaSoftApiService {
         @Query("query") query: String = "",
         @Query("limit") limit: Int = 100,
         @Query("offset") offset: Int = 0
-    ): Response<TemplateListResponseDto>
+    ): TemplateListResponseDto
 
 
     // Метод для получения деталей конкретного шаблона (с content)
     @GET("/api/v1/product/template/{id}")
     suspend fun getTemplateDetail(
         @Path("id") templateId: Int
-    ): Response<TemplateDetailResponseDto>
+    ): TemplateDetailResponseDto
 
 // ==== эндпоинты для маршрутов ====
 
@@ -46,7 +46,7 @@ interface ChaikaSoftApiService {
     suspend fun findStations(
         @Query("query") query: String? = null,   // ← можно вызывать без query
         @Query("limit") limit: Int = 10
-    ): Response<StationsResponseDto>
+    ): StationsResponseDto
 
     /**
      * Поиск поездок с фильтрами.
@@ -57,7 +57,7 @@ interface ChaikaSoftApiService {
         @Query("number") trainNumber: String? = null,
         @Query("from_code") fromCode: Int? = null,
         @Query("to_code") toCode: Int? = null
-    ): Response<TripsResponseDto>
+    ): TripsResponseDto
 
     /**
      * Получить детали поездки по UUID.
@@ -65,7 +65,7 @@ interface ChaikaSoftApiService {
     @GET("/api/v1/route/trip/{trip_uuid}")
     suspend fun getTripByUuid(
         @Path("trip_uuid") uuid: String
-    ): Response<TripDetailResponseDto>
+    ): TripDetailResponseDto
 
     /**
      * Получить список вагонов по UUID поездки.
@@ -73,13 +73,13 @@ interface ChaikaSoftApiService {
     @GET("/api/v1/route/trip/{trip_uuid}/car")
     suspend fun getCarsForTrip(
         @Path("trip_uuid") uuid: String
-    ): Response<CarsResponseDto>
+    ): CarsResponseDto
 
     // ==== эндпоинты ChaikaReports ====
 
     @POST("/api/v1/report/sale")
     suspend fun sendShiftReport(
         @Body body: RequestBody
-    ): Response<Unit>
+    )
 
 }

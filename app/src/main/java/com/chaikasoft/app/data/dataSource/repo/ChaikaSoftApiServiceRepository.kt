@@ -13,12 +13,8 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
 ) : ChaikaSoftApiServiceRepositoryInterface {
 
     override suspend fun fetchProducts(limit: Int, offset: Int): List<ProductInfoDomain> {
-        val response = apiService.getProducts(limit, offset)
-        if (response.isSuccessful) {
-            return response.body()?.products?.map { it.toDomain() } ?: emptyList()
-        } else {
-            throw Exception("Error ${response.code()} - ${response.message()}")
-        }
+        val dto = apiService.getProducts(limit, offset)
+        return dto.products.map { it.toDomain() }
     }
 
     override suspend fun fetchTemplates(
@@ -26,43 +22,20 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
         limit: Int,
         offset: Int
     ): List<TemplateDomain> {
-        val response = apiService.getTemplates(query, limit, offset)
-        val rawBody = response.errorBody()?.string() ?: response.body()?.toString() ?: "null"
-        Log.d("ChaikaSoftApiServiceRepo", "fetchTemplates: query=$query, limit=$limit, offset=$offset, responseCode=${response.code()}, responseMessage=${response.message()}")
-        Log.d("ChaikaSoftApiServiceRepo", "Templates response raw body: ${response.raw()}")
-        Log.d("ChaikaSoftApiServiceRepo", "Templates response body: ${response.body()}")
-        Log.d("ChaikaSoftApiServiceRepo", "Templates response raw JSON: ${response.body()?.let { com.google.gson.Gson().toJson(it) } ?: rawBody}")
-        if (response.isSuccessful) {
-            val body = response.body()
-            Log.d("ChaikaSoftApiServiceRepo", "Templates response raw body: ${response.raw()}")
-            Log.d("ChaikaSoftApiServiceRepo", "Templates response body: $body")
-            if (body == null) {
-                Log.e("ChaikaSoftApiServiceRepo", "Templates response body is null!")
-            } else {
-                Log.d("ChaikaSoftApiServiceRepo", "Templates count: ${body.templates.size}")
-                body.templates.forEachIndexed { i, t ->
-                    Log.d("ChaikaSoftApiServiceRepo", "Template[$i]: id=${t.id}, name=${t.templateName}, desc=${t.description}, contentSize=${t.content.size}")
-                }
-            }
-            return body?.templates?.toDomainList() ?: emptyList()
-        } else {
-            Log.e(
+        val body = apiService.getTemplates(query, limit, offset)
+        Log.d("ChaikaSoftApiServiceRepo", "Templates count: ${body.templates.size}")
+        body.templates.forEachIndexed { i, t ->
+            Log.d(
                 "ChaikaSoftApiServiceRepo",
-                "Error fetching templates: ${response.code()} - ${response.message()}"
+                "Template[$i]: id=${t.id}, name=${t.templateName}, contentSize=${t.content.size}"
             )
-            Log.e("ChaikaSoftApiServiceRepo", "Error body: ${response.errorBody()?.string()}")
-            throw Exception("Error fetching templates: ${response.code()} - ${response.message()}")
         }
+        return body.templates.toDomainList()
     }
 
 
     override suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain {
-        val response = apiService.getTemplateDetail(templateId)
-        if (response.isSuccessful) {
-            return response.body()?.template?.toDomain()
-                ?: throw Exception("Template detail is empty")
-        } else {
-            throw Exception("Error fetching template detail: ${response.code()} - ${response.message()}")
-        }
+        val body = apiService.getTemplateDetail(templateId)
+        return body.template.toDomain()
     }
 }

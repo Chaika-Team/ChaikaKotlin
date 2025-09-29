@@ -11,15 +11,10 @@ class IAMApiServiceRepository @Inject constructor(
 
     override suspend fun fetchUserInfo(accessToken: String): Result<ConductorDomain> {
         return try {
-            val response = iamApiService.getUserInfo("Bearer $accessToken")
-            if (response.isSuccessful) {
-                response.body()?.let { dto ->
-                    // Преобразуем DTO в доменную модель
-                    Result.success(dto.toDomain())
-                } ?: Result.failure(Exception("User info is empty"))
-            } else {
-                Result.failure(Exception("Error: ${response.code()} - ${response.message()}"))
-            }
+            val dto = iamApiService.getUserInfo("Bearer $accessToken")
+            Result.success(dto.toDomain())
+        } catch (e: retrofit2.HttpException) {
+            Result.failure(Exception("HTTP ${e.code()}: ${e.message()}"))
         } catch (e: Exception) {
             Result.failure(e)
         }
