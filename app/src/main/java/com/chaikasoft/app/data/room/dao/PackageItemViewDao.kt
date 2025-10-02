@@ -15,4 +15,8 @@ interface PackageItemViewDao {
     // Получение конкретного товара по его ID
     @Query("SELECT * FROM package_items WHERE product_id = :productId")
     suspend fun getPackageItemByProductId(productId: Int): PackageItemView?
+
+    // Проверка наличия содержимого пакета
+    @Query("SELECT EXISTS(SELECT 1 FROM package_items)")
+    suspend fun hasAnyOnce(): Boolean
 }

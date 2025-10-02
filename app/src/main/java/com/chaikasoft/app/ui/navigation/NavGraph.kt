@@ -143,9 +143,34 @@ fun NavGraph(
 
         // --- PRODUCT GRAPH ---
         navigation(
-            startDestination = Routes.PRODUCT_ENTRY,
+            startDestination = Routes.PRODUCT_GATE,
             route = Routes.PRODUCT_GRAPH
         ) {
+            composable(Routes.PRODUCT_GATE) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val gateVm = hiltViewModel<ProductGateViewModel>(parentEntry)
+
+                LaunchedEffect(Unit) {
+                    val target = runCatching { gateVm.decide() }
+                        .getOrElse { ProductGateViewModel.Target.ENTRY }
+                    when (target) {
+                        ProductGateViewModel.Target.PACKAGE ->
+                            navController.navigate(Routes.PRODUCT_PACKAGE) {
+                            popUpTo(Routes.PRODUCT_GATE) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                        ProductGateViewModel.Target.ENTRY ->
+                            navController.navigate(Routes.PRODUCT_ENTRY) {
+                            popUpTo(Routes.PRODUCT_GATE) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+
+                LoadingScreen()
+            }
             composable(route = Routes.PRODUCT_ENTRY) {
                 ProductEntryView(navController = navController)
             }
