@@ -136,7 +136,8 @@ class CompleteShiftAndSendUseCase @Inject constructor(
 class GenerateShiftReportUseCase @Inject constructor(
     private val shiftRepo: RoomConductorTripShiftRepositoryInterface,
     private val getCartReports: GetCartReportsUseCase,
-    moshi: Moshi
+    moshi: Moshi,
+    private val clearOpsAndPackage: ClearOperationsAndPackageUseCase
 ) {
     private val jsonAdapter = moshi.adapter(ShiftReportReport::class.java)
 
@@ -144,9 +145,9 @@ class GenerateShiftReportUseCase @Inject constructor(
         val shift = shiftRepo.getActiveShift()
             ?: throw IllegalStateException("Active shift with uuid=$uuid not found")
 
-        // Вот здесь стало сразу по делу:
+        // 1) Собираем CartReport'ы из текущих операций (пока они ещё в БД)
         val carts = getCartReports()
-
+        // 2) Формируем итоговый отчёт
         val report = ShiftReportReport(
             tripId     = TripIdReport(shift.trip.trainNumber, shift.trip.departure),
             endTime    = shift.trip.arrival,
@@ -155,7 +156,7 @@ class GenerateShiftReportUseCase @Inject constructor(
                 ?: throw IllegalStateException("Active carriage not set"),
             carts      = carts
         )
-
+        // 3) Фиксируем в БД: статус FINISHED + сам JSON
         val json = jsonAdapter.toJson(report)
         shiftRepo.updateStatusAndReport(
             uuid       = uuid,
@@ -163,6 +164,8 @@ class GenerateShiftReportUseCase @Inject constructor(
             reportJson = json,
             updatedAt  = System.currentTimeMillis()
         )
+        // 4) Сразу же очищаем операции → «пакет» пустой
+        clearOpsAndPackage()
         return json
     }
 }

@@ -28,6 +28,10 @@ interface CartOperationDao {
     @Delete
     suspend fun delete(cartOperation: CartOperation)
 
+    /** Полностью удалить все операции (каскадом удалятся cart_items). */
+    @Query("DELETE FROM cart_operations")
+    suspend fun clearAllOperations()
+
     // Пагинация «шапок» из VIEW
     @Query("""
         SELECT * 

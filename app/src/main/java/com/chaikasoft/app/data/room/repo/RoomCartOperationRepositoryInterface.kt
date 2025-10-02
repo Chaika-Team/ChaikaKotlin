@@ -26,4 +26,6 @@ interface RoomCartOperationRepositoryInterface {
         type: OperationTypeDomain,
         pageSize: Int
     ): Flow<PagingData<OperationSummaryDomain>>
+
+    suspend fun clearAllOperations()
 }

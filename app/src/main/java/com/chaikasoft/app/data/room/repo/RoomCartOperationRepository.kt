@@ -55,4 +55,8 @@ class RoomCartOperationRepository @Inject constructor(
             ),
             pagingSourceFactory = { cartOperationDao.getPagedOperationInfosByType(type.toInt()) }
         ).flow.map { paging -> paging.map { it.toDomain() } }
+
+    override suspend fun clearAllOperations() {
+        cartOperationDao.clearAllOperations()
+    }
 }
