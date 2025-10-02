@@ -60,3 +60,12 @@ class GetPagedOperationSummariesByTypeUseCase @Inject constructor(
     ): Flow<PagingData<OperationSummaryDomain>> =
         repo.getPagedOperationSummariesByType(type, pageSize)
 }
+
+/** Очистить все операции (и тем самым обнулить «пакет»). */
+class ClearOperationsAndPackageUseCase @Inject constructor(
+    private val cartOpsRepo: RoomCartOperationRepositoryInterface
+) {
+    suspend operator fun invoke() {
+        cartOpsRepo.clearAllOperations()
+    }
+}
