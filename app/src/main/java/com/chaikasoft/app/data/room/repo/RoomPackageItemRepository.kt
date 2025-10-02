@@ -38,4 +38,7 @@ class RoomPackageItemRepository @Inject constructor(
         val packageItemView = packageItemViewDao.getPackageItemByProductId(productId)
         return packageItemView?.currentQuantity ?: 0
     }
+
+    override suspend fun hasAnyPackageItemsOnce(): Boolean =
+        packageItemViewDao.hasAnyOnce()
 }

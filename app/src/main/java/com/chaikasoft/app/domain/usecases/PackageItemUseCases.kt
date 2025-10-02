@@ -19,3 +19,9 @@ class GetAvailableQuantityUseCase @Inject constructor(
     suspend operator fun invoke(productId: Int): Int =
         repository.getCurrentQuantity(productId)
 }
+
+class HasAnyPackageItemsOnceUseCase @Inject constructor(
+    private val repository: RoomPackageItemRepositoryInterface
+) {
+    suspend operator fun invoke(): Boolean = repository.hasAnyPackageItemsOnce()
+}
