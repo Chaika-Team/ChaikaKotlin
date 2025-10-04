@@ -98,6 +98,7 @@
     <string name="profile_add_user">Добавить пользователя</string>
     <string name="profile_user_avatar">Аватар пользователя</string>
     <string name="profile_navigate">Навигация</string>
+    <string name="profile_logout">Выход</string>
     <string name="profile_family_name">Фамилия</string>
     <string name="profile_first_name">Имя</string>
     <string name="profile_middle_name">Отчество</string>

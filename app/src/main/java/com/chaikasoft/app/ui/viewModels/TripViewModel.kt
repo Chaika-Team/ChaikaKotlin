@@ -22,6 +22,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -91,6 +93,48 @@ class TripViewModel @Inject constructor(
     private val _carriageList = MutableStateFlow<List<CarriageDomain>>(emptyList())
     val carriageList: StateFlow<List<CarriageDomain>> = _carriageList.asStateFlow()
 
+    /**
+     * Отфильтрованный список вагонов с валидным номером (число)
+     * + подробное логирование.
+     */
+    val validCarriages: StateFlow<List<CarriageDomain>> =
+        carriageList
+            .map { original ->
+                val filtered = original.filter { it.carNumber.toIntOrNull() != null }
+                Log.d(
+                    "TripViewModel",
+                    "Carriages filter -> input=${original.size}, valid=${filtered.size}"
+                )
+                filtered
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
+
+    /**
+     * Сгруппированные по классу вагоны.
+     * Ключ всегда String (используем toString() на случай enum'ов и пр.)
+     * + логирование распределения по группам.
+     */
+    val groupedCarriages: StateFlow<Map<String, List<CarriageDomain>>> =
+        validCarriages
+            .map { list ->
+                val grouped = list.groupBy { it.classType.toString() }
+                val summary = grouped.entries.joinToString { "${it.key}:${it.value.size}" }
+                Log.d(
+                    "TripViewModel",
+                    "Carriages group -> groups=${grouped.size} [$summary]"
+                )
+                grouped
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyMap()
+            )
+
     fun loadHistory() {
         loadHistoryData()
     }
@@ -106,13 +150,17 @@ class TripViewModel @Inject constructor(
         }
     }
 
-
     fun setSelectCarriage(tripRecord: TripDomain) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 _selectedTripRecord.value = tripRecord
-                _carriageList.value = getCarriagesForTrainUseCase(tripRecord.uuid) ?: emptyList()
+                val list = getCarriagesForTrainUseCase(tripRecord.uuid)
+                _carriageList.value = list
+                Log.d(
+                    "TripViewModel",
+                    "Loaded ${list.size} carriages for trip=${tripRecord.uuid}"
+                )
             } catch (e: Exception) {
                 Log.e("TripViewModel", "Error loading carriages", e)
                 _carriageList.value = emptyList()

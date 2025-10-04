@@ -30,9 +30,10 @@ fun SelectCarriageView(
     navController: NavController
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val carriages by viewModel.carriageList.collectAsStateWithLifecycle()
-    val selectedTrip by remember { derivedStateOf { viewModel.getSelectedTrip() } }
+    val groupedCarriages by viewModel.groupedCarriages
+        .collectAsStateWithLifecycle(initialValue = emptyMap())
 
+    val selectedTrip by remember { derivedStateOf { viewModel.getSelectedTrip() } }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when {
@@ -51,8 +52,6 @@ fun SelectCarriageView(
                     tripRecord = selectedTrip!!
                 )
 
-                val groupedCarriages = carriages.groupBy { it.classType }
-
                 LazyColumn {
                     if (groupedCarriages.isEmpty()) {
                         item {
@@ -69,7 +68,10 @@ fun SelectCarriageView(
                                     modifier = Modifier.padding(8.dp),
                                 )
                             }
-                            items(subCarriages) { carriage ->
+                            items(
+                                items = subCarriages,
+                                key = { it.carNumber }
+                            ) { carriage ->
                                 CarriageCard(
                                     modifier = Modifier
                                         .fillMaxWidth()

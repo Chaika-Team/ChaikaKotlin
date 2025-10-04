@@ -20,12 +20,12 @@ import com.chaikasoft.app.ui.screens.product.ProductReplenishView
 import com.chaikasoft.app.ui.screens.product.TemplateDetailView
 import com.chaikasoft.app.ui.screens.product.TemplateEditView
 import com.chaikasoft.app.ui.screens.product.TemplateSearchView
-import com.chaikasoft.app.ui.screens.profile.ProfileScreen
-import com.chaikasoft.app.ui.screens.profile.views.AboutView
-import com.chaikasoft.app.ui.screens.profile.views.FaqsView
-import com.chaikasoft.app.ui.screens.profile.views.FeedbackView
-import com.chaikasoft.app.ui.screens.profile.views.PersonalDataView
-import com.chaikasoft.app.ui.screens.profile.views.SettingsView
+import com.chaikasoft.app.ui.screens.profile.AboutView
+import com.chaikasoft.app.ui.screens.profile.FaqsView
+import com.chaikasoft.app.ui.screens.profile.FeedbackView
+import com.chaikasoft.app.ui.screens.profile.MainProfileView
+import com.chaikasoft.app.ui.screens.profile.PersonalDataView
+import com.chaikasoft.app.ui.screens.profile.SettingsView
 import com.chaikasoft.app.ui.screens.trip.FindByNumberView
 import com.chaikasoft.app.ui.screens.trip.SelectCarriageView
 import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
@@ -34,7 +34,6 @@ import com.chaikasoft.app.ui.screens.util.ErrorScreen
 import com.chaikasoft.app.ui.screens.util.LoadingScreen
 import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
 import com.chaikasoft.app.ui.viewModels.*
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun NavGraph(
@@ -183,7 +182,8 @@ fun NavGraph(
                 val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
                 ProductCartView(
                     saleViewModel = saleViewModel,
-                    conductorViewModel = conductorViewModel
+                    conductorViewModel = conductorViewModel,
+                    navController = navController
                 )
             }
 
@@ -296,7 +296,7 @@ fun NavGraph(
                     navController.getBackStackEntry(Routes.PROFILE_GRAPH)
                 }
                 val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
-                ProfileScreen(
+                MainProfileView(
                     conductorViewModel = conductorViewModel,
                     authViewModel = authViewModel,
                     navController = navController

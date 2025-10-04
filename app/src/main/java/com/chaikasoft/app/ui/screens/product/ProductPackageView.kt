@@ -3,7 +3,9 @@ package com.chaikasoft.app.ui.screens.product
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -25,9 +27,12 @@ import com.chaikasoft.app.ui.components.product.CartFAB
 import com.chaikasoft.app.ui.components.product.ProductComponent
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ProductDimens
+import com.chaikasoft.app.ui.theme.ProductDimens.PaddingM
 import com.chaikasoft.app.ui.viewModels.PackageViewModel
 import com.chaikasoft.app.ui.viewModels.SaleViewModel
 import com.chaikasoft.app.util.formatPriceOnly
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 
 @Composable
 fun ProductPackageView(
@@ -37,6 +42,7 @@ fun ProductPackageView(
 ) {
     val packageItems = packageViewModel.productsFlow.collectAsStateWithLifecycle()
     val cartItems by saleViewModel.items.collectAsStateWithLifecycle()
+    val spacerHeight = (ProductDimens.ProductCardHeight.value / 2).dp
     val isLoading = false
 
     DisposableEffect(Unit) {
@@ -86,6 +92,9 @@ fun ProductPackageView(
                                 saleViewModel.onQuantityChange(item.id, (cartItem?.quantity ?: 1) - 1)
                             },
                         )
+                    }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Spacer(modifier = Modifier.height(spacerHeight))
                     }
                 }
             }

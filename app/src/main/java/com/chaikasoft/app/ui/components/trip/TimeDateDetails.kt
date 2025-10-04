@@ -5,13 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.chaikasoft.app.domain.models.trip.StationDomain
@@ -38,49 +35,43 @@ fun TimeDateDetails(
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-                width = Dimension.percent(0.18f)
+                width = Dimension.wrapContent
                 height = Dimension.value(TripDimens.TimeDateDetailsHeight)
             },
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = tripDetails.departureDayMonth,
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 14.sp
-            )
-            Text(
-                text = tripDetails.departureTime,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 20.sp,
-            )
+            DayMonthText(tripDetails.departureDayMonth)
+            TimeValueText(tripDetails.departureTime)
         }
 
         Box(
-            modifier = Modifier.constrainAs(time) {
-                start.linkTo(startTime.end)
-                end.linkTo(endTime.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(arrow.top)
-                width = Dimension.percent(0.64f)
-                height = Dimension.percent(0.7f)
-            },
+            modifier = Modifier
+                .constrainAs(time) {
+                    start.linkTo(startTime.end)
+                    end.linkTo(endTime.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(arrow.top, margin = TripTimeDefaults.DurationArrowGap)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.wrapContent
+                },
             contentAlignment = Alignment.TopCenter
         ) {
-            Text(text = "${tripDetails.durationHours} ч ${tripDetails.durationMinutes} мин")
+            DurationText(tripDetails.durationHours, tripDetails.durationMinutes)
         }
+
         Box(
-            modifier = Modifier.constrainAs(arrow) {
-                start.linkTo(startTime.end)
-                end.linkTo(endTime.start)
-                top.linkTo(time.bottom)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.percent(0.64f)
-                height = Dimension.percent(0.3f)
-            },
+            modifier = Modifier
+                .constrainAs(arrow) {
+                    start.linkTo(startTime.end)
+                    end.linkTo(endTime.start)
+                    top.linkTo(time.bottom)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                },
             contentAlignment = Alignment.TopCenter
         ) {
-            Arrow()
+            ArrowPadded(modifier = Modifier) // паддинги берутся из общих дефолтов
         }
 
         Column(
@@ -88,22 +79,14 @@ fun TimeDateDetails(
                 end.linkTo(parent.end)
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-                width = Dimension.percent(0.18f)
+                width = Dimension.wrapContent
                 height = Dimension.value(TripDimens.TimeDateDetailsHeight)
             },
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
-            Text(
-                text = tripDetails.arrivalDayMonth,
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 14.sp
-            )
-            Text(
-                text = tripDetails.arrivalTime,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 20.sp,
-            )
+            DayMonthText(tripDetails.arrivalDayMonth)
+            TimeValueText(tripDetails.arrivalTime)
         }
     }
 }
