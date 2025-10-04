@@ -27,6 +27,7 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.FastReportDomain
 import com.chaikasoft.app.ui.components.statistics.HeaderIconCell
 import com.chaikasoft.app.ui.viewModels.StatisticsViewModel
+import com.chaikasoft.app.util.formatPriceOnly
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -124,7 +125,7 @@ private fun CashSummarySheet(
             }
 
             Text(
-                text = formatCurrency(cashRevenue),
+                text = formatPriceOnly(cashRevenue),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
@@ -205,12 +206,12 @@ private fun TableRow(
             )
         }
         CenterScrollArea(scrollState) {
-            NumericCell(formatNumber(report.productPrice),       Color.Gray,  PriceColWidth,  TableText)
-            NumericCell(formatNumber(report.addedQuantity),      Color.Black, QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.replenishedQuantity),Color.Gray,  QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.soldCashQuantity),   Color.Black, QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.soldCartQuantity),   Color.Gray,  QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.revenue),            Color.Black, RevenueColWidth,TableText)
+            NumericCell(formatNumber(report.productPrice.toDouble() / 100), Color.Gray,  PriceColWidth,  TableText)
+            NumericCell(report.addedQuantity.toString(),                    Color.Black, QtyColWidth,    TableText)
+            NumericCell(report.replenishedQuantity.toString(),              Color.Gray,  QtyColWidth,    TableText)
+            NumericCell(report.soldCashQuantity.toString(),                 Color.Black, QtyColWidth,    TableText)
+            NumericCell(report.soldCartQuantity.toString(),                 Color.Gray,  QtyColWidth,    TableText)
+            NumericCell(formatNumber(report.revenue.toDouble() / 100),      Color.Black, RevenueColWidth,TableText)
         }
     }
 }

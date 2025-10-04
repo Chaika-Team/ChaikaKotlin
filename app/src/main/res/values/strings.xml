@@ -233,8 +233,8 @@
 
     <!-- Units & formats -->
     <string name="op_quantity_suffix">шт</string>
-    <string name="op_price_rub">%1$d.%2$02d руб</string>
-    <string name="op_total_price_rub">%1$d.%2$02d руб</string>
+<!--    <string name="op_price_rub">%1$d.%2$02d руб</string>-->
+<!--    <string name="op_total_price_rub">%1$d.%2$02d руб</string>-->
 
     <string name="statistics_title">Статистика</string>
 
