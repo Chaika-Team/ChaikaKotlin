@@ -17,7 +17,7 @@ class RoomCartRepository @Inject constructor(
     override suspend fun saveCartWithItemsAndOperation(
         cart: CartDomain,
         cartOperationDomain: CartOperationDomain,
-    ) {
+    ) :Int {
         // Вставляем операцию и получаем её ID
         val cartOperationId = cartOperationDao.insertOperation(cartOperationDomain.toEntity())
 
@@ -30,5 +30,7 @@ class RoomCartRepository @Inject constructor(
                 ),
             )
         }
+        // 3) Возвращаем ID
+        return cartOperationId.toInt()
     }
 }

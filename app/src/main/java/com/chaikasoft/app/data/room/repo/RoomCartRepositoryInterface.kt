@@ -8,5 +8,5 @@ interface RoomCartRepositoryInterface {
     suspend fun saveCartWithItemsAndOperation(
         cart: CartDomain,
         cartOperationDomain: CartOperationDomain,
-    )
+    ): Int
 }
