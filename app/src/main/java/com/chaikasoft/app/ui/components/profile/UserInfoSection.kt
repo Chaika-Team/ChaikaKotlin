@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.ui.theme.ProfileDimens
 
 @Composable
@@ -34,9 +36,11 @@ fun UserInfoSection(conductor: ConductorDomain?, onClick: () -> Unit) {
             .fillMaxWidth()
             .minimumInteractiveComponentSize(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = listOfNotNull(conductor?.name, conductor?.familyName)
                     .joinToString(" ")
@@ -57,7 +61,7 @@ fun UserInfoSection(conductor: ConductorDomain?, onClick: () -> Unit) {
 
         Box(
             modifier = Modifier
-                .size(ProfileDimens.LogoutCornerRadius)
+                .requiredSize(ProfileDimens.LogoutCornerRadius)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.background)
                 .clickable(onClick = onClick)
@@ -66,7 +70,7 @@ fun UserInfoSection(conductor: ConductorDomain?, onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_logout),
-                contentDescription = stringResource(R.string.profile_navigate),
+                contentDescription = stringResource(R.string.profile_logout),
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(ProfileDimens.LogoutButtonSize)
             )

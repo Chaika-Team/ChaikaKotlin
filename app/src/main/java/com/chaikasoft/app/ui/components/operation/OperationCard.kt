@@ -30,6 +30,8 @@ import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.theme.OperationDimens
 import com.chaikasoft.app.ui.viewModels.OperationViewModel
 import com.chaikasoft.app.util.formatPriceOnly
+import com.chaikasoft.app.util.formatRuShort
+import com.chaikasoft.app.util.toZoned
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -75,7 +77,7 @@ fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel
                     )
                 }
                 Text(
-                    text = summary.timeIso.formatToRuDate(),
+                    text = summary.timeIso.toZoned().formatRuShort(),
                     color = Color.Black
                 )
             }
@@ -190,14 +192,4 @@ fun OperationTypeDomain.iconRes(): Int = when (this) {
     OperationTypeDomain.REPLENISH -> R.drawable.ic_package_receive
     OperationTypeDomain.SOLD_CASH -> R.drawable.ic_cash_payment
     OperationTypeDomain.SOLD_CART -> R.drawable.ic_credit_card
-}
-
-fun String.formatToRuDate(): String {
-    return try {
-        val ldt = LocalDateTime.parse(this, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val formatter = DateTimeFormatter.ofPattern("dd MMM HH:mm", Locale("ru"))
-        ldt.format(formatter)
-    } catch (e: Exception) {
-        this
-    }
 }

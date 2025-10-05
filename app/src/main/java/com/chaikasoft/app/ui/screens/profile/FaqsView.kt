@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.screens.profile.views
+package com.chaikasoft.app.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState

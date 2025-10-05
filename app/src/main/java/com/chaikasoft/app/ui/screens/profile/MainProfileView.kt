@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.screens.profile.views
+package com.chaikasoft.app.ui.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,14 +30,16 @@ import com.chaikasoft.app.ui.theme.ProfileDimens
 import com.chaikasoft.app.ui.viewModels.AuthViewModel
 import androidx.navigation.NavHostController
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.viewModels.ConductorViewModel
 
 @Composable
 fun MainProfileView(
+    conductorViewModel: ConductorViewModel,
     authViewModel: AuthViewModel,
-    conductor: ConductorDomain?,
     navController: NavHostController
 ) {
     val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
+    val conductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier

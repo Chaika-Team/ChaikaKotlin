@@ -1,5 +1,6 @@
-package com.chaikasoft.app.ui.screens.profile.views
+package com.chaikasoft.app.ui.screens.profile
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,7 +39,7 @@ fun FeedbackView() {
     )
 
     fun validateEmail(email: String): Boolean {
-        return email.isEmpty() || android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return email.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     LaunchedEffect(email) {

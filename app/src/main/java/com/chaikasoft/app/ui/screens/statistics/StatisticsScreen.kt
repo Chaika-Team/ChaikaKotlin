@@ -1,6 +1,5 @@
 package com.chaikasoft.app.ui.screens.statistics
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
@@ -27,6 +26,7 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.FastReportDomain
 import com.chaikasoft.app.ui.components.statistics.HeaderIconCell
 import com.chaikasoft.app.ui.viewModels.StatisticsViewModel
+import com.chaikasoft.app.util.formatPriceOnly
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -51,7 +51,7 @@ fun StatisticsScreen(
     val scaffoldState = rememberBottomSheetScaffoldState()
 
     // Подтянем количество чеков при старте
-    LaunchedEffect(Unit) { viewModel.refreshCashChecks() }
+    LaunchedEffect(Unit) { viewModel.refreshCartChecks() }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -64,14 +64,17 @@ fun StatisticsScreen(
             )
         },
         sheetContent = {
-            val expanded =
-                scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded
+            val sheetState = scaffoldState.bottomSheetState
+            val show =
+                sheetState.targetValue == SheetValue.Expanded ||
+                        sheetState.currentValue == SheetValue.Expanded
+
             CashSummarySheet(
                 cashRevenue = cashRevenue,
                 checks = cashChecks,
-                showChecks = expanded,
-                showLabels = expanded,
-                bottomPadding = if (expanded) 56.dp else 0.dp
+                showChecks = show,
+                showLabels = show,
+                bottomPadding = if (show) 56.dp else 0.dp
             )
         }
     ) { innerPadding ->
@@ -81,8 +84,18 @@ fun StatisticsScreen(
                 .padding(16.dp)
                 .padding(innerPadding)
         ) {
-            stickyHeader { TableHeader(sharedHScroll) }
-            items(reports) { report ->
+            stickyHeader {
+                Surface(
+                    color = MaterialTheme.colorScheme.surface,
+                    shadowElevation = 0.dp
+                ) {
+                    TableHeader(sharedHScroll)
+                }
+            }
+            items(
+                items = reports,
+                key = { it.productName }
+            ) { report ->
                 TableRow(report = report, scrollState = sharedHScroll)
             }
         }
@@ -97,6 +110,8 @@ private fun CashSummarySheet(
     showLabels: Boolean,
     bottomPadding: Dp
 ) {
+    val cashRevenueText = remember(cashRevenue) { formatPriceOnly(cashRevenue) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,11 +124,11 @@ private fun CashSummarySheet(
                 .fillMaxWidth()
                 .heightIn(min = 40.dp)
         ) {
-            androidx.compose.animation.AnimatedVisibility(
-                visible = showLabels,
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            if (showLabels) {
+                Row(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_cash),
                         contentDescription = null
@@ -124,14 +139,13 @@ private fun CashSummarySheet(
             }
 
             Text(
-                text = formatCurrency(cashRevenue),
+                text = cashRevenueText,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
 
-
-        AnimatedVisibility(visible = showChecks) {
+        if (showChecks) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,6 +159,7 @@ private fun CashSummarySheet(
         }
     }
 }
+
 
 
 @Composable
@@ -205,12 +220,12 @@ private fun TableRow(
             )
         }
         CenterScrollArea(scrollState) {
-            NumericCell(formatNumber(report.productPrice),       Color.Gray,  PriceColWidth,  TableText)
-            NumericCell(formatNumber(report.addedQuantity),      Color.Black, QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.replenishedQuantity),Color.Gray,  QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.soldCashQuantity),   Color.Black, QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.soldCartQuantity),   Color.Gray,  QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.revenue),            Color.Black, RevenueColWidth,TableText)
+            NumericCell(formatNumber(report.productPrice.toDouble() / 100), Color.Gray,  PriceColWidth,  TableText)
+            NumericCell(report.addedQuantity.toString(),                    Color.Black, QtyColWidth,    TableText)
+            NumericCell(report.replenishedQuantity.toString(),              Color.Gray,  QtyColWidth,    TableText)
+            NumericCell(report.soldCashQuantity.toString(),                 Color.Black, QtyColWidth,    TableText)
+            NumericCell(report.soldCartQuantity.toString(),                 Color.Gray,  QtyColWidth,    TableText)
+            NumericCell(formatNumber(report.revenue.toDouble() / 100),      Color.Black, RevenueColWidth,TableText)
         }
     }
 }
@@ -230,8 +245,7 @@ private fun CenterScrollArea(
         Row(
             modifier = Modifier
                 .horizontalScroll(scrollState)
-                .wrapContentWidth()
-                .height(IntrinsicSize.Min),
+                .wrapContentWidth(),
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )
@@ -246,7 +260,6 @@ private fun TableLineContainer(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .height(IntrinsicSize.Min)
     ) { content() }
 }
 
@@ -271,9 +284,4 @@ private fun formatNumber(number: Number): String {
     nf.maximumFractionDigits = 2
     nf.minimumFractionDigits = if (number is Int) 2 else 0
     return nf.format(number)
-}
-
-private fun formatCurrency(value: Int): String {
-    val nf = NumberFormat.getCurrencyInstance(Locale("ru", "RU"))
-    return nf.format(value)
 }

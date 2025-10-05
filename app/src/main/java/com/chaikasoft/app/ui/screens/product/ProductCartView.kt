@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.chaikasoft.app.ui.components.product.CartPaymentArea
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.theme.ProductDimens
@@ -22,7 +23,8 @@ import com.chaikasoft.app.ui.viewModels.SaleViewModel
 @Composable
 fun ProductCartView(
     saleViewModel: SaleViewModel,
-    conductorViewModel: ConductorViewModel
+    conductorViewModel: ConductorViewModel,
+    navController: NavHostController
 ) {
     val cartItems by saleViewModel.items.collectAsStateWithLifecycle()
     val conductors by conductorViewModel.allConductors.collectAsStateWithLifecycle()
@@ -71,9 +73,11 @@ fun ProductCartView(
             onConductorSelected = { selectedConductor = it },
             onPayCash = {
                 selectedConductor?.id?.let { saleViewModel.onSellCash(it) }
+                navController.navigateUp()
             },
             onPayCard = {
                 selectedConductor?.id?.let { saleViewModel.onSellCard(it) }
+                navController.navigateUp()
             }
         )
     }

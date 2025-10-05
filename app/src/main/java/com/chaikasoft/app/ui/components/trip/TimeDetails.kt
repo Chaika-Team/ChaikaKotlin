@@ -4,18 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.chaikasoft.app.domain.models.trip.StationDomain
@@ -43,20 +36,12 @@ fun TimeDetails(
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-                // height = Dimension.value(TripDimens.TimeDetailsHeight) // Убрано жёсткое задание высоты
-            }
-            .padding(end = 8.dp)
-            .widthIn(max = 80.dp), // Ограничение максимальной ширины
+                width = Dimension.wrapContent
+            },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = tripDetails.departureTime,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 20.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            TimeValueText(tripDetails.departureTime)
         }
 
         Box(
@@ -65,34 +50,27 @@ fun TimeDetails(
                     start.linkTo(startTime.end)
                     end.linkTo(endTime.start)
                     top.linkTo(parent.top)
-                    bottom.linkTo(arrow.top)
+                    bottom.linkTo(arrow.top, margin = TripTimeDefaults.DurationArrowGap)
                     width = Dimension.fillToConstraints
-                    height = Dimension.value(18.dp)
-                }
-                .padding(bottom = 2.dp),
+                    height = Dimension.wrapContent
+                },
             contentAlignment = Alignment.TopCenter
         ) {
-            Text(
-                text = "${tripDetails.durationHours} ч ${tripDetails.durationMinutes} мин",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 12.sp
-            )
+            DurationText(tripDetails.durationHours, tripDetails.durationMinutes)
         }
+
         Box(
-            modifier = Modifier.constrainAs(arrow) {
-                start.linkTo(startTime.end)
-                end.linkTo(endTime.start)
-                top.linkTo(time.bottom)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-                // height = Dimension.percent(0.3f) // Убрано жёсткое задание высоты
-//                height = Dimension.fillToConstraints // Растягиваем по высоте между time и bottom
-            }
-                .padding(bottom = 8.dp),
+            modifier = Modifier
+                .constrainAs(arrow) {
+                    start.linkTo(startTime.end)
+                    end.linkTo(endTime.start)
+                    top.linkTo(time.bottom)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                },
             contentAlignment = Alignment.TopCenter
         ) {
-            Arrow()
+            ArrowPadded()
         }
 
         Column(
@@ -100,20 +78,12 @@ fun TimeDetails(
                 end.linkTo(parent.end)
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-                // height = Dimension.value(TripDimens.TimeDetailsHeight) // Убрано жёсткое задание высоты
-            }
-            .padding(start = 8.dp)
-            .widthIn(max = 80.dp), // Ограничение максимальной ширины
+                width = Dimension.wrapContent
+            },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            Text(
-                text = tripDetails.arrivalTime,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 20.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            TimeValueText(tripDetails.arrivalTime)
         }
     }
 }

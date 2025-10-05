@@ -31,9 +31,9 @@ class StatisticsViewModel @Inject constructor(
     val cashChecksCount: StateFlow<Int> = _cashChecksCount.asStateFlow()
 
     /** Вызывать при старте экрана и, при желании, при расширении шторки */
-    fun refreshCashChecks() {
+    fun refreshCartChecks() {
         viewModelScope.launch {
-            _cashChecksCount.value = getOperationCountByType(OperationTypeDomain.SOLD_CASH)
+            _cashChecksCount.value = getOperationCountByType(OperationTypeDomain.SOLD_CART)
         }
     }
 }
