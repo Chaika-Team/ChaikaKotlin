@@ -49,25 +49,6 @@ class TripUseCasesTest {
         }
     }
 
-    // --- SuggestStationsUseCase tests ---
-
-    @Test
-    fun suggestStationsReturnsMatchingStations() = runTest {
-        val repo = FakeRoutesRepo(stations = listOf(stationA, stationB))
-        val useCase = SuggestStationsUseCase(repo)
-        val result = useCase("A St")
-        assertEquals(1, result.size)
-        assertEquals("A Station", result.first().name)
-    }
-
-    @Test
-    fun suggestStationsReturnsEmptyWhenNoMatch() = runTest {
-        val repo = FakeRoutesRepo(stations = listOf(stationA))
-        val useCase = SuggestStationsUseCase(repo)
-        val result = useCase("Z")
-        assertTrue(result.isEmpty())
-    }
-
     // --- SearchTripsByRouteUseCase tests ---
 
     @Test

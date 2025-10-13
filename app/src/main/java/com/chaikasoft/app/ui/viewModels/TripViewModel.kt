@@ -9,7 +9,7 @@ import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
-import com.chaikasoft.app.domain.usecases.CompleteShiftUseCase
+import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetCarriagesForTrainUseCase
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
@@ -43,7 +43,7 @@ class TripViewModel @Inject constructor(
     private val getPagedStationSuggestions: GetPagedStationSuggestionsUseCase,
     private val startShiftUseCase: StartShiftUseCase,
     private val getActiveShiftUseCase: GetActiveShiftUseCase,
-    private val completeShiftUseCase: CompleteShiftUseCase
+    private val completeShiftUseCase: CompleteShiftAndSendUseCase
 ) : ViewModel() {
 
     // --- New: query states for FROM/TO ---

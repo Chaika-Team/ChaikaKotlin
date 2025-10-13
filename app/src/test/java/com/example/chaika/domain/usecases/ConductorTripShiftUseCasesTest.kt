@@ -228,46 +228,6 @@ class ConductorTripShiftUseCasesTest {
     }
 
     /**
-     * CompleteShiftUseCase должен вызвать сначала генерацию, потом отправку, и вернуть true
-     */
-    @Test
-    fun `CompleteShiftUseCase invokes generate then send and returns send result`() = runTest {
-        val gen = mock<GenerateShiftReportUseCase>()
-        val snd = mock<SendShiftReportUseCase>()
-        val uuid = trip.uuid
-        whenever(gen.invoke(uuid)).thenReturn("{\"dummy\":true}")
-        whenever(snd.invoke(uuid)).thenReturn(true)
-
-        val useCase = CompleteShiftUseCase(gen, snd)
-        val result = useCase.invoke(uuid)
-        assertTrue(result)
-
-        inOrder(gen, snd) {
-            verify(gen).invoke(uuid)
-            verify(snd).invoke(uuid)
-        }
-    }
-
-    /**
-     * CompleteShiftUseCase когда отправка неудачна, возвращает false
-     */
-    @Test
-    fun `CompleteShiftUseCase returns false when send fails`() = runTest {
-        val gen = mock<GenerateShiftReportUseCase>()
-        val snd = mock<SendShiftReportUseCase>()
-        val uuid = trip.uuid
-        whenever(gen.invoke(uuid)).thenReturn("{\"dummy\":true}")
-        whenever(snd.invoke(uuid)).thenReturn(false)
-
-        val useCase = CompleteShiftUseCase(gen, snd)
-        val result = useCase.invoke(uuid)
-        assertFalse(result)
-
-        verify(gen).invoke(uuid)
-        verify(snd).invoke(uuid)
-    }
-
-    /**
      * GetCartReportsUseCase должен собрать отчёты операций и товаров в список CartReport
      */
     @Test

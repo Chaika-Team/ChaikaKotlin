@@ -81,33 +81,6 @@ class StartShiftUseCase @Inject constructor(
 }
 
 /**
- * Редакция от 14.09.2025
- * CompleteShiftUseCase -- адаптер: он делегирует вызов новому оркестратору,
- * затем мапит результат в старый Boolean
- *
- * Ожидается переход на новый CompleteShiftAndSendUseCase ASAP
- */
-@Deprecated("Use CompleteShiftAndSendUseCase instead")
-class CompleteShiftUseCase @Inject constructor(
-    private val delegate: CompleteShiftAndSendUseCase
-) {
-    /**
-     * Маппинг в старую семантику:
-     *  - Success/AlreadySent → true
-     *  - остальное → false
-     * Исключения генерации по-прежнему всплывают.
-     */
-    suspend operator fun invoke(uuid: String): Boolean {
-        Log.d(SEND_TAG, "CompleteShiftUseCase: start, uuid=$uuid")
-        val r = delegate(uuid)
-        val ok = r is SendReportResult.Success || r is SendReportResult.AlreadySent
-        Log.d(SEND_TAG, "CompleteShiftUseCase: result=$r, mappedToBoolean=$ok")
-        return ok
-    }
-
-}
-
-/**
  * Генерирует отчёт и сразу пытается его отправить.
  * Возвращает структурированный результат отправки (без UI-строк).
  */
