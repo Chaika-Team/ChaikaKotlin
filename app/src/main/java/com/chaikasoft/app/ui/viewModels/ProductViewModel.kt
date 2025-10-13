@@ -92,11 +92,6 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    // Метод для принудительного обновления
-    fun refreshProducts() {
-        syncProductsInBackground()
-    }
-
     fun clearProductState() {
         _productsFlow.value = PagingData.empty()
         _isSyncing.value = false

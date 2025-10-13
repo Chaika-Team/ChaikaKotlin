@@ -52,7 +52,7 @@ fun TemplateCard(
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize()
             ) {
-                val (imageRef, titleRef, listRef, moreRef, buttonRef) = createRefs()
+                val (imageRef, titleRef, listRef, buttonRef) = createRefs()
 
                 // Картинка
                 Box(
@@ -97,19 +97,6 @@ fun TemplateCard(
                         width = Dimension.fillToConstraints
                     }
                 )
-
-                // Список содержимого
-//                ColumnOfContent(
-//                    content = template.content,
-//                    modifier = Modifier.constrainAs(listRef) {
-//                        start.linkTo(imageRef.end, margin = 12.dp)
-//                        top.linkTo(titleRef.bottom)
-//                        end.linkTo(buttonRef.start, margin = 8.dp)
-//                        bottom.linkTo(parent.bottom, margin = 12.dp)
-//                        width = Dimension.fillToConstraints
-//                        height = Dimension.preferredValue(102.dp)
-//                    }
-//                )
 
                 // Временно вместо списка
                 Text(
