@@ -2,18 +2,8 @@ package com.chaikasoft.app.domain.usecases
 
 import com.chaikasoft.app.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
-import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import javax.inject.Inject
-
-@Deprecated("Use GetPagedStationSuggestionsUseCase instead")
-class SuggestStationsUseCase @Inject constructor(
-    private val repository: ChaikaRoutesAdapterApiServiceRepositoryInterface
-) {
-    suspend operator fun invoke(query: String, limit: Int = 10): List<StationDomain> =
-        repository.suggestStations(query, limit)
-}
-
 
 class SearchTripsByRouteUseCase @Inject constructor(
     private val repository: ChaikaRoutesAdapterApiServiceRepositoryInterface
