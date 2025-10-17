@@ -1,9 +1,13 @@
 package com.chaikasoft.app.ui.viewModels
 
+import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chaikasoft.app.R
 import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import com.chaikasoft.app.domain.usecases.AddItemToCartWithLimitUseCase
 import com.chaikasoft.app.domain.usecases.GetCartItemsUseCase
 import com.chaikasoft.app.domain.usecases.RemoveItemFromCartUseCase
@@ -12,8 +16,10 @@ import com.chaikasoft.app.domain.usecases.CreateCartUseCase
 import com.chaikasoft.app.domain.usecases.SoldCashOpUseCase
 import com.chaikasoft.app.domain.usecases.SoldCardOpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +37,15 @@ class SaleViewModel @Inject constructor(
 
     /** Собственная in‑memory корзина для продаж */
     private val cart: InMemoryCartRepositoryInterface = createCart()
+
+    data class SellResultDialog(@StringRes val messageRes: Int)
+
+    private val _sellResultDialog = MutableStateFlow<SellResultDialog?>(null)
+    val sellResultDialog = _sellResultDialog.asStateFlow()
+
+    fun dismissSellResultDialog() {
+        _sellResultDialog.value = null
+    }
 
     /** Элементы корзины для UI */
     val items: StateFlow<List<CartItemDomain>> =
@@ -59,11 +74,39 @@ class SaleViewModel @Inject constructor(
 
     /** Продать наличными */
     fun onSellCash(conductorId: Int) = viewModelScope.launch {
-        soldCashOp(cart, conductorId)
+        try {
+            when (soldCashOp(cart, conductorId)) {
+                is SaveOperationResult.Success ->
+                    _sellResultDialog.value = SellResultDialog(
+                        messageRes = R.string.sell_success
+                    )
+                is SaveOperationResult.EmptyCart ->
+                    _sellResultDialog.value = SellResultDialog(R.string.sell_empty_cart)
+                is SaveOperationResult.Failure ->
+                    _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
+            }
+        } catch (e: Exception) {
+            Log.e("SaleViewModel", "onSellCash failed", e)
+            _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
+        }
     }
 
     /** Продать по карте */
     fun onSellCard(conductorId: Int) = viewModelScope.launch {
-        soldCardOp(cart, conductorId)
+        try {
+            when (soldCardOp(cart, conductorId)) {
+                is SaveOperationResult.Success ->
+                    _sellResultDialog.value = SellResultDialog(
+                        messageRes = R.string.sell_success
+                    )
+                is SaveOperationResult.EmptyCart ->
+                    _sellResultDialog.value = SellResultDialog(R.string.sell_empty_cart)
+                is SaveOperationResult.Failure ->
+                    _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
+            }
+        } catch (e: Exception) {
+            Log.e("SaleViewModel", "onSellCard failed", e)
+            _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
+        }
     }
 }

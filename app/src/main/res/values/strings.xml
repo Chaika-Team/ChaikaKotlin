@@ -232,11 +232,14 @@
     <string name="op_type_sold_card">Продажа по карте</string>
     <string name="op_type_replenish">Добор</string>
 
+    <!-- Operation Result -->
+    <string name="sell_title">Операция</string>
+    <string name="sell_success">Операция зарегистрирована</string>
+    <string name="sell_empty_cart">Корзина пуста</string>
+    <string name="sell_failure">Что-то пошло не так, попробуйте повторить операцию</string>
+
     <!-- Units & formats -->
     <string name="op_quantity_suffix">шт</string>
-<!--    <string name="op_price_rub">%1$d.%2$02d руб</string>-->
-<!--    <string name="op_total_price_rub">%1$d.%2$02d руб</string>-->
-
     <string name="statistics_title">Статистика</string>
 
 </resources>
