@@ -234,9 +234,14 @@
 
     <!-- Units & formats -->
     <string name="op_quantity_suffix">шт</string>
-<!--    <string name="op_price_rub">%1$d.%2$02d руб</string>-->
-<!--    <string name="op_total_price_rub">%1$d.%2$02d руб</string>-->
-
     <string name="statistics_title">Статистика</string>
+
+    <!-- Finish trip an send report -->
+    <string name="trip_finish_title">Завершение поездки</string>
+    <string name="trip_finish_success">Поездка завершена, отчёт отправлен</string>
+    <string name="trip_finish_already_sent">Поездка завершена, отчёт уже был отправлен</string>
+    <string name="trip_finish_missing_report">Ошибка отчёта</string>
+    <string name="trip_finish_temp_failure">Ошибка сервиса, попробуйте отправить позже</string>
+    <string name="trip_finish_perm_failure">Ошибка сервиса, мы работаем над этой проблемой</string>
 
 </resources>

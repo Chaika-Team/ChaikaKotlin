@@ -1,6 +1,7 @@
 package com.chaikasoft.app.ui.viewModels
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -9,6 +10,7 @@ import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetCarriagesForTrainUseCase
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.chaikasoft.app.R
 
 @HiltViewModel
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -93,6 +96,15 @@ class TripViewModel @Inject constructor(
     private val _carriageList = MutableStateFlow<List<CarriageDomain>>(emptyList())
     val carriageList: StateFlow<List<CarriageDomain>> = _carriageList.asStateFlow()
 
+    data class FinishTripDialog(@StringRes val messageRes: Int)
+
+    private val _finishTripDialog = MutableStateFlow<FinishTripDialog?>(null)
+    val finishTripDialog = _finishTripDialog.asStateFlow()
+
+    fun dismissFinishTripDialog() {
+        _finishTripDialog.value = null
+    }
+
     /**
      * Отфильтрованный список вагонов с валидным номером (число)
      * + подробное логирование.
@@ -144,9 +156,21 @@ class TripViewModel @Inject constructor(
         _selectedTripRecord.value = null
         _selectedCarriage.value = null
         try {
-            completeShiftUseCase(trip.uuid)
+            when (completeShiftUseCase(trip.uuid)) {
+                is SendReportResult.Success ->
+                    _finishTripDialog.value = FinishTripDialog(R.string.trip_finish_success)
+                is SendReportResult.AlreadySent ->
+                    _finishTripDialog.value = FinishTripDialog(R.string.trip_finish_already_sent)
+                is SendReportResult.MissingReport ->
+                    _finishTripDialog.value = FinishTripDialog(R.string.trip_finish_missing_report)
+                is SendReportResult.TemporaryFailure ->
+                    _finishTripDialog.value = FinishTripDialog(R.string.trip_finish_temp_failure)
+                is SendReportResult.PermanentFailure ->
+                    _finishTripDialog.value = FinishTripDialog(R.string.trip_finish_perm_failure)
+            }
         } catch (e: Exception) {
             Log.e("TripViewModel", "Error finishing trip", e)
+            _finishTripDialog.value = FinishTripDialog(R.string.trip_finish_temp_failure)
         }
     }
 
