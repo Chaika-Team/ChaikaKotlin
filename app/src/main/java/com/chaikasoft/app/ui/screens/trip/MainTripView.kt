@@ -20,6 +20,7 @@ import com.chaikasoft.app.ui.components.trip.HistoryToNowDivider
 import com.chaikasoft.app.ui.components.trip.NewTripButton
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.viewModels.TripViewModel
+import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
 
 @Composable
 fun MainTripView(
@@ -72,5 +73,7 @@ fun MainTripView(
                     .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 16.dp)
             )
         }
+
+        FinishTripResultBottomSheet(viewModel)
     }
 }
