@@ -15,6 +15,7 @@ import com.chaikasoft.app.ui.components.product.CartPaymentArea
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.components.product.SellResultBottomSheet
 import com.chaikasoft.app.ui.mappers.toUiModel
 import com.chaikasoft.app.ui.viewModels.ConductorViewModel
 import com.chaikasoft.app.ui.viewModels.SaleViewModel
@@ -73,12 +74,14 @@ fun ProductCartView(
             onConductorSelected = { selectedConductor = it },
             onPayCash = {
                 selectedConductor?.id?.let { saleViewModel.onSellCash(it) }
-                navController.navigateUp()
             },
             onPayCard = {
                 selectedConductor?.id?.let { saleViewModel.onSellCard(it) }
-                navController.navigateUp()
             }
         )
     }
+    SellResultBottomSheet(
+        viewModel = saleViewModel,
+        onClick = { navController.navigateUp() }
+    )
 }
