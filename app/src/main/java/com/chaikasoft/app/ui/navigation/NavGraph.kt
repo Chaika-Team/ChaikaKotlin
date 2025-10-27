@@ -38,7 +38,8 @@ import com.chaikasoft.app.ui.viewModels.*
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    tripViewModel: TripViewModel
 ) {
     // 1) Слушаем единое состояние авторизации
     val ui by authViewModel.uiState.collectAsStateWithLifecycle()
@@ -96,10 +97,6 @@ fun NavGraph(
             route = Routes.TRIP_GRAPH
         ) {
             composable(Routes.TRIP_MAIN) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.TRIP_GRAPH)
-                }
-                val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
                 MainTripView(
                     viewModel = tripViewModel,
                     navController = navController
@@ -118,10 +115,6 @@ fun NavGraph(
             }
 
             composable(Routes.TRIP_BY_NUMBER) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.TRIP_GRAPH)
-                }
-                val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
                 FindByNumberView(
                     viewModel = tripViewModel,
                     navController = navController
@@ -129,10 +122,6 @@ fun NavGraph(
             }
 
             composable(Routes.TRIP_SELECT_CARRIAGE) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.TRIP_GRAPH)
-                }
-                val tripViewModel = hiltViewModel<TripViewModel>(parentEntry)
                 SelectCarriageView(
                     viewModel = tripViewModel,
                     navController = navController
@@ -299,7 +288,8 @@ fun NavGraph(
                 MainProfileView(
                     conductorViewModel = conductorViewModel,
                     authViewModel = authViewModel,
-                    navController = navController
+                    navController = navController,
+                    tripViewModel = tripViewModel
                 )
             }
             composable(Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->

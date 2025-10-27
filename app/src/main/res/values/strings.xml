@@ -249,5 +249,16 @@
     <string name="trip_finish_missing_report">Ошибка отчёта</string>
     <string name="trip_finish_temp_failure">Ошибка сервиса, попробуйте отправить позже</string>
     <string name="trip_finish_perm_failure">Ошибка сервиса, мы работаем над этой проблемой</string>
+    <string name="trip_finish_result_title">Результат завершения поездки</string>
+
+
+    <string name="logout_confirm_title">Вы хотите выйти из аккаунта?</string>
+    <string name="logout_confirm_message">Вы действительно хотите выйти из аккаунта?</string>
+    <string name="logout_confirm">ПОТДВЕРДИТЬ</string>
+    <string name="logout_cancel">ОТМЕНА</string>
+
+    <string name="active_trip_confirm_title">У вас есть незавершённая поездка</string>
+    <string name="active_trip_confirm_message">У вас есть незавершённая поездка. Вы хотите завершить её?</string>
+
 
 </resources>

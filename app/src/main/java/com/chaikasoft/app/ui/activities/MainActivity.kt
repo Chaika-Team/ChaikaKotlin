@@ -21,6 +21,7 @@ import com.chaikasoft.app.ui.components.topBar.TopBar
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.components.bottomBar.BottomBar
 import com.chaikasoft.app.ui.navigation.NavGraph
+import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChaikaTheme {
                 val authViewModel: AuthViewModel = hiltViewModel()
+                val tripViewModel: TripViewModel = hiltViewModel()
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
@@ -64,7 +66,11 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { paddingValues ->
                     Box(modifier = Modifier.padding(paddingValues)) {
-                        NavGraph(navController = navController, authViewModel = authViewModel)
+                        NavGraph(
+                            navController = navController,
+                            authViewModel = authViewModel,
+                            tripViewModel = tripViewModel
+                        )
                     }
                 }
             }

@@ -15,12 +15,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.CurrentTripCard
+import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
 import com.chaikasoft.app.ui.components.trip.HistoryRecordCard
 import com.chaikasoft.app.ui.components.trip.HistoryToNowDivider
 import com.chaikasoft.app.ui.components.trip.NewTripButton
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.viewModels.TripViewModel
-import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
 
 @Composable
 fun MainTripView(
@@ -74,6 +74,9 @@ fun MainTripView(
             )
         }
 
-        FinishTripResultBottomSheet(viewModel)
+        FinishTripResultBottomSheet(
+            tripViewModel = viewModel,
+            onDismissWithLogout = { }
+        )
     }
 }
