@@ -20,7 +20,9 @@ fun ProductComponent(
     modifier: Modifier = Modifier,
     onAddToCart: () -> Unit,
     onQuantityIncrease: () -> Unit,
-    onQuantityDecrease: () -> Unit
+    onQuantityDecrease: () -> Unit,
+    showQuantityBadge: Boolean = false,
+    quantityToShow: Int
 ) {
     val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
     Column (
@@ -33,7 +35,9 @@ fun ProductComponent(
             modifier = modifier,
             onAddToCart = onAddToCart,
             onQuantityIncrease = onQuantityIncrease,
-            onQuantityDecrease = onQuantityDecrease
+            onQuantityDecrease = onQuantityDecrease,
+            showQuantityBadge = showQuantityBadge,
+            quantityToShow = quantityToShow
         )
     }
 }
@@ -54,6 +58,7 @@ fun PreviewProductComponent() {
         modifier = Modifier,
         onAddToCart = {},
         onQuantityIncrease = {},
-        onQuantityDecrease = {}
+        onQuantityDecrease = {},
+        quantityToShow = 52
     )
 }

@@ -19,12 +19,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.chaikasoft.app.ui.components.product.CartProductItem
+import com.chaikasoft.app.ui.components.product.ReplenishProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.components.template.CheckDialog
 import com.chaikasoft.app.ui.viewModels.ConductorViewModel
+import com.chaikasoft.app.ui.viewModels.PackageViewModel
 import com.chaikasoft.app.ui.viewModels.ReplenishItemsViewModel
 import com.chaikasoft.app.ui.viewModels.ReplenishViewModel
 
@@ -33,6 +34,7 @@ fun ProductReplenishView(
     conductorViewModel: ConductorViewModel,
     replenishViewModel: ReplenishViewModel,
     replenishItemsViewModel: ReplenishItemsViewModel,
+    packageViewModel: PackageViewModel,
     navController: NavHostController,
 ) {
     val conductor = conductorViewModel.conductor.collectAsStateWithLifecycle()
@@ -40,6 +42,8 @@ fun ProductReplenishView(
     val displayProducts = remember(replenishViewModel.items) {
         replenishItemsViewModel.getDisplayProducts(replenishViewModel.items)
     }.collectAsStateWithLifecycle()
+    val productQuantities by packageViewModel.productQuantities.collectAsStateWithLifecycle()
+
     Scaffold { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -61,7 +65,7 @@ fun ProductReplenishView(
                             key = { index -> displayProducts.value[index].id }
                         ) { index ->
                             displayProducts.value[index].let { product ->
-                                CartProductItem(
+                                ReplenishProductItem(
                                     modifier = Modifier.testTag("productCard"),
                                     product = product,
                                     onAddToCart = {
@@ -81,7 +85,8 @@ fun ProductReplenishView(
                                     },
                                     onRemove = {
                                         replenishViewModel.onRemove(product.id)
-                                    }
+                                    },
+                                    packageQuantity = productQuantities[product.id] ?: product.quantity
                                 )
                             }
                         }

@@ -1,8 +1,10 @@
 package com.chaikasoft.app.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.usecases.GetAvailableQuantityUseCase
 import com.chaikasoft.app.domain.usecases.GetPackageItemUseCase
 import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.mappers.toUiModel
@@ -19,10 +21,14 @@ import javax.inject.Inject
 @HiltViewModel
 class PackageViewModel @Inject constructor(
     private val getPackageItemUseCase: GetPackageItemUseCase,
+    private val getAvailableQuantityUseCase: GetAvailableQuantityUseCase
 ) : ViewModel() {
 
     private val _productsFlow = MutableStateFlow<List<Product>>(emptyList())
     val productsFlow: StateFlow<List<Product>> = _productsFlow.asStateFlow()
+
+    private val _productQuantities = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val productQuantities: StateFlow<Map<Int, Int>> = _productQuantities.asStateFlow()
 
     private var loadProductsJob: Job? = null
 
@@ -52,8 +58,30 @@ class PackageViewModel @Inject constructor(
         }
     }
 
+    fun checkProductQuantity(productId: Int, force: Boolean = false) {
+        viewModelScope.launch {
+            try {
+                if (!force && _productQuantities.value.containsKey(productId)) return@launch
+                val quantity = getAvailableQuantityUseCase(productId)
+                _productQuantities.update { currentMap ->
+                    currentMap + (productId to quantity)
+                }
+            } catch (e: Exception) {
+                Log.e("PackageViewModel", "Failed to get quantity for product with id=$productId", e)
+            }
+        }
+    }
+
+    fun refreshAllQuantities() {
+        val ids = _productsFlow.value.map { it.id }
+        ids.forEach { id ->
+            checkProductQuantity(id, force = true)
+        }
+    }
+
     fun clearProductState() {
         _productsFlow.update { emptyList() }
+        _productQuantities.update { emptyMap() }
         loadProductsJob?.cancel()
         loadProductsJob = null
     }

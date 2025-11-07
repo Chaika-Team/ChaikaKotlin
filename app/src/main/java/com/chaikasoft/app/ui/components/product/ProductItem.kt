@@ -1,12 +1,19 @@
 package com.chaikasoft.app.ui.components.product
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -27,7 +34,9 @@ fun ProductItem(
     modifier: Modifier = Modifier,
     onAddToCart: () -> Unit,
     onQuantityIncrease: () -> Unit,
-    onQuantityDecrease: () -> Unit
+    onQuantityDecrease: () -> Unit,
+    showQuantityBadge: Boolean = false,
+    quantityToShow: Int
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -67,6 +76,27 @@ fun ProductItem(
                     imageUrl = product.image,
                     contentDescription = "Изображение продукта: ${product.name}"
                 )
+
+                if (showQuantityBadge && quantityToShow > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset((-6).dp, (-6).dp) // немного внутрь изображения
+                            .size(24.dp)
+                            .background(
+                                color = colorScheme.primary,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = quantityToShow.toString(),
+                            color = colorScheme.onPrimary,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
 
             ProductContent(
@@ -83,7 +113,6 @@ fun ProductItem(
                 }
                     .padding(bottom = ProductDimens.PaddingM)
             )
-
     }
 }
 
@@ -103,6 +132,7 @@ fun PreviewProductItem() {
         modifier = Modifier,
         onAddToCart = {},
         onQuantityIncrease = {},
-        onQuantityDecrease = {}
+        onQuantityDecrease = {},
+        quantityToShow = 52
     )
 }

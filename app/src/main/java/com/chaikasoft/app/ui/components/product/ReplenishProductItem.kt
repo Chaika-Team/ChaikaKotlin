@@ -1,0 +1,256 @@
+package com.chaikasoft.app.ui.components.product
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.chaikasoft.app.ui.dto.Product
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.ProductDimens
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.compose.ui.res.stringResource
+import com.chaikasoft.app.R
+
+
+@Composable
+fun ReplenishProductItem(
+    product: Product,
+    onQuantityIncrease: () -> Unit,
+    onQuantityDecrease: () -> Unit,
+    onAddToCart: () -> Unit,
+    onRemove: () -> Unit,
+    packageQuantity: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
+        ConstraintLayout(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val (divTop, divBottom, imageRef, nameRef, priceRowRef) = createRefs()
+
+            // Верхний разделитель
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(divTop) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+
+            // Изображение продукта
+            ProductImage(
+                imageUrl = product.image,
+                modifier = Modifier
+                    .constrainAs(imageRef) {
+                        top.linkTo(divTop.bottom)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .size(ProductDimens.CartProductItem.ImageSize)
+                    .padding(end = ProductDimens.PaddingM)
+                    .aspectRatio(1f),
+                contentDescription = product.name
+            )
+
+            // Название продукта
+            Text(
+                text = product.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = ProductDimens.CartProductItem.NameFontSize,
+                maxLines = ProductDimens.CartProductItem.MaxNameLines,
+                modifier = Modifier.constrainAs(nameRef) {
+                    top.linkTo(imageRef.top)
+                    start.linkTo(imageRef.end)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+            )
+
+            StockQuantityRow(
+                product = product,
+                quantityToShow = packageQuantity + product.quantity,
+                onAddToCart = onAddToCart,
+                onQuantityIncrease = onQuantityIncrease,
+                onQuantityDecrease = onQuantityDecrease,
+                onRemove = onRemove,
+                modifier = Modifier.constrainAs(priceRowRef) {
+                    start.linkTo(nameRef.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(imageRef.bottom)
+                    width = Dimension.fillToConstraints
+                }
+            )
+
+            // Нижний разделитель
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .constrainAs(divBottom) {
+                        top.linkTo(imageRef.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+        }
+    }
+}
+
+@Composable
+private fun StockQuantityRow(
+    product: Product,
+    quantityToShow: Int,
+    onAddToCart: () -> Unit,
+    onQuantityIncrease: () -> Unit,
+    onQuantityDecrease: () -> Unit,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(ProductDimens.CartProductItem.QuantitySelectorHeight)
+    ) {
+        // Левый блок: остаток
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+        ) {
+            val qtyText = if (quantityToShow >= 0) quantityToShow.toString() else "—"
+            Text(
+                text = "Остаток: $qtyText",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = if (quantityToShow <= 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
+                fontSize = ProductDimens.CartProductItem.PriceFontSize
+            )
+        }
+
+
+        if (product.isInCart) {
+            // если товар уже в корзине — показываем селектор количества и кнопку удаления
+            QuantitySelector(
+                quantity = product.quantity,
+                onIncrease = onQuantityIncrease,
+                onDecrease = onQuantityDecrease,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(
+                        width = ProductDimens.CartProductItem.QuantitySelectorWidth,
+                        height = ProductDimens.CartProductItem.QuantitySelectorHeight
+                    ),
+                colorBack = MaterialTheme.colorScheme.surfaceVariant,
+                colorText = MaterialTheme.colorScheme.onSurface
+            )
+
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = ProductDimens.CartProductItem.QuantitySelectorWidth + ProductDimens.CartProductItem.RemoveButtonPadding)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(id = R.string.cart_product_remove_from_cart),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        } else {
+            Button(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(
+                        width = ProductDimens.CartProductItem.QuantitySelectorWidth,
+                        height = ProductDimens.CartProductItem.QuantitySelectorHeight
+                    ),
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // яркая красная пилюля
+                    contentColor = Color.White
+                ),
+                onClick = onAddToCart,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.cart_product_add_to_cart),
+                    tint = Color.White,
+                    modifier = Modifier.fillMaxSize(0.6F)
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ReplenishProductItemQuantityPreview() {
+    ChaikaTheme {
+        ReplenishProductItem(
+            product = Product(
+                id = 2,
+                name = "Черный чай",
+                description = "Ароматный черный чай",
+                image = "",
+                price = 85,
+                isInCart = true,
+                quantity = 3
+            ),
+            onQuantityIncrease = {},
+            onQuantityDecrease = {},
+            onAddToCart = {},
+            onRemove = {},
+            packageQuantity = 12
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ReplenishProductItemQuantityZeroPreview() {
+    ChaikaTheme {
+        ReplenishProductItem(
+            product = Product(
+                id = 2,
+                name = "Черный чай",
+                description = "Ароматный черный чай",
+                image = "",
+                price = 85,
+                isInCart = false,
+                quantity = 0
+            ),
+            onQuantityIncrease = {},
+            onQuantityDecrease = {},
+            onAddToCart = {},
+            onRemove = {},
+            packageQuantity = 0
+        )
+    }
+}
