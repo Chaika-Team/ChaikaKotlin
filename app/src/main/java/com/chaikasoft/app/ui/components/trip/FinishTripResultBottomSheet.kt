@@ -14,24 +14,31 @@ import com.chaikasoft.app.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinishTripResultBottomSheet(
-    viewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    pendingLogout: Boolean = true,
+    onDismissWithLogout: () -> Unit
 ) {
-    val dialogState by viewModel.finishTripDialog.collectAsStateWithLifecycle()
-    if (dialogState == null) return
+    val dialogState by tripViewModel.finishTripDialog.collectAsStateWithLifecycle()
+
+    val shouldShowSheet = dialogState != null && pendingLogout
+
+    if (!shouldShowSheet) return
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
         onDismissRequest = {
-            // закрываем «жёстко», не оставляя полупозиций
             scope.launch {
                 sheetState.hide()
-                viewModel.dismissFinishTripDialog()
+                tripViewModel.dismissFinishTripDialog()
+
+                if (pendingLogout) {
+                    onDismissWithLogout()
+                }
             }
         },
         sheetState = sheetState,
-//        dragHandle = { ModalBottomSheetDefaults.DragHandle() },
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(
@@ -51,12 +58,15 @@ fun FinishTripResultBottomSheet(
             )
             Spacer(Modifier.height(20.dp))
 
-            // одна понятная кнопка
             Button(
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        viewModel.dismissFinishTripDialog()
+                        tripViewModel.dismissFinishTripDialog()
+
+                        if (pendingLogout) {
+                            onDismissWithLogout()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
