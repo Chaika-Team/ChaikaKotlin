@@ -196,10 +196,12 @@ fun NavGraph(
                 val replenishViewModel = hiltViewModel<ReplenishViewModel>(parentEntry)
                 val replenishItemsViewModel = hiltViewModel<ReplenishItemsViewModel>(parentEntry)
                 val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
+                val packageViewModel = hiltViewModel<PackageViewModel>(parentEntry)
                 ProductReplenishView(
                     replenishViewModel = replenishViewModel,
                     conductorViewModel = conductorViewModel,
                     replenishItemsViewModel = replenishItemsViewModel,
+                    packageViewModel = packageViewModel,
                     navController = navController
                 )
             }
