@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -30,10 +31,36 @@ import com.chaikasoft.app.util.formatPriceOnly
 import java.text.NumberFormat
 import java.util.Locale
 
-private val NameColWidth = 120.dp
-private val PriceColWidth = 50.dp
-private val QtyColWidth = 32.dp
-private val RevenueColWidth = 62.dp
+@Composable
+private fun rememberColumnWidths(): ColumnWidths {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
+    return remember(screenWidth) {
+        if (configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+            ColumnWidths(
+                name = screenWidth * 0.25f,      // 25% для названия
+                price = screenWidth * 0.12f,     // 12% для цены
+                qty = screenWidth * 0.08f,       // 8% для каждой qty колонки
+                revenue = screenWidth * 0.15f    // 15% для итога
+            )
+        } else {
+            ColumnWidths(
+                name = 120.dp,
+                price = 50.dp,
+                qty = 32.dp,
+                revenue = 62.dp
+            )
+        }
+    }
+}
+
+private data class ColumnWidths(
+    val name: Dp,
+    val price: Dp,
+    val qty: Dp,
+    val revenue: Dp
+)
 
 private val TableText = TextStyle(fontSize = 12.sp)
 
@@ -47,10 +74,13 @@ fun StatisticsScreen(
     val cashRevenue by viewModel.cashRevenue.collectAsStateWithLifecycle()
     val cashChecks by viewModel.cashChecksCount.collectAsStateWithLifecycle()
 
+    val columnWidths = rememberColumnWidths()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
     val sharedHScroll = rememberScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    // Подтянем количество чеков при старте
     LaunchedEffect(Unit) { viewModel.refreshCartChecks() }
 
     BottomSheetScaffold(
@@ -89,14 +119,23 @@ fun StatisticsScreen(
                     color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 0.dp
                 ) {
-                    TableHeader(sharedHScroll)
+                    TableHeader(
+                        scrollState = sharedHScroll,
+                        widths = columnWidths,
+                        isLandscape = isLandscape
+                    )
                 }
             }
             items(
                 items = reports,
                 key = { it.productName }
             ) { report ->
-                TableRow(report = report, scrollState = sharedHScroll)
+                TableRow(
+                    report = report,
+                    scrollState = sharedHScroll,
+                    widths = columnWidths,
+                    isLandscape = isLandscape
+                )
             }
         }
     }
@@ -160,14 +199,16 @@ private fun CashSummarySheet(
     }
 }
 
-
-
 @Composable
-private fun TableHeader(scrollState: ScrollState) {
+private fun TableHeader(
+    scrollState: ScrollState,
+    widths: ColumnWidths,
+    isLandscape: Boolean
+) {
     TableLineContainer {
         Box(
             modifier = Modifier
-                .width(NameColWidth)
+                .width(widths.name)
                 .align(Alignment.CenterStart)
         ) {
             Text(
@@ -178,14 +219,18 @@ private fun TableHeader(scrollState: ScrollState) {
                 style = TableText
             )
         }
-        CenterScrollArea(scrollState) {
-            HeaderIconCell(R.drawable.ic_rub,       PriceColWidth)
-            HeaderIconCell(R.drawable.ic_add,       QtyColWidth)
-            HeaderIconCell(R.drawable.ic_replenish, QtyColWidth)
-            HeaderIconCell(R.drawable.ic_card,      QtyColWidth)
-            HeaderIconCell(R.drawable.ic_cash,      QtyColWidth)
+        CenterScrollArea(
+            scrollState = scrollState,
+            nameWidth = widths.name,
+            enableScroll = !isLandscape  // В landscape отключаем скролл
+        ) {
+            HeaderIconCell(R.drawable.ic_rub,       widths.price)
+            HeaderIconCell(R.drawable.ic_add,       widths.qty)
+            HeaderIconCell(R.drawable.ic_replenish, widths.qty)
+            HeaderIconCell(R.drawable.ic_card,      widths.qty)
+            HeaderIconCell(R.drawable.ic_cash,      widths.qty)
             Box(
-                modifier = Modifier.width(RevenueColWidth),
+                modifier = Modifier.width(widths.revenue),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
@@ -203,12 +248,14 @@ private fun TableHeader(scrollState: ScrollState) {
 @Composable
 private fun TableRow(
     report: FastReportDomain,
-    scrollState: ScrollState
+    scrollState: ScrollState,
+    widths: ColumnWidths,
+    isLandscape: Boolean
 ) {
     TableLineContainer {
         Box(
             modifier = Modifier
-                .width(NameColWidth)
+                .width(widths.name)
                 .align(Alignment.CenterStart)
         ) {
             Text(
@@ -219,13 +266,17 @@ private fun TableRow(
                 style = TableText
             )
         }
-        CenterScrollArea(scrollState) {
-            NumericCell(formatNumber(report.productPrice.toDouble() / 100), Color.Gray,  PriceColWidth,  TableText)
-            NumericCell(report.addedQuantity.toString(),                    Color.Black, QtyColWidth,    TableText)
-            NumericCell(report.replenishedQuantity.toString(),              Color.Gray,  QtyColWidth,    TableText)
-            NumericCell(report.soldCashQuantity.toString(),                 Color.Black, QtyColWidth,    TableText)
-            NumericCell(report.soldCartQuantity.toString(),                 Color.Gray,  QtyColWidth,    TableText)
-            NumericCell(formatNumber(report.revenue.toDouble() / 100),      Color.Black, RevenueColWidth,TableText)
+        CenterScrollArea(
+            scrollState = scrollState,
+            nameWidth = widths.name,
+            enableScroll = !isLandscape
+        ) {
+            NumericCell(formatNumber(report.productPrice.toDouble() / 100), Color.Gray,  widths.price,   TableText)
+            NumericCell(report.addedQuantity.toString(),                    Color.Black, widths.qty,     TableText)
+            NumericCell(report.replenishedQuantity.toString(),              Color.Gray,  widths.qty,     TableText)
+            NumericCell(report.soldCashQuantity.toString(),                 Color.Black, widths.qty,     TableText)
+            NumericCell(report.soldCartQuantity.toString(),                 Color.Gray,  widths.qty,     TableText)
+            NumericCell(formatNumber(report.revenue.toDouble() / 100),      Color.Black, widths.revenue, TableText)
         }
     }
 }
@@ -234,19 +285,27 @@ private fun TableRow(
 @Composable
 private fun CenterScrollArea(
     scrollState: ScrollState,
+    nameWidth: Dp,
+    enableScroll: Boolean,
     content: @Composable RowScope.() -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = NameColWidth)
+            .padding(start = nameWidth)
             .clipToBounds()
     ) {
         Row(
             modifier = Modifier
-                .horizontalScroll(scrollState)
-                .wrapContentWidth(),
+                .then(
+                    if (enableScroll) {
+                        Modifier.horizontalScroll(scrollState).wrapContentWidth()
+                    } else {
+                        Modifier.fillMaxWidth()
+                    }
+                ),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = if (enableScroll) Arrangement.Start else Arrangement.SpaceBetween,
             content = content
         )
     }

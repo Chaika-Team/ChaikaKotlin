@@ -21,7 +21,9 @@
         <!-- Основное активити с навигационным intent‑фильтром для deep link -->
         <activity
             android:name=".ui.activities.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
             <!-- Для запуска из лаунчера -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
