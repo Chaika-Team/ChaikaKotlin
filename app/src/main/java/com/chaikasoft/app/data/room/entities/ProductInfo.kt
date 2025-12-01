@@ -2,6 +2,7 @@ package com.chaikasoft.app.data.room.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -13,7 +14,10 @@ import androidx.room.PrimaryKey
  * @param image Ссылка или путь к изображению продукта.
  * @param price Цена продукта.
  */
-@Entity(tableName = "product_info")
+@Entity(
+    tableName = "product_info",
+    indices = [Index(value = ["name"])]
+)
 data class ProductInfo(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,

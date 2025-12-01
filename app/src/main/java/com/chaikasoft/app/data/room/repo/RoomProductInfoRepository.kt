@@ -32,16 +32,38 @@ class RoomProductInfoRepository @Inject constructor(
         productInfoDao.deleteProduct(product.toEntity())
     }
 
-    override fun getPagedProducts(pageSize: Int): Flow<PagingData<ProductInfoDomain>> =
-        Pager(
-            config = PagingConfig(
-                pageSize = pageSize,
-                enablePlaceholders = false,
-                initialLoadSize = pageSize * 2,
-                prefetchDistance = pageSize
-            ),
-            pagingSourceFactory = { productInfoDao.getPagedProducts() }
-        ).flow.map { data -> data.map { it.toDomain() } }
+    override fun getPagedProducts(
+        query: String?,
+        pageSize: Int
+    ): Flow<PagingData<ProductInfoDomain>> {
+        val config = PagingConfig(
+            pageSize = pageSize,
+            enablePlaceholders = false,
+            initialLoadSize = pageSize * 2,
+            prefetchDistance = pageSize
+        )
+
+        return if (query.isNullOrBlank()) {
+            // кейс «все продукты»
+            Pager(
+                config = config,
+                pagingSourceFactory = { productInfoDao.getPagedProducts() }
+            ).flow.map { paging -> paging.map { it.toDomain() } }
+        } else {
+            // кейс «поиск по имени»
+            val pattern = "${escapeLike(query)}%"
+
+            Pager(
+                config = config,
+                pagingSourceFactory = { productInfoDao.getPagedProductsByName(pattern) }
+            ).flow.map { paging -> paging.map { it.toDomain() } }
+        }
+    }
+
+    private fun escapeLike(s: String): String =
+        s.replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
 
     override suspend fun getProductById(productId: Int): ProductInfoDomain? {
         return productInfoDao.getProductById(productId)?.toDomain()

@@ -31,8 +31,11 @@ class GetAllProductsUseCase @Inject constructor(
 class GetPagedProductsUseCase @Inject constructor(
     private val repository: RoomProductInfoRepositoryInterface
 ) {
-    operator fun invoke(pageSize: Int = 20): Flow<PagingData<ProductInfoDomain>> =
-        repository.getPagedProducts(pageSize)
+    operator fun invoke(
+        query: String? = null,
+        pageSize: Int = 20
+    ): Flow<PagingData<ProductInfoDomain>> =
+        repository.getPagedProducts(query, pageSize)
 }
 
 
