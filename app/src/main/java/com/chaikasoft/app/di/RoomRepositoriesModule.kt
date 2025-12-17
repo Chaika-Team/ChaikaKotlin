@@ -1,5 +1,6 @@
 package com.chaikasoft.app.di
 
+import com.chaikasoft.app.data.room.AppDatabase
 import com.chaikasoft.app.data.room.dao.CartItemDao
 import com.chaikasoft.app.data.room.dao.CartOperationDao
 import com.chaikasoft.app.data.room.dao.ConductorDao

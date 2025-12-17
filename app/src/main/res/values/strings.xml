@@ -213,6 +213,7 @@
     <string name="cart_loading_error">Произошла ошибка при загрузке данных</string>
 
     <string name="template_confirm">ПОДТВЕРДИТЬ</string>
+    <string name="template_confirm_title">Подтверждение пакета</string>
     <string name="template_cancel">ОТМЕНА</string>
     
     <string name="empty_product_list">No products available</string>

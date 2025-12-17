@@ -33,14 +33,9 @@ import com.chaikasoft.app.ui.viewModels.ProductViewModel
 fun TemplateDetailView(
     templateId: Int,
     viewModel: TemplateViewModel,
-    productViewModel: ProductViewModel,
     fillViewModel: FillViewModel,
     navController: NavController,
 ) {
-    LaunchedEffect(Unit) {
-        productViewModel.loadInitialData(fillViewModel.items)
-    }
-
     val templateState = produceState<TemplateDomain?>(initialValue = null, templateId) {
         value = viewModel.getTemplateDetail(templateId)
         Log.i("TemplateDetailView", "Got value: $value")
@@ -138,7 +133,7 @@ fun TemplateDetailView(
             onClick = {
                 fillViewModel.onApplyTemplate(template)
                 navController.navigate(Routes.TEMPLATE_EDIT)
-                      },
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()

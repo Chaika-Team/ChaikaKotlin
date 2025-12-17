@@ -11,19 +11,28 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.viewModels.FillViewModel
+import com.chaikasoft.app.ui.viewModels.ProductViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductEntryView(
     navController: NavController,
+    productViewModel: ProductViewModel,
+    fillViewModel: FillViewModel
 ) {
+    LaunchedEffect(Unit) {
+        productViewModel.attachCart(fillViewModel.items)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

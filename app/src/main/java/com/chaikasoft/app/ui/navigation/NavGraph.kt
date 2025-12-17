@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.chaikasoft.app.ui.screens.auth.LoginScreen
 import com.chaikasoft.app.ui.screens.operation.OperationScreen
+import com.chaikasoft.app.ui.screens.product.TemplateConfirmView
 import com.chaikasoft.app.ui.screens.product.ProductCartView
 import com.chaikasoft.app.ui.screens.product.ProductEntryView
 import com.chaikasoft.app.ui.screens.product.ProductPackageView
@@ -96,7 +97,7 @@ fun NavGraph(
             startDestination = Routes.TRIP_MAIN,
             route = Routes.TRIP_GRAPH
         ) {
-            composable(Routes.TRIP_MAIN) { backStackEntry ->
+            composable(Routes.TRIP_MAIN) {
                 MainTripView(
                     viewModel = tripViewModel,
                     navController = navController
@@ -114,14 +115,14 @@ fun NavGraph(
                 )
             }
 
-            composable(Routes.TRIP_BY_NUMBER) { backStackEntry ->
+            composable(Routes.TRIP_BY_NUMBER) {
                 FindByNumberView(
                     viewModel = tripViewModel,
                     navController = navController
                 )
             }
 
-            composable(Routes.TRIP_SELECT_CARRIAGE) { backStackEntry ->
+            composable(Routes.TRIP_SELECT_CARRIAGE) {
                 SelectCarriageView(
                     viewModel = tripViewModel,
                     navController = navController
@@ -159,8 +160,17 @@ fun NavGraph(
 
                 LoadingScreen()
             }
-            composable(route = Routes.PRODUCT_ENTRY) {
-                ProductEntryView(navController = navController)
+            composable(route = Routes.PRODUCT_ENTRY) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                }
+                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
+                ProductEntryView(
+                    navController = navController,
+                    productViewModel = productViewModel,
+                    fillViewModel = fillViewModel
+                )
             }
 
             composable(route = Routes.PRODUCT_CART) { backStackEntry ->
@@ -206,46 +216,74 @@ fun NavGraph(
                 )
             }
 
-            composable(route = Routes.TEMPLATE_SEARCH) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
-                }
-                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
-                TemplateSearchView(viewModel = templateViewModel, navController = navController)
-            }
+            navigation(
+                startDestination = Routes.TEMPLATE_SEARCH,
+                route = Routes.TEMPLATE_GRAPH
+            ) {
 
-            composable(route = Routes.TEMPLATE_DETAIL) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                composable(Routes.TEMPLATE_SEARCH) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry(Routes.TEMPLATE_GRAPH)
+                    }
+                    val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+
+                    TemplateSearchView(
+                        viewModel = templateViewModel,
+                        navController = navController
+                    )
                 }
-                val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
-                val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                val templateId = backStackEntry.arguments?.getString("templateId")?.toIntOrNull()
-                if (templateId != null) {
+
+                composable(Routes.TEMPLATE_DETAIL) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry(Routes.TEMPLATE_GRAPH)
+                    }
+
+                    val templateViewModel = hiltViewModel<TemplateViewModel>(parentEntry)
+                    val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
+
+                    val templateId = backStackEntry.arguments
+                        ?.getString("templateId")
+                        ?.toIntOrNull() ?: return@composable
+
                     TemplateDetailView(
                         templateId = templateId,
                         viewModel = templateViewModel,
                         fillViewModel = fillViewModel,
-                        productViewModel = productViewModel,
                         navController = navController
                     )
                 }
-            }
 
-            composable(route = Routes.TEMPLATE_EDIT) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Routes.PRODUCT_GRAPH)
+                composable(Routes.TEMPLATE_EDIT) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry(Routes.TEMPLATE_GRAPH)
+                    }
+
+                    val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
+                    val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
+                    val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
+
+                    TemplateEditView(
+                        productViewModel = productViewModel,
+                        fillViewModel = fillViewModel,
+                        conductorViewModel = conductorViewModel,
+                        navController = navController
+                    )
                 }
-                val productViewModel = hiltViewModel<ProductViewModel>(parentEntry)
-                val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
-                val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
-                TemplateEditView(
-                    productViewModel = productViewModel,
-                    fillViewModel = fillViewModel,
-                    conductorViewModel = conductorViewModel,
-                    navController = navController
-                )
+
+                composable(Routes.TEMPLATE_CONFIRM) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry(Routes.TEMPLATE_GRAPH)
+                    }
+
+                    val fillViewModel = hiltViewModel<FillViewModel>(parentEntry)
+                    val conductorViewModel = hiltViewModel<ConductorViewModel>(parentEntry)
+
+                    TemplateConfirmView(
+                        fillViewModel = fillViewModel,
+                        conductorViewModel = conductorViewModel,
+                        navController = navController
+                    )
+                }
             }
         }
 
