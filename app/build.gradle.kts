@@ -23,7 +23,7 @@ android {
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "0.0.2-alpha"
+        versionName = "1.1.0"
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.chaikasoft.app"
         testInstrumentationRunner = "com.chaikasoft.app.HiltTestRunner"
@@ -44,9 +44,9 @@ android {
         }
 
         getByName("release") {
-            isMinifyEnabled = true          // было false
-            isShrinkResources = true          // добавь
-            isDebuggable = false            // было true
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
