@@ -36,27 +36,16 @@ class RoomProductInfoRepository @Inject constructor(
         query: String?,
         pageSize: Int
     ): Flow<PagingData<ProductInfoDomain>> {
-        val config = PagingConfig(
-            pageSize = pageSize,
-            enablePlaceholders = false,
-            initialLoadSize = pageSize * 2,
-            prefetchDistance = pageSize
-        )
-
-        return if (query.isNullOrBlank()) {
-            // кейс «все продукты»
-            Pager(
-                config = config,
-                pagingSourceFactory = { productInfoDao.getPagedProducts() }
-            ).flow.map { paging -> paging.map { it.toDomain() } }
-        } else {
-            // кейс «поиск по имени»
-            val pattern = "${escapeLike(query)}%"
-
-            Pager(
-                config = config,
-                pagingSourceFactory = { productInfoDao.getPagedProductsByName(pattern) }
-            ).flow.map { paging -> paging.map { it.toDomain() } }
+        return Pager(
+            config = PagingConfig(
+                pageSize = pageSize,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                productInfoDao.getPagedProducts(query)
+            }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
         }
     }
 

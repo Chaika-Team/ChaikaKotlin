@@ -17,16 +17,12 @@ interface ProductInfoDao {
     @Query("SELECT * FROM product_info")
     fun getAllProducts(): Flow<List<ProductInfo>>
 
-    @Query("SELECT * FROM product_info ORDER BY id ASC")
-    fun getPagedProducts(): PagingSource<Int, ProductInfo>
-
     @Query("""
-    SELECT * FROM product_info
-    WHERE name COLLATE NOCASE LIKE :query ESCAPE '\'
-    ORDER BY name ASC, id ASC
-""")
-    fun getPagedProductsByName(query: String): PagingSource<Int, ProductInfo>
-
+        SELECT * FROM product_info
+        WHERE (:query IS NULL OR :query = '' OR name LIKE '%' || :query || '%')
+        ORDER BY id ASC
+    """)
+    fun getPagedProducts(query: String?): PagingSource<Int, ProductInfo>
 
     @Query("SELECT * FROM product_info WHERE id = :productId LIMIT 1")
     suspend fun getProductById(productId: Int): ProductInfo?
