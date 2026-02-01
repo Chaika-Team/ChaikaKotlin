@@ -268,7 +268,7 @@ class TripViewModel @Inject constructor(
         viewModelScope.launch { _pagingHistoryFlow.value = fetchAndSaveHistoryUseCase() }
     }
 
-    fun getTrips(searchDate: String, searchStart: Int, searchFinish: Int) {
+    fun getTrips(searchDate: String, searchStart: String, searchFinish: String) {
         viewModelScope.launch {
             _foundTripsList.value = searchTripByStationUseCase(searchDate, searchStart, searchFinish)
         }

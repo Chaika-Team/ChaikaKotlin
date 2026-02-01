@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
  * DTO для станции.
  */
 data class StationDto(
-    @SerializedName("code") val code: Int,
+    @SerializedName("code") val code: String,
     @SerializedName("name") val name: String,
     @SerializedName("city") val city: String
 )

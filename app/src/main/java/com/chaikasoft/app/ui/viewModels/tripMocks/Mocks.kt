@@ -12,8 +12,8 @@ private const val MOCK_FROM_NAME = "Московский вокзал"
 private const val MOCK_FROM_CITY = "Санкт-Петербург-Главный"
 private const val MOCK_TO_NAME = "ТПУ Черкизово"
 private const val MOCK_TO_CITY = "Москва ВК Восточный"
-private const val MOCK_FROM_CODE = 1
-private const val MOCK_TO_CODE = 2
+private const val MOCK_FROM_CODE = "1"
+private const val MOCK_TO_CODE = "2"
 
 private fun createMockTrip(index: Int): TripDomain {
     return TripDomain(

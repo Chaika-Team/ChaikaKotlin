@@ -47,12 +47,12 @@ fun HistoryPreview() {
             arrival = "2025-03-30T09:47:00+03:00",
             duration = "PT9H52M",
             from = StationDomain(
-                code = 1,
+                code = "1",
                 name = "Московский вокзал",
                 city = "Санкт-Петербург-Главный"
             ),
             to = StationDomain(
-                code = 2,
+                code = "2",
                 name = "ТПУ Черкизово",
                 city = "Москва ВК Восточный"
             )

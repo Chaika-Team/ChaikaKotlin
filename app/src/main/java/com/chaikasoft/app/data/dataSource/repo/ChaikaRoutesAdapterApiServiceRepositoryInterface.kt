@@ -8,20 +8,16 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
  * Интерфейс репозитория для работы с ChaikaRoutesAdapter.
  */
 interface ChaikaRoutesAdapterApiServiceRepositoryInterface {
-    /**
-     * Предлагает список станций для автокомплита.
-     */
-    suspend fun suggestStations(query: String, limit: Int = 10): List<StationDomain>
 
     /**
      * Ищет поездки по заданной дате и номеру поезда.
      */
-    suspend fun searchTripsByRoute(date: String, trainNumber: String): List<TripDomain>
+    suspend fun searchTripsByRoute(date: String): List<TripDomain>
 
     /**
      * Ищет поездки по дате и кодам станций отправления/прибытия.
      */
-    suspend fun searchTripsByStations(date: String, fromCode: Int, toCode: Int): List<TripDomain>
+    suspend fun searchTripsByStations(date: String, fromCode: String, toCode: String): List<TripDomain>
 
     /**
      * Возвращает список вагонов для конкретной поездки.

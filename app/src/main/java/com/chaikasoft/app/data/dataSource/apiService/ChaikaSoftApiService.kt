@@ -44,19 +44,18 @@ interface ChaikaSoftApiService {
      */
     @GET("/api/v1/route/station")
     suspend fun findStations(
-        @Query("query") query: String? = null,   // ← можно вызывать без query
+        @Query("offset") offset: Int = 0,
         @Query("limit") limit: Int = 10
     ): StationsResponseDto
 
     /**
      * Поиск поездок с фильтрами.
      */
-    @GET("/api/v1/route/trip")
+    @GET("/api/v1/route/yandex/search")
     suspend fun findTrips(
-        @Query("date") date: String,
-        @Query("number") trainNumber: String? = null,
-        @Query("from_code") fromCode: Int? = null,
-        @Query("to_code") toCode: Int? = null
+        @Query("from") fromCode: String? = null,
+        @Query("to") toCode: String? = null,
+        @Query("date") date: String
     ): TripsResponseDto
 
     /**

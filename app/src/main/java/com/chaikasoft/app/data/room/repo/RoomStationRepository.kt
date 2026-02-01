@@ -45,6 +45,6 @@ class RoomStationRepository @Inject constructor(
             .replace("%", "\\%")
             .replace("_", "\\_")
 
-    override suspend fun getByCode(code: Int): StationDomain? =
+    override suspend fun getByCode(code: String): StationDomain? =
         dao.getByCode(code)?.toDomain()
 }
