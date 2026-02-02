@@ -8,7 +8,7 @@ fun stationDomainSaver() = Saver<StationDomain?, Bundle>(
     save = { station ->
         Bundle().apply {
             if (station != null) {
-                putInt("code", station.code)
+                putString("code", station.code)
                 putString("name", station.name)
                 putString("city", station.city)
             } else {
@@ -19,7 +19,7 @@ fun stationDomainSaver() = Saver<StationDomain?, Bundle>(
     restore = { bundle ->
         if (bundle.getInt("code") == -1) null
         else StationDomain(
-            code = bundle.getInt("code"),
+            code = bundle.getString("code") ?: "",
             name = bundle.getString("name") ?: "",
             city = bundle.getString("city") ?: ""
         )

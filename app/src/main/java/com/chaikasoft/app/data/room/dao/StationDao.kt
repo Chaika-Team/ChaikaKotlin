@@ -8,14 +8,14 @@ import com.chaikasoft.app.data.room.entities.Station
 @Dao
 interface StationDao {
     @Upsert suspend fun upsertAll(stations: List<Station>)
+
     @Query("""
     SELECT * FROM stations
     WHERE name COLLATE NOCASE LIKE :pattern ESCAPE '\'
-       OR city COLLATE NOCASE LIKE :pattern ESCAPE '\'
     ORDER BY name ASC, city ASC
 """)
     fun pagingByQuery(pattern: String): PagingSource<Int, Station>
 
     @Query("SELECT * FROM stations WHERE code=:code LIMIT 1")
-    suspend fun getByCode(code: Int): Station?
+    suspend fun getByCode(code: String): Station?
 }
