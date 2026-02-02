@@ -1,112 +1,175 @@
 package com.chaikasoft.app.ui.screens.trip
 
 import android.util.Log
+import androidx.compose.foundation.layout.Box
+import com.chaikasoft.app.R
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.FoundTripCard
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.ui.components.trip.SearchTripSurfaceDropdown
-import com.chaikasoft.app.ui.savers.stationDomainSaver
-import kotlinx.coroutines.delay
+import com.chaikasoft.app.ui.state.TripsSearchUiState
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
+@OptIn(FlowPreview::class)
 @Composable
 fun FindByNumberView(
     viewModel: TripViewModel,
     navController: NavController,
 ) {
-    var searchDate by rememberSaveable { mutableStateOf("") }
+    val searchDate by viewModel.searchDate.collectAsStateWithLifecycle()
+    val fromQuery by viewModel.fromQuery.collectAsStateWithLifecycle()
+    val toQuery by viewModel.toQuery.collectAsStateWithLifecycle()
+    val searchStart by viewModel.searchStartStation.collectAsStateWithLifecycle()
+    val searchFinish by viewModel.searchFinishStation.collectAsStateWithLifecycle()
 
-    var fromQuery by rememberSaveable { mutableStateOf("") }
-    var toQuery by rememberSaveable { mutableStateOf("") }
+    val tripsState by viewModel.tripsSearchState.collectAsStateWithLifecycle()
 
-    var searchStart by rememberSaveable(stateSaver = stationDomainSaver()) {
-        mutableStateOf<StationDomain?>(null)
+    // При входе на экран решаю — сбросить или сохранить ---
+    LaunchedEffect(Unit) {
+        viewModel.onFindByNumberScreenShown()
     }
-    var searchFinish by rememberSaveable(stateSaver = stationDomainSaver()) {
-        mutableStateOf<StationDomain?>(null)
-    }
-
-    val foundTrips by viewModel.foundTripsList.collectAsStateWithLifecycle()
-
-    LaunchedEffect(searchDate, searchStart, searchFinish) {
-        delay(500)
-        if (searchStart != null && searchFinish != null && searchDate.isNotEmpty()) {
-            viewModel.getTrips(
-                searchDate, searchStart!!.code, searchFinish!!.code
-            )
-            Log.d("FindByNumberView", "${searchStart!!.code}, ${searchFinish!!.code}")
-            Log.d("FindByNumberView", foundTrips.toString())
-        }
+    // --- Автопоиск: корректный дебаунс без “накладок” эффектов ---
+    LaunchedEffect(Unit) {
+        snapshotFlow { Triple(searchDate, searchStart?.code, searchFinish?.code) }
+            .debounce(500)
+            .distinctUntilChanged()
+            .collectLatest { (date, from, to) ->
+                if (from != null && to != null && date.isNotBlank()) {
+                    viewModel.getTrips(date, from, to)
+                    Log.d("FindByNumberView", "Search params: date=$date from=$from to=$to")
+                } else {
+                    // если форма неполная — НЕ показываем старые результаты
+                    viewModel.resetTripsSearchResults()
+                }
+            }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
         SearchTripSurfaceDropdown(
             searchDate = searchDate,
-            onSearchDateChange = { newDate -> searchDate = newDate },
+            onSearchDateChange = { viewModel.onSearchDateChanged(it) },
 
             fromQuery = fromQuery,
             onFromQueryChange = { q ->
-                fromQuery = q
                 viewModel.onFromQueryChanged(q)
+                // если пользователь начал печатать — выбранная станция больше не валидна
+                if (searchStart != null && q != searchStart!!.name) {
+                    viewModel.onStartStationChanged(null)
+                }
             },
+
             toQuery = toQuery,
             onToQueryChange = { q ->
-                toQuery = q
                 viewModel.onToQueryChanged(q)
+                if (searchFinish != null && q != searchFinish!!.name) {
+                    viewModel.onFinishStationChanged(null)
+                }
             },
 
             fromSuggestions = viewModel.fromSuggestions,
             toSuggestions = viewModel.toSuggestions,
 
             onStartStationChange = { station ->
-                searchStart = station
-                // Зафиксируем выбранное имя в поле
-                if (station != null) {
-                    fromQuery = station.name
-                    viewModel.onFromQueryChanged(station.name)
-                }
+                viewModel.onStartStationChanged(station)
             },
             onFinishStationChange = { station ->
-                searchFinish = station
-                if (station != null) {
-                    toQuery = station.name
-                    viewModel.onToQueryChanged(station.name)
-                }
+                viewModel.onFinishStationChanged(station)
             },
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1),
+        Box(
             modifier = Modifier
                 .weight(1f)
+                .fillMaxWidth()
                 .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 6.dp),
+            contentAlignment = Alignment.Center
         ) {
-            items(foundTrips) { trip ->
-                FoundTripCard(
-                    modifier = Modifier,
-                    tripRecord = trip,
-                    onClick = {
-                        viewModel.setSelectCarriage(trip)
-                        try {
-                            navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
-                        } catch (e: Exception) {
-                            Log.e("Navigation", "Failed to navigate", e)
+            when (val s = tripsState) {
+                TripsSearchUiState.Idle -> {
+                    // Можно показать подсказку: "Выберите станции и дату"
+                }
+
+                TripsSearchUiState.Loading -> {
+                    // Вообще хорошо бы вынести в компонент.
+                    CircularProgressIndicator()
+                }
+
+                TripsSearchUiState.Empty -> {
+                    Text(stringResource(R.string.trip_search_empty))
+                }
+
+                is TripsSearchUiState.Error -> {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = stringResource(s.messageRes))
+                        if (s.retryable) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(
+                                onClick = {
+                                    viewModel.retryTrips()
+                                },
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .height(46.dp)
+                                    .width(200.dp),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(fontSize = 18.sp, text = stringResource(R.string.retry))
+                            }
                         }
                     }
-                )
+                }
+
+                is TripsSearchUiState.Content -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(1),
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        items(s.trips) { trip ->
+                            FoundTripCard(
+                                modifier = Modifier,
+                                tripRecord = trip,
+                                onClick = {
+                                    // --- Cохраняю состояние только для возврата назад ---
+                                    viewModel.preserveSearchForBackNavigation()
+
+                                    viewModel.setSelectCarriage(trip)
+                                    try {
+                                        navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
+                                    } catch (e: Exception) {
+                                        Log.e("Navigation", "Failed to navigate", e)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
+

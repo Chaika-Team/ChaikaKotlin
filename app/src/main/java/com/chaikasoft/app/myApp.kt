@@ -2,6 +2,7 @@ package com.chaikasoft.app
 
 import android.app.Application
 import android.util.Log
+import com.chaikasoft.app.domain.sealed.RefreshStationsResult
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -9,20 +10,40 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.chaikasoft.app.domain.usecases.RefreshStationsOnLaunchUseCase
+import kotlin.coroutines.cancellation.CancellationException
 
 
 @HiltAndroidApp
 class MyApp : Application() {
+
     @Inject lateinit var refreshStationsOnLaunch: RefreshStationsOnLaunchUseCase
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
+
         appScope.launch {
             try {
-                refreshStationsOnLaunch()
-            } catch (t: Throwable) {
-                Log.w("MyApp", "Stations refresh skipped/failed", t)
+                when (val r = refreshStationsOnLaunch()) {
+                    is RefreshStationsResult.SkippedActiveShift -> {
+                        Log.i("MyApp", "Stations refresh skipped: active shift")
+                    }
+                    is RefreshStationsResult.Success -> {
+                        Log.i("MyApp", "Stations refreshed: count=${r.stationCount}")
+                    }
+                    is RefreshStationsResult.RemoteFailure -> {
+                        Log.w("MyApp", "Stations refresh failed (remote): ${r.error}")
+                    }
+                    is RefreshStationsResult.LocalFailure -> {
+                        Log.e("MyApp", "Stations refresh failed (local db): ${r.cause.message}", r.cause)
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // “Последняя сетка” — сюда не должны попадать сетевые ошибки, но баги возможны
+                Log.e("MyApp", "Stations refresh crashed unexpectedly", e)
             }
         }
     }
