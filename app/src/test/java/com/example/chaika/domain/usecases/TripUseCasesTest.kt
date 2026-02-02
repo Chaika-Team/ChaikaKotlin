@@ -1,7 +1,7 @@
 // src/test/java/com.chaikasoft.app/domain/usecases/TripUseCasesTest.kt
 package com.chaikasoft.app.domain.usecases
 
-import com.chaikasoft.app.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
+import com.chaikasoft.app.data.dataSource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
@@ -31,7 +31,7 @@ class TripUseCasesTest {
         private val tripsByRoute: List<TripDomain> = emptyList(),
         private val tripsByStations: List<TripDomain> = emptyList(),
         private val carriages: List<CarriageDomain> = emptyList()
-    ) : ChaikaRoutesAdapterApiServiceRepositoryInterface {
+    ) : ChaikaTripperRepositoryInterface {
         override suspend fun suggestStations(query: String, limit: Int) =
             stations.filter { it.name.contains(query, ignoreCase = true) }.take(limit)
 

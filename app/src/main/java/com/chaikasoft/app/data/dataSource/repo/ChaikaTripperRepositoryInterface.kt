@@ -1,5 +1,6 @@
 package com.chaikasoft.app.data.dataSource.repo
 
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
@@ -7,7 +8,7 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 /**
  * Интерфейс репозитория для работы с ChaikaRoutesAdapter.
  */
-interface ChaikaRoutesAdapterApiServiceRepositoryInterface {
+interface ChaikaTripperRepositoryInterface {
 
     /**
      * Ищет поездки по заданной дате и номеру поезда.
@@ -17,7 +18,7 @@ interface ChaikaRoutesAdapterApiServiceRepositoryInterface {
     /**
      * Ищет поездки по дате и кодам станций отправления/прибытия.
      */
-    suspend fun searchTripsByStations(date: String, fromCode: String, toCode: String): List<TripDomain>
+    suspend fun searchTripsByStations(date: String, fromCode: String, toCode: String): RemoteResult<List<TripDomain>>
 
     /**
      * Возвращает список вагонов для конкретной поездки.
@@ -27,5 +28,5 @@ interface ChaikaRoutesAdapterApiServiceRepositoryInterface {
     /**
      * Загрузить все станции на старте (большим лимитом, без query)
      */
-    suspend fun fetchAllStations(limit: Int): List<StationDomain>
+    suspend fun fetchAllStations(limit: Int): RemoteResult<List<StationDomain>>
 }

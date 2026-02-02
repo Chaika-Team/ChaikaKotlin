@@ -15,8 +15,9 @@ data class StationDto(
  * Ответ API со списком станций.
  */
 data class StationsResponseDto(
-    @SerializedName("stations") val stations: List<StationDto>
+    @SerializedName("stations") val stations: List<StationDto>? = emptyList()
 )
+
 
 /**
  * DTO для поездки.
@@ -35,7 +36,7 @@ data class TripDto(
  * Ответ API со списком поездок.
  */
 data class TripsResponseDto(
-    @SerializedName("trips") val trips: List<TripDto>
+    @SerializedName("trips") val trips: List<TripDto>? = emptyList()
 )
 
 /**

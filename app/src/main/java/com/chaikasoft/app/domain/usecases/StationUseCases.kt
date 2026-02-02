@@ -1,12 +1,12 @@
 package com.chaikasoft.app.domain.usecases
 
 import androidx.paging.PagingData
-import com.chaikasoft.app.data.dataSource.repo.ChaikaRoutesAdapterApiServiceRepositoryInterface
+import com.chaikasoft.app.data.dataSource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.StationDomain
+import com.chaikasoft.app.domain.sealed.RefreshStationsResult
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,18 +26,33 @@ class GetPagedStationSuggestionsUseCase @Inject constructor(
 }
 
 class RefreshStationsOnLaunchUseCase @Inject constructor(
-    private val remoteRepo: ChaikaRoutesAdapterApiServiceRepositoryInterface,
+    private val remoteRepo: ChaikaTripperRepositoryInterface,
     private val localRepo: RoomStationRepositoryInterface,
     private val hasActiveShift: HasActiveShiftUseCase
 ) {
     companion object {
-        // Один заход «всё и сразу». Пагинация не нужна.
         private const val ALL_STATIONS_LIMIT = 100_000
     }
 
-    suspend operator fun invoke() = withContext(Dispatchers.IO) {
-        if (hasActiveShift()) return@withContext  // нельзя трогать во время активной смены
-        val stations = remoteRepo.fetchAllStations(limit = ALL_STATIONS_LIMIT)
-        localRepo.upsertAll(stations) // @Upsert, быстро и идемпотентно
+    suspend operator fun invoke(): RefreshStationsResult = withContext(Dispatchers.IO) {
+        // 1) Бизнес-правило: во время активной смены не трогаем станции
+        if (hasActiveShift()) return@withContext RefreshStationsResult.SkippedActiveShift
+
+        // 2) Сеть: получаем RemoteResult
+        when (val remote = remoteRepo.fetchAllStations(limit = ALL_STATIONS_LIMIT)) {
+            is RemoteResult.Failure -> {
+                return@withContext RefreshStationsResult.RemoteFailure(remote.error)
+            }
+
+            is RemoteResult.Success -> {
+                // 3) Локальная БД: upsert может упасть (RoomException/SQLiteException)
+                return@withContext try {
+                    localRepo.upsertAll(remote.data)
+                    RefreshStationsResult.Success(stationCount = remote.data.size)
+                } catch (e: Exception) {
+                    RefreshStationsResult.LocalFailure(e)
+                }
+            }
+        }
     }
 }
