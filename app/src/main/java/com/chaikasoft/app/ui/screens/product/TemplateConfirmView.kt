@@ -58,7 +58,10 @@ fun TemplateConfirmView(
                     fillViewModel.onAddOperation(conductorId)
 
                     navController.navigate(Routes.PRODUCT_PACKAGE) {
-                        popUpTo(Routes.TEMPLATE_EDIT) { inclusive = true }
+                        popUpTo(Routes.PRODUCT_GRAPH) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
                     }
                 }
             )

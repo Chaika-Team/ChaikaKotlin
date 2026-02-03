@@ -8,23 +8,23 @@ sealed class Screen(
     val showBackButton: Boolean = true,
     val showMenuIcon: Boolean = false
 ) {
-    object Trip : Screen(Routes.TRIP, R.string.trip_title, false)
+    object Trip : Screen(Routes.TRIP, R.string.trip_title, showBackButton =  false)
     object MainTrip : Screen(Routes.TRIP_MAIN, R.string.trip_title, showBackButton =  false)
     object AutonomousTrip : Screen(Routes.TRIP_AUTONOMOUS, R.string.offline_trip_title)
     object FindTripByNumber : Screen(Routes.TRIP_BY_NUMBER, R.string.new_trip_title, showMenuIcon = true)
     object SelectCarriage : Screen(Routes.TRIP_SELECT_CARRIAGE, R.string.new_trip_title)
 
     object Product : Screen(Routes.PRODUCT, R.string.products_title, false)
-    object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title)
+    object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title, showBackButton =  false)
     object Cart : Screen(Routes.PRODUCT_CART, R.string.cart_title)
-    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showMenuIcon = true)
+    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showBackButton =  false, showMenuIcon = true)
     object Replenish: Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
 
-    object Statistics : Screen(Routes.STATISTICS, R.string.statistics_title)
+    object Statistics : Screen(Routes.STATISTICS, R.string.statistics_title, showBackButton =  false)
 
-    object Operation : Screen(Routes.OPERATION, R.string.operations_title)
+    object Operation : Screen(Routes.OPERATION, R.string.operations_title, showBackButton =  false)
 
-    object Profile : Screen(Routes.PROFILE, R.string.profile_title)
+    object Profile : Screen(Routes.PROFILE, R.string.profile_title, showBackButton =  false)
     object ProfilePersonalData : Screen(Routes.PROFILE_PERSONAL_DATA, R.string.profile_personal_data)
     object ProfileSettings : Screen(Routes.PROFILE_SETTINGS, R.string.profile_settings)
     object ProfileFaqs : Screen(Routes.PROFILE_FAQS, R.string.profile_faqs)
