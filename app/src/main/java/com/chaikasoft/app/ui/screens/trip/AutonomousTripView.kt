@@ -1,5 +1,3 @@
-
-
 package com.chaikasoft.app.ui.screens.trip
 
 import android.app.TimePickerDialog
@@ -47,7 +45,12 @@ fun AutonomousTripScreen(
         viewModel.events.collectLatest { ev ->
             when (ev) {
                 is AutonomousViewModel.Event.ShiftStarted -> {
-                    navController.navigate(Routes.TRIP_MAIN)
+                    navController.navigate(Routes.TRIP_MAIN) {
+                        popUpTo(Routes.TRIP_GRAPH) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
                 is AutonomousViewModel.Event.Info -> snackbarHostState.showSnackbar(ev.message)
             }
