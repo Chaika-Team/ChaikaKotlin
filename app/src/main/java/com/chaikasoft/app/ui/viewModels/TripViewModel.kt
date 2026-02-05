@@ -28,15 +28,22 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.chaikasoft.app.domain.sealed.SearchTripsResult
+import com.chaikasoft.app.ui.mappers.AppErrorUiMapper
+import com.chaikasoft.app.ui.state.TripsSearchUiState
+import com.chaikasoft.app.domain.common.AppError
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 import com.chaikasoft.app.R
+import kotlinx.coroutines.flow.flowOf
+
 
 @HiltViewModel
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -49,26 +56,33 @@ class TripViewModel @Inject constructor(
     private val completeShiftUseCase: CompleteShiftAndSendUseCase
 ) : ViewModel() {
 
-    // --- New: query states for FROM/TO ---
     private val _fromQuery = MutableStateFlow("")
     private val _toQuery = MutableStateFlow("")
+
+    // уже есть _fromQuery/_toQuery — просто открыл наружу
+    val fromQuery: StateFlow<String> = _fromQuery.asStateFlow()
+    val toQuery: StateFlow<String> = _toQuery.asStateFlow()
 
     val fromSuggestions: Flow<PagingData<StationDomain>> =
         _fromQuery
             .map { it.trim() }
-            .filter { it.length >= 2 }
             .debounce(500)
             .distinctUntilChanged()
-            .flatMapLatest { query -> getPagedStationSuggestions(query, pageSize = 20) }
+            .flatMapLatest { query ->
+                if (query.length < 2) flowOf(PagingData.empty())
+                else getPagedStationSuggestions(query, pageSize = 20)
+            }
             .cachedIn(viewModelScope)
 
     val toSuggestions: Flow<PagingData<StationDomain>> =
         _toQuery
             .map { it.trim() }
-            .filter { it.length >= 2 }
             .debounce(500)
             .distinctUntilChanged()
-            .flatMapLatest { query -> getPagedStationSuggestions(query, pageSize = 20) }
+            .flatMapLatest { query ->
+                if (query.length < 2) flowOf(PagingData.empty())
+                else getPagedStationSuggestions(query, pageSize = 20)
+            }
             .cachedIn(viewModelScope)
 
     fun onFromQueryChanged(text: String) { _fromQuery.value = text }
@@ -90,8 +104,31 @@ class TripViewModel @Inject constructor(
     private val _pagingHistoryFlow = MutableStateFlow<List<TripDomain>>(emptyList())
     val pagingHistoryFlow: StateFlow<List<TripDomain>> = _pagingHistoryFlow.asStateFlow()
 
-    private val _foundTripsList = MutableStateFlow<List<TripDomain>>(emptyList())
-    val foundTripsList: StateFlow<List<TripDomain>> = _foundTripsList.asStateFlow()
+    // --- Trips search UI state (НОВЫЙ) ---
+    private val _tripsSearchState = MutableStateFlow<TripsSearchUiState>(TripsSearchUiState.Idle)
+    val tripsSearchState: StateFlow<TripsSearchUiState> = _tripsSearchState.asStateFlow()
+
+    // Для retry (НОВЫЙ)
+    private data class TripsSearchParams(
+        val date: String,
+        val from: String,
+        val to: String
+    )
+    private var lastTripsSearchParams: TripsSearchParams? = null
+
+    // Отменяем предыдущий поиск, чтобы не было гонок (НОВЫЙ)
+    private var searchTripsJob: Job? = null
+
+    // --- Search form state (single source of truth, перенесено из FindByNumberView.kt) ---
+    private val _searchDate = MutableStateFlow("")
+    val searchDate: StateFlow<String> = _searchDate.asStateFlow()
+
+    private val _searchStartStation = MutableStateFlow<StationDomain?>(null)
+    val searchStartStation: StateFlow<StationDomain?> = _searchStartStation.asStateFlow()
+
+    private val _searchFinishStation = MutableStateFlow<StationDomain?>(null)
+    val searchFinishStation: StateFlow<StationDomain?> = _searchFinishStation.asStateFlow()
+
 
     private val _carriageList = MutableStateFlow<List<CarriageDomain>>(emptyList())
     val carriageList: StateFlow<List<CarriageDomain>> = _carriageList.asStateFlow()
@@ -101,8 +138,76 @@ class TripViewModel @Inject constructor(
     private val _finishTripDialog = MutableStateFlow<FinishTripDialog?>(null)
     val finishTripDialog = _finishTripDialog.asStateFlow()
 
+    private var preserveSearchOnNextShow: Boolean = false
+
+    /** Устанавливаю перед навигацией к вагонам */
+    fun preserveSearchForBackNavigation() {
+        preserveSearchOnNextShow = true
+    }
+
+    /** Вызываю только на входе в FindByNumberView */
+    fun onFindByNumberScreenShown() {
+        if (preserveSearchOnNextShow) {
+            // Возврат со следующего экрана (вагоны) — сохраняем
+            preserveSearchOnNextShow = false
+            return
+        }
+        // Если обычный заход на экран — сброс формы и результатов
+        resetTripsSearchAll()
+    }
+
+    private fun resetTripsSearchAll() {
+        _searchDate.value = ""
+        _searchStartStation.value = null
+        _searchFinishStation.value = null
+        _fromQuery.value = ""
+        _toQuery.value = ""
+
+        resetTripsSearchResults()
+    }
+
+    fun resetTripsSearchResults() {
+        searchTripsJob?.cancel()
+        searchTripsJob = null
+        lastTripsSearchParams = null
+        _tripsSearchState.value = TripsSearchUiState.Idle
+    }
+
+    /**
+     * Предотвращение автопоиска, если есть валидные результаты по предыдущиму поиску.
+     */
+    private fun hasValidCachedResultFor(date: String, from: String, to: String): Boolean {
+        val p = lastTripsSearchParams
+        if (p == null || p.date != date || p.from != from || p.to != to) return false
+        return when (_tripsSearchState.value) {
+            is TripsSearchUiState.Content,
+            TripsSearchUiState.Empty -> true
+            else -> false
+        }
+    }
+
     fun dismissFinishTripDialog() {
         _finishTripDialog.value = null
+    }
+
+    fun onSearchDateChanged(value: String) { _searchDate.value = value }
+
+    fun onStartStationChanged(station: StationDomain?) {
+        _searchStartStation.value = station
+        if (station != null) {
+            _fromQuery.value = station.name
+        } else {
+            _fromQuery.value = ""
+        }
+    }
+
+    fun onFinishStationChanged(station: StationDomain?) {
+        _searchFinishStation.value = station
+        if (station != null) {
+            _toQuery.value = station.name
+        } else {
+            _toQuery.value = ""
+        }
     }
 
     /**
@@ -268,9 +373,52 @@ class TripViewModel @Inject constructor(
         viewModelScope.launch { _pagingHistoryFlow.value = fetchAndSaveHistoryUseCase() }
     }
 
-    fun getTrips(searchDate: String, searchStart: Int, searchFinish: Int) {
-        viewModelScope.launch {
-            _foundTripsList.value = searchTripByStationUseCase(searchDate, searchStart, searchFinish)
+    fun getTrips(searchDate: String, searchStart: String, searchFinish: String) {
+        val params = TripsSearchParams(searchDate, searchStart, searchFinish)
+        if (hasValidCachedResultFor(params.date, params.from, params.to)) return
+
+        lastTripsSearchParams = params
+
+        searchTripsJob?.cancel()
+
+        searchTripsJob = viewModelScope.launch {
+            _tripsSearchState.value = TripsSearchUiState.Loading
+
+            try {
+                when (val result = searchTripByStationUseCase(params.date, params.from, params.to)) {
+                    is SearchTripsResult.Success -> {
+                        val trips = result.trips
+                        _tripsSearchState.value =
+                            if (trips.isEmpty()) TripsSearchUiState.Empty
+                            else TripsSearchUiState.Content(trips)
+                    }
+
+                    is SearchTripsResult.Failure -> {
+                        val uiError = AppErrorUiMapper.map(result.error)
+                        _tripsSearchState.value = TripsSearchUiState.Error(
+                            messageRes = uiError.messageRes,
+                            retryable = uiError.retryable
+                        )
+                    }
+                }
+            } catch (e: CancellationException) {
+                // Я сам отменил предыдущую корутину при новом поиске
+                throw e
+            } catch (e: Exception) {
+                // Это только на случай багов. Сетевые ошибки сюда уже не попадают.
+                Log.e("TripViewModel", "Unexpected error in getTrips()", e)
+                val uiError = AppErrorUiMapper.map(AppError.Unknown(e))
+                _tripsSearchState.value = TripsSearchUiState.Error(
+                    messageRes = uiError.messageRes,
+                    retryable = uiError.retryable
+                )
+            }
         }
     }
+
+    fun retryTrips() {
+        val p = lastTripsSearchParams ?: return
+        getTrips(p.date, p.from, p.to)
+    }
+
 }

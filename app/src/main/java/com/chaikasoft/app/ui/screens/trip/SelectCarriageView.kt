@@ -79,7 +79,12 @@ fun SelectCarriageView(
                                     carriageId = carriage.carNumber.toInt(),
                                     onClick = {
                                         viewModel.setCurrentTrip(carriage = carriage)
-                                        navController.navigate(Routes.TRIP_MAIN)
+                                        navController.navigate(Routes.TRIP_MAIN) {
+                                            popUpTo(Routes.TRIP_GRAPH) {
+                                                inclusive = false
+                                            }
+                                            launchSingleTop = true
+                                        }
                                     }
                                 )
                             }

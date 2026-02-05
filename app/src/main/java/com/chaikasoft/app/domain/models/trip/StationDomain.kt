@@ -8,7 +8,7 @@ package com.chaikasoft.app.domain.models.trip
  * @param city Город или регион станции.
  */
 data class StationDomain(
-    val code: Int,
+    val code: String,
     val name: String,
     val city: String
 )

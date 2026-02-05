@@ -6,6 +6,7 @@ object Routes {
     const val AUTH_GRAPH = "auth/graph"
     const val LOGIN = "login"
     const val TRIP = "trip"
+    const val TEMPLATE = "template"
     const val TRIP_MAIN = "trip/graph/main"
     const val TRIP_AUTONOMOUS = "trip/graph/autonomous"
     const val TRIP_BY_NUMBER = "trip/graph/by_number"
@@ -31,13 +32,18 @@ object Routes {
     const val PROFILE_FEEDBACK = "profile/feedback"
     const val PROFILE_ABOUT = "profile/about"
     const val PROFILE_GRAPH = "profile/graph"
+    const val TEMPLATE_GRAPH = "template/graph"
     const val TEMPLATE_SEARCH = "template/search"
     const val TEMPLATE_DETAIL = "template_detail/{templateId}"
     const val TEMPLATE_EDIT = "template/edit"
+    const val TEMPLATE_CONFIRM = "template/package_confirm"
 
     val routesWithoutBottomBar = setOf(
-        LOGIN, LOADING, PRODUCT_GATE, PRODUCT_CART, TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT, PRODUCT_REPLENISH,
-        TRIP_AUTONOMOUS
+        LOGIN, LOADING, PRODUCT_CART,
+        TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT,
+        TEMPLATE_CONFIRM, PRODUCT_REPLENISH, TRIP_AUTONOMOUS,
+        TRIP_AUTONOMOUS, TRIP_BY_STATION, TRIP_BY_NUMBER,
+        TRIP_SELECT_CARRIAGE,
     )
 
     val routesWithoutTopBar = setOf(
@@ -62,6 +68,10 @@ object Routes {
             PROFILE, PROFILE_PERSONAL_DATA, PROFILE_SETTINGS,
             PROFILE_FAQS, PROFILE_FEEDBACK, PROFILE_ABOUT,
             PROFILE_GRAPH
+        ),
+        TEMPLATE to listOf(
+            TEMPLATE_GRAPH, TEMPLATE_SEARCH, TEMPLATE_DETAIL,
+            TEMPLATE_EDIT, TEMPLATE_CONFIRM
         )
     )
 }
