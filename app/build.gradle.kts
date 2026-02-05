@@ -23,7 +23,7 @@ android {
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "1.1.0"
+        versionName = "1.2.0"
 
         manifestPlaceholders["appAuthRedirectScheme"] = "com.chaikasoft.app"
         testInstrumentationRunner = "com.chaikasoft.app.HiltTestRunner"
