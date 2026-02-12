@@ -29,11 +29,6 @@ class ChaikaTripperRepository @Inject constructor(
             body.trips.orEmpty().map { it.toDomain() }
         }
 
-    override suspend fun getCarriagesForTrain(tripUuid: String): List<CarriageDomain> {
-        val body = api.getCarsForTrip(tripUuid)
-        return body.cars.map { it.toDomain() }
-    }
-
     override suspend fun fetchAllStations(limit: Int): RemoteResult<List<StationDomain>> =
         remoteCall {
             val body = api.findStations(limit = limit)

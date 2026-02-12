@@ -66,14 +66,6 @@ interface ChaikaSoftApiService {
         @Path("trip_uuid") uuid: String
     ): TripDetailResponseDto
 
-    /**
-     * Получить список вагонов по UUID поездки.
-     */
-    @GET("/api/v1/route/trip/{trip_uuid}/car")
-    suspend fun getCarsForTrip(
-        @Path("trip_uuid") uuid: String
-    ): CarsResponseDto
-
     // ==== эндпоинты ChaikaReports ====
 
     @POST("/api/v1/report/sale")

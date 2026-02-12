@@ -26,6 +26,9 @@
     <string name="edit">Редактировать</string>
     <string name="check">Проверка</string>
 
+    <string name="enter_carriage_data">Укажите номер вагона</string>
+    <string name="carriage_number">Номер вагона</string>
+
     <!-- Автономные поездки -->
     <string name="offline_trip_title">Автономная поездка</string>
     <string name="train_number_label">Номер поезда</string>
