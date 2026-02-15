@@ -25,10 +25,3 @@ class SearchTripsByStationsUseCase @Inject constructor(
         }
     }
 }
-@Deprecated("Should be replaced to manual input")
-class GetCarriagesForTrainUseCase @Inject constructor(
-    private val repository: ChaikaTripperRepositoryInterface
-) {
-    suspend operator fun invoke(tripUuid: String): List<CarriageDomain> =
-        repository.getCarriagesForTrain(tripUuid)
-}

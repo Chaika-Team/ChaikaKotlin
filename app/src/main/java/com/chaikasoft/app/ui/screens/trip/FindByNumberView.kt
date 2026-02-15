@@ -49,11 +49,12 @@ fun FindByNumberView(
 
     val tripsState by viewModel.tripsSearchState.collectAsStateWithLifecycle()
 
-    // При входе на экран решаю — сбросить или сохранить ---
+    // При входе на экран решаю — сбросить или сохранить
     LaunchedEffect(Unit) {
         viewModel.onFindByNumberScreenShown()
     }
-    // --- Автопоиск: корректный дебаунс без “накладок” эффектов ---
+
+    // Автопоиск: корректный дебаунс без "накладок" эффектов
     LaunchedEffect(Unit) {
         snapshotFlow { Triple(searchDate, searchStart?.code, searchFinish?.code) }
             .debounce(500)
@@ -115,7 +116,6 @@ fun FindByNumberView(
                 }
 
                 TripsSearchUiState.Loading -> {
-                    // Вообще хорошо бы вынести в компонент.
                     CircularProgressIndicator()
                 }
 
@@ -154,10 +154,12 @@ fun FindByNumberView(
                                 modifier = Modifier,
                                 tripRecord = trip,
                                 onClick = {
-                                    // --- Cохраняю состояние только для возврата назад ---
+                                    // Сохраняю состояние только для возврата назад
                                     viewModel.preserveSearchForBackNavigation()
 
-                                    viewModel.setSelectCarriage(trip)
+                                    // Просто устанавливаем выбранный рейс
+                                    viewModel.setSelectedTrip(trip)
+
                                     try {
                                         navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
                                     } catch (e: Exception) {
@@ -172,4 +174,3 @@ fun FindByNumberView(
         }
     }
 }
-

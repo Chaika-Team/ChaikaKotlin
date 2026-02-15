@@ -13,7 +13,6 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
-import com.chaikasoft.app.domain.usecases.GetCarriagesForTrainUseCase
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
 import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
@@ -48,13 +47,16 @@ import kotlinx.coroutines.flow.flowOf
 @HiltViewModel
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class TripViewModel @Inject constructor(
-    private val getCarriagesForTrainUseCase: GetCarriagesForTrainUseCase,
     private val searchTripByStationUseCase: SearchTripsByStationsUseCase,
     private val getPagedStationSuggestions: GetPagedStationSuggestionsUseCase,
     private val startShiftUseCase: StartShiftUseCase,
     private val getActiveShiftUseCase: GetActiveShiftUseCase,
     private val completeShiftUseCase: CompleteShiftAndSendUseCase
 ) : ViewModel() {
+
+    private companion object {
+        const val MAX_CARRIAGE_NUMBER = 99
+    }
 
     private val _fromQuery = MutableStateFlow("")
     private val _toQuery = MutableStateFlow("")
@@ -129,16 +131,84 @@ class TripViewModel @Inject constructor(
     private val _searchFinishStation = MutableStateFlow<StationDomain?>(null)
     val searchFinishStation: StateFlow<StationDomain?> = _searchFinishStation.asStateFlow()
 
-
-    private val _carriageList = MutableStateFlow<List<CarriageDomain>>(emptyList())
-    val carriageList: StateFlow<List<CarriageDomain>> = _carriageList.asStateFlow()
-
     data class FinishTripDialog(@StringRes val messageRes: Int)
 
     private val _finishTripDialog = MutableStateFlow<FinishTripDialog?>(null)
     val finishTripDialog = _finishTripDialog.asStateFlow()
 
     private var preserveSearchOnNextShow: Boolean = false
+
+    private val _carriageNumber = MutableStateFlow("")
+    val carriageNumber: StateFlow<String> = _carriageNumber.asStateFlow()
+
+    val isCarriageInputValid: StateFlow<Boolean> =
+        _carriageNumber
+            .map { text ->
+                val n = text.toIntOrNull()
+                n != null && n in 1..MAX_CARRIAGE_NUMBER
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = false
+            )
+
+    fun onCarriageNumberChanged(raw: String) {
+        if (raw.isEmpty()) {
+            _carriageNumber.value = ""
+            return
+        }
+        val digits = raw.filter(Char::isDigit)
+        if (digits.isEmpty()) {
+            // если прилетело что-то нецифровое — игнор
+            return
+        }
+        // запрет 0 и ведущих нулей: "0"->"", "07"->"7", "00"->""
+        val normalized = digits.trimStart('0')
+        if (normalized.isEmpty()) {
+            _carriageNumber.value = ""
+            return
+        }
+        // запрет >99: как только стало 3+ значащих цифры — игнорируем обновление
+        if (normalized.length > 2) return
+        // на всякий случай (хотя length<=2 гарантирует 1..99 при отсутствии лидирующих нулей)
+        val n = normalized.toIntOrNull() ?: return
+        if (n !in 1..MAX_CARRIAGE_NUMBER) return
+
+        _carriageNumber.value = normalized
+    }
+
+    fun confirmCarriageInput(onSuccess: () -> Unit) {
+        val trip = _selectedTripRecord.value ?: return
+        val numberText = _carriageNumber.value
+
+        val numberInt = numberText.toIntOrNull()
+        if (numberInt == null || numberInt !in 1..MAX_CARRIAGE_NUMBER) {
+            Log.e("TripViewModel", "Invalid carriage number: $numberText")
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val carriage = CarriageDomain(
+                    carNumber = numberInt.toString(), // нормализуем окончательно
+                    classType = ""
+                )
+
+                _selectedCarriage.value = carriage
+                startShift()
+                checkActiveShift()
+
+                onSuccess()
+            } catch (e: Exception) {
+                Log.e("TripViewModel", "Error confirming carriage input", e)
+            }
+        }
+    }
+
+    private fun resetCarriageInput() {
+        _carriageNumber.value = ""
+    }
 
     /** Устанавливаю перед навигацией к вагонам */
     fun preserveSearchForBackNavigation() {
@@ -210,48 +280,6 @@ class TripViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Отфильтрованный список вагонов с валидным номером (число)
-     * + подробное логирование.
-     */
-    val validCarriages: StateFlow<List<CarriageDomain>> =
-        carriageList
-            .map { original ->
-                val filtered = original.filter { it.carNumber.toIntOrNull() != null }
-                Log.d(
-                    "TripViewModel",
-                    "Carriages filter -> input=${original.size}, valid=${filtered.size}"
-                )
-                filtered
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
-
-    /**
-     * Сгруппированные по классу вагоны.
-     * Ключ всегда String (используем toString() на случай enum'ов и пр.)
-     * + логирование распределения по группам.
-     */
-    val groupedCarriages: StateFlow<Map<String, List<CarriageDomain>>> =
-        validCarriages
-            .map { list ->
-                val grouped = list.groupBy { it.classType.toString() }
-                val summary = grouped.entries.joinToString { "${it.key}:${it.value.size}" }
-                Log.d(
-                    "TripViewModel",
-                    "Carriages group -> groups=${grouped.size} [$summary]"
-                )
-                grouped
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyMap()
-            )
-
     fun loadHistory() {
         loadHistoryData()
     }
@@ -279,32 +307,11 @@ class TripViewModel @Inject constructor(
         }
     }
 
-    fun setSelectCarriage(tripRecord: TripDomain) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _selectedTripRecord.value = tripRecord
-                val list = getCarriagesForTrainUseCase(tripRecord.uuid)
-                _carriageList.value = list
-                Log.d(
-                    "TripViewModel",
-                    "Loaded ${list.size} carriages for trip=${tripRecord.uuid}"
-                )
-            } catch (e: Exception) {
-                Log.e("TripViewModel", "Error loading carriages", e)
-                _carriageList.value = emptyList()
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun setCurrentTrip(carriage: CarriageDomain) {
-        viewModelScope.launch {
-            _selectedCarriage.value = carriage
-            startShift()
-            checkActiveShift()
-        }
+    fun setSelectedTrip(tripRecord: TripDomain) {
+        _selectedTripRecord.value = tripRecord
+        // Сбрасываем номер вагона при выборе нового рейса
+        resetCarriageInput()
+        Log.d("TripViewModel", "Selected trip: ${tripRecord.uuid}")
     }
 
     private suspend fun startShift() {
