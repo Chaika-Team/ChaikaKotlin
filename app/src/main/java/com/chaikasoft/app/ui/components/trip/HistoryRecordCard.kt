@@ -1,6 +1,7 @@
 package com.chaikasoft.app.ui.components.trip
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -8,16 +9,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
-import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
 fun HistoryRecordCard(
     modifier: Modifier = Modifier,
-    tripRecord: TripDomain
+    tripRecord: TripDomain,
+    status: TripShiftStatusDomain,
+    onRetrySend: () -> Unit = {},
+    onNavigate: () -> Unit = {}
 ) {
+    val isError = status != TripShiftStatusDomain.SENT
+    val borderColor = if (isError) {
+        MaterialTheme.colorScheme.error
+    } else {
+        MaterialTheme.colorScheme.secondary
+    }
+
     Box(
         modifier = modifier
             .height(TripDimens.RecordCardHeight)
@@ -27,35 +37,16 @@ fun HistoryRecordCard(
                 shape = MaterialTheme.shapes.medium
             )
             .clip(MaterialTheme.shapes.medium)
+            .clickable {
+                if (isError) onRetrySend() else onNavigate()
+            }
     ) {
         HistoryRecordContent(
-            modifier = Modifier.matchParentSize().dashedBorder(),
-            tripRecord = tripRecord
+            modifier = Modifier
+                .matchParentSize()
+                .dashedBorder(color = borderColor),
+            tripRecord = tripRecord,
+            isError = isError
         )
     }
-}
-
-@Preview
-@Composable
-fun HistoryPreview() {
-    HistoryRecordCard(
-        modifier = Modifier,
-        tripRecord = TripDomain(
-            uuid = "12",
-            trainNumber = "120A",
-            departure = "2025-03-29T23:55:00+03:00",
-            arrival = "2025-03-30T09:47:00+03:00",
-            duration = "PT9H52M",
-            from = StationDomain(
-                code = "1",
-                name = "Московский вокзал",
-                city = "Санкт-Петербург-Главный"
-            ),
-            to = StationDomain(
-                code = "2",
-                name = "ТПУ Черкизово",
-                city = "Москва ВК Восточный"
-            )
-        )
-    )
 }

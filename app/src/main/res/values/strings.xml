@@ -260,6 +260,11 @@
     <string name="trip_finish_perm_failure">Ошибка сервиса, мы работаем над этой проблемой</string>
     <string name="trip_finish_result_title">Результат завершения поездки</string>
 
+    <string name="retry_send_title">Отправить отчёт?</string>
+    <string name="retry_send_subtitle">Отчёт по этой поездке не был отправлен автоматически</string>
+    <string name="retry_send_confirm">Подтвердить</string>
+    <string name="retry_send_cancel">Отмена</string>
+
     <!-- Trip search -->
     <string name="trip_search_empty">Нет поездок с такими станциями в указанный день</string>
 
