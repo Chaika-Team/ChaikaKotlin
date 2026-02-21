@@ -7,11 +7,10 @@ import com.chaikasoft.app.domain.models.trip.*
 
 /** Преобразование Int → TripShiftStatusDomain */
 fun Int.toTripShiftStatusDomain(): TripShiftStatusDomain =
-    TripShiftStatusDomain.entries.getOrNull(this)
-        ?: throw IllegalArgumentException("Unknown TripShiftStatusDomain ordinal=$this")
+    TripShiftStatusDomain.withCode(this)
 
 /** Преобразование TripShiftStatusDomain → Int */
-fun TripShiftStatusDomain.toInt(): Int = this.ordinal
+fun TripShiftStatusDomain.toInt(): Int = this.code
 
 /** Entity → Domain */
 fun ConductorTripShiftWithStations.toDomain(): ConductorTripShiftDomain =

@@ -12,6 +12,12 @@ interface RoomConductorTripShiftRepositoryInterface {
     /** Вставить новую смену или обновить существующую */
     suspend fun insertOrUpdate(shift: ConductorTripShiftDomain)
 
+    /** Попытаться создать новую ACTIVE-смену. Возвращает false, если активная уже есть. */
+    suspend fun tryStartNewShift(shift: ConductorTripShiftDomain): Boolean
+
+    /** Получить поездку по UUID */
+    suspend fun getShiftByUuid(uuid: String): ConductorTripShiftDomain?
+
     /**
      * Обновить статус и при необходимости отчёт
      * @param uuid       — идентификатор смены
@@ -21,7 +27,7 @@ interface RoomConductorTripShiftRepositoryInterface {
     suspend fun updateStatusAndReport(
         uuid: String,
         newStatus: Int,
-        reportJson: String?,
+        reportJson: String? = null,
         updatedAt: Long
     )
 
@@ -34,7 +40,10 @@ interface RoomConductorTripShiftRepositoryInterface {
     /** Наблюдать за всеми сменами проводника */
     fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>>
 
+    fun observeShiftHistory(): Flow<List<ConductorTripShiftDomain>>
+
     /** Получить пару "статус смены и отчёт" */
     suspend fun getStatusAndReport(uuid: String): Pair<TripShiftStatusDomain, String?>
+
 
 }

@@ -3,6 +3,8 @@ package com.chaikasoft.app.di
 import android.content.Context
 import android.util.Log
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.chaikasoft.app.data.room.AppDatabase
 import com.chaikasoft.app.data.room.dao.CartItemDao
 import com.chaikasoft.app.data.room.dao.CartOperationDao
@@ -20,9 +22,14 @@ import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.Executors
 import javax.inject.Singleton
 
+
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
+    private const val SHIFT_STATUS_ACTIVE = 0
+
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -30,6 +37,20 @@ object DatabaseModule {
     ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
         .fallbackToDestructiveMigration()   // мы «переустанавливаем приложение», миграции не пишем
         .setQueryCallback({ sql, args -> Log.d("ROOM-SQL-CHAIKA", "$sql -- $args") }, Executors.newSingleThreadExecutor())
+        .addCallback(object : RoomDatabase.Callback() {
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                try {
+                    db.execSQL("""
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_shift
+            ON conductor_trip_shifts(status)
+            WHERE status = $SHIFT_STATUS_ACTIVE
+        """.trimIndent())
+                } catch (t: Throwable) {
+                    Log.e("ROOM", "Failed to ensure idx_unique_active_shift", t)
+                    throw t
+                }
+            }
+        })
         .build()
 
     @Provides
