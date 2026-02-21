@@ -6,6 +6,7 @@ import com.chaikasoft.app.data.room.mappers.toDomain
 import com.chaikasoft.app.data.room.mappers.toEntity
 import com.chaikasoft.app.data.room.mappers.toTripShiftStatusDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
+import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -15,8 +16,26 @@ class RoomConductorTripShiftRepository @Inject constructor(
 ) : RoomConductorTripShiftRepositoryInterface {
 
     override suspend fun insertOrUpdate(shift: ConductorTripShiftDomain) {
-        dao.insertOrUpdate(shift.toEntity())
+        val entity = shift.toEntity()
+        val rowId = dao.insertIgnore(entity)
+        if (rowId == -1L) {
+            // конфликт по PK (uuid уже существует) -> обычный update
+            dao.update(entity)
+        }
     }
+
+    override suspend fun tryStartNewShift(shift: ConductorTripShiftDomain): Boolean {
+        val entity = shift.toEntity()
+        return try {
+            dao.insertNew(entity) // ABORT при конфликте с уникальным индексом
+            true
+        } catch (e: android.database.sqlite.SQLiteConstraintException) {
+            false
+        }
+    }
+
+    override suspend fun getShiftByUuid(uuid: String): ConductorTripShiftDomain? =
+        dao.getByUuidWithStations(uuid)?.toDomain()
 
     override suspend fun updateStatusAndReport(
         uuid: String,
@@ -28,18 +47,21 @@ class RoomConductorTripShiftRepository @Inject constructor(
     }
 
     override suspend fun getActiveShift(): ConductorTripShiftDomain? =
-        dao.getActiveShiftWithStations()?.toDomain()
+        dao.getActiveShiftWithStations(TripShiftStatusDomain.ACTIVE.code)?.toDomain()
+
 
     override fun observeActiveShift(): Flow<ConductorTripShiftDomain?> =
-        dao.getActiveShiftWithStationsFlow().map { it?.toDomain() }
-
+        dao.getActiveShiftWithStationsFlow(TripShiftStatusDomain.ACTIVE.code).map { it?.toDomain() }
 
     override fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>> =
         dao.getAllWithStations().map { list -> list.map { it.toDomain() } }
 
+    override fun observeShiftHistory(): Flow<List<ConductorTripShiftDomain>> =
+        dao.getHistoryWithStations().map { list -> list.map { it.toDomain() } }
+
     override suspend fun getStatusAndReport(
         uuid: String
-    ): Pair<com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain, String?> {
+    ): Pair<TripShiftStatusDomain, String?> {
         val e = dao.getByUuid(uuid)
             ?: throw IllegalStateException("Shift not found: $uuid")
         return e.status.toTripShiftStatusDomain() to e.report

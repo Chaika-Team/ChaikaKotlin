@@ -34,6 +34,16 @@ class GetAllShiftsUseCase @Inject constructor(
 }
 
 /**
+ * Возвращает поток со всеми сменами кроме активной. Использовать для истории.
+ */
+class GetShiftHistoryUseCase @Inject constructor(
+    private val repository: RoomConductorTripShiftRepositoryInterface
+) {
+    operator fun invoke(): Flow<List<ConductorTripShiftDomain>> =
+        repository.observeShiftHistory()
+}
+
+/**
  * Возвращает поток с единственной активной сменой, либо null, когда нет активной.
  */
 class GetActiveShiftUseCase @Inject constructor(
@@ -68,6 +78,7 @@ class StartShiftUseCase @Inject constructor(
         activeCarriage: CarriageDomain?
     ): Boolean {
         // не допускаем более одной активной смены
+        // Быстрый путь, чтобы не ловить exception в обычном сценарии
         if (hasActiveShift()) return false
 
         val newShift = ConductorTripShiftDomain(
@@ -75,8 +86,7 @@ class StartShiftUseCase @Inject constructor(
             activeCarriage = activeCarriage,
             status = TripShiftStatusDomain.ACTIVE
         )
-        repository.insertOrUpdate(newShift)
-        return true
+        return repository.tryStartNewShift(newShift)
     }
 }
 
@@ -115,8 +125,13 @@ class GenerateShiftReportUseCase @Inject constructor(
     private val jsonAdapter = moshi.adapter(ShiftReportReport::class.java)
 
     suspend operator fun invoke(uuid: String): String {
-        val shift = shiftRepo.getActiveShift()
-            ?: throw IllegalStateException("Active shift with uuid=$uuid not found")
+        val shift = shiftRepo.getShiftByUuid(uuid)
+            ?: throw IllegalStateException("Shift with uuid=$uuid not found")
+
+        // Защита от перегенерации/перезаписи отчёта и от очистки операций не в том состоянии.
+        if (shift.status != TripShiftStatusDomain.ACTIVE) {
+            throw IllegalStateException("Shift uuid=$uuid is not ACTIVE (status=${shift.status})")
+        }
 
         // 1) Собираем CartReport'ы из текущих операций (пока они ещё в БД)
         val carts = getCartReports()
@@ -133,7 +148,7 @@ class GenerateShiftReportUseCase @Inject constructor(
         val json = jsonAdapter.toJson(report)
         shiftRepo.updateStatusAndReport(
             uuid       = uuid,
-            newStatus  = TripShiftStatusDomain.FINISHED.ordinal,
+            newStatus  = TripShiftStatusDomain.FINISHED.code,
             reportJson = json,
             updatedAt  = System.currentTimeMillis()
         )
@@ -243,15 +258,14 @@ class MarkShiftSentUseCase @Inject constructor(
         Log.d(SEND_TAG, "MarkShiftSentUseCase: marking SENT, uuid=$uuid")
         repo.updateStatusAndReport(
             uuid = uuid,
-            newStatus = TripShiftStatusDomain.SENT.ordinal,
-            reportJson = null,
+            newStatus = TripShiftStatusDomain.SENT.code,
             updatedAt = System.currentTimeMillis()
         )
         Log.d(SEND_TAG, "MarkShiftSentUseCase: done, uuid=$uuid")
     }
 }
 /**
- * Отправляет отчёт по поездке
+ * Отправляет отчёт по поездке (так же используется для ретрая отправки)
  */
 class SendShiftReportUseCase @Inject constructor(
     private val getReport: GetShiftReportJsonUseCase,

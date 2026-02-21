@@ -8,8 +8,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ConductorTripShiftDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdate(shift: ConductorTripShift)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertNew(shift: ConductorTripShift)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIgnore(shift: ConductorTripShift): Long
 
     @Update
     suspend fun update(shift: ConductorTripShift)
@@ -17,21 +20,37 @@ interface ConductorTripShiftDao {
     @Query("SELECT * FROM conductor_trip_shifts WHERE uuid = :uuid")
     suspend fun getByUuid(uuid: String): ConductorTripShift?
 
-    /** Вместо String — Int, потому что status в сущности хранится как Int */
+    @Transaction
+    @Query("SELECT * FROM conductor_trip_shifts WHERE uuid = :uuid LIMIT 1")
+    suspend fun getByUuidWithStations(uuid: String): ConductorTripShiftWithStations?
+
     @Transaction
     @Query("SELECT * FROM conductor_trip_shifts WHERE status = :status")
     fun getByStatusWithStations(status: Int): Flow<List<ConductorTripShiftWithStations>>
 
     /** Flow для одной активной смены */
     @Transaction
-    @Query("SELECT * FROM conductor_trip_shifts WHERE status = :activeStatus LIMIT 1")
-    fun getActiveShiftWithStationsFlow(activeStatus: Int = 0): Flow<ConductorTripShiftWithStations?>
+    @Query("""
+        SELECT * FROM conductor_trip_shifts 
+         WHERE status = :activeStatus 
+      ORDER BY COALESCE(updatedAt, createdAt) DESC
+         LIMIT 1 
+            """)
+    fun getActiveShiftWithStationsFlow(activeStatus: Int): Flow<ConductorTripShiftWithStations?>
 
 
     /** Flow для всех смен */
     @Transaction
     @Query("SELECT * FROM conductor_trip_shifts")
     fun getAllWithStations(): Flow<List<ConductorTripShiftWithStations>>
+
+    @Transaction
+    @Query("""
+    SELECT * FROM conductor_trip_shifts
+    WHERE status != :activeStatus
+    ORDER BY COALESCE(updatedAt, createdAt) DESC
+""")
+    fun getHistoryWithStations(activeStatus: Int = 0): Flow<List<ConductorTripShiftWithStations>>
 
     @Query("DELETE FROM conductor_trip_shifts WHERE uuid = :uuid")
     suspend fun deleteByUuid(uuid: String)
@@ -59,6 +78,11 @@ interface ConductorTripShiftDao {
     )
 
     @Transaction
-    @Query("SELECT * FROM conductor_trip_shifts WHERE status = :activeStatus LIMIT 1")
-    suspend fun getActiveShiftWithStations(activeStatus: Int = 0): ConductorTripShiftWithStations?
+    @Query("""
+        SELECT * FROM conductor_trip_shifts 
+         WHERE status = :activeStatus 
+      ORDER BY COALESCE(updatedAt, createdAt) DESC
+         LIMIT 1 
+            """)
+    suspend fun getActiveShiftWithStations(activeStatus: Int): ConductorTripShiftWithStations?
 }
