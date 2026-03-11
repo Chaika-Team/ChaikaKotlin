@@ -5,7 +5,6 @@ import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
 import com.chaikasoft.app.domain.models.report.CartIdReport
-import com.chaikasoft.app.domain.models.report.CartItemReport
 import com.chaikasoft.app.domain.models.report.CartReport
 import com.chaikasoft.app.domain.models.report.ShiftReportReport
 import com.chaikasoft.app.domain.models.report.TripIdReport
@@ -181,13 +180,6 @@ class GetCartReportsUseCase @Inject constructor(
             val items = cartItemRepo
                 .getCartItemReportsByOperationId(opId)
                 .first()
-                .map { itemReport ->
-                    CartItemReport(
-                        productId = itemReport.productId,
-                        quantity  = itemReport.quantity,
-                        price     = itemReport.price
-                    )
-                }
 
             // 2.2) финальный CartReport
             CartReport(
