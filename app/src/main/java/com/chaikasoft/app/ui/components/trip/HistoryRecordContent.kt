@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +20,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.chaikasoft.app.R
-import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
@@ -33,8 +32,10 @@ import com.chaikasoft.app.ui.theme.TripDimens
 fun HistoryRecordContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
+    isError: Boolean = false,
 ) {
     val colorScheme = MaterialTheme.colorScheme
+    val sideColor = if (isError) colorScheme.error else colorScheme.secondary
 
     ConstraintLayout(
         modifier = modifier
@@ -51,7 +52,7 @@ fun HistoryRecordContent(
                     bottom.linkTo(parent.bottom)
                     width = Dimension.value(TripDimens.SideRectWidth)
                 },
-            color = colorScheme.secondary
+            color = sideColor
         )
 
         Row(
@@ -67,11 +68,13 @@ fun HistoryRecordContent(
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
                 contentDescription = stringResource(R.string.train_ic),
-                modifier = Modifier.size(TripDimens.IconSize)
+                modifier = Modifier.size(TripDimens.IconSize),
+                tint = if (isError) colorScheme.error else LocalContentColor.current
             )
             Text(
                 text = tripRecord.trainNumber,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isError) colorScheme.error else Color.Unspecified
             )
         }
 
@@ -112,28 +115,3 @@ fun Modifier.dashedBorder(color: Color = Color.Gray, cornerRadius: Dp = 8.dp) = 
         )
     }
 )
-
-@Preview
-@Composable
-fun HistoryContent() {
-    HistoryRecordContent(
-        modifier = Modifier,
-        tripRecord = TripDomain(
-            uuid = "12",
-            trainNumber = "120A",
-            departure = "2025-03-29T23:55:00+03:00",
-            arrival = "2025-03-30T09:47:00+03:00",
-            duration = "PT9H52M",
-            from = StationDomain(
-                code = "1",
-                name = "Московский вокзал",
-                city = "Санкт-Петербург-Главный"
-            ),
-            to = StationDomain(
-                code = "2",
-                name = "ТПУ Черкизово",
-                city = "Москва ВК Восточный"
-            )
-        )
-    )
-}

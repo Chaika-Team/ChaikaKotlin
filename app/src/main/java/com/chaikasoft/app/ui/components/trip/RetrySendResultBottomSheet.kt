@@ -1,28 +1,35 @@
 package com.chaikasoft.app.ui.components.trip
 
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.viewModels.TripViewModel
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinishTripResultBottomSheet(
-    tripViewModel: TripViewModel,
-    pendingLogout: Boolean = true,
-    onDismissWithLogout: () -> Unit
+fun RetrySendResultBottomSheet(
+    tripViewModel: TripViewModel
 ) {
-    val dialogState by tripViewModel.finishTripDialog.collectAsStateWithLifecycle()
+    val resultState by tripViewModel.retryResult.collectAsStateWithLifecycle()
 
-    val shouldShowSheet = dialogState != null && pendingLogout
-
-    if (!shouldShowSheet) return
+    if (resultState == null) return
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -31,11 +38,7 @@ fun FinishTripResultBottomSheet(
         onDismissRequest = {
             scope.launch {
                 sheetState.hide()
-                tripViewModel.dismissFinishTripDialog()
-
-                if (pendingLogout) {
-                    onDismissWithLogout()
-                }
+                tripViewModel.dismissRetryResult()
             }
         },
         sheetState = sheetState,
@@ -53,7 +56,7 @@ fun FinishTripResultBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = stringResource(dialogState!!.messageRes),
+                text = stringResource(resultState!!.messageRes),
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(Modifier.height(20.dp))
@@ -62,11 +65,7 @@ fun FinishTripResultBottomSheet(
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        tripViewModel.dismissFinishTripDialog()
-
-                        if (pendingLogout) {
-                            onDismissWithLogout()
-                        }
+                        tripViewModel.dismissRetryResult()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

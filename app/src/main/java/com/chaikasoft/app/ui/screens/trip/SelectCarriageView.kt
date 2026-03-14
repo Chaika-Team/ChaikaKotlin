@@ -12,22 +12,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.components.trip.SelectedTripRecordSurface
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.TripDimens
-import com.chaikasoft.app.ui.viewModels.TripViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @Composable
 fun SelectCarriageView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
-    val selectedTrip by remember { derivedStateOf { viewModel.getSelectedTrip() } }
+    val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
     val carriageNumber by viewModel.carriageNumber.collectAsStateWithLifecycle()
     val isCarriageInputValid by viewModel.isCarriageInputValid.collectAsStateWithLifecycle()
 

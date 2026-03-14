@@ -7,7 +7,9 @@ import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
+import com.chaikasoft.app.domain.usecases.GetShiftHistoryUseCase
 import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
+import com.chaikasoft.app.domain.usecases.SendShiftReportUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.ui.shift
 import com.chaikasoft.app.ui.station
@@ -37,6 +39,8 @@ class TripViewModelTest : FunSpec({
     lateinit var startShift: StartShiftUseCase
     lateinit var getActiveShift: GetActiveShiftUseCase
     lateinit var completeShift: CompleteShiftAndSendUseCase
+    lateinit var getShiftHistory: GetShiftHistoryUseCase
+    lateinit var sendShiftReport: SendShiftReportUseCase
     lateinit var vm: TripViewModel
 
     beforeTest {
@@ -47,14 +51,26 @@ class TripViewModelTest : FunSpec({
         startShift = mockk()
         getActiveShift = mockk()
         completeShift = mockk()
+        getShiftHistory = mockk()
+        sendShiftReport = mockk()
 
         every { getStations(any(), any()) } returns emptyFlow()
         coEvery { searchTrips(any(), any(), any()) } returns SearchTripsResult.Success(emptyList())
         coEvery { startShift(any(), any()) } returns true
         every { getActiveShift() } returns flowOf(null)
         coEvery { completeShift(any()) } returns SendReportResult.Success
+        every { getShiftHistory() } returns flowOf(emptyList())
+        coEvery { sendShiftReport(any()) } returns SendReportResult.Success
 
-        vm = TripViewModel(searchTrips, getStations, startShift, getActiveShift, completeShift)
+        vm = TripViewModel(
+            searchTrips,
+            getStations,
+            startShift,
+            getActiveShift,
+            completeShift,
+            getShiftHistory,
+            sendShiftReport
+        )
     }
 
     afterTest {
@@ -74,7 +90,8 @@ class TripViewModelTest : FunSpec({
 
     test("confirmCarriageInput with valid state starts shift flow and calls callback") {
         runTest {
-            vm.setSelectedTrip(trip(uuid = "u-1"))
+            val selectedTrip = trip(uuid = "u-1")
+            vm.selectTrip(selectedTrip)
             vm.onCarriageNumberChanged("05")
             var callbackCalled = false
 
@@ -82,7 +99,8 @@ class TripViewModelTest : FunSpec({
             advanceUntilIdle()
 
             callbackCalled shouldBe true
-            vm.shiftStatus.value shouldBe false
+            coVerify(exactly = 1) { startShift(selectedTrip, any()) }
+            vm.selectedTripRecord.value shouldBe null
         }
     }
 
@@ -131,7 +149,7 @@ class TripViewModelTest : FunSpec({
 
     test("finishCurrentTrip maps SendReportResult to dialog message") {
         runTest {
-            vm.setSelectedTrip(trip(uuid = "u-finish"))
+            vm.selectTrip(trip(uuid = "u-finish"))
             coEvery { completeShift("u-finish") } returns SendReportResult.AlreadySent
 
             vm.finishCurrentTrip()
@@ -146,12 +164,19 @@ class TripViewModelTest : FunSpec({
             val activeShift = shift(trip = trip(uuid = "active"))
             every { getActiveShift() } returns flowOf(activeShift)
 
-            vm = TripViewModel(searchTrips, getStations, startShift, getActiveShift, completeShift)
+            vm = TripViewModel(
+                searchTrips,
+                getStations,
+                startShift,
+                getActiveShift,
+                completeShift,
+                getShiftHistory,
+                sendShiftReport
+            )
             vm.checkActiveShift()
             advanceUntilIdle()
 
-            vm.getSelectedTrip()?.uuid shouldBe "active"
-            vm.shiftStatus.value shouldBe true
+            vm.selectedTripRecord.value?.uuid shouldBe "active"
         }
     }
 
@@ -167,5 +192,58 @@ class TripViewModelTest : FunSpec({
         vm.searchStartStation.value shouldBe null
         vm.searchFinishStation.value shouldBe null
         vm.tripsSearchState.value shouldBe TripsSearchUiState.Idle
+    }
+
+    test("preserveSearchForBackNavigation keeps search state on next screen show") {
+        vm.onSearchDateChanged("2026-01-01")
+        vm.onStartStationChanged(station(code = "100", name = "A"))
+        vm.onFinishStationChanged(station(code = "200", name = "B"))
+
+        vm.preserveSearchForBackNavigation()
+        vm.onFindByNumberScreenShown()
+
+        vm.searchDate.value shouldBe "2026-01-01"
+        vm.searchStartStation.value?.code shouldBe "100"
+        vm.searchFinishStation.value?.code shouldBe "200"
+    }
+
+    test("loadHistory observes shifts from history delegate") {
+        runTest {
+            val historyItems = listOf(shift(trip = trip(uuid = "h-1")))
+            every { getShiftHistory() } returns flowOf(historyItems)
+
+            vm = TripViewModel(
+                searchTrips,
+                getStations,
+                startShift,
+                getActiveShift,
+                completeShift,
+                getShiftHistory,
+                sendShiftReport
+            )
+            vm.loadHistory()
+            advanceUntilIdle()
+
+            vm.shiftHistory.value shouldBe historyItems
+            vm.stopHistoryObserving()
+        }
+    }
+
+    test("retry send flow updates confirm and result dialogs") {
+        runTest {
+            coEvery { sendShiftReport("u-retry") } returns SendReportResult.AlreadySent
+
+            vm.requestRetrySend("u-retry")
+            vm.retryConfirm.value?.uuid shouldBe "u-retry"
+
+            vm.confirmRetrySend()
+            advanceUntilIdle()
+
+            vm.retryConfirm.value shouldBe null
+            vm.retryResult.value?.messageRes shouldBe R.string.trip_finish_already_sent
+
+            vm.dismissRetryResult()
+            vm.retryResult.value shouldBe null
+        }
     }
 })

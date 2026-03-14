@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.FoundTripCard
-import com.chaikasoft.app.ui.viewModels.TripViewModel
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.components.trip.SearchTripSurfaceDropdown
 import com.chaikasoft.app.ui.state.TripsSearchUiState
+import com.chaikasoft.app.ui.viewModels.TripViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -49,12 +49,10 @@ fun FindByNumberView(
 
     val tripsState by viewModel.tripsSearchState.collectAsStateWithLifecycle()
 
-    // При входе на экран решаю — сбросить или сохранить
     LaunchedEffect(Unit) {
         viewModel.onFindByNumberScreenShown()
     }
 
-    // Автопоиск: корректный дебаунс без "накладок" эффектов
     LaunchedEffect(Unit) {
         snapshotFlow { Triple(searchDate, searchStart?.code, searchFinish?.code) }
             .debounce(500)
@@ -64,7 +62,6 @@ fun FindByNumberView(
                     viewModel.getTrips(date, from, to)
                     Log.d("FindByNumberView", "Search params: date=$date from=$from to=$to")
                 } else {
-                    // если форма неполная — НЕ показываем старые результаты
                     viewModel.resetTripsSearchResults()
                 }
             }
@@ -78,7 +75,6 @@ fun FindByNumberView(
             fromQuery = fromQuery,
             onFromQueryChange = { q ->
                 viewModel.onFromQueryChanged(q)
-                // если пользователь начал печатать — выбранная станция больше не валидна
                 if (searchStart != null && q != searchStart!!.name) {
                     viewModel.onStartStationChanged(null)
                 }
@@ -154,11 +150,8 @@ fun FindByNumberView(
                                 modifier = Modifier,
                                 tripRecord = trip,
                                 onClick = {
-                                    // Сохраняю состояние только для возврата назад
                                     viewModel.preserveSearchForBackNavigation()
-
-                                    // Просто устанавливаем выбранный рейс
-                                    viewModel.setSelectedTrip(trip)
+                                    viewModel.selectTrip(trip)
 
                                     try {
                                         navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
