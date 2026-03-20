@@ -77,7 +77,7 @@ object OfflineTripBuildHelper {
                 classType = input.carriageClassType?.ifBlank { defaultClassType } ?: defaultClassType
             )
             BuildResult.Success(Output(trip, carriage))
-        } catch (t: Throwable) {
+        } catch (t: IllegalStateException) {
             BuildResult.Failure(t)
         }
     }

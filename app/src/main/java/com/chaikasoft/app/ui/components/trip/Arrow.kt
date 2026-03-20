@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Arrow(
+fun arrow(
     modifier: Modifier = Modifier,
     pointSize: Dp = 8.dp,
     spaceAfterPoint: Dp = 2.dp,
@@ -60,6 +60,6 @@ fun Arrow(
 
 @Preview
 @Composable
-fun ArrowPoint() {
-    Arrow()
+fun arrowPoint() {
+    arrow()
 }

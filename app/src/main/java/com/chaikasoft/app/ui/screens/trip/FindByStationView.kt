@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FindByStationView(
+fun findByStationView(
 ) {
     // TODO: Реализовать экран поиска по станции
         Column(

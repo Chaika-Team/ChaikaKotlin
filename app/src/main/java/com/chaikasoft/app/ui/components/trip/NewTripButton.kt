@@ -28,7 +28,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 
 
 @Composable
-fun NewTripButton(
+fun newTripButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -68,6 +68,6 @@ fun NewTripButton(
 
 @Preview
 @Composable
-fun NewTripButtonPreview() {
-    NewTripButton () {  }
+fun newTripButtonPreview() {
+    newTripButton () {  }
 }

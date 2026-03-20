@@ -21,6 +21,7 @@ import com.chaikasoft.app.ui.viewModels.delegates.TripSearchDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.io.IOException
 
 @HiltViewModel
 class TripViewModel @Inject constructor(
@@ -151,7 +152,7 @@ class TripViewModel @Inject constructor(
                 shift.startShift(trip, carriage)
                 shift.checkActiveShift()
                 onSuccess()
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "Error confirming carriage input", e)
             }
         }

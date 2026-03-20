@@ -10,6 +10,7 @@ import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class RoomConductorTripShiftRepository @Inject constructor(
     private val dao: ConductorTripShiftDao
@@ -30,6 +31,7 @@ class RoomConductorTripShiftRepository @Inject constructor(
             dao.insertNew(entity) // ABORT при конфликте с уникальным индексом
             true
         } catch (e: android.database.sqlite.SQLiteConstraintException) {
+            Log.w("RoomConductorTripShiftRepository", "Cannot start new shift! Error: ${e.message}", e)
             false
         }
     }

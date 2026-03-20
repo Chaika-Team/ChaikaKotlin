@@ -102,7 +102,7 @@ class CompleteShiftAndSendUseCase @Inject constructor(
         try {
             generate(uuid)
             Log.d(SEND_TAG, "CompleteShiftAndSendUseCase: report generated for uuid=$uuid")
-        } catch (t: Throwable) {
+        } catch (t: IllegalStateException) {
             Log.e(SEND_TAG, "CompleteShiftAndSendUseCase: generation FAILED for uuid=$uuid, ${t.message}", t)
             throw t
         }

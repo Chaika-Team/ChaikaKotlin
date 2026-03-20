@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun SideRect(
+fun sideRect(
     modifier: Modifier,
     width: Dp = TripDimens.SideRectWidth,
     color: Color
@@ -45,7 +45,7 @@ fun SideRect(
 
 @Preview
 @Composable
-fun SideRectPreview() {
+fun sideRectPreview() {
     val colorScheme = MaterialTheme.colorScheme
-    SideRect(modifier = Modifier, color = colorScheme.primary)
+    sideRect(modifier = Modifier, color = colorScheme.primary)
 }

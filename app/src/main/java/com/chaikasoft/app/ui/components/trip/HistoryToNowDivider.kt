@@ -19,7 +19,7 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun HistoryToNowDivider(
+fun historyToNowDivider(
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -59,8 +59,8 @@ fun HistoryToNowDivider(
 
 @Preview
 @Composable
-fun HistoryToNowDividerPreview() {
+fun historyToNowDividerPreview() {
     ChaikaTheme {
-        HistoryToNowDivider()
+        historyToNowDivider()
     }
 }

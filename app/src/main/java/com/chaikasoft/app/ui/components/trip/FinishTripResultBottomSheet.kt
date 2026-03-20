@@ -13,7 +13,7 @@ import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinishTripResultBottomSheet(
+fun finishTripResultBottomSheet(
     tripViewModel: TripViewModel,
     pendingLogout: Boolean = true,
     onDismissWithLogout: () -> Unit

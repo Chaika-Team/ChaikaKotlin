@@ -10,6 +10,8 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
+import android.util.Log
+
 class LocalTripReportRepository @Inject constructor(
     private val context: Context,
 ) {
@@ -36,7 +38,7 @@ class LocalTripReportRepository @Inject constructor(
             }
             true
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.e("LocalTripReportRepository", "Failed to save trip report $fileName! Error message: ${e.message}", e)
             false
         }
     }

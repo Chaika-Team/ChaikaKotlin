@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.chaikasoft.app.ui.components.trip.FoundTripCard
+import com.chaikasoft.app.ui.components.trip.foundTripCard
 import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.components.trip.SearchTripSurfaceDropdown
+import com.chaikasoft.app.ui.components.trip.searchTripSurfaceDropdown
 import com.chaikasoft.app.ui.state.TripsSearchUiState
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 import kotlinx.coroutines.FlowPreview
@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(FlowPreview::class)
 @Composable
-fun FindByNumberView(
+fun findByNumberView(
     viewModel: TripViewModel,
     navController: NavController,
 ) {
@@ -68,7 +68,7 @@ fun FindByNumberView(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        SearchTripSurfaceDropdown(
+        searchTripSurfaceDropdown(
             searchDate = searchDate,
             onSearchDateChange = { viewModel.onSearchDateChanged(it) },
 
@@ -146,7 +146,7 @@ fun FindByNumberView(
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         items(s.trips) { trip ->
-                            FoundTripCard(
+                            foundTripCard(
                                 modifier = Modifier,
                                 tripRecord = trip,
                                 onClick = {
@@ -155,7 +155,7 @@ fun FindByNumberView(
 
                                     try {
                                         navController.navigate(Routes.TRIP_SELECT_CARRIAGE)
-                                    } catch (e: Exception) {
+                                    } catch (e: IllegalStateException) {
                                         Log.e("Navigation", "Failed to navigate", e)
                                     }
                                 }

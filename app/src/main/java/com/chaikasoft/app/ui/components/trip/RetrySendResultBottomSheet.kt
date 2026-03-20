@@ -24,7 +24,7 @@ import androidx.compose.runtime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RetrySendResultBottomSheet(
+fun retrySendResultBottomSheet(
     tripViewModel: TripViewModel
 ) {
     val resultState by tripViewModel.retryResult.collectAsStateWithLifecycle()

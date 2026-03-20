@@ -18,7 +18,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.util.parseTripDetails
 
 @Composable
-fun TimeDetails(
+fun timeDetails(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain
 ) {
@@ -41,7 +41,7 @@ fun TimeDetails(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
-            TimeValueText(tripDetails.departureTime)
+            timeValueText(tripDetails.departureTime)
         }
 
         Box(
@@ -50,13 +50,13 @@ fun TimeDetails(
                     start.linkTo(startTime.end)
                     end.linkTo(endTime.start)
                     top.linkTo(parent.top)
-                    bottom.linkTo(arrow.top, margin = TripTimeDefaults.DurationArrowGap)
+                    bottom.linkTo(arrow.top, margin = TripTime.DurationArrowGap)
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            DurationText(tripDetails.durationHours, tripDetails.durationMinutes)
+            durationText(tripDetails.durationHours, tripDetails.durationMinutes)
         }
 
         Box(
@@ -70,7 +70,7 @@ fun TimeDetails(
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            ArrowPadded()
+            arrowPadded()
         }
 
         Column(
@@ -83,16 +83,16 @@ fun TimeDetails(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            TimeValueText(tripDetails.arrivalTime)
+            timeValueText(tripDetails.arrivalTime)
         }
     }
 }
 
 @Preview
 @Composable
-fun TimeDetailsPreview() {
+fun timeDetailsPreview() {
     ChaikaTheme {
-        TimeDetails(
+        timeDetails(
             modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",

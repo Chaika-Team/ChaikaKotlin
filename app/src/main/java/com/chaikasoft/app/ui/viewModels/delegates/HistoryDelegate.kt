@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class HistoryDelegate(
     private val getShiftHistoryUseCase: GetShiftHistoryUseCase,
@@ -65,7 +66,7 @@ class HistoryDelegate(
                         _trips.value = historyList
                         _isLoading.value = false
                     }
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "Failed to observe history", e)
                 _isLoading.value = false
             }
@@ -109,7 +110,7 @@ class HistoryDelegate(
                 // обновить список
                 stopObserving()
                 startObserving()
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "confirmRetrySend: error, uuid=$uuid", e)
                 _retryResult.value = RetryResult(R.string.trip_finish_temp_failure)
             }

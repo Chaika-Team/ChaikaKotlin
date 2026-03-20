@@ -17,7 +17,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.util.parseTripDetails
 
 @Composable
-fun TimeDateDetails(
+fun timeDateDetails(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain
 ) {
@@ -41,8 +41,8 @@ fun TimeDateDetails(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
         ) {
-            DayMonthText(tripDetails.departureDayMonth)
-            TimeValueText(tripDetails.departureTime)
+            dayMonthText(tripDetails.departureDayMonth)
+            timeValueText(tripDetails.departureTime)
         }
 
         Box(
@@ -51,13 +51,13 @@ fun TimeDateDetails(
                     start.linkTo(startTime.end)
                     end.linkTo(endTime.start)
                     top.linkTo(parent.top)
-                    bottom.linkTo(arrow.top, margin = TripTimeDefaults.DurationArrowGap)
+                    bottom.linkTo(arrow.top, margin = TripTime.DurationArrowGap)
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            DurationText(tripDetails.durationHours, tripDetails.durationMinutes)
+            durationText(tripDetails.durationHours, tripDetails.durationMinutes)
         }
 
         Box(
@@ -71,7 +71,7 @@ fun TimeDateDetails(
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            ArrowPadded(modifier = Modifier) // паддинги берутся из общих дефолтов
+            arrowPadded(modifier = Modifier) // паддинги берутся из общих дефолтов
         }
 
         Column(
@@ -85,16 +85,16 @@ fun TimeDateDetails(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
-            DayMonthText(tripDetails.arrivalDayMonth)
-            TimeValueText(tripDetails.arrivalTime)
+            dayMonthText(tripDetails.arrivalDayMonth)
+            timeValueText(tripDetails.arrivalTime)
         }
     }
 }
 
 @Preview
 @Composable
-fun TimeDateDetailsPreview() {
-    TimeDateDetails(
+fun timeDateDetailsPreview() {
+    timeDateDetails(
         modifier = Modifier,
         tripRecord = TripDomain(
             uuid = "12",
@@ -115,4 +115,3 @@ fun TimeDateDetailsPreview() {
         )
     )
 }
-
