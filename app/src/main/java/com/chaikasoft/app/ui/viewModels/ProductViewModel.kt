@@ -120,20 +120,6 @@ class ProductViewModel @Inject constructor(
         }
     }.buffer(Channel.RENDEZVOUS)
 
-    private fun mapWithCart(
-        pagingData: PagingData<ProductInfoDomain>,
-        cartItems: List<CartItemDomain>
-    ): PagingData<Product> {
-        val cartItemsMap = cartItems
-            .filter { it.quantity >= 1 }
-            .associateBy { it.product.id }
-
-        return pagingData.map { product ->
-            cartItemsMap[product.id]?.toUiModel()
-                ?: product.toUiModel()
-        }
-    }
-
     private fun syncProductsInBackground() {
         syncJob?.cancel()
         syncJob = viewModelScope.launch {

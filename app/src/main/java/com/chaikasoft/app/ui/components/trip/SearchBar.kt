@@ -40,7 +40,6 @@ fun searchTripBar(
     SearchBar(
         query = query,
         onQueryChange = { newQuery ->
-            query = newQuery
             onQueryChange(newQuery)
         },
         onSearch = { focusManager.clearFocus() },

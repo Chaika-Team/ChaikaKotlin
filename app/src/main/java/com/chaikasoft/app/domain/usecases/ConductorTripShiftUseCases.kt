@@ -128,9 +128,7 @@ class GenerateShiftReportUseCase @Inject constructor(
             ?: throw IllegalStateException("Shift with uuid=$uuid not found")
 
         // Защита от перегенерации/перезаписи отчёта и от очистки операций не в том состоянии.
-        if (shift.status != TripShiftStatusDomain.ACTIVE) {
-            throw IllegalStateException("Shift uuid=$uuid is not ACTIVE (status=${shift.status})")
-        }
+        check(shift.status == TripShiftStatusDomain.ACTIVE) { "Shift uuid=$uuid is not ACTIVE (status=${shift.status})" }
 
         // 1) Собираем CartReport'ы из текущих операций (пока они ещё в БД)
         val carts = getCartReports()
