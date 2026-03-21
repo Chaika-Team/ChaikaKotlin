@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 /**
  * Единые «дефолты» для времени/длительности/стрелки.
  */
-object TripTimeDefaults {
+object TripTime {
     val DurationFontSize = 12.sp
     val DurationLineHeight = 12.sp
     val DurationArrowGap = 2.dp          // зазор между длительностью и стрелкой
@@ -32,7 +32,7 @@ object TripTimeDefaults {
  * Текст длительности c отключённым font padding и обрезкой в 1 строку.
  */
 @Composable
-fun DurationText(
+fun durationText(
     text: String,
     modifier: Modifier = Modifier
 ) {
@@ -41,8 +41,8 @@ fun DurationText(
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         style = LocalTextStyle.current.copy(
-            fontSize = TripTimeDefaults.DurationFontSize,
-            lineHeight = TripTimeDefaults.DurationLineHeight,
+            fontSize = TripTime.DurationFontSize,
+            lineHeight = TripTime.DurationLineHeight,
             platformStyle = PlatformTextStyle(includeFontPadding = false),
             lineHeightStyle = LineHeightStyle(
                 trim = LineHeightStyle.Trim.Both,
@@ -55,21 +55,21 @@ fun DurationText(
 
 /** Удобная перегрузка — сразу час/минуты. */
 @Composable
-fun DurationText(
+fun durationText(
     hours: Int,
     minutes: Int,
     modifier: Modifier = Modifier
-) = DurationText("$hours ч $minutes мин", modifier)
+) = durationText("$hours ч $minutes мин", modifier)
 
 /**
  * Паддингованная «стрелка» (линия) — чтобы не дублировать .padding(...) вокруг Arrow().
  */
 @Composable
-fun ArrowPadded(
+fun arrowPadded(
     modifier: Modifier = Modifier,
-    horizontalPadding: Dp = TripTimeDefaults.ArrowHorizontalPadding,
-    bottomPadding: Dp = TripTimeDefaults.ArrowBottomPadding,
-    content: @Composable () -> Unit = { Arrow() }
+    horizontalPadding: Dp = TripTime.ArrowHorizontalPadding,
+    bottomPadding: Dp = TripTime.ArrowBottomPadding,
+    content: @Composable () -> Unit = { arrow() }
 ) {
     Box(
         modifier = modifier.padding(
@@ -85,14 +85,14 @@ fun ArrowPadded(
 
 /** Крупное «hh:mm» — единый стиль и ограничения. */
 @Composable
-fun TimeValueText(
+fun timeValueText(
     text: String,
     modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyLarge,
-        fontSize = TripTimeDefaults.TimeFontSize,
+        fontSize = TripTime.TimeFontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier
@@ -101,14 +101,14 @@ fun TimeValueText(
 
 /** Маленький текст даты (день/месяц). */
 @Composable
-fun DayMonthText(
+fun dayMonthText(
     text: String,
     modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        fontSize = TripTimeDefaults.DayMonthFontSize,
+        fontSize = TripTime.DayMonthFontSize,
         modifier = modifier
     )
 }

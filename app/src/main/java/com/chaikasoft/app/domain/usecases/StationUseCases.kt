@@ -39,14 +39,14 @@ class RefreshStationsOnLaunchUseCase @Inject constructor(
         if (hasActiveShift()) return@withContext RefreshStationsResult.SkippedActiveShift
 
         // 2) Сеть: получаем RemoteResult
-        when (val remote = remoteRepo.fetchAllStations(limit = ALL_STATIONS_LIMIT)) {
+        return@withContext when (val remote = remoteRepo.fetchAllStations(limit = ALL_STATIONS_LIMIT)) {
             is RemoteResult.Failure -> {
-                return@withContext RefreshStationsResult.RemoteFailure(remote.error)
+                RefreshStationsResult.RemoteFailure(remote.error)
             }
 
             is RemoteResult.Success -> {
                 // 3) Локальная БД: upsert может упасть (RoomException/SQLiteException)
-                return@withContext try {
+                try {
                     localRepo.upsertAll(remote.data)
                     RefreshStationsResult.Success(stationCount = remote.data.size)
                 } catch (e: Exception) {

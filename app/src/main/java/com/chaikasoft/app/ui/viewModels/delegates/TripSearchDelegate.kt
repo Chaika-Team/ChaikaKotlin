@@ -63,7 +63,7 @@ class TripSearchDelegate(
                 }
             } catch (e: CancellationException) {
                 throw e
-            } catch (e: Exception) {
+            } catch (e: IllegalStateException) {
                 Log.e(TAG, "Unexpected error", e)
                 val ui = AppErrorUiMapper.map(AppError.Unknown(e))
                 _state.value = TripsSearchUiState.Error(ui.messageRes, ui.retryable)

@@ -25,7 +25,7 @@ import androidx.compose.runtime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RetrySendConfirmBottomSheet(
+fun retrySendConfirmBottomSheet(
     tripViewModel: TripViewModel
 ) {
     val confirmState by tripViewModel.retryConfirm.collectAsStateWithLifecycle()

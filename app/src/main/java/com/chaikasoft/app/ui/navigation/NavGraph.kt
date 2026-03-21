@@ -27,10 +27,10 @@ import com.chaikasoft.app.ui.screens.profile.FeedbackView
 import com.chaikasoft.app.ui.screens.profile.MainProfileView
 import com.chaikasoft.app.ui.screens.profile.PersonalDataView
 import com.chaikasoft.app.ui.screens.profile.SettingsView
-import com.chaikasoft.app.ui.screens.trip.FindByNumberView
-import com.chaikasoft.app.ui.screens.trip.SelectCarriageView
-import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
-import com.chaikasoft.app.ui.screens.trip.MainTripView
+import com.chaikasoft.app.ui.screens.trip.findByNumberView
+import com.chaikasoft.app.ui.screens.trip.selectCarriageView
+import com.chaikasoft.app.ui.screens.trip.autonomousTripScreen
+import com.chaikasoft.app.ui.screens.trip.mainTripView
 import com.chaikasoft.app.ui.screens.util.ErrorScreen
 import com.chaikasoft.app.ui.screens.util.LoadingScreen
 import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
@@ -98,7 +98,7 @@ fun NavGraph(
             route = Routes.TRIP_GRAPH
         ) {
             composable(Routes.TRIP_MAIN) {
-                MainTripView(
+                mainTripView(
                     viewModel = tripViewModel,
                     navController = navController
                 )
@@ -109,21 +109,21 @@ fun NavGraph(
                     navController.getBackStackEntry(Routes.TRIP_GRAPH)
                 }
                 val autonomousViewModel = hiltViewModel<AutonomousViewModel>(parentEntry)
-                AutonomousTripScreen(
+                autonomousTripScreen(
                     viewModel = autonomousViewModel,
                     navController = navController
                 )
             }
 
             composable(Routes.TRIP_BY_NUMBER) {
-                FindByNumberView(
+                findByNumberView(
                     viewModel = tripViewModel,
                     navController = navController
                 )
             }
 
             composable(Routes.TRIP_SELECT_CARRIAGE) {
-                SelectCarriageView(
+                selectCarriageView(
                     viewModel = tripViewModel,
                     navController = navController
                 )

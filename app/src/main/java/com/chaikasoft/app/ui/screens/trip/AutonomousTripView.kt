@@ -14,7 +14,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chaikasoft.app.ui.components.template.ButtonSurface
-import com.chaikasoft.app.ui.components.trip.DropDownMenu
+import com.chaikasoft.app.ui.components.trip.dropDownMenu
 import com.chaikasoft.app.ui.viewModels.AutonomousViewModel
 import kotlinx.coroutines.flow.collectLatest
 import android.app.DatePickerDialog
@@ -34,7 +34,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AutonomousTripScreen(
+fun autonomousTripScreen(
     viewModel: AutonomousViewModel,
     navController: NavController
 ) {
@@ -83,8 +83,8 @@ fun AutonomousTripScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            SectionTitle("Номер поезда")
-            FocusHighlightField(
+            sectionTitle("Номер поезда")
+            focusHighlightField(
                 value = state.trainNumber,
                 onValueChange = viewModel::onTrainNumberChange,
                 placeholder = "119A",
@@ -92,10 +92,10 @@ fun AutonomousTripScreen(
             )
 
             Spacer(Modifier.height(8.dp))
-            SectionHeader("Станции")
+            sectionHeader("Станции")
 
-            Label("Станция отправления")
-            DropDownMenu(
+            label("Станция отправления")
+            dropDownMenu(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 query = state.fromQuery,
                 onQueryChange = viewModel::onFromQueryChange,
@@ -105,8 +105,8 @@ fun AutonomousTripScreen(
             )
 
             Spacer(Modifier.height(8.dp))
-            Label("Станция прибытия")
-            DropDownMenu(
+            label("Станция прибытия")
+            dropDownMenu(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 query = state.toQuery,
                 onQueryChange = viewModel::onToQueryChange,
@@ -116,9 +116,9 @@ fun AutonomousTripScreen(
             )
 
             Spacer(Modifier.height(8.dp))
-            SectionHeader("Время")
+            sectionHeader("Время")
 
-            TimeRow(
+            timeRow(
                 arrival = state.arrival,
                 onArrival = viewModel::onArrivalChange,
                 departure = state.departure,
@@ -126,18 +126,18 @@ fun AutonomousTripScreen(
             )
 
             Spacer(Modifier.height(8.dp))
-            SectionHeader("Вагон")
+            sectionHeader("Вагон")
 
-            Label("Номер вагона")
-            FocusHighlightField(
+            label("Номер вагона")
+            focusHighlightField(
                 value = state.carriageNumber,
                 onValueChange = viewModel::onCarriageNumberChange,
                 placeholder = ""
             )
 
             Spacer(Modifier.height(8.dp))
-            Label("Класс обслуживания")
-            FocusHighlightField(
+            label("Класс обслуживания")
+            focusHighlightField(
                 value = state.carriageClassType,
                 onValueChange = viewModel::onCarriageClassTypeChange,
                 placeholder = "Не обязательно"
@@ -149,7 +149,7 @@ fun AutonomousTripScreen(
 /* ----------------------- Вспомогательные UI-компоненты ----------------------- */
 
 @Composable
-private fun FocusHighlightField(
+private fun focusHighlightField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -190,7 +190,7 @@ private fun FocusHighlightField(
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+private fun sectionTitle(text: String) {
     Text(
         modifier = Modifier.padding(horizontal = 16.dp),
         text = text,
@@ -200,7 +200,7 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun SectionHeader(text: String) {
+private fun sectionHeader(text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,7 +219,7 @@ private fun SectionHeader(text: String) {
 }
 
 @Composable
-private fun Label(text: String) {
+private fun label(text: String) {
     Text(
         modifier = Modifier.padding(horizontal = 16.dp),
         text = text,
@@ -229,7 +229,7 @@ private fun Label(text: String) {
 }
 
 @Composable
-private fun TimeRow(
+private fun timeRow(
     arrival: LocalDateTime?,
     onArrival: (LocalDateTime?) -> Unit,
     departure: LocalDateTime?,
@@ -243,7 +243,7 @@ private fun TimeRow(
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Pill(
+        pill(
             text = departure.formatOr("Сегодня, 22:00"),
             modifier = Modifier.weight(1f),
             onClick = {
@@ -253,7 +253,7 @@ private fun TimeRow(
                 ) { picked -> onDeparture(picked) }
             }
         )
-        Pill(
+        pill(
             text = arrival.formatOr("Завтра, 21:32"),
             modifier = Modifier.weight(1f),
             onClick = {
@@ -267,7 +267,7 @@ private fun TimeRow(
 }
 
 @Composable
-private fun Pill(
+private fun pill(
     text: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit

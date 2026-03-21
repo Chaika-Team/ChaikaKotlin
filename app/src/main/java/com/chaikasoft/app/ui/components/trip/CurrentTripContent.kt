@@ -32,7 +32,7 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun CurrentTripContent(
+fun currentTripContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     heightTotal: Dp = TripDimens.NewTripButtonHeight,
@@ -48,7 +48,7 @@ fun CurrentTripContent(
     ) {
         val (sideRect, trainId, timeDetails, stationsDetails, button) = createRefs()
 
-        SideRect(
+        sideRect(
             modifier = Modifier
                 .constrainAs(sideRect) {
                     start.linkTo(parent.start)
@@ -80,7 +80,7 @@ fun CurrentTripContent(
             )
         }
 
-        TimeDetails(
+        timeDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(timeDetails) {
@@ -92,7 +92,7 @@ fun CurrentTripContent(
                 }
         )
 
-        StationsDetails(
+        stationsDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
@@ -104,7 +104,7 @@ fun CurrentTripContent(
                 }
         )
 
-        FinishCurrentTripButton(
+        finishCurrentTripButton(
             modifier = Modifier.constrainAs(button) {
                 start.linkTo(sideRect.end, margin = 4.dp)
                 top.linkTo(stationsDetails.bottom)
@@ -119,9 +119,9 @@ fun CurrentTripContent(
 
 @Preview
 @Composable
-fun CurrentTripButtonPreview() {
+fun currentTripButtonPreview() {
     ChaikaTheme {
-        CurrentTripContent(
+        currentTripContent(
             modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",

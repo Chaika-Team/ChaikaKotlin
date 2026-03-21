@@ -6,13 +6,15 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.DateTimeException
+import java.time.format.DateTimeParseException
 
 fun getDayMonth(dateTime: String): String {
     return try {
         val instant = Instant.parse(dateTime)
         val zonedDateTime = instant.atZone(ZoneId.systemDefault())
         DateTimeFormatter.ofPattern("dd.MM").format(zonedDateTime)
-    } catch (e: Exception) {
+    } catch (e: DateTimeException) {
         Log.e("TimeParser", e.toString())
         "N/A"
     }
@@ -23,7 +25,7 @@ fun getTime(dateTime: String): String {
         val instant = Instant.parse(dateTime)
         val zonedDateTime = instant.atZone(ZoneId.systemDefault())
         DateTimeFormatter.ofPattern("HH:mm").format(zonedDateTime)
-    } catch (e: Exception) {
+    } catch (e: DateTimeException) {
         Log.e("TimeParser", e.toString())
         "N/A"
     }
@@ -36,10 +38,11 @@ fun parseDuration(duration: String): Pair<Int, Int> {
             val hours = dur.toHours().toInt()
             val minutes = dur.minusHours(hours.toLong()).toMinutes().toInt()
             hours to minutes
-        } catch (e: Exception) {
+        } catch (e: DateTimeParseException) {
+            Log.w("TimeParser", "Cannot format: $duration! Reason: ${e.message}! Will proceed alternative method...", e)
             parseAlternativeDuration(duration)
         }
-    } catch (e: Exception) {
+    } catch (e: DateTimeException) {
         Log.e("TimeParser", "Failed to parse duration: $duration", e)
         0 to 0
     }
@@ -74,4 +77,3 @@ data class TripDetails(
     val durationHours: Int,
     val durationMinutes: Int
 )
-

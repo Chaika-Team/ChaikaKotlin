@@ -25,7 +25,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTripBar(
+fun searchTripBar(
     modifier: Modifier = Modifier,
     initialQuery: String = "",
     onQueryChange: (String) -> Unit,
@@ -40,7 +40,6 @@ fun SearchTripBar(
     SearchBar(
         query = query,
         onQueryChange = { newQuery ->
-            query = newQuery
             onQueryChange(newQuery)
         },
         onSearch = { focusManager.clearFocus() },
@@ -71,8 +70,8 @@ fun SearchTripBar(
 
 @Preview
 @Composable
-fun SearchTripBarPreview() {
-    SearchTripBar(
+fun searchTripBarPreview() {
+    searchTripBar(
         modifier = Modifier,
         initialQuery = "",
         onQueryChange = {},

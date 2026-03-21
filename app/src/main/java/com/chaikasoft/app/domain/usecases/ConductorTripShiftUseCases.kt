@@ -102,7 +102,7 @@ class CompleteShiftAndSendUseCase @Inject constructor(
         try {
             generate(uuid)
             Log.d(SEND_TAG, "CompleteShiftAndSendUseCase: report generated for uuid=$uuid")
-        } catch (t: Throwable) {
+        } catch (t: IllegalStateException) {
             Log.e(SEND_TAG, "CompleteShiftAndSendUseCase: generation FAILED for uuid=$uuid, ${t.message}", t)
             throw t
         }
@@ -128,9 +128,7 @@ class GenerateShiftReportUseCase @Inject constructor(
             ?: throw IllegalStateException("Shift with uuid=$uuid not found")
 
         // Защита от перегенерации/перезаписи отчёта и от очистки операций не в том состоянии.
-        if (shift.status != TripShiftStatusDomain.ACTIVE) {
-            throw IllegalStateException("Shift uuid=$uuid is not ACTIVE (status=${shift.status})")
-        }
+        check(shift.status == TripShiftStatusDomain.ACTIVE) { "Shift uuid=$uuid is not ACTIVE (status=${shift.status})" }
 
         // 1) Собираем CartReport'ы из текущих операций (пока они ещё в БД)
         val carts = getCartReports()

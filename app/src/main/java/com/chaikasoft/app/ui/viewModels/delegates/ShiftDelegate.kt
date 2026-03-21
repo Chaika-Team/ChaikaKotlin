@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class ShiftDelegate(
     private val startShiftUseCase: StartShiftUseCase,
@@ -51,7 +52,7 @@ class ShiftDelegate(
             _shiftStatus.value = ok
             Log.d(TAG, if (ok) "Shift started" else "Shift start failed")
             ok
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
             _shiftStatus.value = false
             Log.e(TAG, "Failed to start shift", e)
             false
@@ -73,7 +74,7 @@ class ShiftDelegate(
                     _shiftStatus.value = true
                 }
                 Log.d(TAG, if (shift != null) "Active shift found" else "No active shift")
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "Failed to check active shift", e)
             }
         }
@@ -94,7 +95,7 @@ class ShiftDelegate(
                     is SendReportResult.PermanentFailure -> R.string.trip_finish_perm_failure
                 }
                 _finishDialog.value = FinishTripDialog(msg)
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(TAG, "Error finishing trip", e)
                 _finishDialog.value = FinishTripDialog(R.string.trip_finish_temp_failure)
             }

@@ -30,7 +30,7 @@ import com.chaikasoft.app.ui.viewModels.AuthViewModel
 import androidx.navigation.NavHostController
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
+import com.chaikasoft.app.ui.components.trip.finishTripResultBottomSheet
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @Composable
@@ -171,7 +171,7 @@ fun MainProfileView(
         onDismiss = { showFinishTripConfirmSheet = false }
     )
 
-    FinishTripResultBottomSheet(
+    finishTripResultBottomSheet(
         tripViewModel = tripViewModel,
         pendingLogout = pendingLogoutAfterTripFinish,
         onDismissWithLogout = {

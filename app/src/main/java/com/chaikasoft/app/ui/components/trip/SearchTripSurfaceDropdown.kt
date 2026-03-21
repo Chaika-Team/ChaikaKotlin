@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.Flow
 
 @OptIn(FlowPreview::class)
 @Composable
-fun SearchTripSurfaceDropdown(
+fun searchTripSurfaceDropdown(
     searchDate: String,
     onSearchDateChange: (String) -> Unit,
 
@@ -43,7 +43,7 @@ fun SearchTripSurfaceDropdown(
             .fillMaxWidth()
             .height(height),
     ) {
-        SurfaceBackground(
+        surfaceBackground(
             modifier = Modifier.matchParentSize()
         )
 
@@ -52,7 +52,7 @@ fun SearchTripSurfaceDropdown(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            SearchTripBar(
+            searchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -62,7 +62,7 @@ fun SearchTripSurfaceDropdown(
                 initialQuery = searchDate
             )
 
-            DropDownMenu(
+            dropDownMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -76,7 +76,7 @@ fun SearchTripSurfaceDropdown(
                 cornerRadius = TripDimens.SearchBarCornerRadius
             )
 
-            DropDownMenu(
+            dropDownMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),

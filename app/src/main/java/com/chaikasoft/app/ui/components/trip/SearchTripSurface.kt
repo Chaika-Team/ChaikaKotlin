@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.debounce
 
 @OptIn(FlowPreview::class)
 @Composable
-fun SearchTripSurface(
+fun searchTripSurface(
     height: Dp = TripDimens.SearchCardHeight,
     modifier: Modifier = Modifier,
     onSearch: (date: String, startStation: String, finishStation: String) -> Unit = { _, _, _ -> },
@@ -47,7 +47,7 @@ fun SearchTripSurface(
             .fillMaxWidth()
             .height(height),
     ) {
-        SurfaceBackground(
+        surfaceBackground(
             modifier = Modifier.matchParentSize()
         )
 
@@ -57,7 +57,7 @@ fun SearchTripSurface(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            SearchTripBar(
+            searchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -70,7 +70,7 @@ fun SearchTripSurface(
                 initialQuery = initialDateValue
             )
 
-            SearchTripBar(
+            searchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -82,7 +82,7 @@ fun SearchTripSurface(
                 cornerRadius = TripDimens.SearchBarCornerRadius
             )
 
-            SearchTripBar(
+            searchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -99,6 +99,6 @@ fun SearchTripSurface(
 
 @Preview
 @Composable
-fun SearchCardPreview() {
-    SearchTripSurface(modifier = Modifier)
+fun searchCardPreview() {
+    searchTripSurface(modifier = Modifier)
 }

@@ -44,7 +44,7 @@ import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropDownMenu(
+fun dropDownMenu(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,

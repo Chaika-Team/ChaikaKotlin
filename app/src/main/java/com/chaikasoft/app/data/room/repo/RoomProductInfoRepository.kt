@@ -49,11 +49,6 @@ class RoomProductInfoRepository @Inject constructor(
         }
     }
 
-    private fun escapeLike(s: String): String =
-        s.replace("\\", "\\\\")
-            .replace("%", "\\%")
-            .replace("_", "\\_")
-
     override suspend fun getProductById(productId: Int): ProductInfoDomain? {
         return productInfoDao.getProductById(productId)?.toDomain()
     }

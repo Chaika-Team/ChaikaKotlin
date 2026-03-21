@@ -25,7 +25,9 @@ open class OAuthModule {
 
     @Provides
     @Singleton
-    open fun provideAuthIntentProvider(authService: AuthorizationService): AuthIntentProviderInterface = AuthIntentProvider(authService)
+    open fun provideAuthIntentProvider(
+        authService: AuthorizationService
+    ): AuthIntentProviderInterface = AuthIntentProvider(authService)
 
     @Provides
     @Singleton

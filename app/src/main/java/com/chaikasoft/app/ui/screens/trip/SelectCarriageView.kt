@@ -14,7 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.components.trip.SelectedTripRecordSurface
+import com.chaikasoft.app.ui.components.trip.selectedTripRecordSurface
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.TripDimens
@@ -22,7 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @Composable
-fun SelectCarriageView(
+fun selectCarriageView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
@@ -40,7 +40,7 @@ fun SelectCarriageView(
             }
             else -> {
                 Column(modifier = Modifier.weight(1f)) {
-                    SelectedTripRecordSurface(
+                    selectedTripRecordSurface(
                         height = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL * 2,
                         tripRecord = selectedTrip!!
                     )

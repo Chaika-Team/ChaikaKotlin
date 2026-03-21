@@ -45,9 +45,9 @@ object DatabaseModule {
             ON conductor_trip_shifts(status)
             WHERE status = $SHIFT_STATUS_ACTIVE
         """.trimIndent())
-                } catch (t: Throwable) {
-                    Log.e("ROOM", "Failed to ensure idx_unique_active_shift", t)
-                    throw t
+                } catch (e: android.database.sqlite.SQLiteException) {
+                    Log.e("ROOM", "Failed to ensure idx_unique_active_shift", e)
+                    throw e
                 }
             }
         })

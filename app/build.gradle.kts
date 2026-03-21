@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("org.sonarqube")
+    id("io.gitlab.arturbosch.detekt")
     id("jacoco")
     id("de.mannodermaus.android-junit5") version "1.12.0.0"
 }
@@ -106,6 +108,13 @@ tasks.withType<Test> {
 
 jacoco {
     toolVersion = "0.8.10" // Совместимо с SonarQube
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "ChaikaKotlin")
+        property("sonar.projectName", "ChaikaKotlin")
+    }
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
