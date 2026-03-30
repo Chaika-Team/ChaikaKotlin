@@ -1,8 +1,7 @@
 package com.chaikasoft.app.ui.theme
 
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
-
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 val TextMain = Color(0xFFFFEBDD)       // text_main

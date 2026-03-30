@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.domain.models.trip.TripDomain
 
 @Composable
-fun selectedTripRecordSurface(
+fun SelectedTripRecordSurface(
     modifier: Modifier = Modifier,
     height: Dp,
     tripRecord: TripDomain
@@ -21,10 +21,10 @@ fun selectedTripRecordSurface(
         modifier.fillMaxWidth().height(height),
         contentAlignment = Alignment.Center
     ) {
-        surfaceBackground(
+        SurfaceBackground(
             height = height
         )
-        foundTripContent(
+        FoundTripContent(
             modifier = Modifier.matchParentSize().padding(24.dp),
             tripRecord = tripRecord,
         )

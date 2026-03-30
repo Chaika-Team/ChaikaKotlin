@@ -4,8 +4,9 @@ import com.chaikasoft.app.data.dataSource.repo.IAMApiServiceRepositoryInterface
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
+import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ConductorDomain
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -19,9 +20,10 @@ import javax.inject.Inject
  */
 class FetchConductorByTokenUseCase @Inject constructor(
     private val conductorApiRepository: IAMApiServiceRepositoryInterface,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(accessToken: String): ConductorDomain =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             // Если репозиторий возвращает Result, то можно использовать getOrElse или getOrThrow:
             conductorApiRepository.fetchUserInfo(accessToken).getOrElse { throw it }
         }
@@ -35,13 +37,14 @@ class FetchConductorByTokenUseCase @Inject constructor(
 class SaveConductorLocallyUseCase @Inject constructor(
     private val conductorRepository: RoomConductorRepositoryInterface,
     private val imageRepository: LocalImageRepositoryInterface,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
 
     /**
      * Сохраняет данные проводника локально.
      */
     suspend operator fun invoke(conductor: ConductorDomain, imageUrl: String): ConductorDomain =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             val imagePath = imageRepository.saveImageFromUrl(
                 imageUrl = imageUrl,
                 fileName = "${conductor.employeeID}.jpg",

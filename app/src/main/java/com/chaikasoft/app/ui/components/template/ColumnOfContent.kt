@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.chaikasoft.app.domain.models.TemplateContentDomain
 import androidx.compose.ui.Modifier
+import com.chaikasoft.app.domain.models.TemplateContentDomain
 
 @Composable
 fun ColumnOfContent(

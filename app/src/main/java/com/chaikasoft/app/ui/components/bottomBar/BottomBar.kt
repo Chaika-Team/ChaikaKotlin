@@ -14,8 +14,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.components.bottomBar.BottomBarBackground
-import com.chaikasoft.app.ui.components.bottomBar.BottomBarIcon
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.BarDimens
 

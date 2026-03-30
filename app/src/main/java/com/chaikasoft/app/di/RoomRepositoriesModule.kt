@@ -1,6 +1,5 @@
 package com.chaikasoft.app.di
 
-import com.chaikasoft.app.data.room.AppDatabase
 import com.chaikasoft.app.data.room.dao.CartItemDao
 import com.chaikasoft.app.data.room.dao.CartOperationDao
 import com.chaikasoft.app.data.room.dao.ConductorDao
@@ -19,10 +18,10 @@ import com.chaikasoft.app.data.room.repo.RoomConductorRepository
 import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepository
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
-import com.chaikasoft.app.data.room.repo.RoomProductInfoRepository
-import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomPackageItemRepository
 import com.chaikasoft.app.data.room.repo.RoomPackageItemRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomProductInfoRepository
+import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomReportRepository
 import com.chaikasoft.app.data.room.repo.RoomReportRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepository

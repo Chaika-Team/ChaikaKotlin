@@ -25,39 +25,6 @@ class ChaikaTripperRepositoryTest : FunSpec({
     }
 
     /**
-     * Техника тест-дизайна: #2 Граничные значения
-     *
-     * Описание:
-     *   - Граница: поле trips может приходить nullable, внутри используется orEmpty().
-     *   - Ожидаемое поведение: корректный маппинг списка поездок без падений.
-     *   - Цель: защитить ветку поиска поездок по дате от NPE и искажений данных.
-     */
-    test("searchTripsByRoute maps trips and handles null list as empty") {
-        runTest {
-            coEvery { api.findTrips(fromCode = null, toCode = null, date = "2026-03-10") } returns
-                TripsResponseDto(
-                    trips = listOf(
-                        TripDto(
-                            uuid = "trip-1",
-                            trainNumber = "A1",
-                            departure = "2026-03-10T10:00:00Z",
-                            arrival = "2026-03-10T12:00:00Z",
-                            duration = "PT2H",
-                            from = StationDto(code = "MOW", name = "Moscow", city = "Moscow"),
-                            to = StationDto(code = "SPB", name = "Saint-Petersburg", city = "SPB"),
-                        ),
-                    ),
-                )
-
-            val result = repository.searchTripsByRoute("2026-03-10")
-
-            result.size shouldBe 1
-            result.first().uuid shouldBe "trip-1"
-            result.first().from.code shouldBe "MOW"
-        }
-    }
-
-    /**
      * Техника тест-дизайна: #3 Таблица решений
      *
      * Описание:

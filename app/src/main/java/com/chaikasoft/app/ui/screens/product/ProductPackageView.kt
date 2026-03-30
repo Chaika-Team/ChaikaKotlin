@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,8 +31,6 @@ import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewModels.PackageViewModel
 import com.chaikasoft.app.ui.viewModels.SaleViewModel
 import com.chaikasoft.app.util.formatPriceOnly
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun ProductPackageView(

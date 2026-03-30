@@ -17,6 +17,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
 class LogoutUseCaseTest : FunSpec({
@@ -33,10 +34,11 @@ class LogoutUseCaseTest : FunSpec({
         imageRepository = mockk()
         hasActiveShiftUseCase = mockk()
         useCase = LogoutUseCase(
-            tokenManager,
-            deleteAllConductorsUseCase,
-            imageRepository,
-            hasActiveShiftUseCase
+            tokenManager = tokenManager,
+            deleteAllConductorsUseCase = deleteAllConductorsUseCase,
+            imageRepository = imageRepository,
+            hasActiveShiftUseCase = hasActiveShiftUseCase,
+            ioDispatcher = UnconfinedTestDispatcher(),
         )
     }
 

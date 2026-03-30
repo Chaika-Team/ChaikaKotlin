@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun carriageCard(
+fun CarriageCard(
     modifier: Modifier,
     carriageId: Int,
     onClick: () -> Unit,

@@ -2,8 +2,10 @@ package com.chaikasoft.app.data.room.mappers
 
 import com.chaikasoft.app.data.room.entities.ConductorTripShift
 import com.chaikasoft.app.data.room.relations.ConductorTripShiftWithStations
+import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
+import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.data.room.mappers.toDomain as stationToDomain
-import com.chaikasoft.app.domain.models.trip.*
 
 /** Преобразование Int → TripShiftStatusDomain */
 fun Int.toTripShiftStatusDomain(): TripShiftStatusDomain =

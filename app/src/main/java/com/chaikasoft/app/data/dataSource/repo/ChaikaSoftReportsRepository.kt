@@ -1,13 +1,12 @@
 package com.chaikasoft.app.data.dataSource.repo
 
+import android.util.Log
 import com.chaikasoft.app.data.dataSource.apiService.ChaikaSoftApiService
 import com.chaikasoft.app.domain.sealed.UploadResult
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import javax.inject.Inject
-
-import android.util.Log
 
 private const val SEND_TAG = "SHIFT-REPORT"
 

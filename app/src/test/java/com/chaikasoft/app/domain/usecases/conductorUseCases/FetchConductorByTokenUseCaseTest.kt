@@ -10,6 +10,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
 class FetchConductorByTokenUseCaseTest : FunSpec({
@@ -29,7 +30,10 @@ class FetchConductorByTokenUseCaseTest : FunSpec({
 
     beforeTest {
         conductorApiRepository = mockk()
-        useCase = FetchConductorByTokenUseCase(conductorApiRepository)
+        useCase = FetchConductorByTokenUseCase(
+            conductorApiRepository = conductorApiRepository,
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
     }
 
     /**

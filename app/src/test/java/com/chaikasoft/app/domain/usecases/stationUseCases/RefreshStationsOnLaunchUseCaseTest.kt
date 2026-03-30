@@ -14,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
 class RefreshStationsOnLaunchUseCaseTest : FunSpec({
@@ -27,7 +28,12 @@ class RefreshStationsOnLaunchUseCaseTest : FunSpec({
         remoteRepo = mockk()
         localRepo = mockk()
         hasActiveShift = mockk()
-        useCase = RefreshStationsOnLaunchUseCase(remoteRepo, localRepo, hasActiveShift)
+        useCase = RefreshStationsOnLaunchUseCase(
+            remoteRepo = remoteRepo,
+            localRepo = localRepo,
+            hasActiveShift = hasActiveShift,
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
     }
 
     /**

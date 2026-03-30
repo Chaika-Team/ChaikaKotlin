@@ -1,9 +1,9 @@
 package com.chaikasoft.app.ui.mappers
 
 import com.chaikasoft.app.ui.cartItem
+import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.packageItem
 import com.chaikasoft.app.ui.productInfo
-import com.chaikasoft.app.ui.dto.Product
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 

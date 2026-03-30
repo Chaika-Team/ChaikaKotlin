@@ -9,12 +9,12 @@ import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import com.chaikasoft.app.domain.usecases.AddItemToCartWithLimitUseCase
+import com.chaikasoft.app.domain.usecases.CreateCartUseCase
 import com.chaikasoft.app.domain.usecases.GetCartItemsUseCase
 import com.chaikasoft.app.domain.usecases.RemoveItemFromCartUseCase
-import com.chaikasoft.app.domain.usecases.UpdateQuantityWithLimitUseCase
-import com.chaikasoft.app.domain.usecases.CreateCartUseCase
-import com.chaikasoft.app.domain.usecases.SoldCashOpUseCase
 import com.chaikasoft.app.domain.usecases.SoldCardOpUseCase
+import com.chaikasoft.app.domain.usecases.SoldCashOpUseCase
+import com.chaikasoft.app.domain.usecases.UpdateQuantityWithLimitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -68,7 +68,7 @@ class SaleViewModel @Inject constructor(
     fun onQuantityChange(itemId: Int, newQuantity: Int) = viewModelScope.launch {
         val success = updateQuantityWithLimit(cart, itemId, newQuantity)
         if (!success) {
-            // TODO: показать ошибку “Больше нет в наличии”
+            // CHK-206
         }
     }
 

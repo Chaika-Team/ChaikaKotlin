@@ -13,6 +13,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
 class SaveConductorLocallyUseCaseTest : FunSpec({
@@ -35,7 +36,11 @@ class SaveConductorLocallyUseCaseTest : FunSpec({
     beforeTest {
         conductorRepository = mockk()
         imageRepository = mockk()
-        useCase = SaveConductorLocallyUseCase(conductorRepository, imageRepository)
+        useCase = SaveConductorLocallyUseCase(
+            conductorRepository = conductorRepository,
+            imageRepository = imageRepository,
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
     }
 
     /**

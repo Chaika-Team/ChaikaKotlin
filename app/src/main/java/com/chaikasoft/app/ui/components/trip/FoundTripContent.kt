@@ -24,7 +24,7 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun foundTripContent(
+fun FoundTripContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain
 ) {
@@ -56,7 +56,7 @@ fun foundTripContent(
             )
         }
 
-        timeDetails(
+        TimeDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(timeDetails) {
@@ -68,7 +68,7 @@ fun foundTripContent(
                 }
         )
 
-        stationsDetails(
+        StationsDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
@@ -84,7 +84,7 @@ fun foundTripContent(
 @Preview
 @Composable
 fun foundTripContentPreview() {
-    foundTripContent(
+    FoundTripContent(
         modifier = Modifier,
         tripRecord = TripDomain(
             uuid = "12",

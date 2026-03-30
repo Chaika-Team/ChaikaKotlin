@@ -3,7 +3,6 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -12,11 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -32,7 +26,7 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun currentTripContent(
+fun CurrentTripContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     heightTotal: Dp = TripDimens.NewTripButtonHeight,
@@ -48,7 +42,7 @@ fun currentTripContent(
     ) {
         val (sideRect, trainId, timeDetails, stationsDetails, button) = createRefs()
 
-        sideRect(
+        SideRect(
             modifier = Modifier
                 .constrainAs(sideRect) {
                     start.linkTo(parent.start)
@@ -80,7 +74,7 @@ fun currentTripContent(
             )
         }
 
-        timeDetails(
+        TimeDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(timeDetails) {
@@ -92,7 +86,7 @@ fun currentTripContent(
                 }
         )
 
-        stationsDetails(
+        StationsDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
@@ -104,7 +98,7 @@ fun currentTripContent(
                 }
         )
 
-        finishCurrentTripButton(
+        FinishCurrentTripButton(
             modifier = Modifier.constrainAs(button) {
                 start.linkTo(sideRect.end, margin = 4.dp)
                 top.linkTo(stationsDetails.bottom)
@@ -121,7 +115,7 @@ fun currentTripContent(
 @Composable
 fun currentTripButtonPreview() {
     ChaikaTheme {
-        currentTripContent(
+        CurrentTripContent(
             modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",

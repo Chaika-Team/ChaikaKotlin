@@ -1,9 +1,9 @@
 package com.chaikasoft.app
 
-import com.kaspersky.kaspresso.runner.KaspressoRunner
-import dagger.hilt.android.testing.HiltTestApplication
 import android.app.Application
 import android.content.Context
+import com.kaspersky.kaspresso.runner.KaspressoRunner
+import dagger.hilt.android.testing.HiltTestApplication
 
 class KaspressoHiltTestRunner : KaspressoRunner() {
     override fun newApplication(

@@ -2,18 +2,9 @@ package com.chaikasoft.app.domain.usecases
 
 import com.chaikasoft.app.data.dataSource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.domain.common.RemoteResult
-import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.sealed.SearchTripsResult
 import javax.inject.Inject
-
-@Deprecated("No API for now")
-class SearchTripsByRouteUseCase @Inject constructor(
-    private val repository: ChaikaTripperRepositoryInterface
-) {
-    suspend operator fun invoke(date: String): List<TripDomain> =
-        repository.searchTripsByRoute(date)
-}
 
 class SearchTripsByStationsUseCase @Inject constructor(
     private val repository: ChaikaTripperRepositoryInterface

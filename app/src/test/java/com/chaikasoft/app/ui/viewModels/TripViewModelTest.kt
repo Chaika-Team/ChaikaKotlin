@@ -12,8 +12,8 @@ import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
 import com.chaikasoft.app.domain.usecases.SendShiftReportUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.ui.shift
-import com.chaikasoft.app.ui.station
 import com.chaikasoft.app.ui.state.TripsSearchUiState
+import com.chaikasoft.app.ui.station
 import com.chaikasoft.app.ui.trip
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

@@ -20,14 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import com.chaikasoft.app.domain.models.ConductorDomain
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.theme.ProfileDimens
-import com.chaikasoft.app.ui.theme.ProfileBackground
 import coil.compose.AsyncImage
+import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.models.ConductorDomain
+import com.chaikasoft.app.ui.theme.ProfileBackground
+import com.chaikasoft.app.ui.theme.ProfileDimens
 
 @Composable
 fun UserHeaderSection(

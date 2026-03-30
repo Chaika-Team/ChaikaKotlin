@@ -9,23 +9,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.TripDimens
-import androidx.compose.runtime.*
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
 @OptIn(FlowPreview::class)
 @Composable
-fun searchTripSurface(
-    height: Dp = TripDimens.SearchCardHeight,
+fun SearchTripSurface(
     modifier: Modifier = Modifier,
+    height: Dp = TripDimens.SearchCardHeight,
     onSearch: (date: String, startStation: String, finishStation: String) -> Unit = { _, _, _ -> },
     initialDateValue: String = "Сегодня",
     initialStartValue: String = "",
@@ -39,7 +44,6 @@ fun searchTripSurface(
         snapshotFlow { Triple(searchDate, searchStart, searchFinish) }
             .debounce(400)
             .collect { (d, s, f) -> onSearch(d, s, f) }
-
     }
 
     Box(
@@ -47,50 +51,49 @@ fun searchTripSurface(
             .fillMaxWidth()
             .height(height),
     ) {
-        surfaceBackground(
-            modifier = Modifier.matchParentSize()
-        )
+        SurfaceBackground(modifier = Modifier.matchParentSize())
 
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            searchTripBar(
+            SearchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                value = searchDate,
                 onQueryChange = { newText ->
                     searchDate = newText
                     Log.d("SearchTripSurface", "Date changed: $newText")
-                                },
-                placeholderText = "Дата отправления",
-                cornerRadius = TripDimens.SearchBarCornerRadius,
-                initialQuery = initialDateValue
+                },
+                placeholderText = stringResource(R.string.trip_search_date_placeholder),
+                cornerRadius = TripDimens.SearchBarCornerRadius
             )
 
-            searchTripBar(
+            SearchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                value = searchStart,
                 onQueryChange = { newText ->
                     searchStart = newText
                     Log.d("SearchTripSurface", "Start changed: $newText")
                 },
-                placeholderText = "Станция отправки",
+                placeholderText = stringResource(R.string.trip_search_from_placeholder),
                 cornerRadius = TripDimens.SearchBarCornerRadius
             )
 
-            searchTripBar(
+            SearchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                value = searchFinish,
                 onQueryChange = { newText ->
                     searchFinish = newText
                     Log.d("SearchTripSurface", "Finish changed: $newText")
                 },
-                placeholderText = "Станция прибытия",
+                placeholderText = stringResource(R.string.trip_search_to_placeholder),
                 cornerRadius = TripDimens.SearchBarCornerRadius
             )
         }
@@ -100,5 +103,5 @@ fun searchTripSurface(
 @Preview
 @Composable
 fun searchCardPreview() {
-    searchTripSurface(modifier = Modifier)
+    SearchTripSurface(modifier = Modifier)
 }

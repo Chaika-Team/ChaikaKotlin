@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,11 +22,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun retrySendConfirmBottomSheet(
+fun RetrySendConfirmBottomSheet(
     tripViewModel: TripViewModel
 ) {
     val confirmState by tripViewModel.retryConfirm.collectAsStateWithLifecycle()

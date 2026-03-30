@@ -19,20 +19,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.viewModels.FillViewModel
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.shadow
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.mappers.toUiModel
+import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ProductDimens
+import com.chaikasoft.app.ui.viewModels.ConductorViewModel
+import com.chaikasoft.app.ui.viewModels.FillViewModel
 
 @Composable
 fun TemplateConfirmView(

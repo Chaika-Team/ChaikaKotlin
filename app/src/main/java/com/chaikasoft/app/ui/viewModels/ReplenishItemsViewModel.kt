@@ -1,6 +1,5 @@
 package com.chaikasoft.app.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chaikasoft.app.domain.models.CartItemDomain

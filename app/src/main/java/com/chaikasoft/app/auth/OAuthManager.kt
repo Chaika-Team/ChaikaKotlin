@@ -111,9 +111,11 @@ open class OAuthManager
                             onTokenReceived(accessToken)
                         } else {
                             Log.e("OAuthManager", "Access token is missing")
+                            onTokenReceived("")
                         }
                     } else {
                         Log.e("OAuthManager", "Token exchange error: ${exception?.errorDescription}")
+                        onTokenReceived("")
                     }
                 }
             } else {
@@ -121,6 +123,7 @@ open class OAuthManager
                     "OAuthManager",
                     "Authorization error: ${ex?.errorDescription ?: "Response is null"}",
                 )
+                onTokenReceived("")
             }
         }
 

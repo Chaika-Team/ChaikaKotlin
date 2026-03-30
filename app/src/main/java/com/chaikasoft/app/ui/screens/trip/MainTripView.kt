@@ -15,18 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.chaikasoft.app.ui.components.trip.currentTripCard
-import com.chaikasoft.app.ui.components.trip.finishTripResultBottomSheet
-import com.chaikasoft.app.ui.components.trip.historyRecordCard
-import com.chaikasoft.app.ui.components.trip.historyToNowDivider
-import com.chaikasoft.app.ui.components.trip.newTripButton
-import com.chaikasoft.app.ui.components.trip.retrySendConfirmBottomSheet
-import com.chaikasoft.app.ui.components.trip.retrySendResultBottomSheet
+import com.chaikasoft.app.ui.components.trip.CurrentTripCard
+import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
+import com.chaikasoft.app.ui.components.trip.HistoryRecordCard
+import com.chaikasoft.app.ui.components.trip.HistoryToNowDivider
+import com.chaikasoft.app.ui.components.trip.NewTripButton
+import com.chaikasoft.app.ui.components.trip.RetrySendConfirmBottomSheet
+import com.chaikasoft.app.ui.components.trip.RetrySendResultBottomSheet
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @Composable
-fun mainTripView(
+fun MainTripView(
     viewModel: TripViewModel,
     navController: NavController,
 ) {
@@ -52,7 +52,7 @@ fun mainTripView(
                 .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 6.dp)
         ) {
             items(history) { shiftRecord ->
-                historyRecordCard(
+                HistoryRecordCard(
                     modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
                     tripRecord = shiftRecord.trip,
                     status = shiftRecord.status,
@@ -67,10 +67,10 @@ fun mainTripView(
             }
         }
 
-        historyToNowDivider()
+        HistoryToNowDivider()
 
         if (selectedTrip != null) {
-            currentTripCard(
+            CurrentTripCard(
                 tripRecord = selectedTrip!!,
                 onClick = { viewModel.finishCurrentTrip() },
                 modifier = Modifier
@@ -78,7 +78,7 @@ fun mainTripView(
                     .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 16.dp)
             )
         } else {
-            newTripButton(
+            NewTripButton(
                 onClick = { navController.navigate(Routes.TRIP_BY_NUMBER) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,15 +86,15 @@ fun mainTripView(
             )
         }
 
-        finishTripResultBottomSheet(
+        FinishTripResultBottomSheet(
             tripViewModel = viewModel,
             onDismissWithLogout = { }
         )
 
         // Retry confirmation dialog.
-        retrySendConfirmBottomSheet(tripViewModel = viewModel)
+        RetrySendConfirmBottomSheet(tripViewModel = viewModel)
 
         // Retry result dialog.
-        retrySendResultBottomSheet(tripViewModel = viewModel)
+        RetrySendResultBottomSheet(tripViewModel = viewModel)
     }
 }

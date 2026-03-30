@@ -1,6 +1,5 @@
 package com.chaikasoft.app.data.dataSource.apiService
 
-import com.chaikasoft.app.data.dataSource.dto.CarsResponseDto
 import com.chaikasoft.app.data.dataSource.dto.ProductInfoListResponseDto
 import com.chaikasoft.app.data.dataSource.dto.StationsResponseDto
 import com.chaikasoft.app.data.dataSource.dto.TemplateDetailResponseDto
@@ -8,7 +7,6 @@ import com.chaikasoft.app.data.dataSource.dto.TemplateListResponseDto
 import com.chaikasoft.app.data.dataSource.dto.TripDetailResponseDto
 import com.chaikasoft.app.data.dataSource.dto.TripsResponseDto
 import okhttp3.RequestBody
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -57,14 +55,6 @@ interface ChaikaSoftApiService {
         @Query("to") toCode: String? = null,
         @Query("date") date: String
     ): TripsResponseDto
-
-    /**
-     * Получить детали поездки по UUID.
-     */
-    @GET("/api/v1/route/trip/{trip_uuid}")
-    suspend fun getTripByUuid(
-        @Path("trip_uuid") uuid: String
-    ): TripDetailResponseDto
 
     // ==== эндпоинты ChaikaReports ====
 
