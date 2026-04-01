@@ -2,9 +2,8 @@ package com.chaikasoft.app.data.dataSource.repo
 
 import com.chaikasoft.app.data.dataSource.apiService.ChaikaSoftApiService
 import com.chaikasoft.app.data.dataSource.common.remoteCall
-import com.chaikasoft.app.data.dataSource.mappers.*
+import com.chaikasoft.app.data.dataSource.mappers.toDomain
 import com.chaikasoft.app.domain.common.RemoteResult
-import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import javax.inject.Inject
@@ -12,12 +11,6 @@ import javax.inject.Inject
 class ChaikaTripperRepository @Inject constructor(
     private val api: ChaikaSoftApiService
 ) : ChaikaTripperRepositoryInterface {
-
-
-    override suspend fun searchTripsByRoute(date: String): List<TripDomain> {
-        val body = api.findTrips(date = date)
-        return body.trips.orEmpty().map { it.toDomain() }
-    }
 
     override suspend fun searchTripsByStations(
         date: String,

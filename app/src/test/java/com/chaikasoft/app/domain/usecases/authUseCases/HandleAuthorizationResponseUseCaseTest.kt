@@ -17,6 +17,7 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
@@ -30,7 +31,11 @@ class HandleAuthorizationResponseUseCaseTest : FunSpec({
     beforeTest {
         oAuthManager = mockk()
         tokenManager = mockk()
-        useCase = HandleAuthorizationResponseUseCase(oAuthManager, tokenManager)
+        useCase = HandleAuthorizationResponseUseCase(
+            oAuthManager = oAuthManager,
+            tokenManager = tokenManager,
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
         intent = mockk()
     }
 

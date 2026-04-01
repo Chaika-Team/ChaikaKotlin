@@ -3,11 +3,12 @@ package com.chaikasoft.app.domain.usecases
 import androidx.paging.PagingData
 import com.chaikasoft.app.data.dataSource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
+import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.sealed.RefreshStationsResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -28,13 +29,14 @@ class GetPagedStationSuggestionsUseCase @Inject constructor(
 class RefreshStationsOnLaunchUseCase @Inject constructor(
     private val remoteRepo: ChaikaTripperRepositoryInterface,
     private val localRepo: RoomStationRepositoryInterface,
-    private val hasActiveShift: HasActiveShiftUseCase
+    private val hasActiveShift: HasActiveShiftUseCase,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
     companion object {
         private const val ALL_STATIONS_LIMIT = 100_000
     }
 
-    suspend operator fun invoke(): RefreshStationsResult = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(): RefreshStationsResult = withContext(ioDispatcher) {
         // 1) Бизнес-правило: во время активной смены не трогаем станции
         if (hasActiveShift()) return@withContext RefreshStationsResult.SkippedActiveShift
 

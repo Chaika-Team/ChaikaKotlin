@@ -32,7 +32,7 @@ object TripTime {
  * Текст длительности c отключённым font padding и обрезкой в 1 строку.
  */
 @Composable
-fun durationText(
+fun DurationText(
     text: String,
     modifier: Modifier = Modifier
 ) {
@@ -55,11 +55,11 @@ fun durationText(
 
 /** Удобная перегрузка — сразу час/минуты. */
 @Composable
-fun durationText(
+fun DurationText(
     hours: Int,
     minutes: Int,
     modifier: Modifier = Modifier
-) = durationText("$hours ч $minutes мин", modifier)
+) = DurationText("$hours ч $minutes мин", modifier)
 
 /**
  * Паддингованная «стрелка» (линия) — чтобы не дублировать .padding(...) вокруг Arrow().
@@ -69,7 +69,7 @@ fun arrowPadded(
     modifier: Modifier = Modifier,
     horizontalPadding: Dp = TripTime.ArrowHorizontalPadding,
     bottomPadding: Dp = TripTime.ArrowBottomPadding,
-    content: @Composable () -> Unit = { arrow() }
+    content: @Composable () -> Unit = { Arrow() }
 ) {
     Box(
         modifier = modifier.padding(

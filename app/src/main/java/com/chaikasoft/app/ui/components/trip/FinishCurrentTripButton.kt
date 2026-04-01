@@ -18,7 +18,7 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun finishCurrentTripButton(
+fun FinishCurrentTripButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

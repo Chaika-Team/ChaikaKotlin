@@ -1,13 +1,13 @@
 package com.chaikasoft.app.domain.usecases
 
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
+import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ProductInfoDomain
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -58,9 +58,7 @@ class FetchProductsFromServerUseCase @Inject constructor(
     private val repository: ChaikaSoftApiServiceRepositoryInterface,
 ) {
     suspend operator fun invoke(limit: Int = 100, offset: Int = 0): List<ProductInfoDomain> =
-        withContext(Dispatchers.IO) {
-            repository.fetchProducts(limit, offset)
-        }
+        repository.fetchProducts(limit, offset)
 }
 
 /**
@@ -74,9 +72,10 @@ class FetchProductsFromServerUseCase @Inject constructor(
 class SaveProductsLocallyUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface,
     private val localImageRepository: LocalImageRepositoryInterface,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(products: List<ProductInfoDomain>): List<ProductInfoDomain> =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             products.forEach { product ->
                 val imagePath = localImageRepository.saveImageFromUrl(
                     imageUrl = product.image,

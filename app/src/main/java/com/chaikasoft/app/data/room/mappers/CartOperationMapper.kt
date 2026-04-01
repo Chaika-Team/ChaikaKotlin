@@ -3,14 +3,11 @@ package com.chaikasoft.app.data.room.mappers
 import com.chaikasoft.app.data.room.entities.CartOperation
 import com.chaikasoft.app.data.room.relations.CartOperationWithConductor
 import com.chaikasoft.app.domain.models.CartOperationDomain
-import com.chaikasoft.app.domain.models.report.CartOperationReport
 import com.chaikasoft.app.domain.models.OperationTypeDomain
-import com.chaikasoft.app.domain.models.report.CartItemReport
-import java.text.SimpleDateFormat
+import com.chaikasoft.app.domain.models.report.CartOperationReport
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.Locale
 
 // Преобразование Int в OperationType с использованием ordinal
 fun Int.toOperationType(): OperationTypeDomain =

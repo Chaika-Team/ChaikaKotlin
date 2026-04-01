@@ -1,7 +1,6 @@
 package com.chaikasoft.app.data.dataSource.apiService
 
 import com.chaikasoft.app.data.dataSource.dto.ConductorDto
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
 

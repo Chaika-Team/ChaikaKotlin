@@ -2,14 +2,15 @@ package com.chaikasoft.app
 
 import android.app.Application
 import android.util.Log
+import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.sealed.RefreshStationsResult
+import com.chaikasoft.app.domain.usecases.RefreshStationsOnLaunchUseCase
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import com.chaikasoft.app.domain.usecases.RefreshStationsOnLaunchUseCase
+import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 
@@ -17,8 +18,11 @@ import kotlin.coroutines.cancellation.CancellationException
 class MyApp : Application() {
 
     @Inject lateinit var refreshStationsOnLaunch: RefreshStationsOnLaunchUseCase
+    @Inject @field:IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val appScope by lazy(LazyThreadSafetyMode.NONE) {
+        CoroutineScope(SupervisorJob() + ioDispatcher)
+    }
 
     override fun onCreate() {
         super.onCreate()

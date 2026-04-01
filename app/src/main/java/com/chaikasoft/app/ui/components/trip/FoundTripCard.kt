@@ -18,7 +18,7 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun foundTripCard(
+fun FoundTripCard(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     onClick: () -> Unit
@@ -41,7 +41,7 @@ fun foundTripCard(
             thickness = 1.dp,
             color = colorScheme.onSurfaceVariant
         )
-        foundTripContent(
+        FoundTripContent(
             modifier = Modifier.matchParentSize(),
             tripRecord = tripRecord,
         )
@@ -59,7 +59,7 @@ fun foundTripCard(
 @Preview
 @Composable
 fun foundPreview() {
-    foundTripCard(
+    FoundTripCard(
         modifier = Modifier,
         tripRecord = TripDomain(
             uuid = "12",

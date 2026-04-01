@@ -10,9 +10,7 @@ import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -64,11 +62,10 @@ class GetTemplatesUseCase @Inject constructor(
  * @param repository Репозиторий, реализующий ChaikaSoftApiServiceRepositoryInterface.
  */
 class GetTemplateDetailUseCase @Inject constructor(
-    private val repository: ChaikaSoftApiServiceRepositoryInterface
+    private val repository: ChaikaSoftApiServiceRepositoryInterface,
 ) {
-    suspend operator fun invoke(templateId: Int): TemplateDomain = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(templateId: Int): TemplateDomain =
         repository.fetchTemplateDetail(templateId)
-    }
 }
 /**
  * Use case для применения шаблона к корзине.

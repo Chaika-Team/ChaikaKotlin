@@ -15,19 +15,17 @@ import com.chaikasoft.app.ui.mappers.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -69,7 +67,6 @@ class ProductViewModel @Inject constructor(
             }
             .cachedIn(viewModelScope)
 
-
     fun onSearchChange(query: String) {
         _searchQuery.value = query
     }
@@ -97,28 +94,17 @@ class ProductViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun <T> Flow<T>.debounceExceptFirst(timeoutMillis: Long): Flow<T> = channelFlow {
         var isFirst = true
-        var latestValue: T? = null
-        var hasValue = false
-        var delayJob: Job? = null
 
         collectLatest { value ->
             if (isFirst) {
                 isFirst = false
                 send(value)
             } else {
-                delayJob?.cancel()
-                latestValue = value
-                hasValue = true
-                delayJob = launch {
-                    delay(timeoutMillis)
-                    if (hasValue) {
-                        send(latestValue as T)
-                        hasValue = false
-                    }
-                }
+                delay(timeoutMillis)
+                send(value)
             }
         }
-    }.buffer(Channel.RENDEZVOUS)
+    }
 
     private fun syncProductsInBackground() {
         syncJob?.cancel()

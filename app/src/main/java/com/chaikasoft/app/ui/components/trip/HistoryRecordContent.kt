@@ -29,7 +29,7 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun historyRecordContent(
+fun HistoryRecordContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     isError: Boolean = false,
@@ -44,7 +44,7 @@ fun historyRecordContent(
     ) {
         val (sideRect, trainId, timeDetails, stationsDetails) = createRefs()
 
-        sideRect(
+        SideRect(
             modifier = Modifier
                 .constrainAs(sideRect) {
                     start.linkTo(parent.start)
@@ -78,7 +78,7 @@ fun historyRecordContent(
             )
         }
 
-        timeDateDetails(
+        TimeDateDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(timeDetails) {
@@ -90,7 +90,7 @@ fun historyRecordContent(
                 }
         )
 
-        stationsDetails(
+        StationsDetails(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {

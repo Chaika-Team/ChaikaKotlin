@@ -4,8 +4,8 @@ package com.chaikasoft.app.ui.helpers
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
-import com.chaikasoft.app.util.generateLocalUuid
 import com.chaikasoft.app.util.durationHms
+import com.chaikasoft.app.util.generateLocalUuid
 import com.chaikasoft.app.util.localToRfc3339Utc
 import com.chaikasoft.app.util.normalizeForDisplay
 import java.time.LocalDateTime

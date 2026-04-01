@@ -214,10 +214,13 @@
     <string name="cart_product_remove_from_package">Удалить из пакета</string>
     <string name="cart_empty">Корзина пуста</string>
     <string name="cart_loading_error">Произошла ошибка при загрузке данных</string>
+    <string name="error_out_of_stock">Больше нет в наличии</string>
 
     <string name="template_confirm">ПОДТВЕРДИТЬ</string>
     <string name="template_confirm_title">Подтверждение пакета</string>
+    <string name="template_check_contents">Вы уверены?\nПожалуйста, проверьте содержимое пакета</string>
     <string name="template_cancel">ОТМЕНА</string>
+    <string name="error_no_conductor">Ошибка: проводник не выбран</string>
     
     <string name="empty_product_list">No products available</string>
     <string name="error_loading_products">Failed to load products</string>
@@ -265,7 +268,17 @@
     <string name="retry_send_confirm">Подтвердить</string>
     <string name="retry_send_cancel">Отмена</string>
 
+    <string name="dropdown_default_placeholder">Выберите…</string>
+    <string name="dropdown_min_chars_hint">Введите минимум 2 символа</string>
+    <string name="dropdown_searching">Поиск…</string>
+    <string name="dropdown_error_loading">Ошибка загрузки</string>
+    <string name="dropdown_nothing_found">Ничего не найдено</string>
+    <string name="dropdown_loading_more">Загружаем ещё…</string>
+
     <!-- Trip search -->
+    <string name="trip_search_date_placeholder">Дата отправления</string>
+    <string name="trip_search_from_placeholder">Станция отправки</string>
+    <string name="trip_search_to_placeholder">Станция прибытия</string>
     <string name="trip_search_empty">Нет поездок с такими станциями в указанный день</string>
 
     <!-- Logout process -->
@@ -279,3 +292,4 @@
 
 
 </resources>
+

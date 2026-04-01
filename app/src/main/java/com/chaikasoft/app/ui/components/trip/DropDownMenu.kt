@@ -1,15 +1,15 @@
 package com.chaikasoft.app.ui.components.trip
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -22,164 +22,196 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.boundsInWindow
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupPositionProvider
-import androidx.compose.ui.window.PopupProperties
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import kotlinx.coroutines.flow.Flow
-import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun dropDownMenu(
+fun DropDownMenu(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
     suggestionsFlow: Flow<PagingData<StationDomain>>,
     onItemSelected: (StationDomain) -> Unit,
-    placeholderText: String = "Выберите...",
+    placeholderText: String = "",
     cornerRadius: Dp = 10.dp
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val lazyItems = suggestionsFlow.collectAsLazyPagingItems()
-
-    // NEW: будем целенаправленно фокусить поле и открывать клавиатуру
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
-
-    // координаты якоря (оставляем как у тебя)
-    var anchorRect by remember { mutableStateOf(IntRect(0, 0, 0, 0)) }
-    var anchorWidthPx by remember { mutableStateOf(0) }
-    val density = LocalDensity.current
+    val menuState = mapMenuState(query = query, lazyItems = lazyItems)
+    val resolvedPlaceholder = placeholderText.ifBlank {
+        stringResource(R.string.dropdown_default_placeholder)
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { newExpanded ->
             expanded = newExpanded
             if (newExpanded) {
-                // при открытии меню сразу переводим фокус в поле + показываем ИМЕ
                 focusRequester.requestFocus()
                 keyboard?.show()
             }
         },
         modifier = modifier.fillMaxWidth()
     ) {
-        TextField(
+        DropDownSearchField(
             value = query,
-            onValueChange = { newQuery ->
-                if (newQuery != query) {
-                    onQueryChange(newQuery)
-                    if (newQuery.length >= 2) {
-                        expanded = true
-                        focusRequester.requestFocus()
-                        keyboard?.show()
-                    }
-                }
-            },
-            modifier = Modifier
+            query = query,
+            onQueryChange = onQueryChange,
+            placeholderText = resolvedPlaceholder,
+            cornerRadius = cornerRadius,
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            focusRequester = focusRequester,
+            onShowKeyboard = { keyboard?.show() },
+            fieldModifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
-                .onGloballyPositioned { coords ->
-                    val b = coords.boundsInWindow()
-                    anchorRect = IntRect(b.left.toInt(), b.top.toInt(), b.right.toInt(), b.bottom.toInt())
-                    anchorWidthPx = coords.size.width
-                },
-            singleLine = true,
-            placeholder = { Text(placeholderText) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            shape = RoundedCornerShape(cornerRadius),
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                errorIndicatorColor = Color.Transparent
-            )
         )
-    }
 
-    if (expanded) {
-        Popup(
-            properties = PopupProperties(
-                focusable = false,
-                clippingEnabled = false,
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            ),
+        ExposedDropdownMenu(
+            expanded = expanded,
             onDismissRequest = { expanded = false },
-            popupPositionProvider = remember(anchorRect) {
-                object : PopupPositionProvider {
-                    override fun calculatePosition(
-                        anchorBounds: IntRect,
-                        windowSize: IntSize,
-                        layoutDirection: LayoutDirection,
-                        popupContentSize: IntSize
-                    ): IntOffset {
-                        val x = anchorRect.left
-                        val y = anchorRect.bottom
-                        return IntOffset(
-                            x.coerceIn(0, max(0, windowSize.width - popupContentSize.width)),
-                            y.coerceIn(0, max(0, windowSize.height - popupContentSize.height))
-                        )
-                    }
+            modifier = Modifier.heightIn(max = 320.dp)
+        ) {
+            DropDownContent(
+                state = menuState,
+                lazyItems = lazyItems,
+                onQueryChange = onQueryChange,
+                onItemSelected = onItemSelected,
+                onClose = { expanded = false }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DropDownSearchField(
+    value: String,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    placeholderText: String,
+    cornerRadius: Dp,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    focusRequester: FocusRequester,
+    onShowKeyboard: () -> Unit,
+    fieldModifier: Modifier
+) {
+    TextField(
+        value = value,
+        onValueChange = { newQuery ->
+            if (newQuery != query) {
+                onQueryChange(newQuery)
+                if (newQuery.length >= 2) {
+                    onExpandedChange(true)
+                    focusRequester.requestFocus()
+                    onShowKeyboard()
                 }
             }
-        ) {
-            Surface(
-                shape = RoundedCornerShape(cornerRadius),
-                tonalElevation = 4.dp,
-                shadowElevation = 6.dp,
-                modifier = Modifier
-                    .width(with(density) { anchorWidthPx.toDp() })
-                    .heightIn(max = 320.dp)           // фикс. высота → не переворачиваемся
-            ) {
-                // Рендер списка + состояния загрузки
-                val isInitialLoading = lazyItems.loadState.refresh is LoadState.Loading && lazyItems.itemCount == 0
-                val isAppending = lazyItems.loadState.append is LoadState.Loading
+        },
+        modifier = fieldModifier,
+        singleLine = true,
+        placeholder = { Text(placeholderText) },
+        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+        shape = RoundedCornerShape(cornerRadius),
+        colors = ExposedDropdownMenuDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent
+        )
+    )
+}
 
-                when {
-                    query.length < 2 -> DropdownMenuItem(text = { Text("Введите минимум 2 символа") }, onClick = {})
-                    isInitialLoading -> DropdownMenuItem(text = { Text("Поиск...") }, onClick = {})
-                    lazyItems.loadState.refresh is LoadState.Error -> {
-                        val msg = (lazyItems.loadState.refresh as LoadState.Error).error.localizedMessage ?: "Ошибка загрузки"
-                        DropdownMenuItem(text = { Text(msg) }, onClick = {})
-                    }
-                    lazyItems.itemCount == 0 -> DropdownMenuItem(text = { Text("Ничего не найдено") }, onClick = {})
-                    else -> {
-                        LazyColumn {
-                            items(lazyItems.itemCount) { i ->
-                                lazyItems[i]?.let { station ->
-                                    DropdownMenuItem(
-                                        text = { Text(station.name) },
-                                        onClick = {
-                                            onQueryChange(station.name)
-                                            onItemSelected(station)
-                                            expanded = false
-                                        }
-                                    )
-                                }
-                            }
-                            if (isAppending) {
-                                item { DropdownMenuItem(text = { Text("Загружаем ещё...") }, onClick = {}) }
-                            }
+@Composable
+private fun DropDownContent(
+    state: MenuUiState,
+    lazyItems: LazyPagingItems<StationDomain>,
+    onQueryChange: (String) -> Unit,
+    onItemSelected: (StationDomain) -> Unit,
+    onClose: () -> Unit,
+) {
+    when (state) {
+        MenuUiState.NeedMoreCharacters ->
+            StatusMenuItem(stringResource(R.string.dropdown_min_chars_hint))
+
+        MenuUiState.InitialLoading ->
+            StatusMenuItem(stringResource(R.string.dropdown_searching))
+
+        is MenuUiState.RefreshError ->
+            StatusMenuItem(state.message ?: stringResource(R.string.dropdown_error_loading))
+
+        MenuUiState.Empty ->
+            StatusMenuItem(stringResource(R.string.dropdown_nothing_found))
+
+        is MenuUiState.Content -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 320.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                lazyItems.itemSnapshotList.items.forEach { station ->
+                    DropdownMenuItem(
+                        text = { Text(station.name) },
+                        onClick = {
+                            onQueryChange(station.name)
+                            onItemSelected(station)
+                            onClose()
                         }
-                    }
+                    )
+                }
+                if (state.isAppending) {
+                    StatusMenuItem(stringResource(R.string.dropdown_loading_more))
                 }
             }
         }
     }
 }
 
+@Composable
+private fun StatusMenuItem(text: String) {
+    DropdownMenuItem(text = { Text(text) }, onClick = {})
+}
+
+private sealed interface MenuUiState {
+    data object NeedMoreCharacters : MenuUiState
+    data object InitialLoading : MenuUiState
+    data class RefreshError(val message: String?) : MenuUiState
+    data object Empty : MenuUiState
+    data class Content(val isAppending: Boolean) : MenuUiState
+}
+
+private fun mapMenuState(
+    query: String,
+    lazyItems: LazyPagingItems<StationDomain>,
+): MenuUiState {
+    if (query.length < 2) return MenuUiState.NeedMoreCharacters
+
+    val refreshState = lazyItems.loadState.refresh
+    val isInitialLoading = refreshState is LoadState.Loading && lazyItems.itemCount == 0
+    if (isInitialLoading) return MenuUiState.InitialLoading
+
+    if (refreshState is LoadState.Error) {
+        return MenuUiState.RefreshError(refreshState.error.localizedMessage)
+    }
+
+    if (lazyItems.itemCount == 0) return MenuUiState.Empty
+
+    val isAppending = lazyItems.loadState.append is LoadState.Loading
+    return MenuUiState.Content(isAppending = isAppending)
+}

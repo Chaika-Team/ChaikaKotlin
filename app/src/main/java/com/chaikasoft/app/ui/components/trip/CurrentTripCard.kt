@@ -16,7 +16,7 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun currentTripCard(
+fun CurrentTripCard(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     heightTotal: Dp = TripDimens.NewTripButtonHeight,
@@ -33,7 +33,7 @@ fun currentTripCard(
             )
             .clip(MaterialTheme.shapes.medium)
     ) {
-        currentTripContent(
+        CurrentTripContent(
             modifier = Modifier.matchParentSize().dashedBorder(),
             tripRecord = tripRecord,
             heightTotal = heightTotal,
@@ -47,7 +47,7 @@ fun currentTripCard(
 @Composable
 fun currentTripCardPreview() {
     ChaikaTheme {
-        currentTripCard (
+        CurrentTripCard (
             modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import com.chaikasoft.app.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -24,11 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.TripDimens
 
 
 @Composable
-fun newTripButton(
+fun NewTripButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -69,5 +69,5 @@ fun newTripButton(
 @Preview
 @Composable
 fun newTripButtonPreview() {
-    newTripButton () {  }
+    NewTripButton () {  }
 }

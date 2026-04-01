@@ -11,9 +11,9 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Test
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import testUtils.TestMockServer
 import testUtils.TestServerHolder

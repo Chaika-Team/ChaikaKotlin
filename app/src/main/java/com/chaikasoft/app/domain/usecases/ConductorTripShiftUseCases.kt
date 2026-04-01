@@ -1,5 +1,6 @@
 package com.chaikasoft.app.domain.usecases
 
+import android.util.Log
 import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftReportsRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
@@ -18,7 +19,6 @@ import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
-import android.util.Log
 
 private const val SEND_TAG = "SHIFT-REPORT"
 

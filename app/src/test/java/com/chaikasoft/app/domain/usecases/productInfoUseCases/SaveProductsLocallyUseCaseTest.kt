@@ -11,6 +11,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
 class SaveProductsLocallyUseCaseTest : FunSpec({
@@ -38,7 +39,11 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
     beforeTest {
         productRepository = mockk()
         imageRepository = mockk()
-        useCase = SaveProductsLocallyUseCase(productRepository, imageRepository)
+        useCase = SaveProductsLocallyUseCase(
+            productInfoRepository = productRepository,
+            localImageRepository = imageRepository,
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
     }
 
     /**

@@ -1,7 +1,10 @@
 // data/room/entities/StationEntity.kt
 package com.chaikasoft.app.data.room.entities
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "stations",

@@ -10,19 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
-import com.chaikasoft.app.ui.theme.TripDimens
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
+import com.chaikasoft.app.ui.theme.TripDimens
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(FlowPreview::class)
 @Composable
-fun searchTripSurfaceDropdown(
-    searchDate: String,
-    onSearchDateChange: (String) -> Unit,
+fun SearchTripSurfaceDropdown(
+    searchDateDisplay: String,
+    onSearchDateClick: () -> Unit,
 
     fromQuery: String,
     onFromQueryChange: (String) -> Unit,
@@ -43,26 +45,26 @@ fun searchTripSurfaceDropdown(
             .fillMaxWidth()
             .height(height),
     ) {
-        surfaceBackground(
-            modifier = Modifier.matchParentSize()
-        )
+        SurfaceBackground(modifier = Modifier.matchParentSize())
 
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            searchTripBar(
+            SearchTripBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
-                onQueryChange = onSearchDateChange,
-                placeholderText = "Дата отправления",
+                value = searchDateDisplay,
+                onQueryChange = {},
+                placeholderText = stringResource(R.string.trip_search_date_placeholder),
                 cornerRadius = TripDimens.SearchBarCornerRadius,
-                initialQuery = searchDate
+                readOnly = true,
+                onClick = onSearchDateClick
             )
 
-            dropDownMenu(
+            DropDownMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -72,11 +74,11 @@ fun searchTripSurfaceDropdown(
                 onItemSelected = { station ->
                     onStartStationChange(station)
                 },
-                placeholderText = "Станция отправки",
+                placeholderText = stringResource(R.string.trip_search_from_placeholder),
                 cornerRadius = TripDimens.SearchBarCornerRadius
             )
 
-            dropDownMenu(
+            DropDownMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp),
@@ -86,7 +88,7 @@ fun searchTripSurfaceDropdown(
                 onItemSelected = { station ->
                     onFinishStationChange(station)
                 },
-                placeholderText = "Станция прибытия",
+                placeholderText = stringResource(R.string.trip_search_to_placeholder),
                 cornerRadius = TripDimens.SearchBarCornerRadius
             )
         }

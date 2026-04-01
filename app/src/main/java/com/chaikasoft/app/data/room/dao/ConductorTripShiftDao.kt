@@ -1,6 +1,11 @@
 package com.chaikasoft.app.data.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import com.chaikasoft.app.data.room.entities.ConductorTripShift
 import com.chaikasoft.app.data.room.relations.ConductorTripShiftWithStations
 import kotlinx.coroutines.flow.Flow

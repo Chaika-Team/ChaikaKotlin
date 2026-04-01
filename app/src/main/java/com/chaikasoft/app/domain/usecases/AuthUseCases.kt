@@ -5,9 +5,10 @@ import com.chaikasoft.app.auth.OAuthManager
 import com.chaikasoft.app.data.crypto.EncryptedTokenManagerInterface
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
+import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.domain.sealed.LogoutResult
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -61,6 +62,7 @@ class HandleAuthorizationResponseUseCase
 @Inject constructor(
     private val oAuthManager: OAuthManager,
     private val tokenManager: EncryptedTokenManagerInterface,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(intent: Intent): String {
         // 1) Получаем токен из OAuth асинхронно, без диска/сети здесь
@@ -74,7 +76,7 @@ class HandleAuthorizationResponseUseCase
         }
 
         // 2) Сохраняем токен на IO
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             tokenManager.saveToken(token)
             token
         }
@@ -89,9 +91,10 @@ class GetAccessTokenUseCase
     @Inject
     constructor(
         private val tokenManager: EncryptedTokenManagerInterface,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) {
         suspend operator fun invoke(): String? =
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 tokenManager.getToken()
             }
     }
@@ -106,9 +109,10 @@ class LogoutUseCase
         private val tokenManager: EncryptedTokenManagerInterface,
         private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
         private val imageRepository: LocalImageRepositoryInterface,
-        private val hasActiveShiftUseCase: HasActiveShiftUseCase
+        private val hasActiveShiftUseCase: HasActiveShiftUseCase,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) {
-        suspend operator fun invoke(): LogoutResult = withContext(Dispatchers.IO) {
+        suspend operator fun invoke(): LogoutResult = withContext(ioDispatcher) {
             try {
                 if (hasActiveShiftUseCase()){
                     return@withContext LogoutResult.ActiveShiftExists

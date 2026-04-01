@@ -18,7 +18,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.util.parseTripDetails
 
 @Composable
-fun timeDetails(
+fun TimeDetails(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain
 ) {
@@ -56,7 +56,7 @@ fun timeDetails(
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            durationText(tripDetails.durationHours, tripDetails.durationMinutes)
+            DurationText(tripDetails.durationHours, tripDetails.durationMinutes)
         }
 
         Box(
@@ -92,7 +92,7 @@ fun timeDetails(
 @Composable
 fun timeDetailsPreview() {
     ChaikaTheme {
-        timeDetails(
+        TimeDetails(
             modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",

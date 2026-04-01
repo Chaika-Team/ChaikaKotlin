@@ -14,7 +14,7 @@ import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun historyRecordCard(
+fun HistoryRecordCard(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     status: TripShiftStatusDomain,
@@ -41,7 +41,7 @@ fun historyRecordCard(
                 if (isError) onRetrySend() else onNavigate()
             }
     ) {
-        historyRecordContent(
+        HistoryRecordContent(
             modifier = Modifier
                 .matchParentSize()
                 .dashedBorder(color = borderColor),

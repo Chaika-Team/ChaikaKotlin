@@ -19,7 +19,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 
 
 @Composable
-fun stationsDetails(
+fun StationsDetails(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain
 ) {

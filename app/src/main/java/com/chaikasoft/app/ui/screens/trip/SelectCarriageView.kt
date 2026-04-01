@@ -1,11 +1,20 @@
 package com.chaikasoft.app.ui.screens.trip
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -14,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.components.trip.selectedTripRecordSurface
+import com.chaikasoft.app.ui.components.trip.SelectedTripRecordSurface
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.TripDimens
@@ -22,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.ui.viewModels.TripViewModel
 
 @Composable
-fun selectCarriageView(
+fun SelectCarriageView(
     viewModel: TripViewModel,
     navController: NavController
 ) {
@@ -40,7 +49,7 @@ fun selectCarriageView(
             }
             else -> {
                 Column(modifier = Modifier.weight(1f)) {
-                    selectedTripRecordSurface(
+                    SelectedTripRecordSurface(
                         height = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL * 2,
                         tripRecord = selectedTrip!!
                     )
