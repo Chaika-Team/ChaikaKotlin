@@ -16,8 +16,11 @@ object AppErrorUiMapper {
         val retryable = error.isRetryable()
         val messageRes = when (error) {
             AppError.Network, AppError.Timeout -> R.string.error_no_connection
+
             is AppError.Unauthorized -> R.string.error_unauthorized
+
             is AppError.Http -> R.string.error_try_later
+
             is AppError.Serialization,
             is AppError.Unknown -> R.string.error_try_later
         }

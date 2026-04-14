@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels.delegates
+package com.chaikasoft.app.ui.viewmodels.delegates
 
 import android.util.Log
 import androidx.annotation.StringRes
@@ -10,13 +10,13 @@ import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class ShiftDelegate(
     private val startShiftUseCase: StartShiftUseCase,
@@ -30,12 +30,12 @@ class ShiftDelegate(
     private val _selectedTrip = MutableStateFlow<TripDomain?>(null)
     val selectedTrip: StateFlow<TripDomain?> = _selectedTrip.asStateFlow()
 
-    private val _selectedCarriage = MutableStateFlow<CarriageDomain?>(null)
+    private val selectedCarriage = MutableStateFlow<CarriageDomain?>(null)
 
     private val _shiftStatus = MutableStateFlow<Boolean?>(null)
     val shiftStatus: StateFlow<Boolean?> = _shiftStatus.asStateFlow()
 
-    private val _activeShift = MutableStateFlow<ConductorTripShiftDomain?>(null)
+    private val activeShift = MutableStateFlow<ConductorTripShiftDomain?>(null)
 
     private val _finishDialog = MutableStateFlow<FinishTripDialog?>(null)
     val finishDialog: StateFlow<FinishTripDialog?> = _finishDialog.asStateFlow()
@@ -45,32 +45,30 @@ class ShiftDelegate(
         Log.d(TAG, "Selected trip: ${trip.uuid}")
     }
 
-    suspend fun startShift(trip: TripDomain, carriage: CarriageDomain): Boolean {
-        return try {
-            _selectedCarriage.value = carriage
-            val ok = startShiftUseCase(trip, carriage)
-            _shiftStatus.value = ok
-            Log.d(TAG, if (ok) "Shift started" else "Shift start failed")
-            ok
-        } catch (e: IllegalArgumentException) {
-            _shiftStatus.value = false
-            Log.e(TAG, "Failed to start shift", e)
-            false
-        }
+    suspend fun startShift(trip: TripDomain, carriage: CarriageDomain): Boolean = try {
+        selectedCarriage.value = carriage
+        val ok = startShiftUseCase(trip, carriage)
+        _shiftStatus.value = ok
+        Log.d(TAG, if (ok) "Shift started" else "Shift start failed")
+        ok
+    } catch (e: IllegalArgumentException) {
+        _shiftStatus.value = false
+        Log.e(TAG, "Failed to start shift", e)
+        false
     }
 
     fun checkActiveShift() {
         scope.launch {
             try {
                 val shift = getActiveShiftUseCase().first()
-                _activeShift.value = shift
+                activeShift.value = shift
                 if (shift == null) {
                     _selectedTrip.value = null
-                    _selectedCarriage.value = null
+                    selectedCarriage.value = null
                     _shiftStatus.value = false
                 } else {
                     _selectedTrip.value = shift.trip
-                    _selectedCarriage.value = shift.activeCarriage
+                    selectedCarriage.value = shift.activeCarriage
                     _shiftStatus.value = true
                 }
                 Log.d(TAG, if (shift != null) "Active shift found" else "No active shift")
@@ -83,14 +81,14 @@ class ShiftDelegate(
     fun finishCurrentTrip() {
         val trip = _selectedTrip.value ?: return
         _selectedTrip.value = null
-        _selectedCarriage.value = null
+        selectedCarriage.value = null
 
         scope.launch {
             try {
                 val msg = when (completeShiftUseCase(trip.uuid)) {
-                    is SendReportResult.Success          -> R.string.trip_finish_success
-                    is SendReportResult.AlreadySent      -> R.string.trip_finish_already_sent
-                    is SendReportResult.MissingReport    -> R.string.trip_finish_missing_report
+                    is SendReportResult.Success -> R.string.trip_finish_success
+                    is SendReportResult.AlreadySent -> R.string.trip_finish_already_sent
+                    is SendReportResult.MissingReport -> R.string.trip_finish_missing_report
                     is SendReportResult.TemporaryFailure -> R.string.trip_finish_temp_failure
                     is SendReportResult.PermanentFailure -> R.string.trip_finish_perm_failure
                 }
@@ -102,7 +100,11 @@ class ShiftDelegate(
         }
     }
 
-    fun dismissFinishDialog() { _finishDialog.value = null }
+    fun dismissFinishDialog() {
+        _finishDialog.value = null
+    }
 
-    private companion object { const val TAG = "ShiftDelegate" }
+    private companion object {
+        const val TAG = "ShiftDelegate"
+    }
 }

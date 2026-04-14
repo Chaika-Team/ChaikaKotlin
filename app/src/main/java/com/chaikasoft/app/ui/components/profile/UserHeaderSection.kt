@@ -30,10 +30,7 @@ import com.chaikasoft.app.ui.theme.ProfileBackground
 import com.chaikasoft.app.ui.theme.ProfileDimens
 
 @Composable
-fun UserHeaderSection(
-    conductor: ConductorDomain?,
-    onClick: () -> Unit
-) {
+fun UserHeaderSection(conductor: ConductorDomain?, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

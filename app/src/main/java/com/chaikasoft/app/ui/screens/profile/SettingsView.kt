@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +54,7 @@ fun SettingsView() {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -79,7 +78,7 @@ fun SettingsView() {
                         onCheckedChange = { notificationsEnabled = it }
                     )
                 }
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -104,7 +103,7 @@ fun SettingsView() {
                         enabled = notificationsEnabled
                     )
                 }
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,7 +130,7 @@ fun SettingsView() {
                 }
             }
         }
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -147,7 +146,7 @@ fun SettingsView() {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -173,7 +172,7 @@ fun SettingsView() {
                 }
             }
         }
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -189,7 +188,7 @@ fun SettingsView() {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

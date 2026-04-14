@@ -7,6 +7,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
     id("jacoco")
     id("de.mannodermaus.android-junit5") version "1.12.0.0"
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -41,7 +42,11 @@ android {
         getByName("debug") {
             isMinifyEnabled = false
             buildConfigField("String", "CLIENT_ID", "\"${System.getenv("REL_ZITADEL_TOKEN")}\"")
-            buildConfigField("String", "CHAIKA_SOFT_URL", "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\"")
+            buildConfigField(
+                "String",
+                "CHAIKA_SOFT_URL",
+                "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\""
+            )
             buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("REL_ZITADEL_URL")}\"")
         }
 
@@ -51,10 +56,14 @@ android {
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
             buildConfigField("String", "CLIENT_ID", "\"${System.getenv("REL_ZITADEL_TOKEN")}\"")
-            buildConfigField("String", "CHAIKA_SOFT_URL", "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\"")
+            buildConfigField(
+                "String",
+                "CHAIKA_SOFT_URL",
+                "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\""
+            )
             buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("REL_ZITADEL_URL")}\"")
             signingConfig = signingConfigs.getByName("debug")
         }
@@ -65,7 +74,11 @@ android {
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-STAGING"
             buildConfigField("String", "CLIENT_ID", "\"${System.getenv("STAGE_ZITADEL_TOKEN")}\"")
-            buildConfigField("String", "CHAIKA_SOFT_URL", "\"${System.getenv("STAGE_CHAIKA_SOFT_URL")}\"")
+            buildConfigField(
+                "String",
+                "CHAIKA_SOFT_URL",
+                "\"${System.getenv("STAGE_CHAIKA_SOFT_URL")}\""
+            )
             buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("STAGE_ZITADEL_URL")}\"")
         }
     }
@@ -136,7 +149,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*Test*.*",
             "android/**/*.*",
             "**/di/**",
-            "**/Application.*",
+            "**/Application.*"
         )
 
     val mainSrc = "$projectDir/src/main/java"
@@ -145,15 +158,15 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     classDirectories.setFrom(
         fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
             exclude(fileFilter)
-        },
+        }
     )
     executionData.setFrom(
         fileTree(layout.buildDirectory.dir("jacoco")) {
             include(
                 "testStageUnitTest.exec",
-                "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec",
+                "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec"
             )
-        },
+        }
     )
 }
 
@@ -246,7 +259,6 @@ dependencies {
     testImplementation("androidx.paging:paging-testing:3.3.6")
     androidTestImplementation("androidx.paging:paging-testing:3.3.6")
 
-
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
     val lifecycleVersion = "2.7.0"
@@ -263,7 +275,8 @@ dependencies {
 
     // Базовые зависимости Compose (обязательные)
     implementation("androidx.activity:activity-compose:1.8.0")
-    implementation(platform("androidx.compose:compose-bom:2024.05.00")) // BOM для согласованных версий
+    // BOM для согласованных версий
+    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
 
     // Material 3 (основная тема)
     implementation("androidx.compose.material3:material3")
@@ -295,4 +308,27 @@ junitPlatform {
     instrumentationTests {
         includeExtensions.set(true)
     }
+}
+
+ktlint {
+    android.set(true)
+    verbose.set(true)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    enableExperimentalRules.set(false)
+
+    filter {
+        exclude { it.file.path.contains("generated") }
+        exclude { it.file.path.contains("src/androidTest") }
+        exclude { it.file.path.contains("src/test") }
+    }
+
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(rootProject.tasks.named("addKtlintFormatGitPreCommitHook"))
 }

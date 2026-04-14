@@ -11,6 +11,6 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class CartIdReport(
-    @Json(name = "employee_id")    val employeeId: String,
+    @Json(name = "employee_id") val employeeId: String,
     @Json(name = "operation_time") val operationTime: String
 )

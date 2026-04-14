@@ -2,10 +2,11 @@ package com.chaikasoft.app.apiUseCases
 
 import androidx.paging.PagingSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
-import com.chaikasoft.app.data.dataSource.repo.TemplatePagingSource
+import com.chaikasoft.app.data.datasource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.TemplatePagingSource
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import org.junit.After
@@ -17,7 +18,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import testUtils.TestMockServer
 import testUtils.TestServerHolder
-import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)

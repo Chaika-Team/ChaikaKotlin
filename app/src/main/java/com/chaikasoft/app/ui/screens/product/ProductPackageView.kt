@@ -28,15 +28,15 @@ import com.chaikasoft.app.ui.components.product.ProductComponent
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ProductDimens
-import com.chaikasoft.app.ui.viewModels.PackageViewModel
-import com.chaikasoft.app.ui.viewModels.SaleViewModel
+import com.chaikasoft.app.ui.viewmodels.PackageViewModel
+import com.chaikasoft.app.ui.viewmodels.SaleViewModel
 import com.chaikasoft.app.util.formatPriceOnly
 
 @Composable
 fun ProductPackageView(
     packageViewModel: PackageViewModel,
     saleViewModel: SaleViewModel,
-    navController: NavHostController,
+    navController: NavHostController
 ) {
     val packageItems by packageViewModel.productsFlow.collectAsStateWithLifecycle()
     val cartItems by saleViewModel.items.collectAsStateWithLifecycle()
@@ -65,6 +65,7 @@ fun ProductPackageView(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+
             else -> {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -94,10 +95,16 @@ fun ProductPackageView(
                                 saleViewModel.onAdd(item.toCartItemDomain())
                             },
                             onQuantityIncrease = {
-                                saleViewModel.onQuantityChange(item.id, (cartItem?.quantity ?: 1) + 1)
+                                saleViewModel.onQuantityChange(
+                                    item.id,
+                                    (cartItem?.quantity ?: 1) + 1
+                                )
                             },
                             onQuantityDecrease = {
-                                saleViewModel.onQuantityChange(item.id, (cartItem?.quantity ?: 1) - 1)
+                                saleViewModel.onQuantityChange(
+                                    item.id,
+                                    (cartItem?.quantity ?: 1) - 1
+                                )
                             },
                             showQuantityBadge = true,
                             quantityToShow = quantityToShow

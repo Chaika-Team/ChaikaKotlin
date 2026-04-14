@@ -32,7 +32,7 @@ fun QuantitySelector(
     modifier: Modifier = Modifier,
     colorBack: Color = MaterialTheme.colorScheme.primary,
     colorText: Color = MaterialTheme.colorScheme.background,
-    cornerRadius: Dp = QuantitySelectorHeight // Добавляем параметр для радиуса скругления
+    cornerRadius: Dp = QuantitySelectorHeight
 ) {
     Row(
         modifier = modifier
@@ -44,7 +44,7 @@ fun QuantitySelector(
             )
             .clip(RoundedCornerShape(cornerRadius)), // Обрезаем контент по тем же скруглениям
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
             onClick = onDecrease,

@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.usecases.GetAvailableQuantityUseCase

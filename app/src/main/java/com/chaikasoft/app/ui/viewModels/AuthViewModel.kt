@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import android.content.Intent
 import android.util.Log
@@ -12,13 +12,13 @@ import com.chaikasoft.app.domain.usecases.GetAccessTokenUseCase
 import com.chaikasoft.app.domain.usecases.LogoutUseCase
 import com.chaikasoft.app.domain.usecases.StartAuthorizationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 // ---- Машина состояний авторизации ----
 sealed interface AuthState {
@@ -41,7 +41,7 @@ class AuthViewModel @Inject constructor(
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val startAuthorizationUseCase: StartAuthorizationUseCase,
+    private val startAuthorizationUseCase: StartAuthorizationUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -79,7 +79,9 @@ class AuthViewModel @Inject constructor(
                 if (e is CancellationException) throw e
                 // best-effort очистка, не эскалируем ошибку этой операции
                 runCatching { logoutUseCase() }
-                    .onFailure { Log.w("AuthViewModel", "logoutUseCase after auth failure failed", it) }
+                    .onFailure {
+                        Log.w("AuthViewModel", "logoutUseCase after auth failure failed", it)
+                    }
 
                 setState(AuthState.Unauthenticated)
                 _uiState.update { it.copy(errorMessage = e.message ?: "Authorization failed") }
@@ -105,7 +107,9 @@ class AuthViewModel @Inject constructor(
             }.onFailure { e ->
                 if (e is CancellationException) throw e
                 setState(AuthState.Unauthenticated)
-                _uiState.update { it.copy(errorMessage = e.message ?: "Authorization check failed") }
+                _uiState.update {
+                    it.copy(errorMessage = e.message ?: "Authorization check failed")
+                }
                 Log.e("AuthViewModel", "checkAuthStatus failed", e)
             }
         }
@@ -129,6 +133,7 @@ class AuthViewModel @Inject constructor(
                         }
                         Log.i("AuthViewModel", "Logout success -> Unauthenticated")
                     }
+
                     ActiveShiftExists -> {
                         _uiState.update {
                             it.copy(
@@ -138,6 +143,7 @@ class AuthViewModel @Inject constructor(
                         }
                         Log.i("AuthViewModel", "Logout blocked: active shift exists")
                     }
+
                     is Failure -> {
                         _uiState.update {
                             it.copy(

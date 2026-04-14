@@ -7,8 +7,7 @@ enum class TripShiftStatusDomain(val code: Int) {
     SENT(2);
 
     companion object {
-        fun withCode(code: Int): TripShiftStatusDomain =
-            entries.firstOrNull { it.code == code }
-                ?: throw IllegalArgumentException("Unknown TripShiftStatusDomain code=$code")
+        fun withCode(code: Int): TripShiftStatusDomain = entries.firstOrNull { it.code == code }
+            ?: throw IllegalArgumentException("Unknown TripShiftStatusDomain code=$code")
     }
 }

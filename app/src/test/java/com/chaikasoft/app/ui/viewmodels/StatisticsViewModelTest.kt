@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import app.cash.turbine.test
 import com.chaikasoft.app.domain.models.OperationTypeDomain

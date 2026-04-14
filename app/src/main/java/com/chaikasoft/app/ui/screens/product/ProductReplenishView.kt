@@ -1,6 +1,5 @@
 package com.chaikasoft.app.ui.screens.product
 
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,10 +29,11 @@ import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.template.CheckDialog
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.viewModels.PackageViewModel
-import com.chaikasoft.app.ui.viewModels.ReplenishItemsViewModel
-import com.chaikasoft.app.ui.viewModels.ReplenishViewModel
+import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
+import com.chaikasoft.app.ui.viewmodels.PackageViewModel
+import com.chaikasoft.app.ui.viewmodels.ReplenishItemsViewModel
+import com.chaikasoft.app.ui.viewmodels.ReplenishViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductReplenishView(
@@ -41,7 +41,7 @@ fun ProductReplenishView(
     replenishViewModel: ReplenishViewModel,
     replenishItemsViewModel: ReplenishItemsViewModel,
     packageViewModel: PackageViewModel,
-    navController: NavHostController,
+    navController: NavHostController
 ) {
     val conductor = conductorViewModel.conductor.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
@@ -54,7 +54,7 @@ fun ProductReplenishView(
     val checkDialogText = stringResource(id = R.string.template_check_contents)
     val errorNoConductorMsg = stringResource(id = R.string.error_no_conductor)
 
-    Scaffold (
+    Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -98,7 +98,8 @@ fun ProductReplenishView(
                                     onRemove = {
                                         replenishViewModel.onRemove(product.id)
                                     },
-                                    packageQuantity = productQuantities[product.id] ?: product.quantity
+                                    packageQuantity =
+                                    productQuantities[product.id] ?: product.quantity
                                 )
                             }
                         }

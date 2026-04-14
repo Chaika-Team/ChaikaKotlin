@@ -6,7 +6,4 @@ package com.chaikasoft.app.domain.models.trip
  * @param carNumber Номер вагона.
  * @param classType Тип или класс вагона.
  */
-data class CarriageDomain(
-    val carNumber: String,
-    val classType: String
-)
+data class CarriageDomain(val carNumber: String, val classType: String)

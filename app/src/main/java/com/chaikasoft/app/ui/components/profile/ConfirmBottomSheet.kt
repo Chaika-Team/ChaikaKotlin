@@ -29,9 +29,11 @@ fun ConfirmBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             Text(text = title, modifier = Modifier.padding(bottom = 8.dp))
             Text(text = message, modifier = Modifier.padding(bottom = 16.dp))
             // actions

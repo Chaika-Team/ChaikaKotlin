@@ -49,8 +49,8 @@ dependencies {
     implementation(
         project(
             path = ":app",
-            configuration = "debugRuntimeElements",
-        ),
+            configuration = "debugRuntimeElements"
+        )
     )
 
     // Hilt

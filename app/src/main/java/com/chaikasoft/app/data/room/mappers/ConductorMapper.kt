@@ -8,27 +8,25 @@ import com.chaikasoft.app.domain.models.ConductorDomain
  *
  * @return Доменная модель `ConductorDomain`.
  */
-fun Conductor.toDomain(): ConductorDomain =
-    ConductorDomain(
-        id = this.id,
-        name = this.name,
-        familyName = this.familyName,
-        givenName = this.givenName,
-        employeeID = this.employeeID,
-        image = this.image,
-    )
+fun Conductor.toDomain(): ConductorDomain = ConductorDomain(
+    id = this.id,
+    name = this.name,
+    familyName = this.familyName,
+    givenName = this.givenName,
+    employeeID = this.employeeID,
+    image = this.image
+)
 
 /**
  * Преобразует доменную модель проводника в сущность для базы данных.
  *
  * @return Сущность `Conductor`.
  */
-fun ConductorDomain.toEntity(): Conductor =
-    Conductor(
-        id = this.id ?: 0, // Если id null, используем 0 (Room сгенерирует новый)
-        name = this.name,
-        familyName = this.familyName,
-        givenName = this.givenName,
-        employeeID = this.employeeID,
-        image = this.image,
-    )
+fun ConductorDomain.toEntity(): Conductor = Conductor(
+    id = this.id ?: 0, // Если id null, используем 0 (Room сгенерирует новый)
+    name = this.name,
+    familyName = this.familyName,
+    givenName = this.givenName,
+    employeeID = this.employeeID,
+    image = this.image
+)

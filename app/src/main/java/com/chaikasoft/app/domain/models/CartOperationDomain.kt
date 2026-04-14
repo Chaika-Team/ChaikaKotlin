@@ -6,10 +6,7 @@ package com.chaikasoft.app.domain.models
  * @param operationTypeDomain Тип операции (ADD, SOLD_CASH, SOLD_CART, REPLENISH).
  * @param conductorId Идентификатор проводника, связанного с операцией.
  */
-data class CartOperationDomain(
-    val operationTypeDomain: OperationTypeDomain,
-    val conductorId: Int,
-)
+data class CartOperationDomain(val operationTypeDomain: OperationTypeDomain, val conductorId: Int)
 
 /**
  * Перечисление типов операций с корзиной.
@@ -20,5 +17,8 @@ data class CartOperationDomain(
  * REPLENISH - Пополнение.
  */
 enum class OperationTypeDomain {
-    ADD, SOLD_CASH, SOLD_CART, REPLENISH
+    ADD,
+    SOLD_CASH,
+    SOLD_CART,
+    REPLENISH
 }

@@ -36,10 +36,10 @@ data class ConductorTripShift(
     val arrival: String,
     val duration: String,
     @ColumnInfo(name = "from_code") val fromCode: String,
-    @ColumnInfo(name = "to_code")   val toCode: String,
+    @ColumnInfo(name = "to_code") val toCode: String,
     @Embedded(prefix = "carriage_") val activeCarriage: CarriageDomain?,
-    val status: Int,          // TripShiftStatusDomain.ordinal
-    val report: String?,      // JSON отчёта (или null)
+    val status: Int, // TripShiftStatusDomain.ordinal
+    val report: String?, // JSON отчёта (или null)
     val createdAt: Long,
     val updatedAt: Long?
 )

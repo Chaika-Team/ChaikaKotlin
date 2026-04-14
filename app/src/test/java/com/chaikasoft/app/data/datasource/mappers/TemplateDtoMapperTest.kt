@@ -1,7 +1,7 @@
-package com.chaikasoft.app.data.dataSource.mappers
+package com.chaikasoft.app.data.datasource.mappers
 
-import com.chaikasoft.app.data.dataSource.dto.TemplateContentDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateDto
+import com.chaikasoft.app.data.datasource.dto.TemplateContentDto
+import com.chaikasoft.app.data.datasource.dto.TemplateDto
 import com.chaikasoft.app.domain.models.TemplateContentDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 import io.kotest.core.spec.style.FunSpec

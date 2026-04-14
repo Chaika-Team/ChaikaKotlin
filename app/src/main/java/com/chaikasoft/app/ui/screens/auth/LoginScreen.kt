@@ -27,13 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.LoginDimens
-import com.chaikasoft.app.ui.viewModels.AuthState
-import com.chaikasoft.app.ui.viewModels.AuthViewModel
+import com.chaikasoft.app.ui.viewmodels.AuthState
+import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 
 @Composable
-fun LoginScreen(
-    viewModel: AuthViewModel
-) {
+fun LoginScreen(viewModel: AuthViewModel) {
     val ui by viewModel.uiState.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     val isBusy = ui.state is AuthState.Checking

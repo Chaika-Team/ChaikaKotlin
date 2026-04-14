@@ -1,6 +1,6 @@
 package com.chaikasoft.app.domain.usecases.cartUseCases
 
-import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
+import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.domain.usecases.GetAvailableQuantityUseCase
 import com.chaikasoft.app.domain.usecases.UpdateQuantityWithLimitUseCase
 import io.kotest.core.spec.style.FunSpec

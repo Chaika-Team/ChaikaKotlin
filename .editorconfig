@@ -1,2 +1,24 @@
-[*.kt]
-ktlint_standard_filename = disabled
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 100
+
+[*.{kt,kts}]
+# Правила ktlint
+ktlint_code_style = android_studio
+ktlint_standard_import-ordering = enabled
+ktlint_standard_function-naming = disabled
+
+[app/src/test/**.kt]
+ktlint_standard = disabled
+ktlint_experimental = disabled
+
+[app/src/androidTest/**.kt]
+ktlint_standard = disabled
+ktlint_experimental = disabled

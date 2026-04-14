@@ -8,11 +8,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.SubcomposeAsyncImage
 
 @Composable
-fun ProductImage(
-    imageUrl: String,
-    modifier: Modifier = Modifier,
-    contentDescription: String
-) {
+fun ProductImage(imageUrl: String, modifier: Modifier = Modifier, contentDescription: String) {
     SubcomposeAsyncImage(
         model = imageUrl,
         contentScale = ContentScale.Crop,

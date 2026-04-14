@@ -7,6 +7,6 @@ import com.chaikasoft.app.domain.models.CartOperationDomain
 interface RoomCartRepositoryInterface {
     suspend fun saveCartWithItemsAndOperation(
         cart: CartDomain,
-        cartOperationDomain: CartOperationDomain,
+        cartOperationDomain: CartOperationDomain
     ): Int
 }

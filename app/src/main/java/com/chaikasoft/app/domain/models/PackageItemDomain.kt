@@ -6,7 +6,4 @@ package com.chaikasoft.app.domain.models
  * @param productInfoDomain Информация о продукте, представленная ProductInfoDomain.
  * @param currentQuantity Текущее количество товара у проводника.
  */
-data class PackageItemDomain(
-    val productInfoDomain: ProductInfoDomain,
-    val currentQuantity: Int,
-)
+data class PackageItemDomain(val productInfoDomain: ProductInfoDomain, val currentQuantity: Int)

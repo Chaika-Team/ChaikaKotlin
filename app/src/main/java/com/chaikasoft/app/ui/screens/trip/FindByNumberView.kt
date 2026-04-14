@@ -37,21 +37,18 @@ import com.chaikasoft.app.ui.components.trip.FoundTripCard
 import com.chaikasoft.app.ui.components.trip.SearchTripSurfaceDropdown
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.state.TripsSearchUiState
-import com.chaikasoft.app.ui.viewModels.TripViewModel
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-fun FindByNumberView(
-    viewModel: TripViewModel,
-    navController: NavController,
-) {
+fun FindByNumberView(viewModel: TripViewModel, navController: NavController) {
     val context = LocalContext.current
     val searchDate by viewModel.searchDate.collectAsStateWithLifecycle()
     val fromQuery by viewModel.fromQuery.collectAsStateWithLifecycle()
@@ -105,7 +102,7 @@ private fun ObserveTripsSearchEffect(
     searchStartCode: String?,
     searchFinishCode: String?,
     onSearch: (String, String, String) -> Unit,
-    onReset: () -> Unit,
+    onReset: () -> Unit
 ) {
     val latestParams by rememberUpdatedState(Triple(searchDate, searchStartCode, searchFinishCode))
 
@@ -133,7 +130,7 @@ private fun TripsSearchFilters(
     fromQuery: String,
     toQuery: String,
     searchStartName: String?,
-    searchFinishName: String?,
+    searchFinishName: String?
 ) {
     SearchTripSurfaceDropdown(
         searchDateDisplay = searchDateDisplay,
@@ -169,7 +166,7 @@ private fun TripsSearchFilters(
 private fun androidx.compose.foundation.layout.ColumnScope.TripsSearchContent(
     tripsState: TripsSearchUiState,
     onRetry: () -> Unit,
-    onTripClick: (TripDomain) -> Unit,
+    onTripClick: (TripDomain) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -199,10 +196,7 @@ private fun TripsEmpty() {
 }
 
 @Composable
-private fun TripsError(
-    errorState: TripsSearchUiState.Error,
-    onRetry: () -> Unit,
-) {
+private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = stringResource(errorState.messageRes))
         if (errorState.retryable) {
@@ -222,13 +216,10 @@ private fun TripsError(
 }
 
 @Composable
-private fun TripsGrid(
-    trips: List<TripDomain>,
-    onTripClick: (TripDomain) -> Unit,
-) {
+private fun TripsGrid(trips: List<TripDomain>, onTripClick: (TripDomain) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
     ) {
         items(trips) { trip ->
             FoundTripCard(
@@ -248,11 +239,7 @@ private fun navigateToSelectCarriage(navController: NavController) {
     }
 }
 
-private fun showDatePicker(
-    context: Context,
-    currentDate: String,
-    onDatePicked: (String) -> Unit
-) {
+private fun showDatePicker(context: Context, currentDate: String, onDatePicked: (String) -> Unit) {
     val initialDate = runCatching {
         LocalDate.parse(currentDate, DateTimeFormatter.ISO_LOCAL_DATE)
     }.getOrElse { LocalDate.now() }

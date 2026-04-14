@@ -1,12 +1,12 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
-import com.chaikasoft.app.data.dataSource.apiService.ChaikaSoftApiService
-import com.chaikasoft.app.data.dataSource.dto.ProductInfoDto
-import com.chaikasoft.app.data.dataSource.dto.ProductInfoListResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateContentDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateDetailResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateListResponseDto
+import com.chaikasoft.app.data.datasource.apiservice.ChaikaSoftApiService
+import com.chaikasoft.app.data.datasource.dto.ProductInfoDto
+import com.chaikasoft.app.data.datasource.dto.ProductInfoListResponseDto
+import com.chaikasoft.app.data.datasource.dto.TemplateContentDto
+import com.chaikasoft.app.data.datasource.dto.TemplateDetailResponseDto
+import com.chaikasoft.app.data.datasource.dto.TemplateDto
+import com.chaikasoft.app.data.datasource.dto.TemplateListResponseDto
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery

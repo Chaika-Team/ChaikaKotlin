@@ -18,7 +18,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.template.TemplateCard
 import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.viewModels.TemplateViewModel
+import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
 
 @Composable
 fun TemplateSearchView(
@@ -34,6 +34,7 @@ fun TemplateSearchView(
                 Log.d("TemplateSearchView", "Нет шаблонов для отображения")
                 Text("Нет шаблонов", modifier = Modifier.align(Alignment.Center))
             }
+
             else -> {
                 Column {
                     LazyColumn(
@@ -46,7 +47,10 @@ fun TemplateSearchView(
                         items(templatesPaging.itemCount) { index ->
                             val template = templatesPaging[index]
                             if (template != null) {
-                                Log.d("TemplateSearchView", "Отрисовка карточки шаблона: ${template.templateName}")
+                                Log.d(
+                                    "TemplateSearchView",
+                                    "Отрисовка карточки шаблона: ${template.templateName}"
+                                )
                                 TemplateCard(
                                     template = template,
                                     onClick = {

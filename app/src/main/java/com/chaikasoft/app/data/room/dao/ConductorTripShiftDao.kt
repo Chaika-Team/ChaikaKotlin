@@ -35,14 +35,15 @@ interface ConductorTripShiftDao {
 
     /** Flow для одной активной смены */
     @Transaction
-    @Query("""
-        SELECT * FROM conductor_trip_shifts 
-         WHERE status = :activeStatus 
-      ORDER BY COALESCE(updatedAt, createdAt) DESC
-         LIMIT 1 
-            """)
+    @Query(
+        """
+        SELECT * FROM conductor_trip_shifts
+        WHERE status = :activeStatus
+        ORDER BY COALESCE(updatedAt, createdAt) DESC
+        LIMIT 1
+        """
+    )
     fun getActiveShiftWithStationsFlow(activeStatus: Int): Flow<ConductorTripShiftWithStations?>
-
 
     /** Flow для всех смен */
     @Transaction
@@ -50,11 +51,13 @@ interface ConductorTripShiftDao {
     fun getAllWithStations(): Flow<List<ConductorTripShiftWithStations>>
 
     @Transaction
-    @Query("""
-    SELECT * FROM conductor_trip_shifts
-    WHERE status != :activeStatus
-    ORDER BY COALESCE(updatedAt, createdAt) DESC
-""")
+    @Query(
+        """
+        SELECT * FROM conductor_trip_shifts
+        WHERE status != :activeStatus
+        ORDER BY COALESCE(updatedAt, createdAt) DESC
+        """
+    )
     fun getHistoryWithStations(activeStatus: Int = 0): Flow<List<ConductorTripShiftWithStations>>
 
     @Query("DELETE FROM conductor_trip_shifts WHERE uuid = :uuid")
@@ -68,13 +71,15 @@ interface ConductorTripShiftDao {
      *  - если передан reportJson ≠ null — обновляет и поле report,
      *  - если reportJson == null — оставляет report как есть.
      */
-    @Query("""
-        UPDATE conductor_trip_shifts 
-           SET status    = :newStatus,
-               report    = COALESCE(:reportJson, report),
-               updatedAt = :updatedAt
-         WHERE uuid = :uuid
-    """)
+    @Query(
+        """
+        UPDATE conductor_trip_shifts
+        SET status    = :newStatus,
+            report    = COALESCE(:reportJson, report),
+            updatedAt = :updatedAt
+        WHERE uuid = :uuid
+        """
+    )
     suspend fun updateStatusAndReport(
         uuid: String,
         newStatus: Int,
@@ -83,11 +88,13 @@ interface ConductorTripShiftDao {
     )
 
     @Transaction
-    @Query("""
-        SELECT * FROM conductor_trip_shifts 
-         WHERE status = :activeStatus 
-      ORDER BY COALESCE(updatedAt, createdAt) DESC
-         LIMIT 1 
-            """)
+    @Query(
+        """
+        SELECT * FROM conductor_trip_shifts
+        WHERE status = :activeStatus
+        ORDER BY COALESCE(updatedAt, createdAt) DESC
+        LIMIT 1
+        """
+    )
     suspend fun getActiveShiftWithStations(activeStatus: Int): ConductorTripShiftWithStations?
 }

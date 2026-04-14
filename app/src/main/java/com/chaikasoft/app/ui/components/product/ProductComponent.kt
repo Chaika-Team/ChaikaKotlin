@@ -25,7 +25,7 @@ fun ProductComponent(
     quantityToShow: Int
 ) {
     val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
-    Column (
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier.height(height).padding(PaddingM)

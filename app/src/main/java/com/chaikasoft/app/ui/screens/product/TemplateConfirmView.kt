@@ -32,14 +32,14 @@ import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.mappers.toUiModel
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ProductDimens
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.viewModels.FillViewModel
+import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
+import com.chaikasoft.app.ui.viewmodels.FillViewModel
 
 @Composable
 fun TemplateConfirmView(
     fillViewModel: FillViewModel,
     conductorViewModel: ConductorViewModel,
-    navController: NavController,
+    navController: NavController
 ) {
     val cartItems by fillViewModel.items.collectAsStateWithLifecycle()
     val conductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
@@ -88,11 +88,8 @@ fun TemplateConfirmView(
 }
 
 @Composable
-fun FinalPackageList(
-    cartItems: List<CartItemDomain>,
-    fillViewModel: FillViewModel
-) {
-    LazyVerticalGrid (
+fun FinalPackageList(cartItems: List<CartItemDomain>, fillViewModel: FillViewModel) {
+    LazyVerticalGrid(
         columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(ProductDimens.CartPadding)
     ) {
@@ -100,19 +97,26 @@ fun FinalPackageList(
             CartProductItem(
                 product = product.toUiModel(),
                 onAddToCart = { },
-                onQuantityIncrease = { fillViewModel.onQuantityChange(product.product.id, product.quantity+1) },
-                onQuantityDecrease = { fillViewModel.onQuantityChange(product.product.id, product.quantity-1) },
+                onQuantityIncrease = {
+                    fillViewModel.onQuantityChange(
+                        product.product.id,
+                        product.quantity + 1
+                    )
+                },
+                onQuantityDecrease = {
+                    fillViewModel.onQuantityChange(
+                        product.product.id,
+                        product.quantity - 1
+                    )
+                },
                 onRemove = { fillViewModel.onRemove(product.product.id) }
             )
         }
     }
 }
 
-
 @Composable
-private fun EmptyPackageState(
-    modifier: Modifier
-) {
+private fun EmptyPackageState(modifier: Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -126,10 +130,7 @@ private fun EmptyPackageState(
 }
 
 @Composable
-private fun TemplateConfirmBottomBar(
-    onBackClick: () -> Unit,
-    onConfirmClick: () -> Unit
-) {
+private fun TemplateConfirmBottomBar(onBackClick: () -> Unit, onConfirmClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,7 +157,7 @@ private fun TemplateConfirmBottomBar(
                     .weight(1f)
                     .height(ProductDimens.ButtonHeightL),
                 onClick = onBackClick,
-                shape = RoundedCornerShape(ProductDimens.CornerRadiusM),
+                shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
             ) {
                 Text("НАЗАД")
             }
@@ -166,7 +167,7 @@ private fun TemplateConfirmBottomBar(
                     .weight(1f)
                     .height(ProductDimens.ButtonHeightL),
                 onClick = onConfirmClick,
-                shape = RoundedCornerShape(ProductDimens.CornerRadiusM),
+                shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
             ) {
                 Text("ПОДТВЕРДИТЬ")
             }

@@ -19,14 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.viewModels.TripViewModel
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RetrySendResultBottomSheet(
-    tripViewModel: TripViewModel
-) {
+fun RetrySendResultBottomSheet(tripViewModel: TripViewModel) {
     val resultState by tripViewModel.retryResult.collectAsStateWithLifecycle()
 
     if (resultState == null) return
@@ -42,7 +40,7 @@ fun RetrySendResultBottomSheet(
             }
         },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
             modifier = Modifier

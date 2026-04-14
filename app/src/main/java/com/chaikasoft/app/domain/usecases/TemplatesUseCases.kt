@@ -4,14 +4,14 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
-import com.chaikasoft.app.data.dataSource.repo.TemplatePagingSource
-import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.TemplatePagingSource
+import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Use case для получения списка шаблонов с поддержкой бесконечной прокрутки.
@@ -33,7 +33,6 @@ class GetPagedTemplatesUseCase @Inject constructor(
         ).flow
     }
 }
-
 
 /**
  * Use case для получения всех шаблонов без пагинации.
@@ -62,11 +61,12 @@ class GetTemplatesUseCase @Inject constructor(
  * @param repository Репозиторий, реализующий ChaikaSoftApiServiceRepositoryInterface.
  */
 class GetTemplateDetailUseCase @Inject constructor(
-    private val repository: ChaikaSoftApiServiceRepositoryInterface,
+    private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
     suspend operator fun invoke(templateId: Int): TemplateDomain =
         repository.fetchTemplateDetail(templateId)
 }
+
 /**
  * Use case для применения шаблона к корзине.
  *
@@ -77,10 +77,7 @@ class GetTemplateDetailUseCase @Inject constructor(
 class ApplyTemplateUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface
 ) {
-    suspend operator fun invoke(
-        cart: InMemoryCartRepositoryInterface,
-        template: TemplateDomain
-    ) {
+    suspend operator fun invoke(cart: InMemoryCartRepositoryInterface, template: TemplateDomain) {
         // 1) Очищаем корзину
         cart.clearCart()
 

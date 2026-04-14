@@ -44,7 +44,7 @@ fun PersonalDataView(conductor: ConductorDomain?) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 PersonalDataRow(
                     label = stringResource(R.string.profile_family_name),
                     value = conductor?.familyName ?: "-"
@@ -59,7 +59,7 @@ fun PersonalDataView(conductor: ConductorDomain?) {
                 )
             }
         }
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,7 +75,7 @@ fun PersonalDataView(conductor: ConductorDomain?) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 PersonalDataRow(
                     label = stringResource(R.string.profile_employee_id),
                     value = conductor?.employeeID ?: "-"
@@ -86,7 +86,7 @@ fun PersonalDataView(conductor: ConductorDomain?) {
                 )
             }
         }
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -100,10 +100,16 @@ fun PersonalDataView(conductor: ConductorDomain?) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 PersonalDataRow(
                     label = stringResource(R.string.profile_photo),
-                    value = if (conductor?.image != null) stringResource(R.string.personal_data_photo_loaded) else stringResource(R.string.personal_data_photo_not_loaded)
+                    value = if (conductor?.image !=
+                        null
+                    ) {
+                        stringResource(R.string.personal_data_photo_loaded)
+                    } else {
+                        stringResource(R.string.personal_data_photo_not_loaded)
+                    }
                 )
             }
         }
@@ -111,10 +117,7 @@ fun PersonalDataView(conductor: ConductorDomain?) {
 }
 
 @Composable
-private fun PersonalDataRow(
-    label: String,
-    value: String
-) {
+private fun PersonalDataRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

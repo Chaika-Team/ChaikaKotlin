@@ -13,11 +13,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.chaikasoft.app.ui.screens.auth.LoginScreen
 import com.chaikasoft.app.ui.screens.operation.OperationScreen
-import com.chaikasoft.app.ui.screens.product.TemplateConfirmView
 import com.chaikasoft.app.ui.screens.product.ProductCartView
 import com.chaikasoft.app.ui.screens.product.ProductEntryView
 import com.chaikasoft.app.ui.screens.product.ProductPackageView
 import com.chaikasoft.app.ui.screens.product.ProductReplenishView
+import com.chaikasoft.app.ui.screens.product.TemplateConfirmView
 import com.chaikasoft.app.ui.screens.product.TemplateDetailView
 import com.chaikasoft.app.ui.screens.product.TemplateEditView
 import com.chaikasoft.app.ui.screens.product.TemplateSearchView
@@ -27,14 +27,28 @@ import com.chaikasoft.app.ui.screens.profile.FeedbackView
 import com.chaikasoft.app.ui.screens.profile.MainProfileView
 import com.chaikasoft.app.ui.screens.profile.PersonalDataView
 import com.chaikasoft.app.ui.screens.profile.SettingsView
-import com.chaikasoft.app.ui.screens.trip.FindByNumberView
-import com.chaikasoft.app.ui.screens.trip.SelectCarriageView
+import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
 import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
+import com.chaikasoft.app.ui.screens.trip.FindByNumberView
 import com.chaikasoft.app.ui.screens.trip.MainTripView
+import com.chaikasoft.app.ui.screens.trip.SelectCarriageView
 import com.chaikasoft.app.ui.screens.util.ErrorScreen
 import com.chaikasoft.app.ui.screens.util.LoadingScreen
-import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
-import com.chaikasoft.app.ui.viewModels.*
+import com.chaikasoft.app.ui.viewmodels.AuthState
+import com.chaikasoft.app.ui.viewmodels.AuthViewModel
+import com.chaikasoft.app.ui.viewmodels.AutonomousViewModel
+import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
+import com.chaikasoft.app.ui.viewmodels.FillViewModel
+import com.chaikasoft.app.ui.viewmodels.OperationViewModel
+import com.chaikasoft.app.ui.viewmodels.PackageViewModel
+import com.chaikasoft.app.ui.viewmodels.ProductGateViewModel
+import com.chaikasoft.app.ui.viewmodels.ProductViewModel
+import com.chaikasoft.app.ui.viewmodels.ReplenishItemsViewModel
+import com.chaikasoft.app.ui.viewmodels.ReplenishViewModel
+import com.chaikasoft.app.ui.viewmodels.SaleViewModel
+import com.chaikasoft.app.ui.viewmodels.StatisticsViewModel
+import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
 fun NavGraph(
@@ -54,12 +68,14 @@ fun NavGraph(
                     launchSingleTop = true
                 }
             }
+
             AuthState.Unauthenticated -> {
                 navController.navigate(Routes.AUTH_GRAPH) {
                     popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                     launchSingleTop = true
                 }
             }
+
             AuthState.Authenticated -> {
                 navController.navigate(Routes.TRIP_GRAPH) {
                     popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
@@ -152,14 +168,15 @@ fun NavGraph(
                     when (target) {
                         ProductGateViewModel.Target.PACKAGE ->
                             navController.navigate(Routes.PRODUCT_PACKAGE) {
-                            popUpTo(Routes.PRODUCT_GATE) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                                popUpTo(Routes.PRODUCT_GATE) { inclusive = true }
+                                launchSingleTop = true
+                            }
+
                         ProductGateViewModel.Target.ENTRY ->
                             navController.navigate(Routes.PRODUCT_ENTRY) {
-                            popUpTo(Routes.PRODUCT_GATE) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                                popUpTo(Routes.PRODUCT_GATE) { inclusive = true }
+                                launchSingleTop = true
+                            }
                     }
                 }
 
@@ -225,7 +242,6 @@ fun NavGraph(
                 startDestination = Routes.TEMPLATE_SEARCH,
                 route = Routes.TEMPLATE_GRAPH
             ) {
-
                 composable(Routes.TEMPLATE_SEARCH) { backStackEntry ->
                     val parentEntry = remember(backStackEntry) {
                         navController.getBackStackEntry(Routes.TEMPLATE_GRAPH)

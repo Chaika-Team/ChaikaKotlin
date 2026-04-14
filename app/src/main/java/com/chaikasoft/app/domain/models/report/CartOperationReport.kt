@@ -16,5 +16,5 @@ data class CartOperationReport(
     @Json(name = "EmployeeID") val employeeID: String,
     @Json(name = "OperationType") val operationType: Int,
     @Json(name = "OperationTime") val operationTime: String,
-    @Json(name = "Items") val items: List<CartItemReport>,
+    @Json(name = "Items") val items: List<CartItemReport>
 )

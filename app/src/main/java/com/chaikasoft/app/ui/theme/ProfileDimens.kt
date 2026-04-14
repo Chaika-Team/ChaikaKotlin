@@ -10,7 +10,7 @@ object ProfileDimens {
     // Padding
     val ProfileContentPaddingVertical = 16.dp
     val ProfileContentPaddingHorizontal = 24.dp
-    
+
     // ProfileMenuItem dimensions
     val MenuItemCornerRadiusTop = 16.dp
     val MenuItemCornerRadiusBottom = 16.dp
@@ -20,10 +20,10 @@ object ProfileDimens {
     val MenuItemIconSize = 40.dp
     val MenuItemIconInnerSize = 20.dp
     val MenuItemSpacerWidth = 16.dp
-    
+
     // SectionSpacer
     val SectionSpacerHeight = 8.dp
-    
+
     // UserHeaderSection
     val HeaderPadding = 16.dp
     val AvatarSize = 100.dp
@@ -35,4 +35,4 @@ object ProfileDimens {
 
     // UserInfoSection
     val LogoutButtonSize = 24.dp
-} 
+}

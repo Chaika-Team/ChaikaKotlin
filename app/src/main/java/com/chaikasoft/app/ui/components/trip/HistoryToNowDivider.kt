@@ -19,10 +19,8 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun HistoryToNowDivider(
-    modifier: Modifier = Modifier
-) {
-    Column (
+fun HistoryToNowDivider(modifier: Modifier = Modifier) {
+    Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center
@@ -42,7 +40,8 @@ fun HistoryToNowDivider(
                 .fillMaxWidth()
                 .height(1.dp)
                 .padding(horizontal = TripDimens.PaddingXL),
-            thickness = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
 
         )
         Text(
@@ -59,7 +58,7 @@ fun HistoryToNowDivider(
 
 @Preview
 @Composable
-fun historyToNowDividerPreview() {
+fun HistoryToNowDividerPreview() {
     ChaikaTheme {
         HistoryToNowDivider()
     }

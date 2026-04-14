@@ -11,6 +11,7 @@ jobs:
   analyze:
     name: Build, test and analyze
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,6 +39,17 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
+
+      - name: Upload ktlint report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-report
+          path: '**/build/reports/ktlint/'
+          retention-days: 5
 
       - name: Build and run unit tests
         env:
@@ -76,10 +88,8 @@ jobs:
         run: ./gradlew detekt
         continue-on-error: true
 
-      - name: SonarQube QualityGate 
+      - name: SonarQube QualityGate
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        # Будет удалено после закрытия текущих проблем со стат. анализом и покрытием тестами
-        continue-on-error: true

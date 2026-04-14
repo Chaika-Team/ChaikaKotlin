@@ -17,11 +17,13 @@ interface ProductInfoDao {
     @Query("SELECT * FROM product_info")
     fun getAllProducts(): Flow<List<ProductInfo>>
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM product_info
         WHERE (:query IS NULL OR :query = '' OR name LIKE '%' || :query || '%')
         ORDER BY id ASC
-    """)
+        """
+    )
     fun getPagedProducts(query: String?): PagingSource<Int, ProductInfo>
 
     @Query("SELECT * FROM product_info WHERE id = :productId LIMIT 1")
@@ -32,7 +34,6 @@ interface ProductInfoDao {
 
     @Upsert
     suspend fun upsertProduct(product: ProductInfo)
-
 
     @Update
     suspend fun updateProduct(product: ProductInfo)

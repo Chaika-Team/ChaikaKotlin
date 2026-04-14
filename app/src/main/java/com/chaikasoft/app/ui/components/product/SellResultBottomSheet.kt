@@ -19,15 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.viewModels.SaleViewModel
+import com.chaikasoft.app.ui.viewmodels.SaleViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SellResultBottomSheet(
-    viewModel: SaleViewModel,
-    onClick: () -> Unit
-) {
+fun SellResultBottomSheet(viewModel: SaleViewModel, onClick: () -> Unit) {
     val state by viewModel.sellResultDialog.collectAsStateWithLifecycle()
     if (state == null) return
 
@@ -42,7 +39,7 @@ fun SellResultBottomSheet(
             }
         },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
             modifier = Modifier

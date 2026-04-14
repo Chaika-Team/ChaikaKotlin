@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.components.bottomBar
+package com.chaikasoft.app.ui.components.bottombar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,10 +18,7 @@ import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.BarDimens
 
 @Composable
-fun BottomBar(
-    navController: NavController,
-    currentRoute: String?
-) {
+fun BottomBar(navController: NavController, currentRoute: String?) {
     if (currentRoute == null || currentRoute in Routes.routesWithoutBottomBar) return
 
     BottomBarBackground(
@@ -41,7 +38,7 @@ fun BottomBar(
             .fillMaxWidth()
             .height(BarDimens.BarHeight),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),

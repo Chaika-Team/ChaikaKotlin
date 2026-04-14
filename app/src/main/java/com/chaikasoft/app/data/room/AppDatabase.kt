@@ -24,7 +24,7 @@ import com.chaikasoft.app.data.room.entities.Station
     entities = [ProductInfo::class, Conductor::class, CartItem::class, CartOperation::class, ConductorTripShift::class, Station::class],
     views = [PackageItemView::class, FastReportView::class, OperationInfoView::class],
     version = 1, // Увеличить версию, если используем миграции
-    exportSchema = false,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 

@@ -8,12 +8,12 @@ import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.domain.sealed.LogoutResult
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 
 /**
  * Use Case, который полностью обрабатывает процесс авторизации:
@@ -27,31 +27,29 @@ import kotlin.coroutines.resumeWithException
  * @throws Exception если на любом из шагов происходит ошибка.
  */
 class CompleteAuthorizationFlowUseCase
-    @Inject
-    constructor(
-        private val handleAuthorizationResponseUseCase: HandleAuthorizationResponseUseCase,
-        private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase,
-    ) {
-        suspend operator fun invoke(intent: Intent): Pair<String, ConductorDomain> {
-            // Получаем токен и сохраняем его внутри HandleAuthorizationResponseUseCase
-            val token = handleAuthorizationResponseUseCase(intent)
-            // Получаем и сохраняем данные проводника
-            val conductor = authorizeAndSaveConductorUseCase(token)
-            return token to conductor
-        }
+@Inject
+constructor(
+    private val handleAuthorizationResponseUseCase: HandleAuthorizationResponseUseCase,
+    private val authorizeAndSaveConductorUseCase: AuthorizeAndSaveConductorUseCase
+) {
+    suspend operator fun invoke(intent: Intent): Pair<String, ConductorDomain> {
+        // Получаем токен и сохраняем его внутри HandleAuthorizationResponseUseCase
+        val token = handleAuthorizationResponseUseCase(intent)
+        // Получаем и сохраняем данные проводника
+        val conductor = authorizeAndSaveConductorUseCase(token)
+        return token to conductor
     }
+}
 
 /**
  * Use case для запуска авторизации.
  * Возвращает Intent, который необходимо передать в ActivityResultLauncher.
  */
 class StartAuthorizationUseCase
-    @Inject
-    constructor(
-        private val oAuthManager: OAuthManager,
-    ) {
-        operator fun invoke(): Intent = oAuthManager.createAuthIntent()
-    }
+@Inject
+constructor(private val oAuthManager: OAuthManager) {
+    operator fun invoke(): Intent = oAuthManager.createAuthIntent()
+}
 
 /**
  * Use case для обработки ответа авторизации.
@@ -62,15 +60,18 @@ class HandleAuthorizationResponseUseCase
 @Inject constructor(
     private val oAuthManager: OAuthManager,
     private val tokenManager: EncryptedTokenManagerInterface,
-    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(intent: Intent): String {
         // 1) Получаем токен из OAuth асинхронно, без диска/сети здесь
         val token = suspendCancellableCoroutine { cont ->
             oAuthManager.handleAuthorizationResponse(intent) { t ->
                 if (!cont.isActive) return@handleAuthorizationResponse
-                if (t.isNotEmpty()) cont.resume(t)
-                else cont.resumeWithException(IllegalStateException("Получен пустой токен"))
+                if (t.isNotEmpty()) {
+                    cont.resume(t)
+                } else {
+                    cont.resumeWithException(IllegalStateException("Получен пустой токен"))
+                }
             }
             // cont.invokeOnCancellation { ... } — при необходимости отмены
         }
@@ -88,42 +89,41 @@ class HandleAuthorizationResponseUseCase
  * Он обращается к менеджеру токенов и возвращает токен, если он сохранён.
  */
 class GetAccessTokenUseCase
-    @Inject
-    constructor(
-        private val tokenManager: EncryptedTokenManagerInterface,
-        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    ) {
-        suspend operator fun invoke(): String? =
-            withContext(ioDispatcher) {
-                tokenManager.getToken()
-            }
+@Inject
+constructor(
+    private val tokenManager: EncryptedTokenManagerInterface,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) {
+    suspend operator fun invoke(): String? = withContext(ioDispatcher) {
+        tokenManager.getToken()
     }
+}
 
 /**
  * Use case для выхода из аккаунта (logout).
  * Он очищает сохранённый токен через менеджер токенов.
  */
 class LogoutUseCase
-    @Inject
-    constructor(
-        private val tokenManager: EncryptedTokenManagerInterface,
-        private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
-        private val imageRepository: LocalImageRepositoryInterface,
-        private val hasActiveShiftUseCase: HasActiveShiftUseCase,
-        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    ) {
-        suspend operator fun invoke(): LogoutResult = withContext(ioDispatcher) {
-            try {
-                if (hasActiveShiftUseCase()){
-                    return@withContext LogoutResult.ActiveShiftExists
-                }
-                tokenManager.clearToken()
-                deleteAllConductorsUseCase()
-                imageRepository.deleteImagesInSubDir(ImageSubDir.CONDUCTORS.folder)
-
-             LogoutResult.Success
-            } catch (e: Exception) {
-                LogoutResult.Failure(reason = e.message ?: "Unknown error")
+@Inject
+constructor(
+    private val tokenManager: EncryptedTokenManagerInterface,
+    private val deleteAllConductorsUseCase: DeleteAllConductorsUseCase,
+    private val imageRepository: LocalImageRepositoryInterface,
+    private val hasActiveShiftUseCase: HasActiveShiftUseCase,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) {
+    suspend operator fun invoke(): LogoutResult = withContext(ioDispatcher) {
+        try {
+            if (hasActiveShiftUseCase()) {
+                return@withContext LogoutResult.ActiveShiftExists
             }
+            tokenManager.clearToken()
+            deleteAllConductorsUseCase()
+            imageRepository.deleteImagesInSubDir(ImageSubDir.CONDUCTORS.folder)
+
+            LogoutResult.Success
+        } catch (e: Exception) {
+            LogoutResult.Failure(reason = e.message ?: "Unknown error")
         }
     }
+}

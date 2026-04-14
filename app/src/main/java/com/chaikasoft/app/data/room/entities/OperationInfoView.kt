@@ -45,5 +45,5 @@ data class OperationInfoView(
     @ColumnInfo(name = "conductor_family_name") val conductorFamilyName: String,
     @ColumnInfo(name = "conductor_given_name") val conductorGivenName: String,
     @ColumnInfo(name = "product_line_quantity") val productLineQuantity: Int,
-    @ColumnInfo(name = "total_price") val totalPrice: Int,
+    @ColumnInfo(name = "total_price") val totalPrice: Int
 )

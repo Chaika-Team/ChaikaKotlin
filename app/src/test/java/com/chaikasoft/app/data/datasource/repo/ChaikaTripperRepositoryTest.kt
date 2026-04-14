@@ -1,10 +1,10 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
-import com.chaikasoft.app.data.dataSource.apiService.ChaikaSoftApiService
-import com.chaikasoft.app.data.dataSource.dto.StationDto
-import com.chaikasoft.app.data.dataSource.dto.StationsResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TripDto
-import com.chaikasoft.app.data.dataSource.dto.TripsResponseDto
+import com.chaikasoft.app.data.datasource.apiservice.ChaikaSoftApiService
+import com.chaikasoft.app.data.datasource.dto.StationDto
+import com.chaikasoft.app.data.datasource.dto.StationsResponseDto
+import com.chaikasoft.app.data.datasource.dto.TripDto
+import com.chaikasoft.app.data.datasource.dto.TripsResponseDto
 import com.chaikasoft.app.domain.common.AppError
 import com.chaikasoft.app.domain.common.RemoteResult
 import io.kotest.core.spec.style.FunSpec

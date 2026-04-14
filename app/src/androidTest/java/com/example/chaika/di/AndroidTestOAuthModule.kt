@@ -11,11 +11,11 @@ import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import javax.inject.Singleton
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationService
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import javax.inject.Singleton
 
 @Suppress("UNCHECKED_CAST")
 fun <T> anyNonNull(): T = ArgumentMatchers.any<T>() as T

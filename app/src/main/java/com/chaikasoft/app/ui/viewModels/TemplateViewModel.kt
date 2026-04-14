@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,21 +8,22 @@ import com.chaikasoft.app.domain.usecases.GetPagedTemplatesUseCase
 import com.chaikasoft.app.domain.usecases.GetTemplateDetailUseCase
 import com.chaikasoft.app.ui.state.TemplateDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class TemplateViewModel @Inject constructor(
     getPagedTemplatesUseCase: GetPagedTemplatesUseCase,
-    private val getTemplateDetailUseCase: GetTemplateDetailUseCase,
+    private val getTemplateDetailUseCase: GetTemplateDetailUseCase
 ) : ViewModel() {
     val templatesPagingFlow = getPagedTemplatesUseCase().cachedIn(viewModelScope)
 
-    private val _templateDetailState = MutableStateFlow<TemplateDetailUiState>(TemplateDetailUiState.Idle)
+    private val _templateDetailState =
+        MutableStateFlow<TemplateDetailUiState>(TemplateDetailUiState.Idle)
     val templateDetailState: StateFlow<TemplateDetailUiState> = _templateDetailState.asStateFlow()
 
     private var lastRequestedTemplateId: Int? = null
@@ -30,7 +31,9 @@ class TemplateViewModel @Inject constructor(
 
     fun loadTemplateDetail(templateId: Int) {
         val currentState = _templateDetailState.value
-        if (currentState is TemplateDetailUiState.Content && currentState.template.id == templateId) {
+        if (currentState is TemplateDetailUiState.Content &&
+            currentState.template.id == templateId
+        ) {
             return
         }
 

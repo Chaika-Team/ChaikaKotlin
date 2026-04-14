@@ -32,6 +32,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
+import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,7 +144,7 @@ private fun DropDownContent(
     lazyItems: LazyPagingItems<StationDomain>,
     onQueryChange: (String) -> Unit,
     onItemSelected: (StationDomain) -> Unit,
-    onClose: () -> Unit,
+    onClose: () -> Unit
 ) {
     when (state) {
         MenuUiState.NeedMoreCharacters ->
@@ -196,10 +197,7 @@ private sealed interface MenuUiState {
     data class Content(val isAppending: Boolean) : MenuUiState
 }
 
-private fun mapMenuState(
-    query: String,
-    lazyItems: LazyPagingItems<StationDomain>,
-): MenuUiState {
+private fun mapMenuState(query: String, lazyItems: LazyPagingItems<StationDomain>): MenuUiState {
     if (query.length < 2) return MenuUiState.NeedMoreCharacters
 
     val refreshState = lazyItems.loadState.refresh

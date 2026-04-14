@@ -1,6 +1,6 @@
-package com.chaikasoft.app.data.dataSource.apiService
+package com.chaikasoft.app.data.datasource.apiservice
 
-import com.chaikasoft.app.data.dataSource.dto.ConductorDto
+import com.chaikasoft.app.data.datasource.dto.ConductorDto
 import retrofit2.http.GET
 import retrofit2.http.Header
 
@@ -9,7 +9,5 @@ import retrofit2.http.Header
  */
 interface IAMApiService {
     @GET("/oidc/v1/userinfo")
-    suspend fun getUserInfo(
-        @Header("Authorization") token: String,
-    ): ConductorDto
+    suspend fun getUserInfo(@Header("Authorization") token: String): ConductorDto
 }

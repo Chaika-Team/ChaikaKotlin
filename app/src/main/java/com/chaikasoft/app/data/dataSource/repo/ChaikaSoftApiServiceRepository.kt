@@ -1,15 +1,15 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
 import android.util.Log
-import com.chaikasoft.app.data.dataSource.apiService.ChaikaSoftApiService
-import com.chaikasoft.app.data.dataSource.mappers.toDomain
-import com.chaikasoft.app.data.dataSource.mappers.toDomainList
+import com.chaikasoft.app.data.datasource.apiservice.ChaikaSoftApiService
+import com.chaikasoft.app.data.datasource.mappers.toDomain
+import com.chaikasoft.app.data.datasource.mappers.toDomainList
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 import javax.inject.Inject
 
 class ChaikaSoftApiServiceRepository @Inject constructor(
-    private val apiService: ChaikaSoftApiService,
+    private val apiService: ChaikaSoftApiService
 ) : ChaikaSoftApiServiceRepositoryInterface {
 
     override suspend fun fetchProducts(limit: Int, offset: Int): List<ProductInfoDomain> {
@@ -32,7 +32,6 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
         }
         return body.templates.toDomainList()
     }
-
 
     override suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain {
         val body = apiService.getTemplateDetail(templateId)

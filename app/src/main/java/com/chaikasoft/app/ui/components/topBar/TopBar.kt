@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.components.topBar
+package com.chaikasoft.app.ui.components.topbar
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding

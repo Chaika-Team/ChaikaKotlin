@@ -26,12 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.TripDimens
 
-
 @Composable
-fun NewTripButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun NewTripButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Box(
         modifier = modifier
             .testTag("newTripButton")
@@ -44,7 +40,7 @@ fun NewTripButton(
             .clickable(onClick = onClick)
             .height(TripDimens.NewTripButtonHeight)
             .width(TripDimens.NewTripButtonWidth),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
             drawRoundRect(
@@ -68,6 +64,6 @@ fun NewTripButton(
 
 @Preview
 @Composable
-fun newTripButtonPreview() {
-    NewTripButton () {  }
+fun NewTripButtonPreview() {
+    NewTripButton { }
 }

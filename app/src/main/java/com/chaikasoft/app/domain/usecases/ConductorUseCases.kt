@@ -1,15 +1,15 @@
 package com.chaikasoft.app.domain.usecases
 
-import com.chaikasoft.app.data.dataSource.repo.IAMApiServiceRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.IAMApiServiceRepositoryInterface
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
 import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ConductorDomain
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 /**
  * Use case для получения данных проводника по токену.
@@ -20,13 +20,12 @@ import javax.inject.Inject
  */
 class FetchConductorByTokenUseCase @Inject constructor(
     private val conductorApiRepository: IAMApiServiceRepositoryInterface,
-    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(accessToken: String): ConductorDomain =
-        withContext(ioDispatcher) {
-            // Если репозиторий возвращает Result, то можно использовать getOrElse или getOrThrow:
-            conductorApiRepository.fetchUserInfo(accessToken).getOrElse { throw it }
-        }
+    suspend operator fun invoke(accessToken: String): ConductorDomain = withContext(ioDispatcher) {
+        // Если репозиторий возвращает Result, то можно использовать getOrElse или getOrThrow:
+        conductorApiRepository.fetchUserInfo(accessToken).getOrElse { throw it }
+    }
 }
 
 /**
@@ -37,7 +36,7 @@ class FetchConductorByTokenUseCase @Inject constructor(
 class SaveConductorLocallyUseCase @Inject constructor(
     private val conductorRepository: RoomConductorRepositoryInterface,
     private val imageRepository: LocalImageRepositoryInterface,
-    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     /**
@@ -48,7 +47,7 @@ class SaveConductorLocallyUseCase @Inject constructor(
             val imagePath = imageRepository.saveImageFromUrl(
                 imageUrl = imageUrl,
                 fileName = "${conductor.employeeID}.jpg",
-                subDir = ImageSubDir.CONDUCTORS.folder,
+                subDir = ImageSubDir.CONDUCTORS.folder
             ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
 
             val toInsert = conductor.copy(image = imagePath)
@@ -65,7 +64,7 @@ class SaveConductorLocallyUseCase @Inject constructor(
  */
 class AuthorizeAndSaveConductorUseCase @Inject constructor(
     private val fetchConductorByTokenUseCase: FetchConductorByTokenUseCase,
-    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase,
+    private val saveConductorLocallyUseCase: SaveConductorLocallyUseCase
 ) {
     /**
      * Получает данные проводника по токену, затем сохраняет их локально (в том числе сохраняет изображение)
@@ -82,18 +81,16 @@ class AuthorizeAndSaveConductorUseCase @Inject constructor(
  * Использует RoomConductorRepositoryInterface.
  **/
 class GetAllConductorsUseCase @Inject constructor(
-    private val conductorRepository: RoomConductorRepositoryInterface,
+    private val conductorRepository: RoomConductorRepositoryInterface
 ) {
-    operator fun invoke(): Flow<List<ConductorDomain>> {
-        return conductorRepository.getAllConductors()
-    }
+    operator fun invoke(): Flow<List<ConductorDomain>> = conductorRepository.getAllConductors()
 }
 
 /**
  * Use Case для удаления данных проводников из базы данных SQLite.
  **/
 class DeleteAllConductorsUseCase @Inject constructor(
-    private val conductorRepository: RoomConductorRepositoryInterface,
+    private val conductorRepository: RoomConductorRepositoryInterface
 ) {
     suspend operator fun invoke() {
         conductorRepository.deleteAllConductors()

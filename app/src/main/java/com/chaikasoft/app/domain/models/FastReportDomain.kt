@@ -19,5 +19,5 @@ data class FastReportDomain(
     val replenishedQuantity: Int,
     val soldCashQuantity: Int,
     val soldCartQuantity: Int,
-    val revenue: Int,
+    val revenue: Int
 )

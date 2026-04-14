@@ -19,8 +19,8 @@ object OfflineTripBuildHelper {
 
     data class Input(
         val trainNumber: String,
-        val fromStation: StationDomain?,  // выбрано из БД
-        val toStation: StationDomain?,    // выбрано из БД
+        val fromStation: StationDomain?, // выбрано из БД
+        val toStation: StationDomain?, // выбрано из БД
         val departure: LocalDateTime?,
         val arrival: LocalDateTime?,
         val carriageNumber: String,
@@ -58,23 +58,24 @@ object OfflineTripBuildHelper {
 
         return try {
             // здесь уже ок вызывать requireNotNull (или оставить !!, как у тебя)
-            val dep  = requireNotNull(input.departure)
-            val arr  = requireNotNull(input.arrival)
+            val dep = requireNotNull(input.departure)
+            val arr = requireNotNull(input.arrival)
             val from = requireNotNull(input.fromStation)
-            val to   = requireNotNull(input.toStation)
+            val to = requireNotNull(input.toStation)
 
             val trip = TripDomain(
-                uuid        = generateLocalUuid(),
+                uuid = generateLocalUuid(),
                 trainNumber = normalizeForDisplay(input.trainNumber),
-                departure   = localToRfc3339Utc(dep, zone),
-                arrival     = localToRfc3339Utc(arr, zone),
-                duration    = durationHms(dep, arr, zone),
-                from        = from,
-                to          = to
+                departure = localToRfc3339Utc(dep, zone),
+                arrival = localToRfc3339Utc(arr, zone),
+                duration = durationHms(dep, arr, zone),
+                from = from,
+                to = to
             )
             val carriage = CarriageDomain(
                 carNumber = normalizeForDisplay(input.carriageNumber),
-                classType = input.carriageClassType?.ifBlank { defaultClassType } ?: defaultClassType
+                classType =
+                input.carriageClassType?.ifBlank { defaultClassType } ?: defaultClassType
             )
             BuildResult.Success(Output(trip, carriage))
         } catch (t: IllegalStateException) {
@@ -85,24 +86,26 @@ object OfflineTripBuildHelper {
     private fun validate(i: Input): List<BuildError> {
         val errs = mutableListOf<BuildError>()
 
-        if (i.trainNumber.isBlank())     errs += BuildError.TrainNumberEmpty
-        if (i.fromStation == null)       errs += BuildError.FromStationMissing
-        if (i.toStation == null)         errs += BuildError.ToStationMissing
-        if (i.departure == null)         errs += BuildError.DepartureMissing
-        if (i.arrival == null)           errs += BuildError.ArrivalMissing
-        if (i.carriageNumber.isBlank())  errs += BuildError.CarriageNumberEmpty
+        if (i.trainNumber.isBlank()) errs += BuildError.TrainNumberEmpty
+        if (i.fromStation == null) errs += BuildError.FromStationMissing
+        if (i.toStation == null) errs += BuildError.ToStationMissing
+        if (i.departure == null) errs += BuildError.DepartureMissing
+        if (i.arrival == null) errs += BuildError.ArrivalMissing
+        if (i.carriageNumber.isBlank()) errs += BuildError.CarriageNumberEmpty
 
         if (errs.isEmpty()) {
             val from = i.fromStation
-            val to   = i.toStation
-            val dep  = i.departure
-            val arr  = i.arrival
+            val to = i.toStation
+            val dep = i.departure
+            val arr = i.arrival
 
-            if (from != null && to != null && from.code == to.code)
+            if (from != null && to != null && from.code == to.code) {
                 errs += BuildError.SameStations
+            }
 
-            if (dep != null && arr != null && !arr.isAfter(dep))
+            if (dep != null && arr != null && !arr.isAfter(dep)) {
                 errs += BuildError.ArrivalNotAfterDeparture
+            }
         }
         return errs
     }

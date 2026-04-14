@@ -21,20 +21,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.components.trip.SelectedTripRecordSurface
 import com.chaikasoft.app.ui.components.template.ButtonSurface
+import com.chaikasoft.app.ui.components.trip.SelectedTripRecordSurface
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.TripDimens
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chaikasoft.app.ui.viewModels.TripViewModel
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
-fun SelectCarriageView(
-    viewModel: TripViewModel,
-    navController: NavController
-) {
+fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
     val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
     val carriageNumber by viewModel.carriageNumber.collectAsStateWithLifecycle()
     val isCarriageInputValid by viewModel.isCarriageInputValid.collectAsStateWithLifecycle()
@@ -47,6 +44,7 @@ fun SelectCarriageView(
                     modifier = Modifier.padding(16.dp)
                 )
             }
+
             else -> {
                 Column(modifier = Modifier.weight(1f)) {
                     SelectedTripRecordSurface(

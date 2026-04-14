@@ -17,10 +17,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.util.parseTripDetails
 
 @Composable
-fun TimeDateDetails(
-    modifier: Modifier = Modifier,
-    tripRecord: TripDomain
-) {
+fun TimeDateDetails(modifier: Modifier = Modifier, tripRecord: TripDomain) {
     val tripDetails = tripRecord.parseTripDetails()
 
     ConstraintLayout(
@@ -41,8 +38,8 @@ fun TimeDateDetails(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
         ) {
-            dayMonthText(tripDetails.departureDayMonth)
-            timeValueText(tripDetails.departureTime)
+            DayMonthText(tripDetails.departureDayMonth)
+            TimeValueText(tripDetails.departureTime)
         }
 
         Box(
@@ -71,7 +68,7 @@ fun TimeDateDetails(
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            arrowPadded(modifier = Modifier) // паддинги берутся из общих дефолтов
+            ArrowPadded(modifier = Modifier) // паддинги берутся из общих дефолтов
         }
 
         Column(
@@ -85,15 +82,15 @@ fun TimeDateDetails(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
-            dayMonthText(tripDetails.arrivalDayMonth)
-            timeValueText(tripDetails.arrivalTime)
+            DayMonthText(tripDetails.arrivalDayMonth)
+            TimeValueText(tripDetails.arrivalTime)
         }
     }
 }
 
 @Preview
 @Composable
-fun timeDateDetailsPreview() {
+fun TimeDateDetailsPreview() {
     TimeDateDetails(
         modifier = Modifier,
         tripRecord = TripDomain(

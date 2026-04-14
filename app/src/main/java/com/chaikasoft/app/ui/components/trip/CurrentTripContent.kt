@@ -50,7 +50,7 @@ fun CurrentTripContent(
                     bottom.linkTo(parent.bottom)
                     width = Dimension.value(TripDimens.SideRectWidth)
                 },
-            color = colorScheme.primary,
+            color = colorScheme.primary
         )
 
         Row(
@@ -113,7 +113,7 @@ fun CurrentTripContent(
 
 @Preview
 @Composable
-fun currentTripButtonPreview() {
+fun CurrentTripButtonPreview() {
     ChaikaTheme {
         CurrentTripContent(
             modifier = Modifier,

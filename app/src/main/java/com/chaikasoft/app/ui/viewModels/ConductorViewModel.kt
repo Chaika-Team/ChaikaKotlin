@@ -1,27 +1,28 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.domain.usecases.GetAllConductorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-
 
 @HiltViewModel
 class ConductorViewModel @Inject constructor(
-    private val getAllConductorsUseCase: GetAllConductorsUseCase,
+    private val getAllConductorsUseCase: GetAllConductorsUseCase
 ) : ViewModel() {
 
-    private val _conductor: MutableStateFlow<ConductorDomain?> = MutableStateFlow<ConductorDomain?>(null)
+    private val _conductor: MutableStateFlow<ConductorDomain?> =
+        MutableStateFlow<ConductorDomain?>(null)
     val conductor: StateFlow<ConductorDomain?> = _conductor.asStateFlow()
 
-    private val _allConductors: MutableStateFlow<List<ConductorDomain>> = MutableStateFlow<List<ConductorDomain>>(emptyList())
+    private val _allConductors: MutableStateFlow<List<ConductorDomain>> =
+        MutableStateFlow<List<ConductorDomain>>(emptyList())
     val allConductors: StateFlow<List<ConductorDomain>> = _allConductors.asStateFlow()
 
     init {
@@ -33,8 +34,8 @@ class ConductorViewModel @Inject constructor(
                 }
         }
         viewModelScope.launch {
-            allConductors.collect {
-                    list -> _conductor.value = list.firstOrNull()
+            allConductors.collect { list ->
+                _conductor.value = list.firstOrNull()
             }
         }
     }

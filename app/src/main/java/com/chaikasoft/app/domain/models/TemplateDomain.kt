@@ -6,10 +6,7 @@ package com.chaikasoft.app.domain.models
  * @param productId Идентификатор продукта.
  * @param quantity Количество единиц продукта в шаблоне.
  */
-data class TemplateContentDomain(
-    val productId: Int,
-    val quantity: Int
-)
+data class TemplateContentDomain(val productId: Int, val quantity: Int)
 
 /**
  * Доменная модель шаблона.

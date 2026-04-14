@@ -9,16 +9,11 @@ import java.time.temporal.ChronoUnit
  * Локальное время → RFC 3339 UTC с секундами и суффиксом Z.
  * Пример: 2025-04-29T18:40:00Z
  */
-fun localToRfc3339Utc(
-    local: LocalDateTime,
-    zone: ZoneId = ZoneId.systemDefault()
-): String =
-    local
-        .atZone(zone)                 // трактуем локальное как время в заданной зоне
-        .toInstant()                  // переводим в UTC
-        .truncatedTo(ChronoUnit.SECONDS)
-        .toString()                   // ISO_INSTANT → ...Z
-
+fun localToRfc3339Utc(local: LocalDateTime, zone: ZoneId = ZoneId.systemDefault()): String = local
+    .atZone(zone) // трактуем локальное как время в заданной зоне
+    .toInstant() // переводим в UTC
+    .truncatedTo(ChronoUnit.SECONDS)
+    .toString() // ISO_INSTANT → ...Z
 
 /**
  * Продолжительность между отправлением и прибытием в формате <H>h<M>m<S>s,
@@ -46,6 +41,5 @@ fun generateLocalUuid(): String = "local-${java.util.UUID.randomUUID()}"
  * - схлопывание пробелов
  * (без lowercase — сохраняем регистр)
  */
-fun normalizeForDisplay(s: String): String =
-    s.trim()
-        .replace(Regex("\\s+"), " ")
+fun normalizeForDisplay(s: String): String = s.trim()
+    .replace(Regex("\\s+"), " ")

@@ -92,7 +92,9 @@ fun CartPaymentArea(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = selectedConductor?.let { "${it.familyName} ${it.name}" } ?: stringResource(id = R.string.cart_payment_select_conductor),
+                    value =
+                    selectedConductor?.let { "${it.familyName} ${it.name}" }
+                        ?: stringResource(id = R.string.cart_payment_select_conductor),
                     textStyle = TextStyle(fontSize = ProductDimens.LabelFontSizeM),
                     onValueChange = {},
                     readOnly = true,
@@ -101,7 +103,9 @@ fun CartPaymentArea(
                         .menuAnchor()
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(ProductDimens.CornerRadiusM),
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
+                    },
                     colors = ExposedDropdownMenuDefaults.textFieldColors()
                 )
                 ExposedDropdownMenu(
@@ -113,7 +117,9 @@ fun CartPaymentArea(
                             text = {
                                 Text(
                                     conductor?.let { "${it.familyName} ${it.name}" }
-                                        ?: stringResource(id = R.string.cart_payment_select_conductor)
+                                        ?: stringResource(
+                                            id = R.string.cart_payment_select_conductor
+                                        )
                                 )
                             },
                             onClick = {
@@ -171,6 +177,4 @@ fun CartPaymentAreaPreview() {
             onPayCard = {}
         )
     }
-
-
-} 
+}

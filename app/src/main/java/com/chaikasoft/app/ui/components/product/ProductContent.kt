@@ -32,7 +32,6 @@ import com.chaikasoft.app.ui.theme.ProductDimens.PaddingL
 import com.chaikasoft.app.ui.theme.ProductDimens.QuantitySelectorHeight
 import com.chaikasoft.app.util.formatPriceOnly
 
-
 @Composable
 fun ProductContent(
     product: Product,
@@ -51,7 +50,7 @@ fun ProductContent(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            overflow = TextOverflow.Ellipsis
         )
 
         AnimatedVisibility(visible = !product.isInCart) {
@@ -74,11 +73,7 @@ fun ProductContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotInCartContent(
-    price: Int,
-    description: String,
-    onAddToCart: () -> Unit,
-) {
+private fun NotInCartContent(price: Int, description: String, onAddToCart: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -109,7 +104,7 @@ private fun NotInCartContent(
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary),
-            onClick = onAddToCart,
+            onClick = onAddToCart
         ) {
             Icon(
                 imageVector = Icons.Default.Add,

@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
 import com.chaikasoft.app.domain.sealed.UploadResult
 

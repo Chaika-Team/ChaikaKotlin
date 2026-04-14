@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -19,27 +19,24 @@ class TemplatePagingSource @Inject constructor(
     private val query: String = ""
 ) : PagingSource<Int, TemplateDomain>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TemplateDomain> {
-        return try {
-            val currentPage = params.key ?: 0
-            val pageSize = params.loadSize
-            val offset = currentPage * pageSize
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TemplateDomain> = try {
+        val currentPage = params.key ?: 0
+        val pageSize = params.loadSize
+        val offset = currentPage * pageSize
 
-            val templates = repository.fetchTemplates(query, limit = pageSize, offset = offset)
+        val templates = repository.fetchTemplates(query, limit = pageSize, offset = offset)
 
-            // Если получено меньше элементов, чем pageSize, значит следующей страницы нет.
-            val nextKey = if (templates.size < pageSize) null else currentPage + 1
+        // Если получено меньше элементов, чем pageSize, значит следующей страницы нет.
+        val nextKey = if (templates.size < pageSize) null else currentPage + 1
 
-            LoadResult.Page(
-                data = templates,
-                prevKey = if (currentPage == 0) null else currentPage - 1,
-                nextKey = nextKey
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
+        LoadResult.Page(
+            data = templates,
+            prevKey = if (currentPage == 0) null else currentPage - 1,
+            nextKey = nextKey
+        )
+    } catch (e: Exception) {
+        LoadResult.Error(e)
     }
-
 
     override fun getRefreshKey(state: PagingState<Int, TemplateDomain>): Int? {
         // Для обновления страницы ищем ближайшую страницу к текущей позиции якоря

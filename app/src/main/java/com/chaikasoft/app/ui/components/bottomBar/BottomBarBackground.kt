@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.components.bottomBar
+package com.chaikasoft.app.ui.components.bottombar
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,7 +64,6 @@ fun BottomBarBackground(
 
 @Preview
 @Composable
-private fun Background(
-) {
+private fun Background() {
     BottomBarBackground()
 }

@@ -22,8 +22,6 @@ import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.Executors
 import javax.inject.Singleton
 
-
-
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -32,26 +30,29 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext context: Context,
-    ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
-        .fallbackToDestructiveMigration()   // мы «переустанавливаем приложение», миграции не пишем
-        .setQueryCallback({ sql, args -> Log.d("ROOM-SQL-CHAIKA", "$sql -- $args") }, Executors.newSingleThreadExecutor())
-        .addCallback(object : RoomDatabase.Callback() {
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                try {
-                    db.execSQL("""
-            CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_shift
-            ON conductor_trip_shifts(status)
-            WHERE status = $SHIFT_STATUS_ACTIVE
-        """.trimIndent())
-                } catch (e: android.database.sqlite.SQLiteException) {
-                    Log.e("ROOM", "Failed to ensure idx_unique_active_shift", e)
-                    throw e
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
+            .fallbackToDestructiveMigration() // мы «переустанавливаем приложение», миграции не пишем
+            .setQueryCallback({ sql, args ->
+                Log.d("ROOM-SQL-CHAIKA", "$sql -- $args")
+            }, Executors.newSingleThreadExecutor())
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    try {
+                        db.execSQL(
+                            """
+                            CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_shift
+                            ON conductor_trip_shifts(status)
+                            WHERE status = $SHIFT_STATUS_ACTIVE
+                            """.trimIndent()
+                        )
+                    } catch (e: android.database.sqlite.SQLiteException) {
+                        Log.e("ROOM", "Failed to ensure idx_unique_active_shift", e)
+                        throw e
+                    }
                 }
-            }
-        })
-        .build()
+            })
+            .build()
 
     @Provides
     fun provideCartItemDao(db: AppDatabase): CartItemDao = db.cartItemDao()

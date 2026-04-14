@@ -50,9 +50,9 @@ import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.mappers.toUiModel
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ProductDimens
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.viewModels.FillViewModel
-import com.chaikasoft.app.ui.viewModels.ProductViewModel
+import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
+import com.chaikasoft.app.ui.viewmodels.FillViewModel
+import com.chaikasoft.app.ui.viewmodels.ProductViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -60,7 +60,7 @@ fun TemplateEditView(
     productViewModel: ProductViewModel,
     conductorViewModel: ConductorViewModel,
     fillViewModel: FillViewModel,
-    navController: NavHostController,
+    navController: NavHostController
 ) {
     val pagingItems = productViewModel.productsFlow.collectAsLazyPagingItems()
     val cartItems by fillViewModel.items.collectAsStateWithLifecycle()
@@ -87,7 +87,6 @@ fun TemplateEditView(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
             if (isSyncing) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth()
@@ -147,7 +146,6 @@ private fun ProductScreenContent(
     val itemCount = pagingItems.itemCount
 
     Column(modifier = modifier) {
-
         Box(modifier = Modifier.weight(1f)) {
             when {
                 refreshState is LoadState.Loading && itemCount == 0 -> {
@@ -234,7 +232,6 @@ private fun ProductList(
                         fillViewModel.onRemove(uiProduct.id)
                     }
                 )
-
             }
         }
 
@@ -267,9 +264,7 @@ private fun ProductList(
 }
 
 @Composable
-private fun LoadingState(
-    modifier: Modifier = Modifier
-) {
+private fun LoadingState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -279,9 +274,7 @@ private fun LoadingState(
 }
 
 @Composable
-private fun EmptyState(
-    modifier: Modifier = Modifier
-) {
+private fun EmptyState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -315,11 +308,7 @@ private fun EmptyState(
 }
 
 @Composable
-private fun ErrorState(
-    error: Throwable,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun ErrorState(error: Throwable, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -332,11 +321,7 @@ private fun ErrorState(
 }
 
 @Composable
-private fun ErrorItem(
-    error: Throwable,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun ErrorItem(error: Throwable, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()

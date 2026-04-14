@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import android.content.Intent
 import com.chaikasoft.app.domain.sealed.LogoutResult

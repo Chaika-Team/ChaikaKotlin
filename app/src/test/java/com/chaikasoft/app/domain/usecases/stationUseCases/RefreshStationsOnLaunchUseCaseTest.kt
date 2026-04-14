@@ -1,6 +1,6 @@
 package com.chaikasoft.app.domain.usecases.stationUseCases
 
-import com.chaikasoft.app.data.dataSource.repo.ChaikaTripperRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
 import com.chaikasoft.app.domain.common.AppError
 import com.chaikasoft.app.domain.common.RemoteResult

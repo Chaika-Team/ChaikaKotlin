@@ -1,8 +1,8 @@
-package com.chaikasoft.app.data.dataSource.mappers
+package com.chaikasoft.app.data.datasource.mappers
 
-import com.chaikasoft.app.data.dataSource.dto.CarDto
-import com.chaikasoft.app.data.dataSource.dto.StationDto
-import com.chaikasoft.app.data.dataSource.dto.TripDto
+import com.chaikasoft.app.data.datasource.dto.CarDto
+import com.chaikasoft.app.data.datasource.dto.StationDto
+import com.chaikasoft.app.data.datasource.dto.TripDto
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain

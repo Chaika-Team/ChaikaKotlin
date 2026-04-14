@@ -41,7 +41,7 @@ fun CarriageCard(
             .clickable(onClick = onClick)
             .height(height)
             .width(width),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
             drawRoundRect(

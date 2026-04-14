@@ -9,8 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,7 +20,7 @@ object FileRepositoriesModule {
     @Singleton
     fun provideLocalImageRepository(
         @ApplicationContext context: Context,
-        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher
     ): LocalImageRepositoryInterface =
         LocalImageRepository(context = context, ioDispatcher = ioDispatcher)
 
@@ -28,6 +28,5 @@ object FileRepositoriesModule {
     @Singleton
     fun provideLocalTripReportRepository(
         @ApplicationContext context: Context
-    ): LocalTripReportRepository =
-        LocalTripReportRepository(context)
+    ): LocalTripReportRepository = LocalTripReportRepository(context)
 }

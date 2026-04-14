@@ -53,8 +53,16 @@ fun FaqCard(
                 )
                 IconButton(onClick = onExpandToggle) {
                     Icon(
-                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = if (expanded) collapseContentDescription else expandContentDescription
+                        imageVector = if (expanded) {
+                            Icons.Default.ExpandLess
+                        } else {
+                            Icons.Default.ExpandMore
+                        },
+                        contentDescription = if (expanded) {
+                            collapseContentDescription
+                        } else {
+                            expandContentDescription
+                        }
                     )
                 }
             }
@@ -68,4 +76,4 @@ fun FaqCard(
             }
         }
     }
-} 
+}

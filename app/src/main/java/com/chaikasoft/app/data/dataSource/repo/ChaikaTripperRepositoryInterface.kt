@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
 import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.StationDomain
@@ -12,7 +12,11 @@ interface ChaikaTripperRepositoryInterface {
     /**
      * Ищет поездки по дате и кодам станций отправления/прибытия.
      */
-    suspend fun searchTripsByStations(date: String, fromCode: String, toCode: String): RemoteResult<List<TripDomain>>
+    suspend fun searchTripsByStations(
+        date: String,
+        fromCode: String,
+        toCode: String
+    ): RemoteResult<List<TripDomain>>
 
     /**
      * Загрузить все станции на старте (большим лимитом, без query)

@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +14,9 @@ import com.chaikasoft.app.ui.helpers.OfflineTripBuildHelper.BuildError
 import com.chaikasoft.app.ui.helpers.OfflineTripBuildHelper.BuildResult
 import com.chaikasoft.app.ui.helpers.OfflineTripBuildHelper.Input
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalDateTime
+import java.time.ZoneId
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -30,15 +33,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.ZoneId
-import javax.inject.Inject
 
 @HiltViewModel
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class AutonomousViewModel @Inject constructor(
     private val getPagedStationSuggestions: GetPagedStationSuggestionsUseCase,
-    private val startShift: StartShiftUseCase,
+    private val startShift: StartShiftUseCase
 ) : ViewModel() {
 
     companion object {
@@ -79,11 +79,11 @@ class AutonomousViewModel @Inject constructor(
     private val _state = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = _state.asStateFlow()
 
-    private val _fromQuery = MutableStateFlow("")
-    private val _toQuery = MutableStateFlow("")
+    private val fromQuery = MutableStateFlow("")
+    private val toQuery = MutableStateFlow("")
 
     val fromSuggestions: Flow<PagingData<StationDomain>> =
-        _fromQuery
+        fromQuery
             .map { it.trim() }
             .filter { it.length >= 2 }
             .debounce(500)
@@ -92,7 +92,7 @@ class AutonomousViewModel @Inject constructor(
             .cachedIn(viewModelScope)
 
     val toSuggestions: Flow<PagingData<StationDomain>> =
-        _toQuery
+        toQuery
             .map { it.trim() }
             .filter { it.length >= 2 }
             .debounce(500)
@@ -116,7 +116,7 @@ class AutonomousViewModel @Inject constructor(
         update { copy(trainNumber = value).clearedErrorsFor(BuildError.TrainNumberEmpty) }
 
     fun onFromQueryChange(value: String) {
-        _fromQuery.value = value               // ВАЖНО: запускаем поиск
+        fromQuery.value = value // ВАЖНО: запускаем поиск
         update {
             copy(fromQuery = value, fromSelected = null)
                 .clearedErrorsFor(BuildError.FromStationMissing, BuildError.SameStations)
@@ -124,7 +124,7 @@ class AutonomousViewModel @Inject constructor(
     }
 
     fun onToQueryChange(value: String) {
-        _toQuery.value = value                 // ВАЖНО: запускаем поиск
+        toQuery.value = value // ВАЖНО: запускаем поиск
         update {
             copy(toQuery = value, toSelected = null)
                 .clearedErrorsFor(BuildError.ToStationMissing, BuildError.SameStations)
@@ -132,7 +132,7 @@ class AutonomousViewModel @Inject constructor(
     }
 
     fun onSelectFrom(station: StationDomain) {
-        _fromQuery.value = station.name        // синхронизируем с потоком подсказок
+        fromQuery.value = station.name // синхронизируем с потоком подсказок
         update {
             copy(fromSelected = station, fromQuery = station.name)
                 .clearedErrorsFor(BuildError.FromStationMissing, BuildError.SameStations)
@@ -140,24 +140,29 @@ class AutonomousViewModel @Inject constructor(
     }
 
     fun onSelectTo(station: StationDomain) {
-        _toQuery.value = station.name          // синхронизируем с потоком подсказок
+        toQuery.value = station.name // синхронизируем с потоком подсказок
         update {
             copy(toSelected = station, toQuery = station.name)
                 .clearedErrorsFor(BuildError.ToStationMissing, BuildError.SameStations)
         }
     }
 
-    fun onDepartureChange(value: LocalDateTime?) =
-        update { copy(departure = value).clearedErrorsFor(BuildError.DepartureMissing, BuildError.ArrivalNotAfterDeparture) }
+    fun onDepartureChange(value: LocalDateTime?) = update {
+        copy(
+            departure = value
+        ).clearedErrorsFor(BuildError.DepartureMissing, BuildError.ArrivalNotAfterDeparture)
+    }
 
-    fun onArrivalChange(value: LocalDateTime?) =
-        update { copy(arrival = value).clearedErrorsFor(BuildError.ArrivalMissing, BuildError.ArrivalNotAfterDeparture) }
+    fun onArrivalChange(value: LocalDateTime?) = update {
+        copy(
+            arrival = value
+        ).clearedErrorsFor(BuildError.ArrivalMissing, BuildError.ArrivalNotAfterDeparture)
+    }
 
     fun onCarriageNumberChange(value: String) =
         update { copy(carriageNumber = value).clearedErrorsFor(BuildError.CarriageNumberEmpty) }
 
-    fun onCarriageClassTypeChange(value: String) =
-        update { copy(carriageClassType = value) }
+    fun onCarriageClassTypeChange(value: String) = update { copy(carriageClassType = value) }
 
     fun submit(zone: ZoneId = ZoneId.systemDefault()) {
         val current = _state.value
@@ -180,24 +185,29 @@ class AutonomousViewModel @Inject constructor(
                     // Если вдруг билдер вернул ошибки — просто покажем их в UI-состоянии
                     update { copy(isSubmitting = false, buildErrors = result.errors.toSet()) }
                 }
+
                 is BuildResult.Failure -> {
                     update { copy(isSubmitting = false, lastMessage = result.cause.message) }
                     _events.emit(Event.Info(result.cause.message ?: "Не удалось собрать поездку"))
                 }
+
                 is BuildResult.Success -> {
                     val (trip, carriage) = result.output
                     val started = runCatching { startShift(trip, carriage) }.getOrElse { false }
                     update { copy(isSubmitting = false) }
-                    if (started) _events.emit(Event.ShiftStarted(trip, carriage))
-                    else _events.emit(Event.Info("Уже есть активная смена"))
+                    if (started) {
+                        _events.emit(Event.ShiftStarted(trip, carriage))
+                    } else {
+                        _events.emit(Event.Info("Уже есть активная смена"))
+                    }
                 }
             }
         }
     }
 
     fun clearState() {
-        _fromQuery.value = ""
-        _toQuery.value = ""
+        fromQuery.value = ""
+        toQuery.value = ""
 
         _state.update { UiState() }
     }

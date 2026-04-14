@@ -25,25 +25,21 @@ import kotlinx.coroutines.flow.Flow
 fun SearchTripSurfaceDropdown(
     searchDateDisplay: String,
     onSearchDateClick: () -> Unit,
-
     fromQuery: String,
     onFromQueryChange: (String) -> Unit,
     toQuery: String,
     onToQueryChange: (String) -> Unit,
-
     fromSuggestions: Flow<PagingData<StationDomain>>,
     toSuggestions: Flow<PagingData<StationDomain>>,
-
     onStartStationChange: (StationDomain?) -> Unit,
     onFinishStationChange: (StationDomain?) -> Unit,
-
     modifier: Modifier = Modifier,
-    height: Dp = TripDimens.SearchCardHeight,
+    height: Dp = TripDimens.SearchCardHeight
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(height),
+            .height(height)
     ) {
         SurfaceBackground(modifier = Modifier.matchParentSize())
 

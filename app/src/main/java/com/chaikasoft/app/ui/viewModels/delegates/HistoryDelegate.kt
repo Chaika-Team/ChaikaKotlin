@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels.delegates
+package com.chaikasoft.app.ui.viewmodels.delegates
 
 import android.util.Log
 import androidx.annotation.StringRes
@@ -7,6 +7,7 @@ import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.usecases.GetShiftHistoryUseCase
 import com.chaikasoft.app.domain.usecases.SendShiftReportUseCase
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class HistoryDelegate(
     private val getShiftHistoryUseCase: GetShiftHistoryUseCase,
@@ -99,9 +99,9 @@ class HistoryDelegate(
             Log.d(TAG, "confirmRetrySend: start, uuid=$uuid")
             try {
                 val msg = when (sendShiftReportUseCase(uuid)) {
-                    is SendReportResult.Success          -> R.string.trip_finish_success
-                    is SendReportResult.AlreadySent      -> R.string.trip_finish_already_sent
-                    is SendReportResult.MissingReport    -> R.string.trip_finish_missing_report
+                    is SendReportResult.Success -> R.string.trip_finish_success
+                    is SendReportResult.AlreadySent -> R.string.trip_finish_already_sent
+                    is SendReportResult.MissingReport -> R.string.trip_finish_missing_report
                     is SendReportResult.TemporaryFailure -> R.string.trip_finish_temp_failure
                     is SendReportResult.PermanentFailure -> R.string.trip_finish_perm_failure
                 }
