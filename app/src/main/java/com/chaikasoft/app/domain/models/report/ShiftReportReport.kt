@@ -13,8 +13,8 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class ShiftReportReport(
-    @Json(name = "trip_id")     val tripId: TripIdReport,
-    @Json(name = "end_time")    val endTime: String,
+    @Json(name = "trip_id") val tripId: TripIdReport,
+    @Json(name = "end_time") val endTime: String,
     @Json(name = "carriage_id") val carriageId: Int,
-    @Json(name = "carts")       val carts: List<CartReport>
+    @Json(name = "carts") val carts: List<CartReport>
 )

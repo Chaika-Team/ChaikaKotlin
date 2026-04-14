@@ -26,8 +26,8 @@ import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.components.product.SellResultBottomSheet
 import com.chaikasoft.app.ui.mappers.toUiModel
 import com.chaikasoft.app.ui.theme.ProductDimens
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.viewModels.SaleViewModel
+import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
+import com.chaikasoft.app.ui.viewmodels.SaleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,10 +57,13 @@ fun ProductCartView(
         Box(modifier = Modifier.weight(1f)) {
             if (cartItems.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(id = R.string.cart_empty), style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        stringResource(id = R.string.cart_empty),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             } else {
-                LazyVerticalGrid (
+                LazyVerticalGrid(
                     columns = GridCells.Fixed(1),
                     contentPadding = PaddingValues(ProductDimens.CartPadding)
                 ) {
@@ -68,8 +71,18 @@ fun ProductCartView(
                         CartProductItem(
                             product = product.toUiModel(),
                             onAddToCart = { },
-                            onQuantityIncrease = { saleViewModel.onQuantityChange(product.product.id, product.quantity+1) },
-                            onQuantityDecrease = { saleViewModel.onQuantityChange(product.product.id, product.quantity-1) },
+                            onQuantityIncrease = {
+                                saleViewModel.onQuantityChange(
+                                    product.product.id,
+                                    product.quantity + 1
+                                )
+                            },
+                            onQuantityDecrease = {
+                                saleViewModel.onQuantityChange(
+                                    product.product.id,
+                                    product.quantity - 1
+                                )
+                            },
                             onRemove = { saleViewModel.onRemove(product.product.id) }
                         )
                     }

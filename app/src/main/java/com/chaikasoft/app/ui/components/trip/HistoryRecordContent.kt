@@ -32,7 +32,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 fun HistoryRecordContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
-    isError: Boolean = false,
+    isError: Boolean = false
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val sideColor = if (isError) colorScheme.error else colorScheme.secondary
@@ -42,11 +42,11 @@ fun HistoryRecordContent(
             .height(TripDimens.RecordCardHeight)
             .width(TripDimens.CardWidth)
     ) {
-        val (sideRect, trainId, timeDetails, stationsDetails) = createRefs()
+        val (SideRect, trainId, timeDetails, stationsDetails) = createRefs()
 
         SideRect(
             modifier = Modifier
-                .constrainAs(sideRect) {
+                .constrainAs(SideRect) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -58,7 +58,7 @@ fun HistoryRecordContent(
         Row(
             modifier = Modifier
                 .constrainAs(trainId) {
-                    start.linkTo(sideRect.end, margin = 4.dp)
+                    start.linkTo(SideRect.end, margin = 4.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(timeDetails.top)
                 },
@@ -82,7 +82,7 @@ fun HistoryRecordContent(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(timeDetails) {
-                    start.linkTo(sideRect.end, margin = 4.dp)
+                    start.linkTo(SideRect.end, margin = 4.dp)
                     top.linkTo(trainId.bottom)
                     end.linkTo(parent.end, margin = 4.dp)
                     bottom.linkTo(stationsDetails.top)
@@ -94,7 +94,7 @@ fun HistoryRecordContent(
             tripRecord = tripRecord,
             modifier = Modifier
                 .constrainAs(stationsDetails) {
-                    start.linkTo(sideRect.end, margin = 4.dp)
+                    start.linkTo(SideRect.end, margin = 4.dp)
                     top.linkTo(timeDetails.bottom)
                     end.linkTo(parent.end, margin = 4.dp)
                     width = Dimension.fillToConstraints

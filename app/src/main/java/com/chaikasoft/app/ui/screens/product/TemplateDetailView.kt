@@ -20,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.TemplateContentDomain
@@ -37,15 +37,15 @@ import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.state.TemplateDetailUiState
-import com.chaikasoft.app.ui.viewModels.FillViewModel
-import com.chaikasoft.app.ui.viewModels.TemplateViewModel
+import com.chaikasoft.app.ui.viewmodels.FillViewModel
+import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
 
 @Composable
 fun TemplateDetailView(
     templateId: Int,
     viewModel: TemplateViewModel,
     fillViewModel: FillViewModel,
-    navController: NavController,
+    navController: NavController
 ) {
     val detailState = viewModel.templateDetailState.collectAsStateWithLifecycle()
 
@@ -92,7 +92,7 @@ fun TemplateDetailView(
 private fun TemplateDetailContent(
     template: TemplateDomain,
     fillViewModel: FillViewModel,
-    navController: NavController,
+    navController: NavController
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -213,4 +213,3 @@ private fun ItemInfo(item: TemplateContentDomain) {
         )
     }
 }
-

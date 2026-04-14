@@ -21,24 +21,24 @@ import androidx.room.PrimaryKey
             entity = CartOperation::class,
             parentColumns = ["id"],
             childColumns = ["cart_operation_id"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = ProductInfo::class,
             parentColumns = ["id"],
             childColumns = ["product_id"],
-            onDelete = ForeignKey.CASCADE,
-        ),
+            onDelete = ForeignKey.CASCADE
+        )
 
     ],
     indices = [
         Index(value = ["cart_operation_id"]),
-        Index(value = ["product_id"]),
-    ],
+        Index(value = ["product_id"])
+    ]
 )
 data class CartItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "cart_operation_id") val cartOperationId: Int,
     @ColumnInfo(name = "product_id") val productId: Int,
-    @ColumnInfo(name = "impact") val impact: Int,
+    @ColumnInfo(name = "impact") val impact: Int
 )

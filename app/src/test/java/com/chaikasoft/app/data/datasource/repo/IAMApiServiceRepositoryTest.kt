@@ -1,7 +1,7 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
-import com.chaikasoft.app.data.dataSource.apiService.IAMApiService
-import com.chaikasoft.app.data.dataSource.dto.ConductorDto
+import com.chaikasoft.app.data.datasource.apiservice.IAMApiService
+import com.chaikasoft.app.data.datasource.dto.ConductorDto
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery

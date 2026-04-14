@@ -1,11 +1,11 @@
-package com.chaikasoft.app.data.inMemory
+package com.chaikasoft.app.data.inmemory
 
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.CartItemDomain
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
 
 class InMemoryCartRepository @Inject constructor() : InMemoryCartRepositoryInterface {
 
@@ -21,11 +21,11 @@ class InMemoryCartRepository @Inject constructor() : InMemoryCartRepositoryInter
         return if (existingItem == null) {
             if (item.quantity > 0) {
                 currentItems.add(
-                    item.copy(quantity = item.quantity) //Добавляем из шаблона
+                    item.copy(quantity = item.quantity) // Добавляем из шаблона
                 )
             } else {
                 currentItems.add(
-                    item.copy(quantity = 1) //Только добавили в корзину
+                    item.copy(quantity = 1) // Только добавили в корзину
                 )
             }
             _cartItems.value = currentItems.toList() // Возвращаем неизменяемую копию

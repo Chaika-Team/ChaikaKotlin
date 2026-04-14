@@ -5,8 +5,4 @@ package com.chaikasoft.app.domain.models
  * @param product Продукт, представлен ДМ PackageItemDomain.
  * @param quantity Количество единиц продукта.
  * */
-data class CartItemDomain(
-    val product: ProductInfoDomain,
-    val quantity: Int,
-)
-
+data class CartItemDomain(val product: ProductInfoDomain, val quantity: Int)

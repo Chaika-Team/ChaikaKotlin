@@ -17,12 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.ui.components.operation.OperationCard
-import com.chaikasoft.app.ui.viewModels.OperationViewModel
+import com.chaikasoft.app.ui.viewmodels.OperationViewModel
 
 @Composable
-fun OperationScreen(
-    viewModel: OperationViewModel
-) {
+fun OperationScreen(viewModel: OperationViewModel) {
     val operations = viewModel.operations.collectAsLazyPagingItems()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -37,9 +35,11 @@ fun OperationScreen(
                 loadState.refresh is LoadState.Loading -> {
                     item { LoadingItem("Загрузка операций...") }
                 }
+
                 loadState.append is LoadState.Loading -> {
                     item { LoadingItem("Загружаем ещё...") }
                 }
+
                 loadState.refresh is LoadState.Error -> {
                     item { ErrorItem("Ошибка загрузки") }
                 }

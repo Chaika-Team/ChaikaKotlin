@@ -16,6 +16,6 @@ open class CryptoModule {
     @Provides
     @Singleton
     fun provideEncryptedTokenManager(
-        @ApplicationContext context: Context,
+        @ApplicationContext context: Context
     ): EncryptedTokenManagerInterface = EncryptedTokenManager(context)
 }

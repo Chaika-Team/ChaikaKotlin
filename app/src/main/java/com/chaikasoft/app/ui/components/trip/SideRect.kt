@@ -17,12 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun SideRect(
-    modifier: Modifier,
-    width: Dp = TripDimens.SideRectWidth,
-    color: Color
-) {
-    Box (
+fun SideRect(modifier: Modifier, width: Dp = TripDimens.SideRectWidth, color: Color) {
+    Box(
         modifier = modifier
             .fillMaxHeight()
             .width(width)
@@ -45,7 +41,7 @@ fun SideRect(
 
 @Preview
 @Composable
-fun sideRectPreview() {
+fun SideRectPreview() {
     val colorScheme = MaterialTheme.colorScheme
     SideRect(modifier = Modifier, color = colorScheme.primary)
 }

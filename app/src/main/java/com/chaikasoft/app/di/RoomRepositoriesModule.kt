@@ -37,31 +37,35 @@ import javax.inject.Singleton
 object RoomRepositoriesModule {
     @Provides
     @Singleton
-    fun provideRoomCartOperationRepository(cartOperationDao: CartOperationDao): RoomCartOperationRepositoryInterface =
-        RoomCartOperationRepository(cartOperationDao)
+    fun provideRoomCartOperationRepository(
+        cartOperationDao: CartOperationDao
+    ): RoomCartOperationRepositoryInterface = RoomCartOperationRepository(cartOperationDao)
 
     @Provides
     @Singleton
     fun provideRoomCartItemRepository(
         cartItemDao: CartItemDao,
-        productInfoDao: ProductInfoDao,
+        productInfoDao: ProductInfoDao
     ): RoomCartItemRepositoryInterface = RoomCartItemRepository(cartItemDao, productInfoDao)
 
     @Provides
     @Singleton
     fun provideRoomCartRepository(
         cartItemDao: CartItemDao,
-        cartOperationDao: CartOperationDao,
+        cartOperationDao: CartOperationDao
     ): RoomCartRepositoryInterface = RoomCartRepository(cartItemDao, cartOperationDao)
 
     @Provides
     @Singleton
-    fun provideRoomConductorRepository(conductorDao: ConductorDao): RoomConductorRepositoryInterface = RoomConductorRepository(conductorDao)
+    fun provideRoomConductorRepository(
+        conductorDao: ConductorDao
+    ): RoomConductorRepositoryInterface = RoomConductorRepository(conductorDao)
 
     @Provides
     @Singleton
-    fun provideRoomProductInfoRepository(productInfoDao: ProductInfoDao): RoomProductInfoRepositoryInterface =
-        RoomProductInfoRepository(productInfoDao)
+    fun provideRoomProductInfoRepository(
+        productInfoDao: ProductInfoDao
+    ): RoomProductInfoRepositoryInterface = RoomProductInfoRepository(productInfoDao)
 
     @Provides
     @Singleton
@@ -87,6 +91,5 @@ object RoomRepositoriesModule {
     @Singleton
     fun provideRoomReportRepository(
         fastReportViewDao: FastReportViewDao
-    ): RoomReportRepositoryInterface =
-        RoomReportRepository(fastReportViewDao)
+    ): RoomReportRepositoryInterface = RoomReportRepository(fastReportViewDao)
 }

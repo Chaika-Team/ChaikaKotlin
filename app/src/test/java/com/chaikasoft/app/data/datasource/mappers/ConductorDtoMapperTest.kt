@@ -1,6 +1,6 @@
-package com.chaikasoft.app.data.dataSource.mappers
+package com.chaikasoft.app.data.datasource.mappers
 
-import com.chaikasoft.app.data.dataSource.dto.ConductorDto
+import com.chaikasoft.app.data.datasource.dto.ConductorDto
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 

@@ -31,11 +31,7 @@ import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 
 @Composable
-fun TemplateCard(
-    template: TemplateDomain,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun TemplateCard(template: TemplateDomain, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(modifier = modifier) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
@@ -47,7 +43,9 @@ fun TemplateCard(
                 .fillMaxWidth()
                 .height(144.dp),
             elevation = CardDefaults.cardElevation(0.dp),
-            colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color.Transparent)
+            colors = CardDefaults.cardColors(
+                containerColor = androidx.compose.ui.graphics.Color.Transparent
+            )
         ) {
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize()
@@ -125,14 +123,23 @@ fun TemplateCard(
                         }
                         .shadow(
                             elevation = 8.dp,
-                            shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp, topEnd = 0.dp, bottomEnd = 0.dp),
+                            shape = RoundedCornerShape(
+                                topStart = 10.dp,
+                                bottomStart = 10.dp,
+                                topEnd = 0.dp,
+                                bottomEnd = 0.dp
+                            ),
                             spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         ),
-                    shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp, topEnd = 0.dp, bottomEnd = 0.dp)
+                    shape = RoundedCornerShape(
+                        topStart = 10.dp,
+                        bottomStart = 10.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp
+                    )
                 ) {
                     Text(">")
                 }
-                
             }
         }
         HorizontalDivider(

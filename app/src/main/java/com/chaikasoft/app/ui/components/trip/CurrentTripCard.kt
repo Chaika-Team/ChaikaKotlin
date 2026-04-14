@@ -45,9 +45,9 @@ fun CurrentTripCard(
 
 @Preview
 @Composable
-fun currentTripCardPreview() {
+fun CurrentTripCardPreview() {
     ChaikaTheme {
-        CurrentTripCard (
+        CurrentTripCard(
             modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",

@@ -23,13 +23,10 @@ import com.chaikasoft.app.ui.components.trip.NewTripButton
 import com.chaikasoft.app.ui.components.trip.RetrySendConfirmBottomSheet
 import com.chaikasoft.app.ui.components.trip.RetrySendResultBottomSheet
 import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.viewModels.TripViewModel
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
-fun MainTripView(
-    viewModel: TripViewModel,
-    navController: NavController,
-) {
+fun MainTripView(viewModel: TripViewModel, navController: NavController) {
     val history by viewModel.shiftHistory.collectAsStateWithLifecycle()
     val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
 
@@ -43,7 +40,6 @@ fun MainTripView(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             reverseLayout = true,

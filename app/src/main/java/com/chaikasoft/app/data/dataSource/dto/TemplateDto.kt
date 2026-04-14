@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.dto
+package com.chaikasoft.app.data.datasource.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -14,7 +14,8 @@ data class TemplateDto(
     @SerializedName("templateName")
     val templateName: String,
     val description: String,
-    val content: List<TemplateContentDto> = emptyList() // По умолчанию пустой
+    // По умолчанию пустой
+    val content: List<TemplateContentDto> = emptyList()
 )
 
 // DTO для списка шаблонов

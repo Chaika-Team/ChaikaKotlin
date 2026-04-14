@@ -1,8 +1,8 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
+import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.usecases.AddItemToCartUseCase
 import com.chaikasoft.app.domain.usecases.CreateCartUseCase
@@ -11,11 +11,11 @@ import com.chaikasoft.app.domain.usecases.RemoveItemFromCartUseCase
 import com.chaikasoft.app.domain.usecases.ReplenishUseCase
 import com.chaikasoft.app.domain.usecases.UpdateQuantityUnlimitedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ReplenishViewModel @Inject constructor(

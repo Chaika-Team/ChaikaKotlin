@@ -33,32 +33,36 @@ interface CartOperationDao {
     suspend fun clearAllOperations()
 
     // Пагинация «шапок» из VIEW
-    @Query("""
-        SELECT * 
+    @Query(
+        """
+        SELECT *
         FROM operation_info_view
         ORDER BY operation_time DESC, operation_id DESC
-    """)
+        """
+    )
     fun getPagedOperationInfos(): PagingSource<Int, OperationInfoView>
 
     // Дозагрузка товаров конкретной операции (Room сам подтянет ProductInfo через @Relation)
     @Transaction
-    @Query("""
-        SELECT * 
+    @Query(
+        """
+        SELECT *
         FROM cart_items
         WHERE cart_operation_id = :operationId
         ORDER BY id ASC
-    """)
-    fun observeItemsWithProducts(
-        operationId: Int
-    ): Flow<List<CartItemWithProduct>>
+        """
+    )
+    fun observeItemsWithProducts(operationId: Int): Flow<List<CartItemWithProduct>>
 
     /** Шапки для отчёта: операция + её проводник (через @Relation). */
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT *
         FROM cart_operations
         ORDER BY operation_time ASC, id ASC
-    """)
+        """
+    )
     fun getOperationsWithConductorForReport(): Flow<List<CartOperationWithConductor>>
 
     /** Одноразовый счётчик по типу операции */
@@ -66,12 +70,13 @@ interface CartOperationDao {
     suspend fun countByType(type: Int): Int
 
     /** Пагинированный список «шапок» по типу из VIEW (удобно для UI) */
-    @Query("""
-        SELECT * 
+    @Query(
+        """
+        SELECT *
         FROM operation_info_view
         WHERE operation_type = :type
         ORDER BY operation_time DESC, operation_id DESC
-    """)
+        """
+    )
     fun getPagedOperationInfosByType(type: Int): PagingSource<Int, OperationInfoView>
-
 }

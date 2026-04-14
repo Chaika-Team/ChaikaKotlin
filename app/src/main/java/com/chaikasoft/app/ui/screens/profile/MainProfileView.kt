@@ -17,21 +17,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.components.profile.ConfirmBottomSheet
 import com.chaikasoft.app.ui.components.profile.ProfileMenuItem
 import com.chaikasoft.app.ui.components.profile.ProfileMenuItemShape
 import com.chaikasoft.app.ui.components.profile.SectionSpacer
 import com.chaikasoft.app.ui.components.profile.UserHeaderSection
 import com.chaikasoft.app.ui.components.profile.UserInfoSection
-import com.chaikasoft.app.ui.components.profile.ConfirmBottomSheet
+import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
+import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ProfileBackground
 import com.chaikasoft.app.ui.theme.ProfileDimens
-import com.chaikasoft.app.ui.viewModels.AuthViewModel
-import androidx.navigation.NavHostController
-import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.viewModels.ConductorViewModel
-import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
-import com.chaikasoft.app.ui.viewModels.TripViewModel
+import com.chaikasoft.app.ui.viewmodels.AuthViewModel
+import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
 fun MainProfileView(
@@ -43,7 +43,9 @@ fun MainProfileView(
     val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
     val conductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
 
-    val selectedTripRecord by tripViewModel.selectedTripRecord.collectAsStateWithLifecycle(initialValue = null)
+    val selectedTripRecord by tripViewModel.selectedTripRecord.collectAsStateWithLifecycle(
+        initialValue = null
+    )
 
     var showLogoutConfirmSheet by remember { mutableStateOf(false) }
     var showFinishTripConfirmSheet by remember { mutableStateOf(false) }
@@ -134,7 +136,10 @@ fun MainProfileView(
             onDismissRequest = { authViewModel.dismissLogoutErrorDialog() },
             title = { Text(text = stringResource(R.string.logout_error_title)) },
             text = {
-                Text(text = uiState.logoutErrorMessage ?: stringResource(R.string.logout_error_message))
+                Text(
+                    text =
+                    uiState.logoutErrorMessage ?: stringResource(R.string.logout_error_message)
+                )
             },
             confirmButton = {
                 TextButton(onClick = { authViewModel.dismissLogoutErrorDialog() }) {

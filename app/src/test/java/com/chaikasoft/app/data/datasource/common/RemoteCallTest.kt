@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.common
+package com.chaikasoft.app.data.datasource.common
 
 import com.chaikasoft.app.domain.common.AppError
 import com.chaikasoft.app.domain.common.RemoteResult

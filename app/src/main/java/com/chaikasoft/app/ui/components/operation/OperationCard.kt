@@ -40,7 +40,7 @@ import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.theme.OperationDimens
-import com.chaikasoft.app.ui.viewModels.OperationViewModel
+import com.chaikasoft.app.ui.viewmodels.OperationViewModel
 import com.chaikasoft.app.util.formatPriceOnly
 import com.chaikasoft.app.util.formatRuShort
 import com.chaikasoft.app.util.toZoned
@@ -56,7 +56,10 @@ fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel
             .fillMaxWidth()
             .heightIn(max = OperationDimens.CardMaxHeight)
             .padding(OperationDimens.CardOuterPadding)
-            .background(color = Color.White, shape = RoundedCornerShape(OperationDimens.CornerRadius))
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(OperationDimens.CornerRadius)
+            )
             .dashedBorder(),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -106,7 +109,7 @@ fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel
                             ProductRow(
                                 item = cartItem,
                                 isSale = summary.type == OperationTypeDomain.SOLD_CASH ||
-                                        summary.type == OperationTypeDomain.SOLD_CART
+                                    summary.type == OperationTypeDomain.SOLD_CART
                             )
                             // Разделитель только между строками
                             if (index < cartDomain.items.lastIndex) {

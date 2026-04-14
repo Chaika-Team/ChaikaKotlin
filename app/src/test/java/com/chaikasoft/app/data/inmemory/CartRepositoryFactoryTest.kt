@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.inMemory
+package com.chaikasoft.app.data.inmemory
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldNotBe

@@ -37,7 +37,6 @@ import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.ProductDimens
 
-
 @Composable
 fun ReplenishProductItem(
     product: Product,
@@ -50,7 +49,7 @@ fun ReplenishProductItem(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
@@ -155,11 +154,14 @@ private fun StockQuantityRow(
                 text = "Остаток: $qtyText",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = if (quantityToShow <= 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
+                color = if (quantityToShow <= 0) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onBackground
+                },
                 fontSize = ProductDimens.CartProductItem.PriceFontSize
             )
         }
-
 
         if (product.isInCart) {
             // если товар уже в корзине — показываем селектор количества и кнопку удаления
@@ -181,11 +183,17 @@ private fun StockQuantityRow(
                 onClick = onRemove,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = ProductDimens.CartProductItem.QuantitySelectorWidth + ProductDimens.CartProductItem.RemoveButtonPadding)
+                    .padding(
+                        end =
+                        ProductDimens.CartProductItem.QuantitySelectorWidth +
+                            ProductDimens.CartProductItem.RemoveButtonPadding
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(id = R.string.cart_product_remove_from_cart),
+                    contentDescription = stringResource(
+                        id = R.string.cart_product_remove_from_cart
+                    ),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -203,7 +211,7 @@ private fun StockQuantityRow(
                     containerColor = MaterialTheme.colorScheme.primary, // яркая красная пилюля
                     contentColor = Color.White
                 ),
-                onClick = onAddToCart,
+                onClick = onAddToCart
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,

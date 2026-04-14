@@ -13,12 +13,12 @@ import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.domain.models.report.CartOperationReport
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class RoomCartOperationRepository @Inject constructor(
-    private val cartOperationDao: CartOperationDao,
+    private val cartOperationDao: CartOperationDao
 ) : RoomCartOperationRepositoryInterface {
 
     override fun getCartOperationReportsWithIds(): Flow<List<Pair<Int, CartOperationReport>>> {
@@ -27,17 +27,16 @@ class RoomCartOperationRepository @Inject constructor(
             .map { rows -> rows.map { it.toReportPair() } } // <- маппер
     }
 
-    override fun getPagedOperationSummaries(config: PagingConfig): Flow<PagingData<OperationSummaryDomain>> {
-        return Pager(
-            config = config,
-            pagingSourceFactory = { cartOperationDao.getPagedOperationInfos() }
-        ).flow.map { pagingData -> pagingData.map { it.toDomain() } }
-    }
+    override fun getPagedOperationSummaries(
+        config: PagingConfig
+    ): Flow<PagingData<OperationSummaryDomain>> = Pager(
+        config = config,
+        pagingSourceFactory = { cartOperationDao.getPagedOperationInfos() }
+    ).flow.map { pagingData -> pagingData.map { it.toDomain() } }
 
-    override fun observeOperationItems(operationId: Int): Flow<CartDomain> {
-            return cartOperationDao.observeItemsWithProducts(operationId)
-                .map { it.toCartDomain() }
-        }
+    override fun observeOperationItems(operationId: Int): Flow<CartDomain> =
+        cartOperationDao.observeItemsWithProducts(operationId)
+            .map { it.toCartDomain() }
 
     override suspend fun countByType(type: OperationTypeDomain): Int =
         cartOperationDao.countByType(type.toInt())
@@ -45,16 +44,15 @@ class RoomCartOperationRepository @Inject constructor(
     override fun getPagedOperationSummariesByType(
         type: OperationTypeDomain,
         pageSize: Int
-    ): Flow<PagingData<OperationSummaryDomain>> =
-        Pager(
-            config = PagingConfig(
-                pageSize = pageSize,
-                enablePlaceholders = false,
-                initialLoadSize = pageSize * 2,
-                prefetchDistance = pageSize
-            ),
-            pagingSourceFactory = { cartOperationDao.getPagedOperationInfosByType(type.toInt()) }
-        ).flow.map { paging -> paging.map { it.toDomain() } }
+    ): Flow<PagingData<OperationSummaryDomain>> = Pager(
+        config = PagingConfig(
+            pageSize = pageSize,
+            enablePlaceholders = false,
+            initialLoadSize = pageSize * 2,
+            prefetchDistance = pageSize
+        ),
+        pagingSourceFactory = { cartOperationDao.getPagedOperationInfosByType(type.toInt()) }
+    ).flow.map { paging -> paging.map { it.toDomain() } }
 
     override suspend fun clearAllOperations() {
         cartOperationDao.clearAllOperations()

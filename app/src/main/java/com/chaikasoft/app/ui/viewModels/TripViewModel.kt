@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -13,15 +13,15 @@ import com.chaikasoft.app.domain.usecases.GetShiftHistoryUseCase
 import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
 import com.chaikasoft.app.domain.usecases.SendShiftReportUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
-import com.chaikasoft.app.ui.viewModels.delegates.CarriageInputDelegate
-import com.chaikasoft.app.ui.viewModels.delegates.HistoryDelegate
-import com.chaikasoft.app.ui.viewModels.delegates.ShiftDelegate
-import com.chaikasoft.app.ui.viewModels.delegates.StationSuggestionsDelegate
-import com.chaikasoft.app.ui.viewModels.delegates.TripSearchDelegate
+import com.chaikasoft.app.ui.viewmodels.delegates.CarriageInputDelegate
+import com.chaikasoft.app.ui.viewmodels.delegates.HistoryDelegate
+import com.chaikasoft.app.ui.viewmodels.delegates.ShiftDelegate
+import com.chaikasoft.app.ui.viewmodels.delegates.StationSuggestionsDelegate
+import com.chaikasoft.app.ui.viewmodels.delegates.TripSearchDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 import java.io.IOException
+import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class TripViewModel @Inject constructor(
@@ -41,7 +41,10 @@ class TripViewModel @Inject constructor(
     private val tripSearch = TripSearchDelegate(searchTripsUseCase, viewModelScope)
 
     private val shift = ShiftDelegate(
-        startShiftUseCase, getActiveShiftUseCase, completeShiftUseCase, viewModelScope
+        startShiftUseCase,
+        getActiveShiftUseCase,
+        completeShiftUseCase,
+        viewModelScope
     )
 
     private val carriageInput = CarriageInputDelegate(viewModelScope)
@@ -158,5 +161,7 @@ class TripViewModel @Inject constructor(
         }
     }
 
-    private companion object { const val TAG = "TripViewModel" }
+    private companion object {
+        const val TAG = "TripViewModel"
+    }
 }

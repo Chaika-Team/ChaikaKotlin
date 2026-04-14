@@ -1,7 +1,7 @@
 package com.chaikasoft.app.domain.usecases
 
 import android.util.Log
-import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftReportsRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.ChaikaSoftReportsRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
@@ -16,9 +16,9 @@ import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.sealed.UploadResult
 import com.squareup.moshi.Moshi
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
 private const val SEND_TAG = "SHIFT-REPORT"
 
@@ -28,8 +28,7 @@ private const val SEND_TAG = "SHIFT-REPORT"
 class GetAllShiftsUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface
 ) {
-    operator fun invoke(): Flow<List<ConductorTripShiftDomain>> =
-        repository.observeAllShifts()
+    operator fun invoke(): Flow<List<ConductorTripShiftDomain>> = repository.observeAllShifts()
 }
 
 /**
@@ -38,8 +37,7 @@ class GetAllShiftsUseCase @Inject constructor(
 class GetShiftHistoryUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface
 ) {
-    operator fun invoke(): Flow<List<ConductorTripShiftDomain>> =
-        repository.observeShiftHistory()
+    operator fun invoke(): Flow<List<ConductorTripShiftDomain>> = repository.observeShiftHistory()
 }
 
 /**
@@ -48,8 +46,7 @@ class GetShiftHistoryUseCase @Inject constructor(
 class GetActiveShiftUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface
 ) {
-    operator fun invoke(): Flow<ConductorTripShiftDomain?> =
-        repository.observeActiveShift()
+    operator fun invoke(): Flow<ConductorTripShiftDomain?> = repository.observeActiveShift()
 }
 
 /**
@@ -59,8 +56,7 @@ class HasActiveShiftUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface
 ) {
     /** true, если в БД уже есть активная смена на момент вызова */
-    suspend operator fun invoke(): Boolean =
-        repository.getActiveShift() != null
+    suspend operator fun invoke(): Boolean = repository.getActiveShift() != null
 }
 
 /**
@@ -72,10 +68,7 @@ class StartShiftUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface,
     private val hasActiveShift: HasActiveShiftUseCase
 ) {
-    suspend operator fun invoke(
-        trip: TripDomain,
-        activeCarriage: CarriageDomain?
-    ): Boolean {
+    suspend operator fun invoke(trip: TripDomain, activeCarriage: CarriageDomain?): Boolean {
         // не допускаем более одной активной смены
         // Быстрый путь, чтобы не ловить exception в обычном сценарии
         if (hasActiveShift()) return false
@@ -103,7 +96,11 @@ class CompleteShiftAndSendUseCase @Inject constructor(
             generate(uuid)
             Log.d(SEND_TAG, "CompleteShiftAndSendUseCase: report generated for uuid=$uuid")
         } catch (t: IllegalStateException) {
-            Log.e(SEND_TAG, "CompleteShiftAndSendUseCase: generation FAILED for uuid=$uuid, ${t.message}", t)
+            Log.e(
+                SEND_TAG,
+                "CompleteShiftAndSendUseCase: generation FAILED for uuid=$uuid, ${t.message}",
+                t
+            )
             throw t
         }
         val res = send(uuid)
@@ -128,33 +125,34 @@ class GenerateShiftReportUseCase @Inject constructor(
             ?: throw IllegalStateException("Shift with uuid=$uuid not found")
 
         // Защита от перегенерации/перезаписи отчёта и от очистки операций не в том состоянии.
-        check(shift.status == TripShiftStatusDomain.ACTIVE) { "Shift uuid=$uuid is not ACTIVE (status=${shift.status})" }
+        check(shift.status == TripShiftStatusDomain.ACTIVE) {
+            "Shift uuid=$uuid is not ACTIVE (status=${shift.status})"
+        }
 
         // 1) Собираем CartReport'ы из текущих операций (пока они ещё в БД)
         val carts = getCartReports()
         // 2) Формируем итоговый отчёт
         val report = ShiftReportReport(
-            tripId     = TripIdReport(shift.trip.trainNumber, shift.trip.departure),
-            endTime    = shift.trip.arrival,
+            tripId = TripIdReport(shift.trip.trainNumber, shift.trip.departure),
+            endTime = shift.trip.arrival,
             carriageId = shift.activeCarriage
                 ?.carNumber?.toIntOrNull()
                 ?: throw IllegalStateException("Active carriage not set"),
-            carts      = carts
+            carts = carts
         )
         // 3) Фиксируем в БД: статус FINISHED + сам JSON
         val json = jsonAdapter.toJson(report)
         shiftRepo.updateStatusAndReport(
-            uuid       = uuid,
-            newStatus  = TripShiftStatusDomain.FINISHED.code,
+            uuid = uuid,
+            newStatus = TripShiftStatusDomain.FINISHED.code,
             reportJson = json,
-            updatedAt  = System.currentTimeMillis()
+            updatedAt = System.currentTimeMillis()
         )
         // 4) Сразу же очищаем операции → «пакет» пустой
         clearOpsAndPackage()
         return json
     }
 }
-
 
 /**
  * вспомогательный юзкейс сборки отчёта:
@@ -181,17 +179,16 @@ class GetCartReportsUseCase @Inject constructor(
 
             // 2.2) финальный CartReport
             CartReport(
-                cartId        = CartIdReport(
-                    employeeId    = opReport.employeeID,
+                cartId = CartIdReport(
+                    employeeId = opReport.employeeID,
                     operationTime = opReport.operationTime
                 ),
                 operationType = opReport.operationType,
-                items         = items
+                items = items
             )
         }
     }
 }
-
 
 /**
  * Получить отчёт по поездке из базы данных
@@ -201,7 +198,10 @@ class GetShiftReportJsonUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(uuid: String): Pair<TripShiftStatusDomain, String?> {
         val (status, json) = repo.getStatusAndReport(uuid)
-        Log.d(SEND_TAG, "GetShiftReportJsonUseCase: uuid=$uuid, status=$status, reportPresent=${!json.isNullOrBlank()}, reportLen=${json?.length ?: 0}")
+        Log.d(
+            SEND_TAG,
+            "GetShiftReportJsonUseCase: uuid=$uuid, status=$status, reportPresent=${!json.isNullOrBlank()}, reportLen=${json?.length ?: 0}"
+        )
         return status to json
     }
 }
@@ -219,15 +219,23 @@ class UploadShiftReportUseCase @Inject constructor(
                 Log.d(SEND_TAG, "UploadShiftReportUseCase: server OK (2xx)")
                 SendReportResult.Success
             }
+
             is UploadResult.HttpError -> {
                 val bodySnippet = repoRes.body?.take(256)
-                Log.w(SEND_TAG, "UploadShiftReportUseCase: HTTP ${repoRes.code}, errSnippet=$bodySnippet")
+                Log.w(
+                    SEND_TAG,
+                    "UploadShiftReportUseCase: HTTP ${repoRes.code}, errSnippet=$bodySnippet"
+                )
                 when (repoRes.code) {
-                    409 -> SendReportResult.Success // идемпотентность
+                    409 -> SendReportResult.Success
+
+                    // идемпотентность
                     in 400..499 -> SendReportResult.PermanentFailure(repoRes.code, repoRes.body)
+
                     else -> SendReportResult.TemporaryFailure(httpCode = repoRes.code)
                 }
             }
+
             is UploadResult.NetworkError -> {
                 Log.w(SEND_TAG, "UploadShiftReportUseCase: network error: $repoRes")
                 SendReportResult.TemporaryFailure(isNetwork = true)
@@ -254,6 +262,7 @@ class MarkShiftSentUseCase @Inject constructor(
         Log.d(SEND_TAG, "MarkShiftSentUseCase: done, uuid=$uuid")
     }
 }
+
 /**
  * Отправляет отчёт по поездке (так же используется для ретрая отправки)
  */
@@ -269,7 +278,10 @@ class SendShiftReportUseCase @Inject constructor(
     suspend operator fun invoke(uuid: String): SendReportResult {
         Log.d(SEND_TAG, "SendShiftReportUseCase: start, uuid=$uuid")
         val (status, reportJson) = getReport(uuid)
-        Log.d(SEND_TAG, "SendShiftReportUseCase: currentStatus=$status, hasReport=${!reportJson.isNullOrBlank()}, reportLen=${reportJson?.length ?: 0}")
+        Log.d(
+            SEND_TAG,
+            "SendShiftReportUseCase: currentStatus=$status, hasReport=${!reportJson.isNullOrBlank()}, reportLen=${reportJson?.length ?: 0}"
+        )
 
         if (status == TripShiftStatusDomain.SENT) {
             Log.d(SEND_TAG, "SendShiftReportUseCase: already SENT, skipping upload, uuid=$uuid")
@@ -291,5 +303,4 @@ class SendShiftReportUseCase @Inject constructor(
         }
         return result
     }
-
 }

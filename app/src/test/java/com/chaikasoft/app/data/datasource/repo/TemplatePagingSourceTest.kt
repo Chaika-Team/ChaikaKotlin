@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.repo
+package com.chaikasoft.app.data.datasource.repo
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

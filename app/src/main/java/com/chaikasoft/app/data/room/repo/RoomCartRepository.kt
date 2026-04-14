@@ -10,14 +10,14 @@ import javax.inject.Inject
 
 class RoomCartRepository @Inject constructor(
     private val cartItemDao: CartItemDao,
-    private val cartOperationDao: CartOperationDao,
+    private val cartOperationDao: CartOperationDao
 ) : RoomCartRepositoryInterface {
 
     @Transaction
     override suspend fun saveCartWithItemsAndOperation(
         cart: CartDomain,
-        cartOperationDomain: CartOperationDomain,
-    ) :Int {
+        cartOperationDomain: CartOperationDomain
+    ): Int {
         // Вставляем операцию и получаем её ID
         val cartOperationId = cartOperationDao.insertOperation(cartOperationDomain.toEntity())
 
@@ -26,8 +26,8 @@ class RoomCartRepository @Inject constructor(
             cartItemDao.insertCartItem(
                 cartItem.toEntity(
                     cartOperationId.toInt(),
-                    cartOperationDomain.operationTypeDomain,
-                ),
+                    cartOperationDomain.operationTypeDomain
+                )
             )
         }
         // 3) Возвращаем ID

@@ -1,7 +1,7 @@
 package com.chaikasoft.app.di
 
-import com.chaikasoft.app.data.inMemory.CartRepositoryFactory
-import com.chaikasoft.app.data.inMemory.CartRepositoryFactoryInterface
+import com.chaikasoft.app.data.inmemory.CartRepositoryFactory
+import com.chaikasoft.app.data.inmemory.CartRepositoryFactoryInterface
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

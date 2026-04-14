@@ -60,6 +60,6 @@ fun Arrow(
 
 @Preview
 @Composable
-fun arrowPoint() {
+fun ArrowPoint() {
     Arrow()
 }

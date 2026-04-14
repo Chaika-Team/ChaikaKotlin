@@ -43,35 +43,50 @@ object Routes {
         TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT,
         TEMPLATE_CONFIRM, PRODUCT_REPLENISH, TRIP_AUTONOMOUS,
         TRIP_AUTONOMOUS, TRIP_BY_STATION, TRIP_BY_NUMBER,
-        TRIP_SELECT_CARRIAGE,
+        TRIP_SELECT_CARRIAGE
     )
 
     val routesWithoutTopBar = setOf(
-        LOGIN, PROFILE
+        LOGIN,
+        PROFILE
     )
 
     val mainRoutes = mapOf(
         TRIP to listOf(
-            TRIP, TRIP_MAIN, TRIP_GRAPH,
-            TRIP_BY_NUMBER, TRIP_BY_STATION,
-            TRIP_SELECT_CARRIAGE, TRIP_AUTONOMOUS
+            TRIP,
+            TRIP_MAIN,
+            TRIP_GRAPH,
+            TRIP_BY_NUMBER,
+            TRIP_BY_STATION,
+            TRIP_SELECT_CARRIAGE,
+            TRIP_AUTONOMOUS
         ),
         PRODUCT to listOf(
             PRODUCT_GATE,
-            PRODUCT_ENTRY, PRODUCT,
-            PRODUCT_CART, PRODUCT_PACKAGE, PRODUCT_GRAPH,
+            PRODUCT_ENTRY,
+            PRODUCT,
+            PRODUCT_CART,
+            PRODUCT_PACKAGE,
+            PRODUCT_GRAPH,
             PRODUCT_LIST_EMPTY
         ),
         STATISTICS to listOf(STATISTICS, STATISTICS_GRAPH),
         OPERATION to listOf(OPERATION),
         PROFILE to listOf(
-            PROFILE, PROFILE_PERSONAL_DATA, PROFILE_SETTINGS,
-            PROFILE_FAQS, PROFILE_FEEDBACK, PROFILE_ABOUT,
+            PROFILE,
+            PROFILE_PERSONAL_DATA,
+            PROFILE_SETTINGS,
+            PROFILE_FAQS,
+            PROFILE_FEEDBACK,
+            PROFILE_ABOUT,
             PROFILE_GRAPH
         ),
         TEMPLATE to listOf(
-            TEMPLATE_GRAPH, TEMPLATE_SEARCH, TEMPLATE_DETAIL,
-            TEMPLATE_EDIT, TEMPLATE_CONFIRM
+            TEMPLATE_GRAPH,
+            TEMPLATE_SEARCH,
+            TEMPLATE_DETAIL,
+            TEMPLATE_EDIT,
+            TEMPLATE_CONFIRM
         )
     )
 }

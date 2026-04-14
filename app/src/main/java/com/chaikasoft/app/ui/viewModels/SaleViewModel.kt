@@ -1,11 +1,11 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chaikasoft.app.R
-import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
+import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import com.chaikasoft.app.domain.usecases.AddItemToCartWithLimitUseCase
@@ -16,13 +16,13 @@ import com.chaikasoft.app.domain.usecases.SoldCardOpUseCase
 import com.chaikasoft.app.domain.usecases.SoldCashOpUseCase
 import com.chaikasoft.app.domain.usecases.UpdateQuantityWithLimitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class SaleViewModel @Inject constructor(
@@ -32,7 +32,7 @@ class SaleViewModel @Inject constructor(
     private val removeItemFromCart: RemoveItemFromCartUseCase,
     private val updateQuantityWithLimit: UpdateQuantityWithLimitUseCase,
     private val soldCashOp: SoldCashOpUseCase,
-    private val soldCardOp: SoldCardOpUseCase,
+    private val soldCardOp: SoldCardOpUseCase
 ) : ViewModel() {
 
     /** Собственная in‑memory корзина для продаж */
@@ -80,8 +80,10 @@ class SaleViewModel @Inject constructor(
                     _sellResultDialog.value = SellResultDialog(
                         messageRes = R.string.sell_success
                     )
+
                 is SaveOperationResult.EmptyCart ->
                     _sellResultDialog.value = SellResultDialog(R.string.sell_empty_cart)
+
                 is SaveOperationResult.Failure ->
                     _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
             }
@@ -99,8 +101,10 @@ class SaleViewModel @Inject constructor(
                     _sellResultDialog.value = SellResultDialog(
                         messageRes = R.string.sell_success
                     )
+
                 is SaveOperationResult.EmptyCart ->
                     _sellResultDialog.value = SellResultDialog(R.string.sell_empty_cart)
+
                 is SaveOperationResult.Failure ->
                     _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
             }

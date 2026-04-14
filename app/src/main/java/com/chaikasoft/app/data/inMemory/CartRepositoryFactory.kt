@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.inMemory
+package com.chaikasoft.app.data.inmemory
 
 import javax.inject.Inject
 import javax.inject.Singleton

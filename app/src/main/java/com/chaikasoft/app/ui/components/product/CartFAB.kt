@@ -124,7 +124,10 @@ fun CartFAB(
                 Spacer(modifier = Modifier.height(ProductDimens.CartFAB.SpacerHeight))
 
                 Text(
-                    text = String.format(stringResource(id = R.string.cart_fab_price_format), totalPrice),
+                    text = String.format(
+                        stringResource(id = R.string.cart_fab_price_format),
+                        totalPrice
+                    ),
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = ProductDimens.CartFAB.PriceFontSize,
                     fontWeight = FontWeight.Medium,

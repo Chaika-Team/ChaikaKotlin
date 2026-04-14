@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,8 +7,8 @@ import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.usecases.GetPagedOperationSummariesUseCase
 import com.chaikasoft.app.domain.usecases.ObserveOperationItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 @HiltViewModel
 class OperationViewModel @Inject constructor(
@@ -18,6 +18,5 @@ class OperationViewModel @Inject constructor(
 
     val operations = getPagedOperationSummaries().cachedIn(viewModelScope)
 
-    fun getItems(operationId: Int): Flow<CartDomain> =
-        observeOperationItems(operationId)
+    fun getItems(operationId: Int): Flow<CartDomain> = observeOperationItems(operationId)
 }

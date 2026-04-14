@@ -8,24 +8,40 @@ sealed class Screen(
     val showBackButton: Boolean = true,
     val showMenuIcon: Boolean = false
 ) {
-    object Trip : Screen(Routes.TRIP, R.string.trip_title, showBackButton =  false)
-    object MainTrip : Screen(Routes.TRIP_MAIN, R.string.trip_title, showBackButton =  false)
+    object Trip : Screen(Routes.TRIP, R.string.trip_title, showBackButton = false)
+    object MainTrip : Screen(Routes.TRIP_MAIN, R.string.trip_title, showBackButton = false)
     object AutonomousTrip : Screen(Routes.TRIP_AUTONOMOUS, R.string.offline_trip_title)
-    object FindTripByNumber : Screen(Routes.TRIP_BY_NUMBER, R.string.new_trip_title, showMenuIcon = true)
+    object FindTripByNumber : Screen(
+        Routes.TRIP_BY_NUMBER,
+        R.string.new_trip_title,
+        showMenuIcon = true
+    )
     object SelectCarriage : Screen(Routes.TRIP_SELECT_CARRIAGE, R.string.new_trip_title)
 
     object Product : Screen(Routes.PRODUCT, R.string.products_title, false)
-    object ProductEntry : Screen(Routes.PRODUCT_ENTRY, R.string.product_entry_title, showBackButton =  false)
+    object ProductEntry : Screen(
+        Routes.PRODUCT_ENTRY,
+        R.string.product_entry_title,
+        showBackButton = false
+    )
     object Cart : Screen(Routes.PRODUCT_CART, R.string.cart_title)
-    object Package : Screen(Routes.PRODUCT_PACKAGE, R.string.package_title, showBackButton =  false, showMenuIcon = true)
-    object Replenish: Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
+    object Package : Screen(
+        Routes.PRODUCT_PACKAGE,
+        R.string.package_title,
+        showBackButton = false,
+        showMenuIcon = true
+    )
+    object Replenish : Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
 
-    object Statistics : Screen(Routes.STATISTICS, R.string.statistics_title, showBackButton =  false)
+    object Statistics : Screen(Routes.STATISTICS, R.string.statistics_title, showBackButton = false)
 
-    object Operation : Screen(Routes.OPERATION, R.string.operations_title, showBackButton =  false)
+    object Operation : Screen(Routes.OPERATION, R.string.operations_title, showBackButton = false)
 
-    object Profile : Screen(Routes.PROFILE, R.string.profile_title, showBackButton =  false)
-    object ProfilePersonalData : Screen(Routes.PROFILE_PERSONAL_DATA, R.string.profile_personal_data)
+    object Profile : Screen(Routes.PROFILE, R.string.profile_title, showBackButton = false)
+    object ProfilePersonalData : Screen(
+        Routes.PROFILE_PERSONAL_DATA,
+        R.string.profile_personal_data
+    )
     object ProfileSettings : Screen(Routes.PROFILE_SETTINGS, R.string.profile_settings)
     object ProfileFaqs : Screen(Routes.PROFILE_FAQS, R.string.profile_faqs)
     object ProfileFeedback : Screen(Routes.PROFILE_FEEDBACK, R.string.profile_feedback)
@@ -34,35 +50,36 @@ sealed class Screen(
     object TemplateSearch : Screen(Routes.TEMPLATE_SEARCH, R.string.templates)
     object TemplateDetail : Screen(Routes.TEMPLATE_DETAIL, R.string.templates)
     object TemplateEdit : Screen(Routes.TEMPLATE_EDIT, R.string.edit)
-    object TemplateConfirm : Screen(Routes.TEMPLATE_CONFIRM, titleResId = R.string.template_confirm_title)
+    object TemplateConfirm : Screen(
+        Routes.TEMPLATE_CONFIRM,
+        titleResId = R.string.template_confirm_title
+    )
 
     companion object {
-        fun fromRoute(route: String?): Screen {
-            return when (route) {
-                Routes.TRIP -> Trip
-                Routes.TRIP_MAIN -> MainTrip
-                Routes.TRIP_AUTONOMOUS -> AutonomousTrip
-                Routes.TRIP_BY_NUMBER -> FindTripByNumber
-                Routes.TRIP_SELECT_CARRIAGE -> SelectCarriage
-                Routes.PRODUCT -> Product
-                Routes.PRODUCT_ENTRY -> ProductEntry
-                Routes.PRODUCT_CART -> Cart
-                Routes.PRODUCT_PACKAGE -> Package
-                Routes.PRODUCT_REPLENISH -> Replenish
-                Routes.OPERATION -> Operation
-                Routes.PROFILE -> Profile
-                Routes.PROFILE_PERSONAL_DATA -> ProfilePersonalData
-                Routes.PROFILE_SETTINGS -> ProfileSettings
-                Routes.PROFILE_FAQS -> ProfileFaqs
-                Routes.PROFILE_FEEDBACK -> ProfileFeedback
-                Routes.PROFILE_ABOUT -> ProfileAbout
-                Routes.TEMPLATE_SEARCH -> TemplateSearch
-                Routes.TEMPLATE_DETAIL -> TemplateDetail
-                Routes.TEMPLATE_EDIT -> TemplateEdit
-                Routes.TEMPLATE_CONFIRM -> TemplateConfirm
-                Routes.STATISTICS -> Statistics
-                else -> Trip
-            }
+        fun fromRoute(route: String?): Screen = when (route) {
+            Routes.TRIP -> Trip
+            Routes.TRIP_MAIN -> MainTrip
+            Routes.TRIP_AUTONOMOUS -> AutonomousTrip
+            Routes.TRIP_BY_NUMBER -> FindTripByNumber
+            Routes.TRIP_SELECT_CARRIAGE -> SelectCarriage
+            Routes.PRODUCT -> Product
+            Routes.PRODUCT_ENTRY -> ProductEntry
+            Routes.PRODUCT_CART -> Cart
+            Routes.PRODUCT_PACKAGE -> Package
+            Routes.PRODUCT_REPLENISH -> Replenish
+            Routes.OPERATION -> Operation
+            Routes.PROFILE -> Profile
+            Routes.PROFILE_PERSONAL_DATA -> ProfilePersonalData
+            Routes.PROFILE_SETTINGS -> ProfileSettings
+            Routes.PROFILE_FAQS -> ProfileFaqs
+            Routes.PROFILE_FEEDBACK -> ProfileFeedback
+            Routes.PROFILE_ABOUT -> ProfileAbout
+            Routes.TEMPLATE_SEARCH -> TemplateSearch
+            Routes.TEMPLATE_DETAIL -> TemplateDetail
+            Routes.TEMPLATE_EDIT -> TemplateEdit
+            Routes.TEMPLATE_CONFIRM -> TemplateConfirm
+            Routes.STATISTICS -> Statistics
+            else -> Trip
         }
     }
 }

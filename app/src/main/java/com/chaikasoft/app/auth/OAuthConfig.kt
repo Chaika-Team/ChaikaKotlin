@@ -9,5 +9,5 @@ data class OAuthConfig(
     val redirectUri: String,
     val authEndpoint: String,
     val tokenEndpoint: String,
-    val scopes: String,
+    val scopes: String
 )

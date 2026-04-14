@@ -4,18 +4,18 @@ import com.chaikasoft.app.data.room.dao.PackageItemViewDao
 import com.chaikasoft.app.data.room.dao.ProductInfoDao
 import com.chaikasoft.app.data.room.mappers.toDomain
 import com.chaikasoft.app.domain.models.PackageItemDomain
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class RoomPackageItemRepository @Inject constructor(
     private val packageItemViewDao: PackageItemViewDao,
-    private val productInfoDao: ProductInfoDao,
+    private val productInfoDao: ProductInfoDao
 ) : RoomPackageItemRepositoryInterface {
 
     // Получение всех товаров у проводника из представления PackageItemView с использованием Flow
-    override fun getAllPackageItems(): Flow<List<PackageItemDomain>> {
-        return packageItemViewDao.getPackageItems().map { packageItemViews ->
+    override fun getAllPackageItems(): Flow<List<PackageItemDomain>> =
+        packageItemViewDao.getPackageItems().map { packageItemViews ->
             packageItemViews.mapNotNull { packageItemView ->
                 // Получаем сущность ProductInfo из базы данных
                 val productInfoEntity = productInfoDao.getProductById(packageItemView.productId)
@@ -26,7 +26,6 @@ class RoomPackageItemRepository @Inject constructor(
                 }
             }
         }
-    }
 
     override suspend fun getPackageItemByProductId(productId: Int): PackageItemDomain? {
         val packageItemView = packageItemViewDao.getPackageItemByProductId(productId)
@@ -39,6 +38,5 @@ class RoomPackageItemRepository @Inject constructor(
         return packageItemView?.currentQuantity ?: 0
     }
 
-    override suspend fun hasAnyPackageItemsOnce(): Boolean =
-        packageItemViewDao.hasAnyOnce()
+    override suspend fun hasAnyPackageItemsOnce(): Boolean = packageItemViewDao.hasAnyOnce()
 }

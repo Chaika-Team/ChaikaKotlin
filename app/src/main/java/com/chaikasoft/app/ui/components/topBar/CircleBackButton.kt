@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.components.topBar
+package com.chaikasoft.app.ui.components.topbar
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -19,12 +19,12 @@ fun CircleBackButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     iconSize: Dp = 24.dp,
-    buttonSize: Dp = 40.dp,
+    buttonSize: Dp = 40.dp
 ) {
     IconButton(
         onClick = onClick,
         modifier = modifier.run {
-            size(buttonSize).dashedBorder(cornerRadius =  24.dp)
+            size(buttonSize).dashedBorder(cornerRadius = 24.dp)
         }
     ) {
         Icon(

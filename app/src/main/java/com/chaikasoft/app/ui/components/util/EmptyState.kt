@@ -8,10 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun EmptyState(
-    message: String,
-    modifier: Modifier = Modifier
-) {
+fun EmptyState(message: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,

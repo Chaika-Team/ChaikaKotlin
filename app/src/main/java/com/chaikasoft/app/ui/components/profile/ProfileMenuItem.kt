@@ -28,7 +28,10 @@ import com.chaikasoft.app.ui.theme.ProfileDimens
 import com.chaikasoft.app.ui.theme.ProfileMenuItemBackground
 
 enum class ProfileMenuItemShape {
-    Top, Middle, Bottom, Single
+    Top,
+    Middle,
+    Bottom,
+    Single
 }
 
 @Composable
@@ -40,14 +43,17 @@ fun ProfileMenuItem(
 ) {
     val cornerShape = when (shape) {
         ProfileMenuItemShape.Top -> RoundedCornerShape(
-            topStart = ProfileDimens.MenuItemCornerRadiusTop, 
+            topStart = ProfileDimens.MenuItemCornerRadiusTop,
             topEnd = ProfileDimens.MenuItemCornerRadiusTop
         )
+
         ProfileMenuItemShape.Middle -> RoundedCornerShape(0.dp)
+
         ProfileMenuItemShape.Bottom -> RoundedCornerShape(
-            bottomStart = ProfileDimens.MenuItemCornerRadiusBottom, 
+            bottomStart = ProfileDimens.MenuItemCornerRadiusBottom,
             bottomEnd = ProfileDimens.MenuItemCornerRadiusBottom
         )
+
         ProfileMenuItemShape.Single -> RoundedCornerShape(ProfileDimens.MenuItemCornerRadiusSingle)
     }
     Row(
@@ -57,7 +63,7 @@ fun ProfileMenuItem(
             .background(ProfileMenuItemBackground)
             .clickable(onClick = onClick)
             .padding(
-                horizontal = ProfileDimens.MenuItemPaddingHorizontal, 
+                horizontal = ProfileDimens.MenuItemPaddingHorizontal,
                 vertical = ProfileDimens.MenuItemPaddingVertical
             ),
         verticalAlignment = Alignment.CenterVertically

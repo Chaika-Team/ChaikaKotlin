@@ -20,7 +20,7 @@ RuntimeVisibleParameterAnnotations,RuntimeInvisibleParameterAnnotations,Annotati
 }
 
 # Явно фиксируем ваши API-интерфейсы (на случай наследования/делегаций)
--keep interface com.chaikasoft.app.data.dataSource.apiService.** { *; }
+-keep interface com.chaikasoft.app.data.datasource.apiservice.** { *; }
 
 ############################################
 # Moshi
@@ -39,7 +39,7 @@ RuntimeVisibleParameterAnnotations,RuntimeInvisibleParameterAnnotations,Annotati
 ############################################
 # DTO из сети (пока не всё покрыто @Json/@SerializedName)
 ############################################
--keep class com.chaikasoft.app.data.dataSource.dto.** { *; }
+-keep class com.chaikasoft.app.data.datasource.dto.** { *; }
 
 ############################################
 # ДОМЕННЫЕ МОДЕЛИ, которые Moshi парсит через рефлексию

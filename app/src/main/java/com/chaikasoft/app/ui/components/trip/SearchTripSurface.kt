@@ -49,7 +49,7 @@ fun SearchTripSurface(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(height),
+            .height(height)
     ) {
         SurfaceBackground(modifier = Modifier.matchParentSize())
 
@@ -102,6 +102,6 @@ fun SearchTripSurface(
 
 @Preview
 @Composable
-fun searchCardPreview() {
+fun SearchCardPreview() {
     SearchTripSurface(modifier = Modifier)
 }

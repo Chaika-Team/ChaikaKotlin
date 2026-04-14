@@ -5,6 +5,7 @@ import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.usecases.FetchProductsFromServerUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import org.junit.After
@@ -15,7 +16,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import testUtils.TestMockServer
 import testUtils.TestServerHolder
-import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)

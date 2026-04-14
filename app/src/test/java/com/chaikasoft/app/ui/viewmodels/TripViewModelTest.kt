@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.common.AppError

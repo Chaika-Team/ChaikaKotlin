@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 object TripTime {
     val DurationFontSize = 12.sp
     val DurationLineHeight = 12.sp
-    val DurationArrowGap = 2.dp          // зазор между длительностью и стрелкой
-    val ArrowHorizontalPadding = 8.dp    // сужаем линию/стрелку по ширине
+    val DurationArrowGap = 2.dp // зазор между длительностью и стрелкой
+    val ArrowHorizontalPadding = 8.dp // сужаем линию/стрелку по ширине
     val ArrowBottomPadding = 16.dp
     val TimeFontSize = 20.sp
     val DayMonthFontSize = 14.sp
@@ -32,10 +32,7 @@ object TripTime {
  * Текст длительности c отключённым font padding и обрезкой в 1 строку.
  */
 @Composable
-fun DurationText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
+fun DurationText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         maxLines = 1,
@@ -55,17 +52,14 @@ fun DurationText(
 
 /** Удобная перегрузка — сразу час/минуты. */
 @Composable
-fun DurationText(
-    hours: Int,
-    minutes: Int,
-    modifier: Modifier = Modifier
-) = DurationText("$hours ч $minutes мин", modifier)
+fun DurationText(hours: Int, minutes: Int, modifier: Modifier = Modifier) =
+    DurationText("$hours ч $minutes мин", modifier)
 
 /**
  * Паддингованная «стрелка» (линия) — чтобы не дублировать .padding(...) вокруг Arrow().
  */
 @Composable
-fun arrowPadded(
+fun ArrowPadded(
     modifier: Modifier = Modifier,
     horizontalPadding: Dp = TripTime.ArrowHorizontalPadding,
     bottomPadding: Dp = TripTime.ArrowBottomPadding,
@@ -85,10 +79,7 @@ fun arrowPadded(
 
 /** Крупное «hh:mm» — единый стиль и ограничения. */
 @Composable
-fun timeValueText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
+fun TimeValueText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyLarge,
@@ -101,10 +92,7 @@ fun timeValueText(
 
 /** Маленький текст даты (день/месяц). */
 @Composable
-fun dayMonthText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
+fun DayMonthText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,

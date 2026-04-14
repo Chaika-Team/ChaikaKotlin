@@ -1,6 +1,6 @@
 package com.chaikasoft.app.domain.usecases.conductorTripShiftUseCases
 
-import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftReportsRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.ChaikaSoftReportsRepositoryInterface
 import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.sealed.UploadResult
 import com.chaikasoft.app.domain.usecases.UploadShiftReportUseCase

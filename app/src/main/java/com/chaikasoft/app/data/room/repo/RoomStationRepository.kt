@@ -8,22 +8,21 @@ import com.chaikasoft.app.data.room.dao.StationDao
 import com.chaikasoft.app.data.room.mappers.toDomain
 import com.chaikasoft.app.data.room.mappers.toEntity
 import com.chaikasoft.app.domain.models.trip.StationDomain
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class RoomStationRepository @Inject constructor(
-    private val dao: StationDao
-) : RoomStationRepositoryInterface {
+class RoomStationRepository @Inject constructor(private val dao: StationDao) :
+    RoomStationRepositoryInterface {
 
-    override suspend fun upsertAll(stations: List<StationDomain>) =
-        dao.upsertAll(stations.map { it.toEntity() })
+    override suspend fun upsertAll(stations: List<StationDomain>) = dao.upsertAll(
+        stations.map {
+            it.toEntity()
+        }
+    )
 
-    override fun pagedQuery(
-        query: String,
-        pageSize: Int
-    ): Flow<PagingData<StationDomain>> {
+    override fun pagedQuery(query: String, pageSize: Int): Flow<PagingData<StationDomain>> {
         if (query.isBlank()) return flowOf(PagingData.empty())
 
         val prefix = "${escapeLike(query)}%"
@@ -40,11 +39,9 @@ class RoomStationRepository @Inject constructor(
         ).flow.map { paging -> paging.map { it.toDomain() } }
     }
 
-    private fun escapeLike(s: String): String =
-        s.replace("\\", "\\\\")
-            .replace("%", "\\%")
-            .replace("_", "\\_")
+    private fun escapeLike(s: String): String = s.replace("\\", "\\\\")
+        .replace("%", "\\%")
+        .replace("_", "\\_")
 
-    override suspend fun getByCode(code: String): StationDomain? =
-        dao.getByCode(code)?.toDomain()
+    override suspend fun getByCode(code: String): StationDomain? = dao.getByCode(code)?.toDomain()
 }

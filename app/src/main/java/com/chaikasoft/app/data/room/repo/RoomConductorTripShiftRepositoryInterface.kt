@@ -44,6 +44,4 @@ interface RoomConductorTripShiftRepositoryInterface {
 
     /** Получить пару "статус смены и отчёт" */
     suspend fun getStatusAndReport(uuid: String): Pair<TripShiftStatusDomain, String?>
-
-
 }

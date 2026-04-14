@@ -39,7 +39,7 @@ fun ButtonSurface(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(ProductDimens.PaddingL),
+                .padding(ProductDimens.PaddingL)
         ) {
             Button(
                 onClick = onClick,
@@ -54,4 +54,4 @@ fun ButtonSurface(
             }
         }
     }
-} 
+}

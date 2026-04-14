@@ -15,10 +15,7 @@ import androidx.compose.ui.unit.dp
 private val HeaderIconSize = 18.dp
 
 @Composable
-fun HeaderIconCell(
-    @DrawableRes icon: Int,
-    width: Dp
-) {
+fun HeaderIconCell(@DrawableRes icon: Int, width: Dp) {
     Box(
         modifier = Modifier.width(width),
         contentAlignment = Alignment.CenterEnd

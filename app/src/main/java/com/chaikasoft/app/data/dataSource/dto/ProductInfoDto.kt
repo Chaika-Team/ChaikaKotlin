@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.dto
+package com.chaikasoft.app.data.datasource.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -11,7 +11,4 @@ data class ProductInfoDto(
     val price: Double
 )
 
-
-data class ProductInfoListResponseDto(
-    val products: List<ProductInfoDto>
-)
+data class ProductInfoListResponseDto(val products: List<ProductInfoDto>)

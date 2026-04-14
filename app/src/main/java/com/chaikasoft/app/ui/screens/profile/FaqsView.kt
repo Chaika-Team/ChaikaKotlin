@@ -83,7 +83,7 @@ fun FaqsView() {
                 collapseContentDescription = stringResource(R.string.faqs_collapse)
             )
         }
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,7 +109,4 @@ fun FaqsView() {
     }
 }
 
-private data class FAQ(
-    val question: String,
-    val answer: String
-)
+private data class FAQ(val question: String, val answer: String)

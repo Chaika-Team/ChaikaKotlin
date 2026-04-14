@@ -39,7 +39,6 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.util.formatPrice
 
-
 @Composable
 fun CartProductItem(
     product: Product,
@@ -52,7 +51,7 @@ fun CartProductItem(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
@@ -169,7 +168,10 @@ private fun CartProductActionsRow(
                 onDecrease = onQuantityDecrease,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .size(width = ProductDimens.CartProductItem.QuantitySelectorWidth, height = ProductDimens.CartProductItem.QuantitySelectorHeight),
+                    .size(
+                        width = ProductDimens.CartProductItem.QuantitySelectorWidth,
+                        height = ProductDimens.CartProductItem.QuantitySelectorHeight
+                    ),
                 colorBack = MaterialTheme.colorScheme.surfaceVariant,
                 colorText = MaterialTheme.colorScheme.onSurface
             )
@@ -177,11 +179,16 @@ private fun CartProductActionsRow(
             Button(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .size(width = ProductDimens.CartProductItem.QuantitySelectorWidth, height = ProductDimens.CartProductItem.QuantitySelectorHeight),
+                    .size(
+                        width = ProductDimens.CartProductItem.QuantitySelectorWidth,
+                        height = ProductDimens.CartProductItem.QuantitySelectorHeight
+                    ),
                 shape = CircleShape,
                 contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary),
-                onClick = onAddToCart,
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
+                onClick = onAddToCart
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -197,10 +204,17 @@ private fun CartProductActionsRow(
                 onClick = onRemove,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = ProductDimens.CartProductItem.QuantitySelectorWidth + ProductDimens.CartProductItem.RemoveButtonPadding)            ) {
+                    .padding(
+                        end =
+                        ProductDimens.CartProductItem.QuantitySelectorWidth +
+                            ProductDimens.CartProductItem.RemoveButtonPadding
+                    )
+            ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(id = R.string.cart_product_remove_from_cart),
+                    contentDescription = stringResource(
+                        id = R.string.cart_product_remove_from_cart
+                    ),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -209,11 +223,17 @@ private fun CartProductActionsRow(
                 onClick = onRemoveFromPackage,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .offset(x = (-ProductDimens.CartProductItem.QuantitySelectorWidth) - ProductDimens.CartProductItem.RemoveButtonPadding)
+                    .offset(
+                        x =
+                        (-ProductDimens.CartProductItem.QuantitySelectorWidth) -
+                            ProductDimens.CartProductItem.RemoveButtonPadding
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(id = R.string.cart_product_remove_from_package),
+                    contentDescription = stringResource(
+                        id = R.string.cart_product_remove_from_package
+                    ),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -265,4 +285,4 @@ fun CartProductItemNotInCartPreview() {
             onRemoveFromPackage = {}
         )
     }
-} 
+}

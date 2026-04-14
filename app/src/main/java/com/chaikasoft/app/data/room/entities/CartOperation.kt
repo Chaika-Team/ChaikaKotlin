@@ -20,17 +20,17 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = Conductor::class,
             parentColumns = ["id"],
-            childColumns = ["conductor_id"],
-        ),
+            childColumns = ["conductor_id"]
+        )
     ],
     indices = [
         Index(value = ["conductor_id"]),
         Index(value = ["operation_time", "id"]),
         Index(value = ["operation_type"]),
         Index(value = ["operation_type", "operation_time", "id"])
-    ],
+    ]
 
-    )
+)
 data class CartOperation(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "operation_type") val operationType: Int,

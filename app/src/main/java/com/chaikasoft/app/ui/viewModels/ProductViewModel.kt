@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -13,6 +13,7 @@ import com.chaikasoft.app.domain.usecases.GetPagedProductsUseCase
 import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.mappers.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -27,12 +28,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val getPagedProductsUseCase: GetPagedProductsUseCase,
-    private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase,
+    private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase
 ) : ViewModel() {
 
     private val _isSyncing = MutableStateFlow(false)

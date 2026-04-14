@@ -1,25 +1,24 @@
 package com.chaikasoft.app.domain.usecases
 
 import androidx.paging.PagingData
-import com.chaikasoft.app.data.dataSource.repo.ChaikaSoftApiServiceRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.ChaikaSoftApiServiceRepositoryInterface
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ProductInfoDomain
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 // Юзкейс для получения всех товаров из базы данных.
 // Используйте GetPagedProductsUseCase, чтобы улучшить оптимизацию
 class GetAllProductsUseCase @Inject constructor(
-    private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface, // Используем интерфейс
+    private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
 ) {
-    operator fun invoke(): Flow<List<ProductInfoDomain>> {
-        return roomProductInfoRepositoryInterface.getAllProducts()
-    }
+    operator fun invoke(): Flow<List<ProductInfoDomain>> =
+        roomProductInfoRepositoryInterface.getAllProducts()
 }
 
 /**
@@ -34,14 +33,12 @@ class GetPagedProductsUseCase @Inject constructor(
     operator fun invoke(
         query: String? = null,
         pageSize: Int = 20
-    ): Flow<PagingData<ProductInfoDomain>> =
-        repository.getPagedProducts(query, pageSize)
+    ): Flow<PagingData<ProductInfoDomain>> = repository.getPagedProducts(query, pageSize)
 }
-
 
 // Юзкейс для удаления товара из базы данных
 class DeleteProductUseCase @Inject constructor(
-    private val repository: RoomProductInfoRepositoryInterface, // Используем интерфейс
+    private val repository: RoomProductInfoRepositoryInterface
 ) {
     suspend operator fun invoke(productInfoDomain: ProductInfoDomain) {
         repository.deleteProduct(productInfoDomain)
@@ -55,7 +52,7 @@ class DeleteProductUseCase @Inject constructor(
  * По умолчанию возвращает до 100 товаров, начиная с offset = 0.
  */
 class FetchProductsFromServerUseCase @Inject constructor(
-    private val repository: ChaikaSoftApiServiceRepositoryInterface,
+    private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
     suspend operator fun invoke(limit: Int = 100, offset: Int = 0): List<ProductInfoDomain> =
         repository.fetchProducts(limit, offset)
@@ -72,7 +69,7 @@ class FetchProductsFromServerUseCase @Inject constructor(
 class SaveProductsLocallyUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface,
     private val localImageRepository: LocalImageRepositoryInterface,
-    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(products: List<ProductInfoDomain>): List<ProductInfoDomain> =
         withContext(ioDispatcher) {

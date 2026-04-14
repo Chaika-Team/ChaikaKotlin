@@ -1,7 +1,6 @@
-package com.chaikasoft.app.ui.components.topBar
+package com.chaikasoft.app.ui.components.topbar
 
 import com.chaikasoft.app.R
-
 
 enum class MenuItem(val titleResId: Int) {
     REFILL(R.string.refill),

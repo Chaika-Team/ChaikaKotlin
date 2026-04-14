@@ -1,6 +1,6 @@
 package com.chaikasoft.app.domain.usecases.tripUseCases
 
-import com.chaikasoft.app.data.dataSource.repo.ChaikaTripperRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.domain.common.AppError
 import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.StationDomain

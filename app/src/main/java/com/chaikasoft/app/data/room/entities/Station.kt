@@ -8,7 +8,12 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "stations",
-    indices = [Index(value = ["code"], unique = true), Index(value = ["name"]), Index(value = ["city"])]
+    indices = [
+        Index(
+            value = ["code"],
+            unique = true
+        ), Index(value = ["name"]), Index(value = ["city"])
+    ]
 )
 data class Station(
     @PrimaryKey val code: String,

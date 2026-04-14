@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels
+package com.chaikasoft.app.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,11 +7,11 @@ import com.chaikasoft.app.domain.models.PackageItemDomain
 import com.chaikasoft.app.domain.usecases.GetPackageItemUseCase
 import com.chaikasoft.app.ui.dto.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
 class ReplenishItemsViewModel @Inject constructor(
@@ -27,8 +27,8 @@ class ReplenishItemsViewModel @Inject constructor(
      * Создает поток продуктов для отображения, объединяя товары из пакета с данными корзины.
      * @param cartItems Поток элементов корзины, передаваемый из уровня экрана
      */
-    fun getDisplayProducts(cartItems: StateFlow<List<CartItemDomain>>): StateFlow<List<Product>> {
-        return combine(
+    fun getDisplayProducts(cartItems: StateFlow<List<CartItemDomain>>): StateFlow<List<Product>> =
+        combine(
             packageItems,
             cartItems
         ) { packageList, cartList ->
@@ -51,5 +51,4 @@ class ReplenishItemsViewModel @Inject constructor(
                 )
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-    }
 }

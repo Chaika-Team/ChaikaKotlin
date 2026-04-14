@@ -1,43 +1,40 @@
 package com.chaikasoft.app.ui.screens.trip
 
+import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.text.format.DateFormat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.chaikasoft.app.ui.components.template.ButtonSurface
-import com.chaikasoft.app.ui.components.trip.DropDownMenu
-import com.chaikasoft.app.ui.viewModels.AutonomousViewModel
-import kotlinx.coroutines.flow.collectLatest
-import android.app.DatePickerDialog
-import android.text.format.DateFormat
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.chaikasoft.app.ui.components.template.ButtonSurface
+import com.chaikasoft.app.ui.components.trip.DropDownMenu
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.viewmodels.AutonomousViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun AutonomousTripScreen(
-    viewModel: AutonomousViewModel,
-    navController: NavController
-) {
+fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -52,6 +49,7 @@ fun AutonomousTripScreen(
                         launchSingleTop = true
                     }
                 }
+
                 is AutonomousViewModel.Event.Info -> snackbarHostState.showSnackbar(ev.message)
             }
         }
@@ -157,7 +155,7 @@ private fun FocusHighlightField(
     onDone: () -> Unit = {},
     modifier: Modifier = Modifier,
     isError: Boolean = false,
-    onFocusChangedState: (Boolean) -> Unit = {},
+    onFocusChangedState: (Boolean) -> Unit = {}
 ) {
     val cs = MaterialTheme.colorScheme
     OutlinedTextField(
@@ -171,7 +169,9 @@ private fun FocusHighlightField(
             .padding(horizontal = 16.dp)
             .heightIn(min = 48.dp)
             .onFocusChanged { onFocusChangedState(it.isFocused) },
-        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default.copy(imeAction = imeAction),
+        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default.copy(
+            imeAction = imeAction
+        ),
         keyboardActions = androidx.compose.foundation.text.KeyboardActions(
             onSearch = { onDone() },
             onDone = { onDone() }
@@ -233,7 +233,7 @@ private fun TimeRow(
     arrival: LocalDateTime?,
     onArrival: (LocalDateTime?) -> Unit,
     departure: LocalDateTime?,
-    onDeparture: (LocalDateTime?) -> Unit,
+    onDeparture: (LocalDateTime?) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -259,7 +259,7 @@ private fun TimeRow(
             onClick = {
                 showDateTimePicker(
                     context = context,
-                    initial = arrival  ?: LocalDateTime.now()
+                    initial = arrival ?: LocalDateTime.now()
                 ) { picked -> onArrival(picked) }
             }
         )
@@ -267,11 +267,7 @@ private fun TimeRow(
 }
 
 @Composable
-private fun Pill(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+private fun Pill(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Surface(
         modifier = modifier
             .height(56.dp)

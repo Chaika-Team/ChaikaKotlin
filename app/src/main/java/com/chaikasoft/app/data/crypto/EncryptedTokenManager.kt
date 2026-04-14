@@ -25,7 +25,7 @@ class EncryptedTokenManager @Inject constructor(context: Context) : EncryptedTok
                 "encrypted_prefs",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -37,14 +37,12 @@ class EncryptedTokenManager @Inject constructor(context: Context) : EncryptedTok
                 "encrypted_prefs",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         }
     }
 
-    override fun getToken(): String? {
-        return sharedPreferences.getString("access_token", null)
-    }
+    override fun getToken(): String? = sharedPreferences.getString("access_token", null)
 
     override fun saveToken(token: String) {
         sharedPreferences.edit().putString("access_token", token).apply()

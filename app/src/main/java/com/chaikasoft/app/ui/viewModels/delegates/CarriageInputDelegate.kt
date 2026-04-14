@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels.delegates
+package com.chaikasoft.app.ui.viewmodels.delegates
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,13 +23,19 @@ class CarriageInputDelegate(scope: CoroutineScope) {
         get() = _number.value.toIntOrNull()?.takeIf { it in 1..MAX }
 
     fun onNumberChanged(raw: String) {
-        if (raw.isEmpty()) { _number.value = ""; return }
+        if (raw.isEmpty()) {
+            _number.value = ""
+            return
+        }
 
         val digits = raw.filter(Char::isDigit)
         if (digits.isEmpty()) return
 
         val normalized = digits.trimStart('0')
-        if (normalized.isEmpty()) { _number.value = ""; return }
+        if (normalized.isEmpty()) {
+            _number.value = ""
+            return
+        }
         if (normalized.length > 2) return
 
         val n = normalized.toIntOrNull() ?: return
@@ -38,7 +44,11 @@ class CarriageInputDelegate(scope: CoroutineScope) {
         _number.value = normalized
     }
 
-    fun reset() { _number.value = "" }
+    fun reset() {
+        _number.value = ""
+    }
 
-    private companion object { const val MAX = 99 }
+    private companion object {
+        const val MAX = 99
+    }
 }

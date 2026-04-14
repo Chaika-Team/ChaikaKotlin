@@ -1,11 +1,10 @@
-package com.chaikasoft.app.data.dataSource.apiService
+package com.chaikasoft.app.data.datasource.apiservice
 
-import com.chaikasoft.app.data.dataSource.dto.ProductInfoListResponseDto
-import com.chaikasoft.app.data.dataSource.dto.StationsResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateDetailResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TemplateListResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TripDetailResponseDto
-import com.chaikasoft.app.data.dataSource.dto.TripsResponseDto
+import com.chaikasoft.app.data.datasource.dto.ProductInfoListResponseDto
+import com.chaikasoft.app.data.datasource.dto.StationsResponseDto
+import com.chaikasoft.app.data.datasource.dto.TemplateDetailResponseDto
+import com.chaikasoft.app.data.datasource.dto.TemplateListResponseDto
+import com.chaikasoft.app.data.datasource.dto.TripsResponseDto
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,12 +27,9 @@ interface ChaikaSoftApiService {
         @Query("offset") offset: Int = 0
     ): TemplateListResponseDto
 
-
     // Метод для получения деталей конкретного шаблона (с content)
     @GET("/api/v1/product/template/{id}")
-    suspend fun getTemplateDetail(
-        @Path("id") templateId: Int
-    ): TemplateDetailResponseDto
+    suspend fun getTemplateDetail(@Path("id") templateId: Int): TemplateDetailResponseDto
 
 // ==== эндпоинты для маршрутов ====
 
@@ -59,8 +55,5 @@ interface ChaikaSoftApiService {
     // ==== эндпоинты ChaikaReports ====
 
     @POST("/api/v1/report/sale")
-    suspend fun sendShiftReport(
-        @Body body: RequestBody
-    )
-
+    suspend fun sendShiftReport(@Body body: RequestBody)
 }

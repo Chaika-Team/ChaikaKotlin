@@ -15,7 +15,7 @@ object ProductDimens {
     val QuantitySelectorHeight = 30.dp
     val BackgroundSlantAngle = 1F
     val TextSizeSmall = 12.sp
-    
+
     // Константы для CartProductItem
     object CartProductItem {
         val ImageSize = 78.dp

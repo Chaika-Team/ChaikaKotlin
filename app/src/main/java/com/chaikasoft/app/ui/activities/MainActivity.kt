@@ -14,15 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.chaikasoft.app.ui.components.bottomBar.BottomBar
-import com.chaikasoft.app.ui.components.topBar.MenuItem
-import com.chaikasoft.app.ui.components.topBar.TopBar
+import com.chaikasoft.app.ui.components.bottombar.BottomBar
+import com.chaikasoft.app.ui.components.topbar.MenuItem
+import com.chaikasoft.app.ui.components.topbar.TopBar
 import com.chaikasoft.app.ui.navigation.NavGraph
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.navigation.Screen
 import com.chaikasoft.app.ui.theme.ChaikaTheme
-import com.chaikasoft.app.ui.viewModels.AuthViewModel
-import com.chaikasoft.app.ui.viewModels.TripViewModel
+import com.chaikasoft.app.ui.viewmodels.AuthViewModel
+import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,8 +62,13 @@ class MainActivity : ComponentActivity() {
                             menuItems = if (currentScreen.showMenuIcon) menuItems else emptyList(),
                             onMenuItemClick = { item ->
                                 when (item) {
-                                    MenuItem.REFILL -> navController.navigate(Routes.PRODUCT_REPLENISH)
-                                    MenuItem.AUTONOMOUS_TRIP -> navController.navigate(Routes.TRIP_AUTONOMOUS)
+                                    MenuItem.REFILL -> navController.navigate(
+                                        Routes.PRODUCT_REPLENISH
+                                    )
+
+                                    MenuItem.AUTONOMOUS_TRIP -> navController.navigate(
+                                        Routes.TRIP_AUTONOMOUS
+                                    )
                                 }
                             }
                         )

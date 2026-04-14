@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<baseline version="1.0">
+    <file name="src/main/java/com/chaikasoft/app/data/room/AppDatabase.kt">
+        <error line="24" column="101" source="standard:max-line-length" />
+    </file>
+    <file name="src/main/java/com/chaikasoft/app/di/DatabaseModule.kt">
+        <error line="35" column="101" source="standard:max-line-length" />
+    </file>
+    <file name="src/main/java/com/chaikasoft/app/domain/usecases/FastReportUseCases.kt">
+        <error line="1" column="1" source="standard:filename" />
+    </file>
+    <file name="src/main/java/com/chaikasoft/app/domain/usecases/TripUseCases.kt">
+        <error line="1" column="1" source="standard:filename" />
+    </file>
+    <file name="src/main/java/com/chaikasoft/app/myApp.kt">
+        <error line="1" column="1" source="standard:filename" />
+    </file>
+    <file name="src/main/java/com/chaikasoft/app/ui/screens/profile/MainProfileView.kt">
+        <error line="13" column="1" source="standard:no-wildcard-imports" />
+    </file>
+    <file name="src/main/java/com/chaikasoft/app/ui/screens/trip/AutonomousTripView.kt">
+        <error line="8" column="1" source="standard:no-wildcard-imports" />
+        <error line="10" column="1" source="standard:no-wildcard-imports" />
+        <error line="14" column="1" source="standard:no-wildcard-imports" />
+    </file>
+</baseline>

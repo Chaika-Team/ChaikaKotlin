@@ -57,9 +57,8 @@ fun FeedbackView() {
         stringResource(R.string.feedback_category_other)
     )
 
-    fun validateEmail(email: String): Boolean {
-        return email.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
+    fun validateEmail(email: String): Boolean =
+        email.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
     LaunchedEffect(email) {
         isEmailValid = validateEmail(email)
@@ -103,7 +102,7 @@ fun FeedbackView() {
                         textAlign = TextAlign.Center
                     )
                     Button(
-                        onClick = { 
+                        onClick = {
                             isSubmitted = false
                             name = ""
                             email = ""
@@ -133,14 +132,14 @@ fun FeedbackView() {
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    
+
                     Text(
                         text = stringResource(R.string.feedback_category),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     ExposedDropdownMenuBox(
                         expanded = expanded,
                         onExpandedChange = { expanded = it }
@@ -152,7 +151,9 @@ fun FeedbackView() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .menuAnchor(),
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            }
                         )
                         ExposedDropdownMenu(
                             expanded = expanded,
@@ -161,7 +162,7 @@ fun FeedbackView() {
                             categories.forEach { category ->
                                 DropdownMenuItem(
                                     text = { Text(category) },
-                                    onClick = { 
+                                    onClick = {
                                         selectedCategory = category
                                         expanded = false
                                     }
@@ -169,9 +170,9 @@ fun FeedbackView() {
                             }
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
@@ -181,9 +182,9 @@ fun FeedbackView() {
                             imeAction = ImeAction.Next
                         )
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -203,9 +204,9 @@ fun FeedbackView() {
                             }
                         }
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     OutlinedTextField(
                         value = subject,
                         onValueChange = { subject = it },
@@ -215,9 +216,9 @@ fun FeedbackView() {
                             imeAction = ImeAction.Next
                         )
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     OutlinedTextField(
                         value = message,
                         onValueChange = { message = it },
@@ -230,22 +231,25 @@ fun FeedbackView() {
                         ),
                         maxLines = 5
                     )
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    
+
                     Button(
-                        onClick = { 
+                        onClick = {
                             // Backlog ChaikaKotlin #204
-                            isSubmitted = true 
+                            isSubmitted = true
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = name.isNotBlank() && message.isNotBlank() && (email.isBlank() || validateEmail(email))
+                        enabled =
+                        name.isNotBlank() &&
+                            message.isNotBlank() &&
+                            (email.isBlank() || validateEmail(email))
                     ) {
                         Text(stringResource(R.string.feedback_send_button))
                     }
                 }
             }
-            
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

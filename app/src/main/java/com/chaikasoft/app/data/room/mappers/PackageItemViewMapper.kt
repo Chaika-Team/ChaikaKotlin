@@ -8,5 +8,5 @@ import com.chaikasoft.app.domain.models.ProductInfoDomain
 fun PackageItemView.toDomain(productInfoDomain: ProductInfoDomain): PackageItemDomain =
     PackageItemDomain(
         productInfoDomain = productInfoDomain,
-        currentQuantity = this.currentQuantity,
+        currentQuantity = this.currentQuantity
     )

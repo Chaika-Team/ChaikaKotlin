@@ -1,6 +1,7 @@
 package com.chaikasoft.app.data.local
 
 import android.content.Context
+import android.util.Log
 import com.chaikasoft.app.domain.models.TripReport
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -10,36 +11,34 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
-import android.util.Log
-
-class LocalTripReportRepository @Inject constructor(
-    private val context: Context,
-) {
+class LocalTripReportRepository @Inject constructor(private val context: Context) {
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
 
     private val adapter = moshi.adapter(TripReport::class.java)
 
-    fun saveTripReport(tripReport: TripReport, fileName: String): Boolean {
-        return try {
-            val jsonString = adapter.toJson(tripReport)
+    fun saveTripReport(tripReport: TripReport, fileName: String): Boolean = try {
+        val jsonString = adapter.toJson(tripReport)
 
-            // Создаём директорию для отчётов, если её ещё нет
-            val reportDir = File(context.filesDir, "reports")
-            if (!reportDir.exists()) {
-                reportDir.mkdirs()
-            }
-
-            // Сохраняем JSON-файл в папку "reports"
-            val file = File(reportDir, fileName)
-            FileOutputStream(file).use { output ->
-                output.write(jsonString.toByteArray(StandardCharsets.UTF_8))
-            }
-            true
-        } catch (e: IOException) {
-            Log.e("LocalTripReportRepository", "Failed to save trip report $fileName! Error message: ${e.message}", e)
-            false
+        // Создаём директорию для отчётов, если её ещё нет
+        val reportDir = File(context.filesDir, "reports")
+        if (!reportDir.exists()) {
+            reportDir.mkdirs()
         }
+
+        // Сохраняем JSON-файл в папку "reports"
+        val file = File(reportDir, fileName)
+        FileOutputStream(file).use { output ->
+            output.write(jsonString.toByteArray(StandardCharsets.UTF_8))
+        }
+        true
+    } catch (e: IOException) {
+        Log.e(
+            "LocalTripReportRepository",
+            "Failed to save trip report $fileName! Error message: ${e.message}",
+            e
+        )
+        false
     }
 }

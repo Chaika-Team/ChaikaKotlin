@@ -18,10 +18,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.util.parseTripDetails
 
 @Composable
-fun TimeDetails(
-    modifier: Modifier = Modifier,
-    tripRecord: TripDomain
-) {
+fun TimeDetails(modifier: Modifier = Modifier, tripRecord: TripDomain) {
     val tripDetails = tripRecord.parseTripDetails()
 
     ConstraintLayout(
@@ -41,7 +38,7 @@ fun TimeDetails(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
-            timeValueText(tripDetails.departureTime)
+            TimeValueText(tripDetails.departureTime)
         }
 
         Box(
@@ -70,7 +67,7 @@ fun TimeDetails(
                 },
             contentAlignment = Alignment.TopCenter
         ) {
-            arrowPadded()
+            ArrowPadded()
         }
 
         Column(
@@ -83,14 +80,14 @@ fun TimeDetails(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            timeValueText(tripDetails.arrivalTime)
+            TimeValueText(tripDetails.arrivalTime)
         }
     }
 }
 
 @Preview
 @Composable
-fun timeDetailsPreview() {
+fun TimeDetailsPreview() {
     ChaikaTheme {
         TimeDetails(
             modifier = Modifier,
@@ -114,4 +111,3 @@ fun timeDetailsPreview() {
         )
     }
 }
-

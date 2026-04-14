@@ -56,5 +56,4 @@ class SuggestStationsE2ETest {
             .onNodeWithText("СУМСКИЙ ПОСАД")
             .assertIsDisplayed()
     }
-
 }

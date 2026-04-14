@@ -27,7 +27,6 @@ import com.chaikasoft.app.ui.theme.ProductDimens.ImageWidth
 import com.chaikasoft.app.ui.theme.ProductDimens.ProductCardHeight
 import com.chaikasoft.app.ui.theme.ProductDimens.ProductCardWidth
 
-
 @Composable
 fun ProductItem(
     product: Product,
@@ -40,7 +39,7 @@ fun ProductItem(
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
-    ConstraintLayout (
+    ConstraintLayout(
         modifier = modifier
             .height(ProductCardHeight)
             .width(ProductCardWidth)
@@ -62,57 +61,57 @@ fun ProductItem(
                 .width(ProductCardWidth)
         )
 
-            Box (
-                modifier = Modifier.constrainAs(image) {
-                    bottom.linkTo(content.top)
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    width = Dimension.value(ImageWidth)
-                    height = Dimension.value(ImageHeight)
-                }
-            ) {
-                ProductImage(
-                    imageUrl = product.image,
-                    contentDescription = "Изображение продукта: ${product.name}"
-                )
+        Box(
+            modifier = Modifier.constrainAs(image) {
+                bottom.linkTo(content.top)
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.value(ImageWidth)
+                height = Dimension.value(ImageHeight)
+            }
+        ) {
+            ProductImage(
+                imageUrl = product.image,
+                contentDescription = "Изображение продукта: ${product.name}"
+            )
 
-                if (showQuantityBadge && quantityToShow > 0) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .offset((-6).dp, (-6).dp) // немного внутрь изображения
-                            .size(24.dp)
-                            .background(
-                                color = colorScheme.primary,
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = quantityToShow.toString(),
-                            color = colorScheme.onPrimary,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+            if (showQuantityBadge && quantityToShow > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset((-6).dp, (-6).dp) // немного внутрь изображения
+                        .size(24.dp)
+                        .background(
+                            color = colorScheme.primary,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = quantityToShow.toString(),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
+        }
 
-            ProductContent(
-                product = product,
-                onAddToCart = onAddToCart,
-                onQuantityIncrease = onQuantityIncrease,
-                onQuantityDecrease = onQuantityDecrease,
-                modifier = Modifier.constrainAs(content) {
-                    top.linkTo(image.bottom)
-                    bottom.linkTo(back.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }
-                    .padding(bottom = ProductDimens.PaddingM)
-            )
+        ProductContent(
+            product = product,
+            onAddToCart = onAddToCart,
+            onQuantityIncrease = onQuantityIncrease,
+            onQuantityDecrease = onQuantityDecrease,
+            modifier = Modifier.constrainAs(content) {
+                top.linkTo(image.bottom)
+                bottom.linkTo(back.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            }
+                .padding(bottom = ProductDimens.PaddingM)
+        )
     }
 }
 

@@ -1,6 +1,6 @@
 package com.chaikasoft.app.domain.usecases.conductorUseCases
 
-import com.chaikasoft.app.data.dataSource.repo.IAMApiServiceRepositoryInterface
+import com.chaikasoft.app.data.datasource.repo.IAMApiServiceRepositoryInterface
 import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.domain.usecases.FetchConductorByTokenUseCase
 import io.kotest.assertions.throwables.shouldThrow

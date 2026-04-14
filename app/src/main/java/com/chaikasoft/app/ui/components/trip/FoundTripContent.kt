@@ -24,10 +24,7 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun FoundTripContent(
-    modifier: Modifier = Modifier,
-    tripRecord: TripDomain
-) {
+fun FoundTripContent(modifier: Modifier = Modifier, tripRecord: TripDomain) {
     ConstraintLayout(
         modifier = modifier
             .height(TripDimens.FoundTripCardHeight)
@@ -83,7 +80,7 @@ fun FoundTripContent(
 
 @Preview
 @Composable
-fun foundTripContentPreview() {
+fun FoundTripContentPreview() {
     FoundTripContent(
         modifier = Modifier,
         tripRecord = TripDomain(
@@ -102,6 +99,6 @@ fun foundTripContentPreview() {
                 name = "ТПУ Черкизово",
                 city = "Москва ВК Восточный"
             )
-        ),
+        )
     )
 }

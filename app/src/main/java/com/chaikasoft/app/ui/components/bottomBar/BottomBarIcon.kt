@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.components.bottomBar
+package com.chaikasoft.app.ui.components.bottombar
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,11 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.chaikasoft.app.ui.theme.BarDimens
 
 @Composable
-fun BottomBarIcon(
-    imageVector: ImageVector,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
+fun BottomBarIcon(imageVector: ImageVector, selected: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val iconColor = if (selected) colors.primary else colors.secondary
 

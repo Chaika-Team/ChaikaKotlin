@@ -8,8 +8,5 @@ sealed interface TripsSearchUiState {
     data object Loading : TripsSearchUiState
     data class Content(val trips: List<TripDomain>) : TripsSearchUiState
     data object Empty : TripsSearchUiState
-    data class Error(
-        @StringRes val messageRes: Int,
-        val retryable: Boolean
-    ) : TripsSearchUiState
+    data class Error(@StringRes val messageRes: Int, val retryable: Boolean) : TripsSearchUiState
 }

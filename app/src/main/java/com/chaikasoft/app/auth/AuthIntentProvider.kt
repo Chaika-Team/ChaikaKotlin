@@ -8,9 +8,8 @@ import net.openid.appauth.AuthorizationService
 /**
  * Реальная реализация AuthIntentProvider, использующая CustomTabs.
  */
-class AuthIntentProvider(
-    private val authService: AuthorizationService,
-) : AuthIntentProviderInterface {
+class AuthIntentProvider(private val authService: AuthorizationService) :
+    AuthIntentProviderInterface {
     override fun getAuthIntent(authRequest: AuthorizationRequest): Intent {
         val customTabsIntent = CustomTabsIntent.Builder().build()
         return authService.getAuthorizationRequestIntent(authRequest, customTabsIntent)

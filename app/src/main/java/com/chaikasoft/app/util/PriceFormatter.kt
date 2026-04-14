@@ -2,7 +2,7 @@ package com.chaikasoft.app.util
 
 /**
  * Утилитарная функция для форматирования цены в рублях
- * 
+ *
  * @param priceKopecks Цена в копейках
  * @param quantity Количество товара (по умолчанию 1)
  * @return Отформатированная строка с ценой
@@ -17,7 +17,7 @@ fun formatPrice(priceKopecks: Int, quantity: Int = 1): String {
 
 /**
  * Утилитарная функция для форматирования цены без количества
- * 
+ *
  * @param priceKopecks Цена в копейках
  * @return Отформатированная строка с ценой
  */

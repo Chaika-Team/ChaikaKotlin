@@ -1,6 +1,6 @@
 package com.chaikasoft.app.domain.usecases.cartUseCases
 
-import com.chaikasoft.app.data.inMemory.InMemoryCartRepositoryInterface
+import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartRepositoryInterface
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.CartItemDomain

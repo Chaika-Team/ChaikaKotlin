@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.inMemory
+package com.chaikasoft.app.data.inmemory
 
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.ProductInfoDomain

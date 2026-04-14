@@ -1,4 +1,4 @@
-package com.chaikasoft.app.data.dataSource.dto
+package com.chaikasoft.app.data.datasource.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -18,7 +18,6 @@ data class StationsResponseDto(
     @SerializedName("stations") val stations: List<StationDto>? = emptyList()
 )
 
-
 /**
  * DTO для поездки.
  */
@@ -35,16 +34,12 @@ data class TripDto(
 /**
  * Ответ API со списком поездок.
  */
-data class TripsResponseDto(
-    @SerializedName("trips") val trips: List<TripDto>? = emptyList()
-)
+data class TripsResponseDto(@SerializedName("trips") val trips: List<TripDto>? = emptyList())
 
 /**
  * DTO для отдельной поездки (detail).
  */
-data class TripDetailResponseDto(
-    @SerializedName("trip") val trip: TripDto
-)
+data class TripDetailResponseDto(@SerializedName("trip") val trip: TripDto)
 
 /**
  * DTO для вагона.
@@ -57,6 +52,4 @@ data class CarDto(
 /**
  * Ответ API со списком вагонов.
  */
-data class CarsResponseDto(
-    @SerializedName("cars") val cars: List<CarDto>
-)
+data class CarsResponseDto(@SerializedName("cars") val cars: List<CarDto>)

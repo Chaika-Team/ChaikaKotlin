@@ -32,7 +32,7 @@ fun FinishCurrentTripButton(
         shape = RoundedCornerShape(TripDimens.SearchBarCornerRadius),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ),
         enabled = enabled
     ) {

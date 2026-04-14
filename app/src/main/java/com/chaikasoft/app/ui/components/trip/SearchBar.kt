@@ -35,7 +35,7 @@ fun SearchTripBar(
     placeholderText: String = "",
     cornerRadius: Dp = 10.dp,
     readOnly: Boolean = false,
-    onClick: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -66,7 +66,13 @@ fun SearchTripBar(
                 ) {
                     Text(
                         text = if (hasValue) value else placeholderText,
-                        color = if (hasValue) colorScheme.onSurface else colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        color = if (hasValue) {
+                            colorScheme.onSurface
+                        } else {
+                            colorScheme.onSurfaceVariant.copy(
+                                alpha = 0.6f
+                            )
+                        },
                         fontSize = 16.sp
                     )
                 }

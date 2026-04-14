@@ -1,4 +1,4 @@
-package com.chaikasoft.app.ui.viewModels.delegates
+package com.chaikasoft.app.ui.viewmodels.delegates
 
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -35,8 +35,11 @@ class StationSuggestionsDelegate(
             .debounce(DEBOUNCE_MS)
             .distinctUntilChanged()
             .flatMapLatest { q ->
-                if (q.length < MIN_QUERY_LEN) flowOf(PagingData.empty())
-                else getPagedSuggestions(q, pageSize = PAGE_SIZE)
+                if (q.length < MIN_QUERY_LEN) {
+                    flowOf(PagingData.empty())
+                } else {
+                    getPagedSuggestions(q, pageSize = PAGE_SIZE)
+                }
             }
             .cachedIn(scope)
 
@@ -47,13 +50,20 @@ class StationSuggestionsDelegate(
             .debounce(DEBOUNCE_MS)
             .distinctUntilChanged()
             .flatMapLatest { q ->
-                if (q.length < MIN_QUERY_LEN) flowOf(PagingData.empty())
-                else getPagedSuggestions(q, pageSize = PAGE_SIZE)
+                if (q.length < MIN_QUERY_LEN) {
+                    flowOf(PagingData.empty())
+                } else {
+                    getPagedSuggestions(q, pageSize = PAGE_SIZE)
+                }
             }
             .cachedIn(scope)
 
-    fun onFromQueryChanged(text: String) { _fromQuery.value = text }
-    fun onToQueryChanged(text: String)   { _toQuery.value = text }
+    fun onFromQueryChanged(text: String) {
+        _fromQuery.value = text
+    }
+    fun onToQueryChanged(text: String) {
+        _toQuery.value = text
+    }
 
     fun reset() {
         _fromQuery.value = ""

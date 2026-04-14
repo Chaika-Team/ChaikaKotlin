@@ -18,18 +18,14 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun FoundTripCard(
-    modifier: Modifier = Modifier,
-    tripRecord: TripDomain,
-    onClick: () -> Unit
-) {
+fun FoundTripCard(modifier: Modifier = Modifier, tripRecord: TripDomain, onClick: () -> Unit) {
     val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = modifier
             .height(TripDimens.FoundTripCardHeight)
             .width(TripDimens.CardWidth)
             .background(
-                color = colorScheme.background,
+                color = colorScheme.background
             )
             .clickable(onClick = onClick)
     ) {
@@ -43,7 +39,7 @@ fun FoundTripCard(
         )
         FoundTripContent(
             modifier = Modifier.matchParentSize(),
-            tripRecord = tripRecord,
+            tripRecord = tripRecord
         )
         HorizontalDivider(
             modifier = Modifier
@@ -58,7 +54,7 @@ fun FoundTripCard(
 
 @Preview
 @Composable
-fun foundPreview() {
+fun FoundPreview() {
     FoundTripCard(
         modifier = Modifier,
         tripRecord = TripDomain(

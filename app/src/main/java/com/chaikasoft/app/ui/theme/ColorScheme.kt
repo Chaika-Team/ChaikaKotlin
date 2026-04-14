@@ -4,7 +4,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-val TextMain = Color(0xFFFFEBDD)       // text_main
+val TextMain = Color(0xFFFFEBDD) // text_main
 val BackgroundDark = Color(0xFF201E28) // bg
 val BackgroundLighter = Color(0xFF34323C) // bg_lighter
 val DangerRed = Color(0xFFD8472D)
@@ -21,7 +21,7 @@ val LightColorScheme = lightColorScheme(
     primaryContainer = RzdRed.copy(alpha = 0.2f),
     onPrimaryContainer = RzdRed,
 
-    secondary = Color(0xFF787878),     // light_gray
+    secondary = Color(0xFF787878), // light_gray
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFF0F0F0), // light_gray2
     onSecondaryContainer = Color(0xFF3D3D3D), // dark_gray
@@ -38,7 +38,7 @@ val LightColorScheme = lightColorScheme(
     onSurface = Color.Black,
 
     surfaceVariant = Search, // light_gray2
-    onSurfaceVariant = Color(0xFF6C6C6C), // hint
+    onSurfaceVariant = Color(0xFF6C6C6C) // hint
 )
 
 val DarkColorScheme = darkColorScheme(
@@ -47,7 +47,7 @@ val DarkColorScheme = darkColorScheme(
     primaryContainer = RzdRed.copy(alpha = 0.2f),
     onPrimaryContainer = RzdRed,
 
-    secondary = Color(0xFF787878),     // light_gray
+    secondary = Color(0xFF787878), // light_gray
     onSecondary = Color.Black,
     secondaryContainer = Color(0xFF464451), // bg_lighter_2
     onSecondaryContainer = Color(0xFFF0F0F0), // light_gray2
@@ -57,12 +57,12 @@ val DarkColorScheme = darkColorScheme(
     errorContainer = DangerRed.copy(alpha = 0.2f),
     onErrorContainer = DangerRed,
 
-    background = BackgroundDark,       // bg
-    onBackground = TextMain,           // text_main
+    background = BackgroundDark, // bg
+    onBackground = TextMain, // text_main
 
-    surface = BackgroundDark,          // bg
-    onSurface = TextMain,              // text_main
+    surface = BackgroundDark, // bg
+    onSurface = TextMain, // text_main
 
     surfaceVariant = BackgroundLighter, // bg_lighter
-    onSurfaceVariant = Color(0xFF6C6C6C), // hint
+    onSurfaceVariant = Color(0xFF6C6C6C) // hint
 )

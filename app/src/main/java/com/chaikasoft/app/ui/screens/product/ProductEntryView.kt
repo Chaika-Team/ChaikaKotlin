@@ -18,9 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.navigation.Routes
-import com.chaikasoft.app.ui.viewModels.FillViewModel
-import com.chaikasoft.app.ui.viewModels.ProductViewModel
-
+import com.chaikasoft.app.ui.viewmodels.FillViewModel
+import com.chaikasoft.app.ui.viewmodels.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
