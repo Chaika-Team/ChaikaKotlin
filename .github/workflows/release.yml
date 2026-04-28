@@ -69,7 +69,7 @@ jobs:
       - uses: ./.github/actions/setup-android-gradle
 
       - name: Run stage unit tests and coverage
-        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport --no-daemon
+        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReportStage --no-daemon
 
       - name: Upload unit test and coverage reports
         if: always()
@@ -194,16 +194,12 @@ jobs:
           path: app/build
 
       - name: Run SonarQube scan
-        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport sonar --no-daemon
+        run: >
+          ./gradlew :app:testStageUnitTest :app:jacocoTestReportStage sonar --no-daemon
+          -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-
-      - name: SonarQube Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
 
   github-release:
     name: GitHub Release
