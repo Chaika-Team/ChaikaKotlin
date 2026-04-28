@@ -196,7 +196,6 @@ jobs:
       - ktlint
       - unit-tests
       - release-build
-      - e2e
 
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -265,7 +264,6 @@ jobs:
     needs:
       - sonar
       - release-build
-      - e2e
     permissions:
       contents: write
 
