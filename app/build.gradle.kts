@@ -38,6 +38,15 @@ android {
         htmlReport = true
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(System.getenv("RELEASE_STORE_FILE") ?: "app/release.keystore")
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
@@ -65,7 +74,7 @@ android {
                 "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\""
             )
             buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("REL_ZITADEL_URL")}\"")
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
 
         create("stage") {
