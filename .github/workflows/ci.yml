@@ -26,20 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: zulu
-          cache: gradle
-          cache-dependency-path: |
-            *.gradle.kts
-            app/*.gradle.kts
-            e2e-tests/*.gradle.kts
-            gradle/wrapper/gradle-wrapper.properties
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - uses: ./.github/actions/setup-android-gradle
 
       - name: Run ktlint
         run: ./gradlew ktlintCheck
@@ -65,23 +52,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: zulu
-          cache: gradle
-          cache-dependency-path: |
-            *.gradle.kts
-            app/*.gradle.kts
-            e2e-tests/*.gradle.kts
-            gradle/wrapper/gradle-wrapper.properties
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - uses: ./.github/actions/setup-android-gradle
 
       - name: Run stage unit tests and coverage
-        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport
+        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport --no-daemon
 
       - name: Upload unit test and coverage reports
         if: always()
@@ -89,9 +63,9 @@ jobs:
         with:
           name: unit-test-reports
           path: |
-            app/build/test-results/testStageUnitTest/**
-            app/build/reports/tests/testStageUnitTest/**
-            app/build/reports/jacoco/**
+            app/build/test-results/testStageUnitTest
+            app/build/reports/tests/testStageUnitTest
+            app/build/reports/jacoco
           if-no-files-found: ignore
           retention-days: 7
 
@@ -107,23 +81,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: zulu
-          cache: gradle
-          cache-dependency-path: |
-            *.gradle.kts
-            app/*.gradle.kts
-            e2e-tests/*.gradle.kts
-            gradle/wrapper/gradle-wrapper.properties
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - uses: ./.github/actions/setup-android-gradle
 
       - name: Assemble stage APK
-        run: ./gradlew :app:assembleStage
+        run: ./gradlew :app:assembleStage --no-daemon
 
       - name: Upload stage APK
         uses: actions/upload-artifact@v4
@@ -132,6 +93,7 @@ jobs:
           path: app/build/outputs/apk/stage/*.apk
           if-no-files-found: error
           retention-days: 7
+          compression-level: 0
 
   detekt:
     name: Detekt
@@ -141,30 +103,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: zulu
-          cache: gradle
-          cache-dependency-path: |
-            *.gradle.kts
-            app/*.gradle.kts
-            e2e-tests/*.gradle.kts
-            gradle/wrapper/gradle-wrapper.properties
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - uses: ./.github/actions/setup-android-gradle
 
       - name: Run detekt
-        run: ./gradlew detekt
+        run: ./gradlew detekt --no-daemon
 
       - name: Upload detekt reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: detekt-reports
-          path: app/build/reports/detekt/**
+          path: app/build/reports/detekt
           if-no-files-found: ignore
           retention-days: 7
 
@@ -198,18 +147,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17
+      - name: Setup Android Gradle
         if: steps.sonar-secrets.outputs.available == 'true'
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: zulu
-          cache: gradle
-          cache-dependency-path: |
-            *.gradle.kts
-            app/*.gradle.kts
-            e2e-tests/*.gradle.kts
-            gradle/wrapper/gradle-wrapper.properties
+        uses: ./.github/actions/setup-android-gradle
 
       - name: Cache SonarQube packages
         if: steps.sonar-secrets.outputs.available == 'true'
@@ -232,22 +172,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: detekt-reports
-          path: app/build/reports/detekt
+          path: app/build/reports
 
       - name: Run SonarQube scan
         if: steps.sonar-secrets.outputs.available == 'true'
-        uses: sonarsource/sonarqube-scan-action@master
+        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport sonar --no-daemon
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.sources=app/src/main
-            -Dsonar.tests=app/src/test
-            -Dsonar.projectKey=ChaikaKotlin
-            -Dsonar.junit.reportPaths=app/build/test-results/
-            -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
-            -Dsonar.exclusions=**/*.mock.kt,**/generated/**,**/res/**
 
       - name: SonarQube Quality Gate
         if: steps.sonar-secrets.outputs.available == 'true'

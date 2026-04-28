@@ -140,6 +140,10 @@ sonar {
     properties {
         property("sonar.projectKey", "ChaikaKotlin")
         property("sonar.projectName", "ChaikaKotlin")
+        property("sonar.junit.reportPaths", "build/test-results/testStageUnitTest")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacoco.xml")
+        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
+        property("sonar.exclusions", "**/*.mock.kt,**/generated/**,**/res/**")
     }
 }
 
