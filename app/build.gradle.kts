@@ -38,6 +38,19 @@ android {
         htmlReport = true
     }
 
+    signingConfigs {
+        create("release") {
+            val releaseStoreFile =
+                System.getenv("RELEASE_STORE_FILE")
+                    ?: "app/release.keystore"
+
+            storeFile = rootProject.file(releaseStoreFile)
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
@@ -65,7 +78,7 @@ android {
                 "\"${System.getenv("REL_CHAIKA_SOFT_URL")}\""
             )
             buildConfigField("String", "ZITADEL_URL", "\"${System.getenv("REL_ZITADEL_URL")}\"")
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
 
         create("stage") {
@@ -124,9 +137,24 @@ jacoco {
 }
 
 sonar {
+    androidVariant = "stage"
+
     properties {
         property("sonar.projectKey", "ChaikaKotlin")
         property("sonar.projectName", "ChaikaKotlin")
+        property("sonar.junit.reportPaths", "build/test-results/testStageUnitTest")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacoco.xml")
+        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
+        property("sonar.exclusions", "**/*.mock.kt,**/generated/**,**/res/**")
+    }
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        txt.required.set(false)
+        sarif.required.set(false)
     }
 }
 
@@ -149,21 +177,34 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*Test*.*",
             "android/**/*.*",
             "**/di/**",
-            "**/Application.*"
+            "**/Application.*",
+            "**/*Hilt*.*",
+            "**/*_Factory.*",
+            "**/*_MembersInjector.*",
+            "**/*_Impl.*"
         )
 
-    val mainSrc = "$projectDir/src/main/java"
+    val mainSrc =
+        files(
+            "$projectDir/src/main/java",
+            "$projectDir/src/main/kotlin"
+        )
 
-    sourceDirectories.setFrom(files(mainSrc))
+    sourceDirectories.setFrom(mainSrc)
     classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-            exclude(fileFilter)
-        }
+        files(
+            fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/stage")) {
+                exclude(fileFilter)
+            },
+            fileTree(layout.buildDirectory.dir("intermediates/javac/stage/classes")) {
+                exclude(fileFilter)
+            }
+        )
     )
     executionData.setFrom(
-        fileTree(layout.buildDirectory.dir("jacoco")) {
+        fileTree(layout.buildDirectory) {
             include(
-                "testStageUnitTest.exec",
+                "jacoco/testStageUnitTest.exec",
                 "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec"
             )
         }
@@ -329,6 +370,8 @@ ktlint {
     }
 }
 
-tasks.named("preBuild") {
-    dependsOn(rootProject.tasks.named("addKtlintFormatGitPreCommitHook"))
+if (System.getenv("CI") != "true") {
+    tasks.named("preBuild") {
+        dependsOn(rootProject.tasks.named("addKtlintFormatGitPreCommitHook"))
+    }
 }

@@ -1,0 +1,197 @@
+name: Chaika CI
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+      - 'CHK-*'
+      - 'CHOPS-*'
+      - 'fix/*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ktlint:
+    name: KtLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
+
+      - name: Upload ktlint reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-reports
+          path: '**/build/reports/ktlint/**'
+          if-no-files-found: ignore
+          retention-days: 5
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    env:
+      STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL || 'https://example.invalid/' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Run stage unit tests and coverage
+        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport --no-daemon
+
+      - name: Upload unit test and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: |
+            app/build/test-results/testStageUnitTest
+            app/build/reports/tests/testStageUnitTest
+            app/build/reports/jacoco
+          if-no-files-found: ignore
+          retention-days: 7
+
+  stage-build:
+    name: Stage build
+    runs-on: ubuntu-latest
+
+    env:
+      STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL || 'https://example.invalid/' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Assemble stage APK
+        run: ./gradlew :app:assembleStage --no-daemon
+
+      - name: Upload stage APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-apk
+          path: app/build/outputs/apk/stage/*.apk
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  detekt:
+    name: Detekt
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Run detekt
+        run: ./gradlew detekt --no-daemon
+
+      - name: Upload detekt reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-reports
+          path: app/build/reports/detekt
+          if-no-files-found: ignore
+          retention-days: 7
+
+  sonar:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    needs:
+      - ktlint
+      - unit-tests
+      - stage-build
+      - detekt
+    if: github.event_name != 'pull_request'
+
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    steps:
+      - name: Check SonarQube secrets
+        id: sonar-secrets
+        run: |
+          if [ -n "$SONAR_TOKEN" ] && [ -n "$SONAR_HOST_URL" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "SONAR_TOKEN or SONAR_HOST_URL is not set; skipping SonarQube scan."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.sonar-secrets.outputs.available == 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Setup Android Gradle
+        if: steps.sonar-secrets.outputs.available == 'true'
+        uses: ./.github/actions/setup-android-gradle
+
+      - name: Cache SonarQube packages
+        if: steps.sonar-secrets.outputs.available == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Download unit test reports
+        if: steps.sonar-secrets.outputs.available == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-reports
+          path: app/build
+
+      - name: Download detekt reports
+        if: steps.sonar-secrets.outputs.available == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: detekt-reports
+          path: app/build/reports/detekt
+
+      - name: Debug Sonar lint property
+        if: steps.sonar-secrets.outputs.available == 'true'
+        run: |
+          echo "Search in repository:"
+          grep -R "lint-results-stage.xml\|sonar.androidLint.reportPaths\|androidLint" -n . \
+            --exclude-dir=.git \
+            --exclude-dir=.gradle \
+            --exclude-dir=build || true
+
+      - name: Run SonarQube scan
+        if: steps.sonar-secrets.outputs.available == 'true'
+        run: >
+          ./gradlew
+          :app:testStageUnitTest
+          :app:jacocoTestReport
+          sonar
+          --no-daemon
+          -Dsonar.qualitygate.wait=true
+        env:
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
