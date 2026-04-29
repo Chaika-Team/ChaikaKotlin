@@ -197,6 +197,14 @@ jobs:
         continue-on-error: true
         run: ./gradlew :app:detekt --no-daemon
 
+      - name: Debug Sonar lint property
+        run: |
+          echo "Search in repository:"
+          grep -R "lint-results-stage.xml\|sonar.androidLint.reportPaths\|androidLint" -n . \
+            --exclude-dir=.git \
+            --exclude-dir=.gradle \
+            --exclude-dir=build || true
+
       - name: Run SonarQube scan
         run: >
           ./gradlew
