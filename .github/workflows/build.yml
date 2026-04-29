@@ -51,12 +51,12 @@ jobs:
           path: '**/build/reports/ktlint/'
           retention-days: 5
 
-      - name: Build and run unit tests
+      - name: Build and run unit tests (Kotest via JUnit Platform)
         env:
           STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL }}
           STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN }}
           STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL }}
-        run: ./gradlew clean buildStage testStage jacocoTestReportStage
+        run: ./gradlew clean :app:buildStage :app:testStageUnitTest :app:jacocoTestReport
 
       # - name: Enable KVM
       #   run: |
@@ -80,7 +80,7 @@ jobs:
             -Dsonar.sources=app/src/main
             -Dsonar.tests=app/src/test
             -Dsonar.projectKey=ChaikaKotlin
-            -Dsonar.junit.reportPaths=app/build/test-results/
+            -Dsonar.junit.reportPaths=app/build/test-results/testStageUnitTest
             -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
             -Dsonar.exclusions=**/*.mock.kt,**/generated/**,**/res/**
 

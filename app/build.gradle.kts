@@ -95,9 +95,6 @@ android {
         unitTests {
             isReturnDefaultValues = true
         }
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
     }
 
     packaging {
@@ -131,6 +128,8 @@ sonar {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
+    group = "verification"
+    description = "Generates JaCoCo coverage report for stage unit tests."
     dependsOn("testStageUnitTest")
 
     reports {
@@ -161,12 +160,12 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         }
     )
     executionData.setFrom(
-        fileTree(layout.buildDirectory.dir("jacoco")) {
-            include(
-                "testStageUnitTest.exec",
+        files(
+            layout.buildDirectory.file("jacoco/testStageUnitTest.exec"),
+            layout.buildDirectory.file(
                 "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec"
             )
-        }
+        )
     )
 }
 
