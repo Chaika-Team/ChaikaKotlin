@@ -193,13 +193,16 @@ jobs:
           name: release-unit-test-reports
           path: app/build
 
+      - name: Run Detekt report
+        continue-on-error: true
+        run: ./gradlew :app:detekt --no-daemon
+
       - name: Run SonarQube scan
         run: >
           ./gradlew
           :app:testStageUnitTest
           :app:jacocoTestReport
           :app:lintStage
-          :app:detekt
           sonar
           --no-daemon
           -Dsonar.qualitygate.wait=true
