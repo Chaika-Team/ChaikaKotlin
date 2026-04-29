@@ -141,10 +141,9 @@ sonar {
         property("sonar.projectKey", "ChaikaKotlin")
         property("sonar.projectName", "ChaikaKotlin")
         property("sonar.junit.reportPaths", "build/test-results/testStageUnitTest")
-        property(
-            "sonar.coverage.jacoco.xmlReportPaths",
-            "build/reports/jacoco/jacocoTestReportStage/jacocoTestReportStage.xml"
-        )
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacoco.xml")
+        property("sonar.androidLint.reportPaths", "build/reports/lint-results-stage.xml")
+        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
         property("sonar.exclusions", "**/*.mock.kt,**/generated/**,**/res/**")
     }
 }
@@ -168,21 +167,34 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*Test*.*",
             "android/**/*.*",
             "**/di/**",
-            "**/Application.*"
+            "**/Application.*",
+            "**/*Hilt*.*",
+            "**/*_Factory.*",
+            "**/*_MembersInjector.*",
+            "**/*_Impl.*"
         )
 
-    val mainSrc = "$projectDir/src/main/java"
+    val mainSrc =
+        files(
+            "$projectDir/src/main/java",
+            "$projectDir/src/main/kotlin"
+        )
 
-    sourceDirectories.setFrom(files(mainSrc))
+    sourceDirectories.setFrom(mainSrc)
     classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-            exclude(fileFilter)
-        }
+        files(
+            fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/stage")) {
+                exclude(fileFilter)
+            },
+            fileTree(layout.buildDirectory.dir("intermediates/javac/stage/classes")) {
+                exclude(fileFilter)
+            }
+        )
     )
     executionData.setFrom(
-        fileTree(layout.buildDirectory.dir("jacoco")) {
+        fileTree(layout.buildDirectory) {
             include(
-                "testStageUnitTest.exec",
+                "jacoco/testStageUnitTest.exec",
                 "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec"
             )
         }
@@ -348,6 +360,8 @@ ktlint {
     }
 }
 
-tasks.named("preBuild") {
-    dependsOn(rootProject.tasks.named("addKtlintFormatGitPreCommitHook"))
+if (System.getenv("CI") != "true") {
+    tasks.named("preBuild") {
+        dependsOn(rootProject.tasks.named("addKtlintFormatGitPreCommitHook"))
+    }
 }
