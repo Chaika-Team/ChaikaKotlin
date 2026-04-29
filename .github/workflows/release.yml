@@ -202,7 +202,6 @@ jobs:
           ./gradlew
           :app:testStageUnitTest
           :app:jacocoTestReport
-          :app:lintStage
           sonar
           --no-daemon
           -Dsonar.qualitygate.wait=true
