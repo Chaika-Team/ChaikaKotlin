@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface RoomStationRepositoryInterface {
     suspend fun upsertAll(stations: List<StationDomain>)
+    suspend fun hasAnyStationsOnce(): Boolean
     fun pagedQuery(query: String, pageSize: Int): Flow<PagingData<StationDomain>>
     suspend fun getByCode(code: String): StationDomain?
 }

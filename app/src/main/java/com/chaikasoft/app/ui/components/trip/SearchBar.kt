@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -35,7 +36,8 @@ fun SearchTripBar(
     placeholderText: String = "",
     cornerRadius: Dp = 10.dp,
     readOnly: Boolean = false,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    testTag: String? = null
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -48,6 +50,7 @@ fun SearchTripBar(
         if (readOnly && onClick != null) {
             Surface(
                 modifier = Modifier
+                    .then(if (testTag != null) Modifier.testTag(testTag) else Modifier)
                     .fillMaxSize()
                     .clickable {
                         keyboardController?.hide()
@@ -84,7 +87,9 @@ fun SearchTripBar(
                 onSearch = { focusManager.clearFocus() },
                 active = false,
                 onActiveChange = {},
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .then(if (testTag != null) Modifier.testTag(testTag) else Modifier)
+                    .fillMaxSize(),
                 placeholder = {
                     Text(
                         text = placeholderText,

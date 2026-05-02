@@ -21,15 +21,20 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.LoginDimens
 import com.chaikasoft.app.ui.viewmodels.AuthState
 import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(viewModel: AuthViewModel) {
     val ui by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,6 +61,8 @@ fun LoginScreen(viewModel: AuthViewModel) {
 
     Column(
         modifier = Modifier
+            .testTag("loginScreen")
+            .semantics { testTagsAsResourceId = true }
             .fillMaxSize()
             .padding(LoginDimens.LoginContainerPadding),
         verticalArrangement = Arrangement.Center,
@@ -67,7 +74,9 @@ fun LoginScreen(viewModel: AuthViewModel) {
                 val authIntent = viewModel.startAuth()
                 authLauncher.launch(authIntent)
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("loginButton"),
             enabled = !isBusy
         ) {
             Text(stringResource(R.string.login_button))
@@ -75,7 +84,9 @@ fun LoginScreen(viewModel: AuthViewModel) {
 
         if (isBusy) {
             CircularProgressIndicator(
-                modifier = Modifier.padding(LoginDimens.LoadingIndicatorPadding)
+                modifier = Modifier
+                    .padding(LoginDimens.LoadingIndicatorPadding)
+                    .testTag("loginProgress")
             )
         }
 
@@ -83,7 +94,8 @@ fun LoginScreen(viewModel: AuthViewModel) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = LoginDimens.ErrorCardTopPadding),
+                    .padding(top = LoginDimens.ErrorCardTopPadding)
+                    .testTag("loginErrorCard"),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer
                 )

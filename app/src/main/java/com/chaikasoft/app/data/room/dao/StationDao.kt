@@ -1,4 +1,3 @@
-// data/room/dao/StationDao.kt
 package com.chaikasoft.app.data.room.dao
 
 import androidx.paging.PagingSource
@@ -9,7 +8,11 @@ import com.chaikasoft.app.data.room.entities.Station
 
 @Dao
 interface StationDao {
+    // Рассмотреть @Insert(onConflict = OnConflictStrategy.IGNORE) вместо @Upsert
     @Upsert suspend fun upsertAll(stations: List<Station>)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM stations LIMIT 1)")
+    suspend fun hasAnyStationsOnce(): Boolean
 
     @Query(
         """

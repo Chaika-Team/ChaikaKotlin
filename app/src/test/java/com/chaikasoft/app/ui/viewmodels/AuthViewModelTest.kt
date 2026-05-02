@@ -1,6 +1,7 @@
 package com.chaikasoft.app.ui.viewmodels
 
 import android.content.Intent
+import com.chaikasoft.app.auth.AuthSessionBootstrap
 import com.chaikasoft.app.domain.sealed.LogoutResult
 import com.chaikasoft.app.domain.usecases.CompleteAuthorizationFlowUseCase
 import com.chaikasoft.app.domain.usecases.GetAccessTokenUseCase
@@ -28,6 +29,7 @@ class AuthViewModelTest : FunSpec({
     lateinit var completeAuth: CompleteAuthorizationFlowUseCase
     lateinit var logout: LogoutUseCase
     lateinit var startAuth: StartAuthorizationUseCase
+    lateinit var authSessionBootstrap: AuthSessionBootstrap
 
     beforeTest {
         Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -35,8 +37,10 @@ class AuthViewModelTest : FunSpec({
         completeAuth = mockk()
         logout = mockk()
         startAuth = mockk()
+        authSessionBootstrap = mockk()
         coEvery { getAccessToken() } returns null
         coEvery { logout() } returns LogoutResult.Success
+        coEvery { authSessionBootstrap.bootstrapIfNeeded() } returns Unit
     }
 
     afterTest {
@@ -47,7 +51,8 @@ class AuthViewModelTest : FunSpec({
         getAccessTokenUseCase = getAccessToken,
         completeAuthorizationFlowUseCase = completeAuth,
         logoutUseCase = logout,
-        startAuthorizationUseCase = startAuth
+        startAuthorizationUseCase = startAuth,
+        authSessionBootstrap = authSessionBootstrap
     )
 
     test("init sets Authenticated when token exists") {

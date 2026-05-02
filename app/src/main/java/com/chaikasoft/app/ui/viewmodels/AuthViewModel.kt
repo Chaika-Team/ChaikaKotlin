@@ -4,6 +4,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chaikasoft.app.auth.AuthSessionBootstrap
 import com.chaikasoft.app.domain.sealed.LogoutResult.ActiveShiftExists
 import com.chaikasoft.app.domain.sealed.LogoutResult.Failure
 import com.chaikasoft.app.domain.sealed.LogoutResult.Success
@@ -41,7 +42,8 @@ class AuthViewModel @Inject constructor(
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
     private val completeAuthorizationFlowUseCase: CompleteAuthorizationFlowUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val startAuthorizationUseCase: StartAuthorizationUseCase
+    private val startAuthorizationUseCase: StartAuthorizationUseCase,
+    private val authSessionBootstrap: AuthSessionBootstrap
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -95,6 +97,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             setState(AuthState.Checking)
             runCatching {
+                authSessionBootstrap.bootstrapIfNeeded()
                 getAccessTokenUseCase()
             }.onSuccess { token ->
                 if (token != null) {

@@ -9,10 +9,8 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "stations",
     indices = [
-        Index(
-            value = ["code"],
-            unique = true
-        ), Index(value = ["name"]), Index(value = ["city"])
+        Index(value = ["name"]),
+        Index(value = ["city"])
     ]
 )
 data class Station(

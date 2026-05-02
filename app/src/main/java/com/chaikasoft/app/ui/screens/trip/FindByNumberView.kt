@@ -26,6 +26,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +72,11 @@ fun FindByNumberView(viewModel: TripViewModel, navController: NavController) {
         onReset = viewModel::resetTripsSearchResults
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("findTripScreen")
+    ) {
         TripsSearchFilters(
             context = context,
             viewModel = viewModel,
@@ -172,6 +177,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.TripsSearchContent(
         modifier = Modifier
             .weight(1f)
             .fillMaxWidth()
+            .testTag("tripsSearchContent")
             .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 6.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -187,12 +193,15 @@ private fun androidx.compose.foundation.layout.ColumnScope.TripsSearchContent(
 
 @Composable
 private fun TripsLoading() {
-    CircularProgressIndicator()
+    CircularProgressIndicator(modifier = Modifier.testTag("tripsLoading"))
 }
 
 @Composable
 private fun TripsEmpty() {
-    Text(stringResource(R.string.trip_search_empty))
+    Text(
+        text = stringResource(R.string.trip_search_empty),
+        modifier = Modifier.testTag("tripsEmpty")
+    )
 }
 
 @Composable
@@ -204,6 +213,7 @@ private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit
             Button(
                 onClick = onRetry,
                 modifier = Modifier
+                    .testTag("tripsRetryButton")
                     .padding(16.dp)
                     .height(46.dp)
                     .width(200.dp),
@@ -219,7 +229,9 @@ private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit
 private fun TripsGrid(trips: List<TripDomain>, onTripClick: (TripDomain) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("tripsGrid")
     ) {
         items(trips) { trip ->
             FoundTripCard(

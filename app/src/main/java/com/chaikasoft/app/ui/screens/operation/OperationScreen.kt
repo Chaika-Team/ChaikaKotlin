@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -23,7 +24,11 @@ import com.chaikasoft.app.ui.viewmodels.OperationViewModel
 fun OperationScreen(viewModel: OperationViewModel) {
     val operations = viewModel.operations.collectAsLazyPagingItems()
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("operationScreen")
+    ) {
         items(operations.itemCount) { item ->
             operations[item]?.let {
                 OperationCard(summary = it, viewModel = viewModel)

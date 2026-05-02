@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -129,6 +130,7 @@ fun StatisticsScreen(
     ) { innerPadding ->
         LazyColumn(
             modifier = modifier
+                .testTag("statisticsScreen")
                 .fillMaxSize()
                 .padding(16.dp)
                 .padding(innerPadding)

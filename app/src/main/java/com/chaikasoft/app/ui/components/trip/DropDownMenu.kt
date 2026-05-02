@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
-import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +44,10 @@ fun DropDownMenu(
     suggestionsFlow: Flow<PagingData<StationDomain>>,
     onItemSelected: (StationDomain) -> Unit,
     placeholderText: String = "",
-    cornerRadius: Dp = 10.dp
+    cornerRadius: Dp = 10.dp,
+    inputTestTag: String? = null,
+    menuTestTag: String? = null,
+    itemTestTagFactory: ((StationDomain) -> String)? = null
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val lazyItems = suggestionsFlow.collectAsLazyPagingItems()
@@ -80,19 +83,23 @@ fun DropDownMenu(
                 .menuAnchor()
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
+                .then(if (inputTestTag != null) Modifier.testTag(inputTestTag) else Modifier)
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.heightIn(max = 320.dp)
+            modifier = Modifier
+                .then(if (menuTestTag != null) Modifier.testTag(menuTestTag) else Modifier)
+                .heightIn(max = 320.dp)
         ) {
             DropDownContent(
                 state = menuState,
                 lazyItems = lazyItems,
                 onQueryChange = onQueryChange,
                 onItemSelected = onItemSelected,
-                onClose = { expanded = false }
+                onClose = { expanded = false },
+                itemTestTagFactory = itemTestTagFactory
             )
         }
     }
@@ -144,7 +151,8 @@ private fun DropDownContent(
     lazyItems: LazyPagingItems<StationDomain>,
     onQueryChange: (String) -> Unit,
     onItemSelected: (StationDomain) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    itemTestTagFactory: ((StationDomain) -> String)?
 ) {
     when (state) {
         MenuUiState.NeedMoreCharacters ->
@@ -168,6 +176,11 @@ private fun DropDownContent(
             ) {
                 lazyItems.itemSnapshotList.items.forEach { station ->
                     DropdownMenuItem(
+                        modifier = if (itemTestTagFactory != null) {
+                            Modifier.testTag(itemTestTagFactory(station))
+                        } else {
+                            Modifier
+                        },
                         text = { Text(station.name) },
                         onClick = {
                             onQueryChange(station.name)

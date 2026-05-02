@@ -8,6 +8,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
+import java.io.IOException
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
@@ -15,7 +16,6 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import retrofit2.HttpException
 import retrofit2.Response
-import java.io.IOException
 
 class ChaikaSoftReportsRepositoryTest : FunSpec({
 
