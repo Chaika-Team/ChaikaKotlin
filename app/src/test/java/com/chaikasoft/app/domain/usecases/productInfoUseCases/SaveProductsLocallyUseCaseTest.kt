@@ -39,6 +39,7 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
     beforeTest {
         productRepository = mockk()
         imageRepository = mockk()
+
         useCase = SaveProductsLocallyUseCase(
             productInfoRepository = productRepository,
             localImageRepository = imageRepository,
@@ -49,18 +50,12 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
     /**
      * Техника тест-дизайна: #3 Таблица решений
      *
-     * Автор: Codex
-     *
      * Описание:
-     *   - Входы: смешанные результаты сохранения изображения (путь vs null).
-     *   - Ожидаемое поведение:
-     *       1) путь сохраненного изображения заменяет image перед вставкой,
-     *       2) null путь сохраняет исходный image,
-     *       3) каждый товар вставляется,
-     *       4) возвращается исходный список.
-     *   - Цель: зафиксировать поведение по каждому товару и контракт возврата.
+     *   - Вход: список продуктов, где одно изображение сохраняется локально, а второе возвращает null.
+     *   - Ожидаемое поведение: успешное сохранение заменяет image на локальный путь, ошибка оставляет remote URL.
+     *   - Цель: зафиксировать best-effort политику сохранения изображений без срыва синка продуктов.
      */
-    test("when image saving results are mixed - inserts each product with expected image and returns original list") {
+    test("when image saving results are mixed - inserts each product with expected image") {
         runTest {
             val products = listOf(productOne, productTwo)
             val inserted = mutableListOf<ProductInfoDomain>()
@@ -101,6 +96,30 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
                 )
             }
             coVerify(exactly = 2) { productRepository.insertProduct(any()) }
+            confirmVerified(productRepository, imageRepository)
+        }
+    }
+
+    /**
+     * Техника тест-дизайна: #2 Граничные значения
+     *
+     * Описание:
+     *   - Вход: продукт с пустым или blank image.
+     *   - Ожидаемое поведение: LocalImageRepository не вызывается, в БД уходит пустая строка image.
+     *   - Цель: гарантировать, что отсутствующие изображения не создают локальные файлы.
+     */
+    test("when image is missing - does not call saveImageFromUrl and stores empty image") {
+        runTest {
+            val productWithoutImage = productOne.copy(image = "  ")
+            val inserted = mutableListOf<ProductInfoDomain>()
+            coEvery { productRepository.insertProduct(capture(inserted)) } returns Unit
+
+            val result = useCase(listOf(productWithoutImage))
+
+            result shouldBe listOf(productWithoutImage)
+            inserted.single().image shouldBe ""
+            coVerify(exactly = 0) { imageRepository.saveImageFromUrl(any(), any(), any()) }
+            coVerify(exactly = 1) { productRepository.insertProduct(any()) }
             confirmVerified(productRepository, imageRepository)
         }
     }

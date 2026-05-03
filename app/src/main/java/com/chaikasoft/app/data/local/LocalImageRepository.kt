@@ -54,8 +54,7 @@ constructor(
             Log.d("LocalImageRepository", "Image saved: ${file.absolutePath}")
             file.absolutePath
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("LocalImageRepository", "Failed to save image: ${e.message}")
+            Log.e("LocalImageRepository", "Failed to save image: ${e.message}", e)
             null
         }
     }

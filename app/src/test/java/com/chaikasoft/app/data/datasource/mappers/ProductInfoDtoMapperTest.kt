@@ -4,20 +4,17 @@ import com.chaikasoft.app.data.datasource.dto.ProductInfoDto
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-private const val DEFAULT_IMAGE =
-    "https://i.pinimg.com/736x/5b/d3/e7/5bd3e779f192cb04cf35b859e0d50cbc.jpg"
-
 class ProductInfoDtoMapperTest : FunSpec({
 
     /**
-     * Техника тест-дизайна: #2 Граничные значения
+     * Техника тест-дизайна: #1 Классы эквивалентности
      *
      * Описание:
-     *   - Вход: цена с дробной частью, требующей округления HALF_UP при переводе в копейки.
-     *   - Ожидаемое поведение: корректная конвертация price и подстановка фиксированного image.
-     *   - Цель: защитить от регрессий в расчетах денежных значений и контракте отображения картинки.
+     *   - Вход: DTO продукта с заполненным image и дробной ценой.
+     *   - Ожидаемое поведение: поля маппятся без подмены image, цена переводится в копейки.
+     *   - Цель: зафиксировать, что data-слой сохраняет URL сервиса и не подставляет placeholder.
      */
-    test("maps dto to domain and converts rubles to kopecks with HALF_UP") {
+    test("maps dto to domain and keeps explicit image") {
         val dto = ProductInfoDto(
             id = 7,
             name = "Tea",
@@ -31,7 +28,29 @@ class ProductInfoDtoMapperTest : FunSpec({
         domain.id shouldBe 7
         domain.name shouldBe "Tea"
         domain.description shouldBe "Black tea"
-        domain.image shouldBe DEFAULT_IMAGE
+        domain.image shouldBe "https://example.com/from-api.png"
         domain.price shouldBe 1235
+    }
+
+    /**
+     * Техника тест-дизайна: #2 Граничные значения
+     *
+     * Описание:
+     *   - Вход: DTO продукта с image == null.
+     *   - Ожидаемое поведение: image в доменной модели становится пустой строкой.
+     *   - Цель: защитить контракт отсутствующего изображения без внешнего placeholder URL.
+     */
+    test("maps missing dto image to empty string") {
+        val dto = ProductInfoDto(
+            id = 7,
+            name = "Tea",
+            description = "Black tea",
+            image = null,
+            price = 12.345,
+        )
+
+        val domain = dto.toDomain()
+
+        domain.image shouldBe ""
     }
 })

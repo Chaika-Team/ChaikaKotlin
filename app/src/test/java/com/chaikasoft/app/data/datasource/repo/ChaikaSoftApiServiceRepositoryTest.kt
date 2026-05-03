@@ -14,9 +14,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 
-private const val DEFAULT_IMAGE =
-    "https://i.pinimg.com/736x/5b/d3/e7/5bd3e779f192cb04cf35b859e0d50cbc.jpg"
-
 class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
     lateinit var api: ChaikaSoftApiService
@@ -55,8 +52,38 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
             result.size shouldBe 1
             result.first().id shouldBe 1
             result.first().price shouldBe 1230
-            result.first().image shouldBe DEFAULT_IMAGE
+            result.first().image shouldBe "from-api"
             coVerify(exactly = 1) { api.getProducts(limit = 50, offset = 100) }
+        }
+    }
+
+    /**
+     * Техника тест-дизайна: #2 Граничные значения
+     *
+     * Описание:
+     *   - Вход: успешный ответ products, где DTO продукта содержит image == null.
+     *   - Ожидаемое поведение: repository возвращает продукт с пустым image.
+     *   - Цель: закрепить контракт отсутствующего изображения на границе API repository.
+     */
+    test("fetchProducts maps null image to empty string") {
+        runTest {
+            coEvery { api.getProducts(limit = 10, offset = 0) } returns
+                ProductInfoListResponseDto(
+                    products = listOf(
+                        ProductInfoDto(
+                            id = 1,
+                            name = "Tea",
+                            description = "Black tea",
+                            image = null,
+                            price = 10.0,
+                        )
+                    )
+                )
+
+            val result = repository.fetchProducts(limit = 10, offset = 0)
+
+            result.first().image shouldBe ""
+            coVerify(exactly = 1) { api.getProducts(limit = 10, offset = 0) }
         }
     }
 

@@ -7,7 +7,7 @@ data class ProductInfoDto(
     val name: String,
     val description: String,
     @SerializedName("imageurl")
-    val image: String,
+    val image: String? = null,
     val price: Double
 )
 
