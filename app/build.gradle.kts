@@ -8,6 +8,7 @@ plugins {
     id("jacoco")
     id("de.mannodermaus.android-junit5") version "1.12.0.0"
     id("org.jlleitschuh.gradle.ktlint")
+    id("org.jetbrains.kotlinx.kover")
 }
 
 android {
@@ -307,6 +308,27 @@ java {
 junitPlatform {
     instrumentationTests {
         includeExtensions.set(true)
+    }
+}
+
+kover {
+    reports {
+        total {
+            filters {
+                includes {
+                    classes(
+                        "com.chaikasoft.app.data.datasource.mappers.TripMapperKt", 
+                        "com.chaikasoft.app.data.room.mappers.StationMapperKt",
+                        "com.chaikasoft.app.data.datasource.repo.ChaikaTripperRepository",
+                        "com.chaikasoft.app.data.room.repo.RoomStationRepository",
+                        "com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase",
+                        "com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase",
+                        "com.chaikasoft.app.domain.usecases.RefreshStationsOnLaunchUseCase",
+                        "com.chaikasoft.app.ui.viewmodels.TripViewModel"
+                    )
+                }
+            }
+        }
     }
 }
 
