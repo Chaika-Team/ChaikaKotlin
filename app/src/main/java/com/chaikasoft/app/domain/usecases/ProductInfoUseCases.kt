@@ -1,5 +1,6 @@
 package com.chaikasoft.app.domain.usecases
 
+import android.util.Log
 import androidx.paging.PagingData
 import com.chaikasoft.app.data.datasource.repo.ChaikaSoftApiServiceRepositoryInterface
 import com.chaikasoft.app.data.local.ImageSubDir
@@ -7,6 +8,7 @@ import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.util.normalizedRemoteImageUrlOrNull
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -73,15 +75,36 @@ class SaveProductsLocallyUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(products: List<ProductInfoDomain>): List<ProductInfoDomain> =
         withContext(ioDispatcher) {
+            var missingImageCount = 0
+            var savedLocallyCount = 0
+
             products.forEach { product ->
-                val imagePath = localImageRepository.saveImageFromUrl(
-                    imageUrl = product.image,
-                    fileName = "${product.name}.jpg",
-                    subDir = ImageSubDir.PRODUCTS.folder
-                )
-                val productWithImagePath = product.copy(image = imagePath ?: product.image)
-                productInfoRepository.insertProduct(productWithImagePath)
+                val remoteImageUrl = product.image.normalizedRemoteImageUrlOrNull()
+                if (remoteImageUrl == null) {
+                    missingImageCount++
+                }
+
+                val imageToStore = if (remoteImageUrl != null) {
+                    val imagePath = localImageRepository.saveImageFromUrl(
+                        imageUrl = remoteImageUrl,
+                        fileName = "${product.name}.jpg",
+                        subDir = ImageSubDir.PRODUCTS.folder
+                    )
+                    if (imagePath != null) {
+                        savedLocallyCount++
+                    }
+                    imagePath ?: remoteImageUrl
+                } else {
+                    ""
+                }
+
+                productInfoRepository.insertProduct(product.copy(image = imageToStore))
             }
+
+            Log.i(
+                PRODUCT_IMAGE_SYNC_LOG_TAG,
+                "Products image sync summary: total=${products.size}, missingFromApi=$missingImageCount, savedLocally=$savedLocallyCount"
+            )
             products
         }
 }
@@ -101,3 +124,5 @@ class FetchAndSaveProductsUseCase @Inject constructor(
         return saveProductsLocallyUseCase(products)
     }
 }
+
+private const val PRODUCT_IMAGE_SYNC_LOG_TAG = "ProductImageSync"

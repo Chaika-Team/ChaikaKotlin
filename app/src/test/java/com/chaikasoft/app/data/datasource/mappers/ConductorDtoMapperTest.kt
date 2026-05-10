@@ -4,18 +4,15 @@ import com.chaikasoft.app.data.datasource.dto.ConductorDto
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-private const val DEFAULT_IMAGE =
-    "https://i.pinimg.com/736x/5b/d3/e7/5bd3e779f192cb04cf35b859e0d50cbc.jpg"
-
 class ConductorDtoMapperTest : FunSpec({
 
     /**
-     * Техника тест-дизайна: #3 Таблица решений
+     * Техника тест-дизайна: #1 Классы эквивалентности
      *
      * Описание:
-     *   - Вход: DTO с заполненным image.
-     *   - Ожидаемое поведение: nickname маппится в employeeID, image сохраняется как есть, id фиксируется в 0.
-     *   - Цель: защитить основной контракт маппинга ConductorDto -> ConductorDomain.
+     *   - Вход: DTO проводника с заполненным image и nickname.
+     *   - Ожидаемое поведение: nickname маппится в employeeID, image сохраняется как есть.
+     *   - Цель: зафиксировать основной контракт ConductorDto -> ConductorDomain без подмены изображения.
      */
     test("maps nickname to employeeID and keeps explicit image") {
         val dto = ConductorDto(
@@ -40,11 +37,11 @@ class ConductorDtoMapperTest : FunSpec({
      * Техника тест-дизайна: #2 Граничные значения
      *
      * Описание:
-     *   - Граница: image == null.
-     *   - Ожидаемое поведение: подставляется дефолтная ссылка на изображение.
-     *   - Цель: зафиксировать безопасный fallback для отсутствующего аватара.
+     *   - Вход: DTO проводника с image == null.
+     *   - Ожидаемое поведение: image в доменной модели становится пустой строкой.
+     *   - Цель: защитить fallback-контракт data-слоя без записи placeholder URL.
      */
-    test("uses fallback image when dto image is null") {
+    test("maps missing dto image to empty string") {
         val dto = ConductorDto(
             name = "Ivan",
             familyName = "Petrov",
@@ -55,6 +52,6 @@ class ConductorDtoMapperTest : FunSpec({
 
         val domain = dto.toDomain()
 
-        domain.image shouldBe DEFAULT_IMAGE
+        domain.image shouldBe ""
     }
 })

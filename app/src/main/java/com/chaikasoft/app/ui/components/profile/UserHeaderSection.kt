@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.chaikasoft.app.R
@@ -45,23 +46,19 @@ fun UserHeaderSection(conductor: ConductorDomain?, onClick: () -> Unit) {
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
-            if (conductor?.image != null && conductor.image.isNotBlank()) {
-                AsyncImage(
-                    model = conductor.image,
-                    contentDescription = stringResource(R.string.profile_user_avatar),
-                    modifier = Modifier
-                        .size(ProfileDimens.AvatarSize)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(ProfileDimens.AvatarSize)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                )
-            }
+            val avatarFallback = painterResource(id = R.drawable.placeholder_chaika)
+            AsyncImage(
+                model = conductor?.image?.takeIf { it.isNotBlank() },
+                placeholder = avatarFallback,
+                error = avatarFallback,
+                fallback = avatarFallback,
+                contentDescription = stringResource(R.string.profile_user_avatar),
+                modifier = Modifier
+                    .size(ProfileDimens.AvatarSize)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentScale = ContentScale.Crop
+            )
         }
 
         Spacer(modifier = Modifier.width(ProfileDimens.HeaderSpacerWidth))

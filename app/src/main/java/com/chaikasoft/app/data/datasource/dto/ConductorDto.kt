@@ -12,5 +12,5 @@ data class ConductorDto(
     @SerializedName("nickname")
     val nickname: String, // с сервера приходит nickname
     @SerializedName("image")
-    val image: String?
+    val image: String? = null
 )

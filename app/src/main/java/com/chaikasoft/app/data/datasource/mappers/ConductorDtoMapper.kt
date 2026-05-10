@@ -5,7 +5,7 @@ import com.chaikasoft.app.domain.models.ConductorDomain
 
 /**
  * Преобразует ConductorDto (данные с сервера) в доменную модель ConductorDomain.
- * Здесь поле nickname маппится на employeeID, а id остаётся неустановленным (например, 0 или null),
+ * Здесь поле nickname маппится на employeeID, а id остаётся неустановленным,
  * поскольку сервер не передаёт его.
  */
 fun ConductorDto.toDomain(): ConductorDomain = ConductorDomain(
@@ -14,6 +14,5 @@ fun ConductorDto.toDomain(): ConductorDomain = ConductorDomain(
     familyName = this.familyName,
     givenName = this.givenName,
     employeeID = this.nickname,
-    image = this.image
-        ?: "https://i.pinimg.com/736x/5b/d3/e7/5bd3e779f192cb04cf35b859e0d50cbc.jpg"
+    image = this.image?.trim().orEmpty()
 )

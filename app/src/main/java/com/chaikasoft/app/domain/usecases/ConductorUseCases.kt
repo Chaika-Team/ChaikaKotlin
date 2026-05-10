@@ -1,11 +1,13 @@
 package com.chaikasoft.app.domain.usecases
 
+import android.util.Log
 import com.chaikasoft.app.data.datasource.repo.IAMApiServiceRepositoryInterface
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
 import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.models.ConductorDomain
+import com.chaikasoft.app.util.normalizedRemoteImageUrlOrNull
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -44,13 +46,28 @@ class SaveConductorLocallyUseCase @Inject constructor(
      */
     suspend operator fun invoke(conductor: ConductorDomain, imageUrl: String): ConductorDomain =
         withContext(ioDispatcher) {
-            val imagePath = imageRepository.saveImageFromUrl(
-                imageUrl = imageUrl,
-                fileName = "${conductor.employeeID}.jpg",
-                subDir = ImageSubDir.CONDUCTORS.folder
-            ) ?: throw IllegalArgumentException("Не удалось сохранить изображение проводника")
+            val normalizedImageUrl = imageUrl.normalizedRemoteImageUrlOrNull()
+            val imageToStore = if (normalizedImageUrl != null) {
+                val imagePath = imageRepository.saveImageFromUrl(
+                    imageUrl = normalizedImageUrl,
+                    fileName = "${conductor.employeeID}.jpg",
+                    subDir = ImageSubDir.CONDUCTORS.folder
+                )
+                if (imagePath != null) {
+                    Log.i(CONDUCTOR_IMAGE_SYNC_LOG_TAG, "Conductor image saved locally")
+                } else {
+                    Log.w(
+                        CONDUCTOR_IMAGE_SYNC_LOG_TAG,
+                        "Conductor image save failed, keeping remote url"
+                    )
+                }
+                imagePath ?: normalizedImageUrl
+            } else {
+                Log.i(CONDUCTOR_IMAGE_SYNC_LOG_TAG, "Conductor image is missing from API")
+                ""
+            }
 
-            val toInsert = conductor.copy(image = imagePath)
+            val toInsert = conductor.copy(image = imageToStore)
             conductorRepository.insertConductor(toInsert)
 
             // Получаем уже сохранённого проводника из БД
@@ -96,3 +113,5 @@ class DeleteAllConductorsUseCase @Inject constructor(
         conductorRepository.deleteAllConductors()
     }
 }
+
+private const val CONDUCTOR_IMAGE_SYNC_LOG_TAG = "ConductorImageSync"

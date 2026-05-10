@@ -44,17 +44,12 @@ class SaveConductorLocallyUseCaseTest : FunSpec({
     }
 
     /**
-     * Test design technique: #1 Equivalence classes
+     * Техника тест-дизайна: #1 Классы эквивалентности
      *
-     * Author: OwletsFox
-     *
-     * Description:
-     *   - Input class: image saved successfully and conductor is found after insert.
-     *   - Expected behavior:
-     *       1) use case returns updated conductor,
-     *       2) repository inserts conductor with updated image,
-     *       3) repository lookup returns the stored entity.
-     *   - Goal: keep the happy path stable across refactors.
+     * Описание:
+     *   - Вход: проводник с валидным remote URL, изображение успешно сохраняется локально.
+     *   - Ожидаемое поведение: в БД вставляется проводник с локальным путём, затем возвращается сохранённая запись.
+     *   - Цель: сохранить happy path локального сохранения аватара проводника.
      */
     test("when image saved and conductor found - returns updated conductor") {
         runTest {
@@ -89,19 +84,18 @@ class SaveConductorLocallyUseCaseTest : FunSpec({
     }
 
     /**
-     * Test design technique: #5 Error guessing / Equivalence classes
+     * Техника тест-дизайна: #5 Error guessing
      *
-     * Author: OwletsFox
-     *
-     * Description:
-     *   - Input class: image saving fails (null result).
-     *   - Expected behavior:
-     *       1) use case throws IllegalArgumentException,
-     *       2) no database calls are made.
-     *   - Goal: prevent accidental DB writes when image download fails.
+     * Описание:
+     *   - Вход: проводник с валидным remote URL, но LocalImageRepository возвращает null.
+     *   - Ожидаемое поведение: проводник всё равно сохраняется, а image остаётся remote URL.
+     *   - Цель: подтвердить best-effort поведение, чтобы ошибка изображения не ломала авторизацию.
      */
-    test("when image save fails - throws IllegalArgumentException and does not touch DB") {
+    test("when image save fails - keeps remote url and still writes conductor") {
         runTest {
+            val updatedConductor = conductor.copy(image = imageUrl)
+            val insertSlot = slot<ConductorDomain>()
+
             coEvery {
                 imageRepository.saveImageFromUrl(
                     imageUrl = imageUrl,
@@ -109,9 +103,13 @@ class SaveConductorLocallyUseCaseTest : FunSpec({
                     subDir = ImageSubDir.CONDUCTORS.folder,
                 )
             } returns null
+            coEvery { conductorRepository.insertConductor(capture(insertSlot)) } returns Unit
+            coEvery { conductorRepository.getConductorByEmployeeID(conductor.employeeID) } returns updatedConductor
 
-            shouldThrow<IllegalArgumentException> { useCase(conductor, imageUrl) }
+            val result = useCase(conductor, imageUrl)
 
+            result shouldBe updatedConductor
+            insertSlot.captured.image shouldBe imageUrl
             coVerify(exactly = 1) {
                 imageRepository.saveImageFromUrl(
                     imageUrl = imageUrl,
@@ -119,23 +117,46 @@ class SaveConductorLocallyUseCaseTest : FunSpec({
                     subDir = ImageSubDir.CONDUCTORS.folder,
                 )
             }
-            coVerify(exactly = 0) { conductorRepository.insertConductor(any()) }
-            coVerify(exactly = 0) { conductorRepository.getConductorByEmployeeID(any()) }
+            coVerify(exactly = 1) { conductorRepository.insertConductor(any()) }
+            coVerify(exactly = 1) { conductorRepository.getConductorByEmployeeID(conductor.employeeID) }
             confirmVerified(conductorRepository, imageRepository)
         }
     }
 
     /**
-     * Test design technique: #5 Error guessing
+     * Техника тест-дизайна: #2 Граничные значения
      *
-     * Author: OwletsFox
+     * Описание:
+     *   - Вход: проводник с blank image.
+     *   - Ожидаемое поведение: image repository не вызывается, в БД сохраняется пустая строка image.
+     *   - Цель: исключить попытку скачать несуществующее изображение проводника.
+     */
+    test("when image is missing - does not call image repository and stores empty image") {
+        runTest {
+            val updatedConductor = conductor.copy(image = "")
+            val insertSlot = slot<ConductorDomain>()
+
+            coEvery { conductorRepository.insertConductor(capture(insertSlot)) } returns Unit
+            coEvery { conductorRepository.getConductorByEmployeeID(conductor.employeeID) } returns updatedConductor
+
+            val result = useCase(conductor, "   ")
+
+            result shouldBe updatedConductor
+            insertSlot.captured.image shouldBe ""
+            coVerify(exactly = 0) { imageRepository.saveImageFromUrl(any(), any(), any()) }
+            coVerify(exactly = 1) { conductorRepository.insertConductor(any()) }
+            coVerify(exactly = 1) { conductorRepository.getConductorByEmployeeID(conductor.employeeID) }
+            confirmVerified(conductorRepository, imageRepository)
+        }
+    }
+
+    /**
+     * Техника тест-дизайна: #5 Error guessing
      *
-     * Description:
-     *   - Input class: conductor inserted, but lookup returns null.
-     *   - Expected behavior:
-     *       1) use case throws IllegalStateException,
-     *       2) insert is attempted exactly once.
-     *   - Goal: ensure "insert then read-back" invariant is enforced.
+     * Описание:
+     *   - Вход: изображение сохранено, insert выполнен, но повторное чтение проводника возвращает null.
+     *   - Ожидаемое поведение: use case выбрасывает IllegalStateException.
+     *   - Цель: защитить инвариант insert-then-read для локально сохранённого проводника.
      */
     test("when conductor missing after insert - throws IllegalStateException") {
         runTest {
@@ -154,50 +175,6 @@ class SaveConductorLocallyUseCaseTest : FunSpec({
             coVerify(exactly = 1) {
                 imageRepository.saveImageFromUrl(
                     imageUrl = imageUrl,
-                    fileName = "${conductor.employeeID}.jpg",
-                    subDir = ImageSubDir.CONDUCTORS.folder,
-                )
-            }
-            coVerify(exactly = 1) { conductorRepository.insertConductor(any()) }
-            coVerify(exactly = 1) { conductorRepository.getConductorByEmployeeID(conductor.employeeID) }
-            confirmVerified(conductorRepository, imageRepository)
-        }
-    }
-
-    /**
-     * Test design technique: #2 Boundary values
-     *
-     * Author: OwletsFox
-     *
-     * Description:
-     *   - Input class: use case receives an explicit imageUrl parameter.
-     *   - Expected behavior:
-     *       1) imageRepository.saveImageFromUrl uses the provided url,
-     *       2) fileName is based on employeeID,
-     *       3) subDir targets conductors.
-     *   - Goal: protect the contract for image saving parameters.
-     */
-    test("saves image with correct parameters") {
-        runTest {
-            val explicitUrl = "https://example.test/explicit.png"
-            val updatedConductor = conductor.copy(image = savedImagePath)
-
-            coEvery {
-                imageRepository.saveImageFromUrl(
-                    imageUrl = explicitUrl,
-                    fileName = "${conductor.employeeID}.jpg",
-                    subDir = ImageSubDir.CONDUCTORS.folder,
-                )
-            } returns savedImagePath
-            coEvery { conductorRepository.insertConductor(any()) } returns Unit
-            coEvery { conductorRepository.getConductorByEmployeeID(conductor.employeeID) } returns updatedConductor
-
-            val result = useCase(conductor, explicitUrl)
-
-            result shouldBe updatedConductor
-            coVerify(exactly = 1) {
-                imageRepository.saveImageFromUrl(
-                    imageUrl = explicitUrl,
                     fileName = "${conductor.employeeID}.jpg",
                     subDir = ImageSubDir.CONDUCTORS.folder,
                 )
