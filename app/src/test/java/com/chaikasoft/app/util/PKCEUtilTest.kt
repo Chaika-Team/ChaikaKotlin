@@ -4,9 +4,9 @@ import android.util.Base64
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldMatch
+import java.security.MessageDigest
 import org.mockito.MockedStatic
 import org.mockito.Mockito
-import java.security.MessageDigest
 
 class PKCEUtilTest : FunSpec({
 

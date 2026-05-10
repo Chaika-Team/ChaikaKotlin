@@ -1,9 +1,13 @@
 package com.chaikasoft.app.ui.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -48,6 +52,7 @@ import com.chaikasoft.app.ui.viewmodels.ReplenishViewModel
 import com.chaikasoft.app.ui.viewmodels.SaleViewModel
 import com.chaikasoft.app.ui.viewmodels.StatisticsViewModel
 import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
+import com.chaikasoft.app.ui.viewmodels.TripGateViewModel
 import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
@@ -110,9 +115,56 @@ fun NavGraph(
 
         // --- MAIN / TRIP GRAPH ---
         navigation(
-            startDestination = Routes.TRIP_MAIN,
+            startDestination = Routes.TRIP_GATE,
             route = Routes.TRIP_GRAPH
         ) {
+            composable(Routes.TRIP_GATE) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.TRIP_GRAPH)
+                }
+                val gateVm = hiltViewModel<TripGateViewModel>(parentEntry)
+                val gateState by gateVm.uiState.collectAsStateWithLifecycle()
+
+                LaunchedEffect(Unit) {
+                    gateVm.prepare()
+                }
+
+                LaunchedEffect(gateState) {
+                    if (gateState is TripGateViewModel.TripGateUiState.Ready) {
+                        navController.navigate(Routes.TRIP_MAIN) {
+                            popUpTo(Routes.TRIP_GATE) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+
+                val currentGateState = gateState
+                val stateTag = when (currentGateState) {
+                    TripGateViewModel.TripGateUiState.Loading -> "tripGateStateLoading"
+                    is TripGateViewModel.TripGateUiState.Ready -> {
+                        if (currentGateState.hadRefreshFailure) {
+                            "tripGateStateReadyWithRefreshFailure"
+                        } else {
+                            "tripGateStateReady"
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("tripGateScreen")
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag(stateTag)
+                    ) {
+                        LoadingScreen()
+                    }
+                }
+            }
+
             composable(Routes.TRIP_MAIN) {
                 MainTripView(
                     viewModel = tripViewModel,

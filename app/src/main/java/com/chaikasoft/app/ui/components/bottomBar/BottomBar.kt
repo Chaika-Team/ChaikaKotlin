@@ -43,6 +43,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
             selected = Routes.mainRoutes[Routes.TRIP]?.contains(currentRoute) == true,
+            tag = "bottomBarTrip",
             onClick = {
                 navController.navigate(Routes.TRIP_GRAPH) {
                     popUpTo(Routes.TRIP_GRAPH) { inclusive = true }
@@ -53,6 +54,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_bag),
             selected = Routes.mainRoutes[Routes.PRODUCT]?.contains(currentRoute) == true,
+            tag = "bottomBarProduct",
             onClick = {
                 navController.navigate(Routes.PRODUCT_GRAPH) {
                     popUpTo(Routes.PRODUCT_GRAPH) { inclusive = true }
@@ -63,6 +65,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_statistics),
             selected = Routes.mainRoutes[Routes.STATISTICS]?.contains(currentRoute) == true,
+            tag = "bottomBarStatistics",
             onClick = {
                 navController.navigate(Routes.STATISTICS_GRAPH) {
                     popUpTo(Routes.STATISTICS_GRAPH) { inclusive = true }
@@ -73,6 +76,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_time),
             selected = Routes.mainRoutes[Routes.OPERATION]?.contains(currentRoute) == true,
+            tag = "bottomBarOperation",
             onClick = {
                 navController.navigate(Routes.OPERATION_GRAPH) {
                     popUpTo(Routes.OPERATION_GRAPH) { inclusive = true }
@@ -83,6 +87,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_profile_bar),
             selected = Routes.mainRoutes[Routes.PROFILE]?.contains(currentRoute) == true,
+            tag = "bottomBarProfile",
             onClick = {
                 navController.navigate(Routes.PROFILE) {
                     popUpTo(Routes.PROFILE_GRAPH) { inclusive = true }

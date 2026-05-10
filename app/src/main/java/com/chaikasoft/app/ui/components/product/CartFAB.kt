@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,12 +81,14 @@ fun CartFAB(
     totalPrice: String,
     itemsCount: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tag: String? = null
 ) {
     val badgeSize = ProductDimens.CartFAB.BadgeSize
     val badgeOverlap = ProductDimens.CartFAB.BadgeOverlap
     Box(
         modifier = modifier
+            .then(if (tag != null) Modifier.testTag(tag) else Modifier)
             .width(ProductDimens.CartFAB.Width)
             .height(ProductDimens.CartFAB.Height)
     ) {

@@ -1,0 +1,108 @@
+name: e2e-nightly
+
+on:
+  schedule:
+    - cron: '20 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  hermetic-managed:
+    name: Nightly Hermetic Managed Device (${{ matrix.task }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - pixel6Api34DebugAndroidTest
+          - pixelTabletApi34DebugAndroidTest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run nightly hermetic suite
+        run: >
+          ./gradlew
+          :e2e-tests:${{ matrix.task }}
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+          -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
+          -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
+          -Pandroid.testInstrumentationRunnerArguments.e2e.tripGateMode=fake_success
+          --stacktrace
+          --console=plain
+
+      - name: Upload managed artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-managed-${{ matrix.task }}
+          path: |
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+          if-no-files-found: warn
+
+  compatibility-api26:
+    name: Nightly API26 Compatibility Lane
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run API26 compatibility smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 26
+          script: >
+            ./gradlew
+            :e2e-tests:connectedDebugAndroidTest
+            -Pandroid.testInstrumentationRunnerArguments.class=com.chaikasoft.app.e2e.tests.CompatibilityApi26SmokeE2ETest
+            -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
+            -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
+            -Pandroid.testInstrumentationRunnerArguments.e2e.tripGateMode=fake_success
+            --stacktrace
+            --console=plain
+
+      - name: Upload API26 artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-api26-artifacts
+          path: |
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+          if-no-files-found: warn

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -53,6 +54,7 @@ fun ProductCartView(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .testTag("productCartScreen")
     ) {
         Box(modifier = Modifier.weight(1f)) {
             if (cartItems.isEmpty()) {

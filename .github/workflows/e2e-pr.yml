@@ -1,0 +1,50 @@
+name: e2e-pr
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  hermetic-pr-gate:
+    name: Hermetic E2E PR Gate (Managed Device API 34)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run hermetic smoke suite on managed device
+        run: >
+          ./gradlew
+          :e2e-tests:pixel6Api34DebugAndroidTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+          -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
+          -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
+          -Pandroid.testInstrumentationRunnerArguments.e2e.tripGateMode=fake_success
+          --stacktrace
+          --console=plain
+
+      - name: Upload E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-pr-artifacts
+          path: |
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+            app/build/reports/**
+          if-no-files-found: warn

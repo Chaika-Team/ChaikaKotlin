@@ -8,6 +8,7 @@ object Routes {
     const val TRIP = "trip"
     const val TEMPLATE = "template"
     const val TRIP_MAIN = "trip/graph/main"
+    const val TRIP_GATE = "trip/graph/gate"
     const val TRIP_AUTONOMOUS = "trip/graph/autonomous"
     const val TRIP_BY_NUMBER = "trip/graph/by_number"
     const val TRIP_BY_STATION = "trip/graph/by_station"
@@ -43,18 +44,20 @@ object Routes {
         TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT,
         TEMPLATE_CONFIRM, PRODUCT_REPLENISH, TRIP_AUTONOMOUS,
         TRIP_AUTONOMOUS, TRIP_BY_STATION, TRIP_BY_NUMBER,
-        TRIP_SELECT_CARRIAGE
+        TRIP_GATE, TRIP_SELECT_CARRIAGE
     )
 
     val routesWithoutTopBar = setOf(
         LOGIN,
-        PROFILE
+        PROFILE,
+        TRIP_GATE
     )
 
     val mainRoutes = mapOf(
         TRIP to listOf(
             TRIP,
             TRIP_MAIN,
+            TRIP_GATE,
             TRIP_GRAPH,
             TRIP_BY_NUMBER,
             TRIP_BY_STATION,

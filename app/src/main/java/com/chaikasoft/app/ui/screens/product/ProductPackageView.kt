@@ -54,7 +54,9 @@ fun ProductPackageView(
     val itemsCount = cartItems.sumOf { it.quantity }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("productPackageScreen")
     ) {
         when {
             isLoading -> {
@@ -122,6 +124,7 @@ fun ProductPackageView(
             onClick = {
                 navController.navigate(Routes.PRODUCT_CART)
             },
+            tag = "productCartFab",
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 0.dp)

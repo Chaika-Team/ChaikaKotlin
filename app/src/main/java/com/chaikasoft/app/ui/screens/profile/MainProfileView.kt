@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +55,7 @@ fun MainProfileView(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .testTag("profileScreen")
             .background(ProfileBackground)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -155,6 +157,8 @@ fun MainProfileView(
         message = stringResource(R.string.logout_confirm_message),
         confirmText = stringResource(R.string.logout_confirm),
         cancelText = stringResource(R.string.logout_cancel),
+        confirmButtonTag = "profileLogoutConfirmButton",
+        cancelButtonTag = "profileLogoutCancelButton",
         onConfirm = {
             showLogoutConfirmSheet = false
             authViewModel.logout()

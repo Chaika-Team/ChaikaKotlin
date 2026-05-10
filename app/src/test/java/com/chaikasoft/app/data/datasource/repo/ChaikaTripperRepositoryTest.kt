@@ -11,8 +11,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
 import java.net.UnknownHostException
+import kotlinx.coroutines.test.runTest
 
 class ChaikaTripperRepositoryTest : FunSpec({
 

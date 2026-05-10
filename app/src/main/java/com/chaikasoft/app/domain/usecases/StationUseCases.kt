@@ -1,8 +1,11 @@
 package com.chaikasoft.app.domain.usecases
 
+import android.util.Log
 import androidx.paging.PagingData
 import com.chaikasoft.app.data.datasource.repo.ChaikaTripperRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomSyncMetaRepositoryInterface
+import com.chaikasoft.app.data.room.sync.SyncDataset
 import com.chaikasoft.app.di.IoDispatcher
 import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.StationDomain
@@ -26,6 +29,7 @@ class GetPagedStationSuggestionsUseCase @Inject constructor(
 class RefreshStationsOnLaunchUseCase @Inject constructor(
     private val remoteRepo: ChaikaTripperRepositoryInterface,
     private val localRepo: RoomStationRepositoryInterface,
+    private val syncMetaRepo: RoomSyncMetaRepositoryInterface,
     private val hasActiveShift: HasActiveShiftUseCase,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
@@ -34,28 +38,43 @@ class RefreshStationsOnLaunchUseCase @Inject constructor(
     }
 
     suspend operator fun invoke(): RefreshStationsResult = withContext(ioDispatcher) {
-        // 1) Бизнес-правило: во время активной смены не трогаем станции
         if (hasActiveShift()) return@withContext RefreshStationsResult.SkippedActiveShift
 
-        // 2) Сеть: получаем RemoteResult
+        val shouldRefresh = shouldRefreshStations()
+        if (!shouldRefresh) return@withContext RefreshStationsResult.SkippedFreshCache
+
         return@withContext when (
             val remote = remoteRepo.fetchAllStations(
                 limit = ALL_STATIONS_LIMIT
             )
         ) {
-            is RemoteResult.Failure -> {
-                RefreshStationsResult.RemoteFailure(remote.error)
-            }
+            is RemoteResult.Failure -> RefreshStationsResult.RemoteFailure(remote.error)
 
             is RemoteResult.Success -> {
-                // 3) Локальная БД: upsert может упасть (RoomException/SQLiteException)
                 try {
                     localRepo.upsertAll(remote.data)
+                    syncMetaRepo.setLastSuccessfulSyncAt(
+                        datasetKey = SyncDataset.STATIONS.key,
+                        timestampMillis = System.currentTimeMillis()
+                    )
                     RefreshStationsResult.Success(stationCount = remote.data.size)
                 } catch (e: Exception) {
                     RefreshStationsResult.LocalFailure(e)
                 }
             }
         }
+    }
+
+    private suspend fun shouldRefreshStations(): Boolean {
+        val hasAnyStations = localRepo.hasAnyStationsOnce()
+        if (!hasAnyStations) return true
+
+        val lastSuccessfulSyncAt =
+            syncMetaRepo.getLastSuccessfulSyncAt(SyncDataset.STATIONS.key) ?: return true
+
+        val now = System.currentTimeMillis()
+        Log.d("StationUseCases_shouldRefreshStations", "current time: $now")
+        Log.d("StationUseCases_shouldRefreshStations", "lastSynx: $lastSuccessfulSyncAt")
+        return now - lastSuccessfulSyncAt >= SyncDataset.STATIONS.ttlMs
     }
 }

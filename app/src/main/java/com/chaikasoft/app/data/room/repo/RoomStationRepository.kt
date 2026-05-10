@@ -22,6 +22,8 @@ class RoomStationRepository @Inject constructor(private val dao: StationDao) :
         }
     )
 
+    override suspend fun hasAnyStationsOnce(): Boolean = dao.hasAnyStationsOnce()
+
     override fun pagedQuery(query: String, pageSize: Int): Flow<PagingData<StationDomain>> {
         if (query.isBlank()) return flowOf(PagingData.empty())
 
