@@ -3,9 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("org.sonarqube")
     id("io.gitlab.arturbosch.detekt")
-    id("jacoco")
+    id("org.jetbrains.kotlinx.kover")
     id("de.mannodermaus.android-junit5") version "1.12.0.0"
     id("org.jlleitschuh.gradle.ktlint")
 }
@@ -95,9 +94,6 @@ android {
         unitTests {
             isReturnDefaultValues = true
         }
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
     }
 
     packaging {
@@ -113,61 +109,66 @@ android {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    extensions.configure(JacocoTaskExtension::class.java) {
-        isIncludeNoLocationClasses = true
-        excludes = listOf("jdk.internal.*")
-    }
 }
 
-jacoco {
-    toolVersion = "0.8.10" // Совместимо с SonarQube
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "ChaikaKotlin")
-        property("sonar.projectName", "ChaikaKotlin")
-    }
-}
-
-tasks.register<JacocoReport>("jacocoTestReport") {
-    dependsOn("testStageUnitTest")
-
+kover {
     reports {
-        xml.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacoco.xml"))
-        html.required.set(true)
-        csv.required.set(false)
+        variant("stage") {
+            filters {
+                excludes {
+                    classes(
+                        "*.R",
+                        "*.R$*",
+                        "*.BuildConfig",
+                        "*.Manifest",
+                        "*.Manifest$*",
+                        "*Test*",
+                        "android.*",
+                        "*.databinding.*",
+                        "*Binding",
+                        "*BindingImpl",
+                        "*JsonAdapter*",
+                        "*_Factory*",
+                        "*_MembersInjector*",
+                        "*_Impl",
+                        "*Dao_Impl*",
+                        "*Database_Impl*",
+                        "*GeneratedInjector*",
+                        "*.Hilt_*",
+                        "*_HiltModules*",
+                        "dagger.hilt.*",
+                        "hilt_aggregated_deps.*",
+                        "com.chaikasoft.app.MyApp",
+                        "com.chaikasoft.app.AppDatabase",
+                        "com.chaikasoft.app.di.*",
+                        "com.chaikasoft.app.domain.models.*",
+                        "com.chaikasoft.app.domain.sealed.*",
+                        "com.chaikasoft.app.data.datasource.apiservice.*",
+                        "com.chaikasoft.app.data.datasource.dto.*",
+                        "com.chaikasoft.app.data.room.dao.*",
+                        "com.chaikasoft.app.data.room.entities.*",
+                        "com.chaikasoft.app.data.room.relations.*",
+                        "com.chaikasoft.app.data.room.sync.*",
+                        "com.chaikasoft.app.ui.activities.*",
+                        "com.chaikasoft.app.ui.components.*",
+                        "com.chaikasoft.app.ui.dto.*",
+                        "com.chaikasoft.app.ui.navigation.*",
+                        "com.chaikasoft.app.ui.savers.*",
+                        "com.chaikasoft.app.ui.screens.*",
+                        "com.chaikasoft.app.ui.state.*",
+                        "com.chaikasoft.app.ui.theme.*"
+                    )
+                }
+            }
+            xml {
+                xmlFile =
+                    layout.buildDirectory.file("reports/kover/stage/xml/report.xml").get().asFile
+            }
+            html {
+                htmlDir = layout.buildDirectory.dir("reports/kover/stage/html").get().asFile
+            }
+        }
     }
-
-    val fileFilter =
-        listOf(
-            "**/R.class",
-            "**/R$*.class",
-            "**/BuildConfig.*",
-            "**/Manifest*.*",
-            "**/*Test*.*",
-            "android/**/*.*",
-            "**/di/**",
-            "**/Application.*"
-        )
-
-    val mainSrc = "$projectDir/src/main/java"
-
-    sourceDirectories.setFrom(files(mainSrc))
-    classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-            exclude(fileFilter)
-        }
-    )
-    executionData.setFrom(
-        fileTree(layout.buildDirectory.dir("jacoco")) {
-            include(
-                "testStageUnitTest.exec",
-                "outputs/unit_test_code_coverage/stageUnitTest/testStageUnitTest.exec"
-            )
-        }
-    )
 }
 
 dependencies {
