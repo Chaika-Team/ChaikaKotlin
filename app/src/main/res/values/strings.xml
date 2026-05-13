@@ -247,6 +247,12 @@
     <string name="sell_empty_cart">Корзина пуста</string>
     <string name="sell_failure">Что-то пошло не так, попробуйте повторить операцию</string>
 
+    <!-- Operation Result -->
+    <string name="operation_nothing">Нет операций</string>
+    <string name="operation_loading_operations">Загрузка операций…</string>
+    <string name="operation_loading_more">Загружаем ещё…</string>
+    <string name="operation_loading_error">Ошибка загрузки</string>
+
     <!-- Network errors -->
     <string name="error_no_connection">Нет подключения к сети</string>
     <string name="error_unauthorized">Ошибка авторизации, попробуйте зарегистрироваться снова</string>
@@ -298,4 +304,3 @@
 
 
 </resources>
-
