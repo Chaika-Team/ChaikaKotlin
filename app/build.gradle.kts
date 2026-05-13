@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("org.sonarqube")
     id("io.gitlab.arturbosch.detekt")
     id("jacoco")
     id("de.mannodermaus.android-junit5") version "1.12.0.0"
@@ -136,17 +135,9 @@ jacoco {
     toolVersion = "0.8.10" // Совместимо с SonarQube
 }
 
-sonar {
-    androidVariant = "stage"
-
-    properties {
-        property("sonar.projectKey", "ChaikaKotlin")
-        property("sonar.projectName", "ChaikaKotlin")
-        property("sonar.junit.reportPaths", "build/test-results/testStageUnitTest")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacoco.xml")
-        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
-        property("sonar.exclusions", "**/*.mock.kt,**/generated/**,**/res/**")
-    }
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
@@ -158,17 +149,23 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     }
 }
 
-tasks.register<JacocoReport>("jacocoTestReport") {
-    dependsOn("testStageUnitTest")
+tasks.register<JacocoReport>("jacocoStageUnitTestReport") {
+    group = "verification"
+    description = "Generates JaCoCo XML and HTML coverage reports for stage unit tests."
+
+    dependsOn(tasks.named("testStageUnitTest"))
 
     reports {
         xml.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacoco.xml"))
+        xml.outputLocation.set(
+            layout.buildDirectory.file("reports/jacoco/stageUnitTest/stageUnitTest.xml")
+        )
         html.required.set(true)
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/stageUnitTest/html"))
         csv.required.set(false)
     }
 
-    val fileFilter =
+    val jacocoClassExclusions =
         listOf(
             "**/R.class",
             "**/R$*.class",
@@ -176,12 +173,21 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/Manifest*.*",
             "**/*Test*.*",
             "android/**/*.*",
+            "**/databinding/**",
+            "**/*Binding.*",
+            "**/*BindingImpl.*",
             "**/di/**",
             "**/Application.*",
             "**/*Hilt*.*",
             "**/*_Factory.*",
             "**/*_MembersInjector.*",
-            "**/*_Impl.*"
+            "**/*_Impl.*",
+            "**/*Dao_Impl*.*",
+            "**/*Database_Impl*.*",
+            "**/Hilt_*.*",
+            "**/*_HiltModules*.*",
+            "**/dagger/hilt/**",
+            "**/hilt_aggregated_deps/**"
         )
 
     val mainSrc =
@@ -194,10 +200,10 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     classDirectories.setFrom(
         files(
             fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/stage")) {
-                exclude(fileFilter)
+                exclude(jacocoClassExclusions)
             },
             fileTree(layout.buildDirectory.dir("intermediates/javac/stage/classes")) {
-                exclude(fileFilter)
+                exclude(jacocoClassExclusions)
             }
         )
     )
@@ -209,6 +215,12 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             )
         }
     )
+}
+
+tasks.register("jacocoTestReport") {
+    group = "verification"
+    description = "Compatibility alias for jacocoStageUnitTestReport."
+    dependsOn(tasks.named("jacocoStageUnitTestReport"))
 }
 
 dependencies {
@@ -359,19 +371,16 @@ ktlint {
     enableExperimentalRules.set(false)
 
     filter {
-        exclude { it.file.path.contains("generated") }
-        exclude { it.file.path.contains("src/androidTest") }
-        exclude { it.file.path.contains("src/test") }
+        exclude {
+            val normalizedPath = it.file.path.replace('\\', '/')
+            normalizedPath.contains("generated") ||
+                normalizedPath.contains("src/androidTest") ||
+                normalizedPath.contains("src/test")
+        }
     }
 
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
-    }
-}
-
-if (System.getenv("CI") != "true") {
-    tasks.named("preBuild") {
-        dependsOn(rootProject.tasks.named("addKtlintFormatGitPreCommitHook"))
     }
 }

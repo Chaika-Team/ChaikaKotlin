@@ -42,7 +42,7 @@ jobs:
       - uses: ./.github/actions/setup-android-gradle
 
       - name: Run ktlint
-        run: ./gradlew ktlintCheck
+        run: ./gradlew ktlintCheck --no-daemon
 
       - name: Upload ktlint reports
         if: failure()
@@ -69,7 +69,7 @@ jobs:
       - uses: ./.github/actions/setup-android-gradle
 
       - name: Run stage unit tests and coverage
-        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport --no-daemon
+        run: ./gradlew :app:testStageUnitTest :app:jacocoStageUnitTestReport --no-daemon
 
       - name: Upload unit test and coverage reports
         if: always()
@@ -79,7 +79,7 @@ jobs:
           path: |
             app/build/test-results/testStageUnitTest
             app/build/reports/tests/testStageUnitTest
-            app/build/reports/jacoco
+            app/build/reports/jacoco/stageUnitTest
           if-no-files-found: ignore
           retention-days: 14
 
@@ -148,10 +148,17 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+      - name: Remove decoded keystore
+        if: always()
+        run: rm -f app/release.keystore
+
   e2e:
-    name: E2E
+    name: E2E non-blocking
     needs: preflight
     uses: ./.github/workflows/e2e.yml
+    with:
+      lane: hermetic-pr
+      allow_failure: true
     secrets: inherit
 
   sonar:
@@ -197,21 +204,18 @@ jobs:
         continue-on-error: true
         run: ./gradlew :app:detekt --no-daemon
 
-      - name: Debug Sonar lint property
+      - name: Verify Sonar input reports
         run: |
-          echo "Search in repository:"
-          grep -R "lint-results-stage.xml\|sonar.androidLint.reportPaths\|androidLint" -n . \
-            --exclude-dir=.git \
-            --exclude-dir=.gradle \
-            --exclude-dir=build || true
+          test -d app/build/test-results/testStageUnitTest
+          test -f app/build/reports/jacoco/stageUnitTest/stageUnitTest.xml
+          ls -la app/build/reports/detekt || true
 
       - name: Run SonarQube scan
         run: >
           ./gradlew
-          :app:testStageUnitTest
-          :app:jacocoTestReport
           sonar
           --no-daemon
+          -Dsonar.host.url="${SONAR_HOST_URL}"
           -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}

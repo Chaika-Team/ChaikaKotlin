@@ -1,0 +1,21 @@
+name: env-smoke
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  env-smoke:
+    name: Environment Smoke
+    uses: ./.github/workflows/e2e.yml
+    with:
+      lane: env-smoke
+    secrets: inherit

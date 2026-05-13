@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
@@ -57,6 +58,7 @@ fun LoginScreen(viewModel: AuthViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .testTag("loginScreen")
             .padding(LoginDimens.LoginContainerPadding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -67,7 +69,9 @@ fun LoginScreen(viewModel: AuthViewModel) {
                 val authIntent = viewModel.startAuth()
                 authLauncher.launch(authIntent)
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("loginButton"),
             enabled = !isBusy
         ) {
             Text(stringResource(R.string.login_button))
@@ -75,7 +79,9 @@ fun LoginScreen(viewModel: AuthViewModel) {
 
         if (isBusy) {
             CircularProgressIndicator(
-                modifier = Modifier.padding(LoginDimens.LoadingIndicatorPadding)
+                modifier = Modifier
+                    .padding(LoginDimens.LoadingIndicatorPadding)
+                    .testTag("loginProgress")
             )
         }
 
@@ -83,6 +89,7 @@ fun LoginScreen(viewModel: AuthViewModel) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag("loginErrorCard")
                     .padding(top = LoginDimens.ErrorCardTopPadding),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer

@@ -29,7 +29,7 @@ jobs:
       - uses: ./.github/actions/setup-android-gradle
 
       - name: Run ktlint
-        run: ./gradlew ktlintCheck
+        run: ./gradlew ktlintCheck --no-daemon
 
       - name: Upload ktlint reports
         if: failure()
@@ -55,7 +55,7 @@ jobs:
       - uses: ./.github/actions/setup-android-gradle
 
       - name: Run stage unit tests and coverage
-        run: ./gradlew :app:testStageUnitTest :app:jacocoTestReport --no-daemon
+        run: ./gradlew :app:testStageUnitTest :app:jacocoStageUnitTestReport --no-daemon
 
       - name: Upload unit test and coverage reports
         if: always()
@@ -65,7 +65,7 @@ jobs:
           path: |
             app/build/test-results/testStageUnitTest
             app/build/reports/tests/testStageUnitTest
-            app/build/reports/jacoco
+            app/build/reports/jacoco/stageUnitTest
           if-no-files-found: ignore
           retention-days: 7
 
@@ -106,7 +106,7 @@ jobs:
       - uses: ./.github/actions/setup-android-gradle
 
       - name: Run detekt
-        run: ./gradlew detekt --no-daemon
+        run: ./gradlew :app:detekt --no-daemon
 
       - name: Upload detekt reports
         if: always()
@@ -174,23 +174,25 @@ jobs:
           name: detekt-reports
           path: app/build/reports/detekt
 
-      - name: Debug Sonar lint property
+      - name: Ensure Detekt XML report exists
+        if: steps.sonar-secrets.outputs.available == 'true'
+        continue-on-error: true
+        run: ./gradlew :app:detekt --no-daemon
+
+      - name: Verify Sonar input reports
         if: steps.sonar-secrets.outputs.available == 'true'
         run: |
-          echo "Search in repository:"
-          grep -R "lint-results-stage.xml\|sonar.androidLint.reportPaths\|androidLint" -n . \
-            --exclude-dir=.git \
-            --exclude-dir=.gradle \
-            --exclude-dir=build || true
+          test -d app/build/test-results/testStageUnitTest
+          test -f app/build/reports/jacoco/stageUnitTest/stageUnitTest.xml
+          ls -la app/build/reports/detekt || true
 
       - name: Run SonarQube scan
         if: steps.sonar-secrets.outputs.available == 'true'
         run: >
           ./gradlew
-          :app:testStageUnitTest
-          :app:jacocoTestReport
           sonar
           --no-daemon
+          -Dsonar.host.url="${SONAR_HOST_URL}"
           -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}

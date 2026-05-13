@@ -11,6 +11,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -80,7 +82,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) { paddingValues ->
-                    Box(modifier = Modifier.padding(paddingValues)) {
+                    Box(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .semantics { testTagsAsResourceId = true }
+                    ) {
                         NavGraph(
                             navController = navController,
                             authViewModel = authViewModel,

@@ -1,0 +1,21 @@
+name: e2e-nightly
+
+on:
+  schedule:
+    - cron: '20 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    name: Nightly E2E
+    uses: ./.github/workflows/e2e.yml
+    with:
+      lane: nightly
+    secrets: inherit

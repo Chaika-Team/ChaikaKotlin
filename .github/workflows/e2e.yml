@@ -1,35 +1,60 @@
 name: System tests
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      lane:
+        description: E2E lane to run.
+        required: true
+        type: string
+      allow_failure:
+        description: Allow E2E test step failure without failing the caller.
+        required: false
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: E2E lane to run.
+        required: true
+        default: hermetic-pr
+        type: choice
+        options:
+          - hermetic-pr
+          - nightly
+          - api26
+          - env-smoke
+      allow_failure:
+        description: Allow E2E test step failure without failing this workflow.
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_call' && github.run_id || github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_call' }}
-
 jobs:
-  end-to-end:
-    name: Start e2e tests
+  hermetic-pr:
+    name: Hermetic E2E PR Gate (Managed Device API 34)
+    if: inputs.lane == 'hermetic-pr'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
 
     env:
-      STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL }}
-      STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN }}
-      STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL }}
+      REL_CHAIKA_SOFT_URL: ${{ secrets.REL_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      REL_ZITADEL_TOKEN: ${{ secrets.REL_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      REL_ZITADEL_URL: ${{ secrets.REL_ZITADEL_URL || 'https://example.invalid/' }}
+      STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL || 'https://example.invalid/' }}
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/setup-android-gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
       - name: Enable KVM
         run: |
@@ -37,21 +62,216 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run E2E tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: ./gradlew :e2e-tests:connectedAndroidTest -i
+      - name: Run hermetic smoke suite on managed device
+        continue-on-error: ${{ inputs.allow_failure }}
+        run: >
+          ./gradlew
+          :e2e-tests:pixel6Api34DebugAndroidTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+          -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
+          -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
+          --stacktrace
+          --console=plain
+          --no-daemon
 
-      - name: Upload E2E reports
+      - name: Upload E2E artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-reports
+          name: e2e-pr-artifacts
           path: |
-            e2e-tests/build/reports
-            e2e-tests/build/outputs/androidTest-results
-            app/build/reports/androidTests
-            app/build/outputs/androidTest-results
-          if-no-files-found: ignore
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+            app/build/reports/**
+          if-no-files-found: warn
           retention-days: 7
+
+  nightly-managed:
+    name: Nightly Hermetic Managed Device (${{ matrix.task }})
+    if: inputs.lane == 'nightly'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - pixel6Api34DebugAndroidTest
+          - pixelTabletApi34DebugAndroidTest
+
+    env:
+      REL_CHAIKA_SOFT_URL: ${{ secrets.REL_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      REL_ZITADEL_TOKEN: ${{ secrets.REL_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      REL_ZITADEL_URL: ${{ secrets.REL_ZITADEL_URL || 'https://example.invalid/' }}
+      STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL || 'https://example.invalid/' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run nightly hermetic suite
+        continue-on-error: ${{ inputs.allow_failure }}
+        run: >
+          ./gradlew
+          :e2e-tests:${{ matrix.task }}
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+          -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
+          -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
+          --stacktrace
+          --console=plain
+          --no-daemon
+
+      - name: Upload managed artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-managed-${{ matrix.task }}
+          path: |
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 14
+
+  compatibility-api26:
+    name: API26 Compatibility Lane
+    if: inputs.lane == 'nightly' || inputs.lane == 'api26'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    env:
+      REL_CHAIKA_SOFT_URL: ${{ secrets.REL_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      REL_ZITADEL_TOKEN: ${{ secrets.REL_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      REL_ZITADEL_URL: ${{ secrets.REL_ZITADEL_URL || 'https://example.invalid/' }}
+      STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL || 'https://example.invalid/' }}
+      STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN || 'ci-placeholder-token' }}
+      STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL || 'https://example.invalid/' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run API26 compatibility smoke
+        continue-on-error: ${{ inputs.allow_failure }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 26
+          script: >
+            ./gradlew
+            :e2e-tests:connectedDebugAndroidTest
+            -Pandroid.testInstrumentationRunnerArguments.class=com.chaikasoft.app.e2e.tests.CompatibilityApi26SmokeE2ETest
+            -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
+            -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
+            --stacktrace
+            --console=plain
+            --no-daemon
+
+      - name: Upload API26 artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api26-artifacts
+          path: |
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 14
+
+  env-smoke:
+    name: Environment Smoke (non-PR gate)
+    if: inputs.lane == 'env-smoke'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: stage
+
+    env:
+      REL_CHAIKA_SOFT_URL: ${{ secrets.REL_CHAIKA_SOFT_URL }}
+      REL_ZITADEL_TOKEN: ${{ secrets.REL_ZITADEL_TOKEN }}
+      REL_ZITADEL_URL: ${{ secrets.REL_ZITADEL_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-android-gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check environment smoke secrets
+        run: |
+          missing=()
+          for name in REL_CHAIKA_SOFT_URL REL_ZITADEL_TOKEN REL_ZITADEL_URL
+          do
+            if [ -z "${!name}" ]; then
+              missing+=("$name")
+            fi
+          done
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "Missing required env-smoke secrets: ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run environment smoke class
+        continue-on-error: ${{ inputs.allow_failure }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          script: >
+            ./gradlew
+            :e2e-tests:connectedDebugAndroidTest
+            -Pandroid.testInstrumentationRunnerArguments.class=com.chaikasoft.app.e2e.tests.EnvSmokeE2ETest
+            -Pandroid.testInstrumentationRunnerArguments.e2e.env=true
+            -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=disabled
+            --stacktrace
+            --console=plain
+            --no-daemon
+
+      - name: Upload env smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-smoke-artifacts
+          path: |
+            e2e-tests/build/reports/**
+            e2e-tests/build/outputs/**
+            e2e-tests/build/outputs/androidTest-results/**
+            e2e-tests/build/outputs/managed_device_android_test_additional_output/**
+            e2e-tests/build/outputs/connected_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 14

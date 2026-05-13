@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ fun SearchTripSurfaceDropdown(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .testTag("tripSearchFilters")
             .height(height)
     ) {
         SurfaceBackground(modifier = Modifier.matchParentSize())
@@ -57,6 +59,7 @@ fun SearchTripSurfaceDropdown(
                 placeholderText = stringResource(R.string.trip_search_date_placeholder),
                 cornerRadius = TripDimens.SearchBarCornerRadius,
                 readOnly = true,
+                testTag = "tripDateInput",
                 onClick = onSearchDateClick
             )
 
@@ -71,7 +74,9 @@ fun SearchTripSurfaceDropdown(
                     onStartStationChange(station)
                 },
                 placeholderText = stringResource(R.string.trip_search_from_placeholder),
-                cornerRadius = TripDimens.SearchBarCornerRadius
+                cornerRadius = TripDimens.SearchBarCornerRadius,
+                inputTestTag = "tripFromStationInput",
+                itemTestTagFactory = { station -> "tripFromStationItem_${station.code}" }
             )
 
             DropDownMenu(
@@ -85,7 +90,9 @@ fun SearchTripSurfaceDropdown(
                     onFinishStationChange(station)
                 },
                 placeholderText = stringResource(R.string.trip_search_to_placeholder),
-                cornerRadius = TripDimens.SearchBarCornerRadius
+                cornerRadius = TripDimens.SearchBarCornerRadius,
+                inputTestTag = "tripToStationInput",
+                itemTestTagFactory = { station -> "tripToStationItem_${station.code}" }
             )
         }
     }

@@ -10,10 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import com.chaikasoft.app.ui.theme.BarDimens
 
 @Composable
-fun BottomBarIcon(imageVector: ImageVector, selected: Boolean, onClick: () -> Unit) {
+fun BottomBarIcon(
+    imageVector: ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit,
+    tag: String? = null
+) {
     val colors = MaterialTheme.colorScheme
     val iconColor = if (selected) colors.primary else colors.secondary
 
@@ -21,6 +27,7 @@ fun BottomBarIcon(imageVector: ImageVector, selected: Boolean, onClick: () -> Un
         onClick = onClick,
         modifier = Modifier
             .size(BarDimens.IconSize)
+            .then(if (tag != null) Modifier.testTag(tag) else Modifier)
             .clip(RoundedCornerShape(BarDimens.CornerShape)),
         colors = IconButtonDefaults.iconButtonColors(
             contentColor = iconColor

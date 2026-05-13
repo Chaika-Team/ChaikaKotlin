@@ -12,6 +12,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -39,7 +40,11 @@ fun MainTripView(viewModel: TripViewModel, navController: NavController) {
         onDispose { viewModel.stopHistoryObserving() }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("tripMainScreen")
+    ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             reverseLayout = true,

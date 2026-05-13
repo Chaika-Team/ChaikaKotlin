@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,9 @@ fun DropDownMenu(
     suggestionsFlow: Flow<PagingData<StationDomain>>,
     onItemSelected: (StationDomain) -> Unit,
     placeholderText: String = "",
-    cornerRadius: Dp = 10.dp
+    cornerRadius: Dp = 10.dp,
+    inputTestTag: String? = null,
+    itemTestTagFactory: (StationDomain) -> String = { station -> "stationItem_${station.code}" }
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val lazyItems = suggestionsFlow.collectAsLazyPagingItems()
@@ -79,6 +82,7 @@ fun DropDownMenu(
             fieldModifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
+                .then(if (inputTestTag != null) Modifier.testTag(inputTestTag) else Modifier)
                 .focusRequester(focusRequester)
         )
 
@@ -92,6 +96,7 @@ fun DropDownMenu(
                 lazyItems = lazyItems,
                 onQueryChange = onQueryChange,
                 onItemSelected = onItemSelected,
+                itemTestTagFactory = itemTestTagFactory,
                 onClose = { expanded = false }
             )
         }
@@ -144,6 +149,7 @@ private fun DropDownContent(
     lazyItems: LazyPagingItems<StationDomain>,
     onQueryChange: (String) -> Unit,
     onItemSelected: (StationDomain) -> Unit,
+    itemTestTagFactory: (StationDomain) -> String,
     onClose: () -> Unit
 ) {
     when (state) {
@@ -168,6 +174,7 @@ private fun DropDownContent(
             ) {
                 lazyItems.itemSnapshotList.items.forEach { station ->
                     DropdownMenuItem(
+                        modifier = Modifier.testTag(itemTestTagFactory(station)),
                         text = { Text(station.name) },
                         onClick = {
                             onQueryChange(station.name)

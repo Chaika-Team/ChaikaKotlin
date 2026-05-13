@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
@@ -22,7 +23,9 @@ fun ConfirmBottomSheet(
     confirmText: String = stringResource(id = android.R.string.ok),
     cancelText: String = stringResource(id = android.R.string.cancel),
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    confirmButtonTag: String? = null,
+    cancelButtonTag: String? = null
 ) {
     if (!visible) return
 
@@ -43,6 +46,13 @@ fun ConfirmBottomSheet(
                     onConfirm()
                 },
                 modifier = Modifier
+                    .then(
+                        if (confirmButtonTag != null) {
+                            Modifier.testTag(confirmButtonTag)
+                        } else {
+                            Modifier
+                        }
+                    )
                     .fillMaxWidth()
             ) {
                 Text(text = confirmText)
@@ -50,6 +60,13 @@ fun ConfirmBottomSheet(
             TextButton(
                 onClick = onDismiss,
                 modifier = Modifier
+                    .then(
+                        if (cancelButtonTag != null) {
+                            Modifier.testTag(cancelButtonTag)
+                        } else {
+                            Modifier
+                        }
+                    )
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 8.dp)
             ) {
