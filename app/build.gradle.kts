@@ -190,11 +190,7 @@ tasks.register<JacocoReport>("jacocoStageUnitTestReport") {
             "**/hilt_aggregated_deps/**"
         )
 
-    val mainSrc =
-        files(
-            "$projectDir/src/main/java",
-            "$projectDir/src/main/kotlin"
-        )
+    val mainSrc = files("$projectDir/src/main/java")
 
     sourceDirectories.setFrom(mainSrc)
     classDirectories.setFrom(
