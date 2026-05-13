@@ -204,10 +204,14 @@ jobs:
         continue-on-error: true
         run: ./gradlew :app:detekt --no-daemon
 
+      - name: Generate Android Lint report for SonarQube
+        run: ./gradlew :app:lintDebug --no-daemon
+
       - name: Verify Sonar input reports
         run: |
           test -d app/build/test-results/testStageUnitTest
           test -f app/build/reports/jacoco/stageUnitTest/stageUnitTest.xml
+          test -f app/build/reports/lint-results-debug.xml
           ls -la app/build/reports/detekt || true
 
       - name: Run SonarQube scan
