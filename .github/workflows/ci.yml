@@ -176,8 +176,7 @@ jobs:
 
       - name: Ensure Detekt XML report exists
         if: steps.sonar-secrets.outputs.available == 'true'
-        continue-on-error: true
-        run: ./gradlew :app:detekt --no-daemon
+        run: ./gradlew :app:detekt --no-daemon || echo "Detekt is advisory; continuing with generated reports."
 
       - name: Generate Android Lint report for SonarQube
         if: steps.sonar-secrets.outputs.available == 'true'

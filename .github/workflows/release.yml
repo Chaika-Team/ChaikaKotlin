@@ -201,8 +201,7 @@ jobs:
           path: app/build
 
       - name: Run Detekt report
-        continue-on-error: true
-        run: ./gradlew :app:detekt --no-daemon
+        run: ./gradlew :app:detekt --no-daemon || echo "Detekt is advisory; continuing with generated reports."
 
       - name: Generate Android Lint report for SonarQube
         run: ./gradlew :app:lintDebug --no-daemon
