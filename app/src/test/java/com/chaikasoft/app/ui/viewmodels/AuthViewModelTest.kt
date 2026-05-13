@@ -1,6 +1,7 @@
 package com.chaikasoft.app.ui.viewmodels
 
 import android.content.Intent
+import com.chaikasoft.app.auth.NoOpAuthSessionBootstrap
 import com.chaikasoft.app.domain.sealed.LogoutResult
 import com.chaikasoft.app.domain.usecases.CompleteAuthorizationFlowUseCase
 import com.chaikasoft.app.domain.usecases.GetAccessTokenUseCase
@@ -47,7 +48,8 @@ class AuthViewModelTest : FunSpec({
         getAccessTokenUseCase = getAccessToken,
         completeAuthorizationFlowUseCase = completeAuth,
         logoutUseCase = logout,
-        startAuthorizationUseCase = startAuth
+        startAuthorizationUseCase = startAuth,
+        authSessionBootstrap = NoOpAuthSessionBootstrap()
     )
 
     test("init sets Authenticated when token exists") {
