@@ -31,11 +31,24 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Check KVM access
+        run: |
+          ls -l /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+
       - name: Run nightly hermetic suite
         run: >
           ./gradlew
           :e2e-tests:${{ matrix.task }}
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+          -Pandroid.testInstrumentationRunnerArguments.class=com.chaikasoft.app.e2e.tests.HermeticSmokeE2ETest
           -Pandroid.testInstrumentationRunnerArguments.e2e.env=false
           -Pandroid.testInstrumentationRunnerArguments.e2e.authMode=fake_success
           -Pandroid.testInstrumentationRunnerArguments.e2e.tripGateMode=fake_success
