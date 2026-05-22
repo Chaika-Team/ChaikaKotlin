@@ -11,9 +11,11 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SaveProductsLocallyUseCaseTest : FunSpec({
 
     lateinit var productRepository: RoomProductInfoRepositoryInterface
@@ -58,9 +60,10 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
     test("when image saving results are mixed - inserts each product with expected image") {
         runTest {
             val products = listOf(productOne, productTwo)
-            val inserted = mutableListOf<ProductInfoDomain>()
             val productOneSaved = productOne.copy(image = savedImagePath)
+            val expectedProducts = listOf(productOneSaved, productTwo)
 
+            coEvery { productRepository.getAllProductsOnce() } returns emptyList()
             coEvery {
                 imageRepository.saveImageFromUrl(
                     imageUrl = productOne.image,
@@ -75,12 +78,11 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
                     subDir = ImageSubDir.PRODUCTS.folder,
                 )
             } returns null
-            coEvery { productRepository.insertProduct(capture(inserted)) } returns Unit
+            coEvery { productRepository.upsertAll(expectedProducts) } returns Unit
 
             val result = useCase(products)
 
-            result shouldBe products
-            inserted.toSet() shouldBe setOf(productOneSaved, productTwo)
+            result shouldBe expectedProducts
             coVerify(exactly = 1) {
                 imageRepository.saveImageFromUrl(
                     imageUrl = productOne.image,
@@ -95,7 +97,8 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
                     subDir = ImageSubDir.PRODUCTS.folder,
                 )
             }
-            coVerify(exactly = 2) { productRepository.insertProduct(any()) }
+            coVerify(exactly = 1) { productRepository.getAllProductsOnce() }
+            coVerify(exactly = 1) { productRepository.upsertAll(expectedProducts) }
             confirmVerified(productRepository, imageRepository)
         }
     }
@@ -111,15 +114,59 @@ class SaveProductsLocallyUseCaseTest : FunSpec({
     test("when image is missing - does not call saveImageFromUrl and stores empty image") {
         runTest {
             val productWithoutImage = productOne.copy(image = "  ")
-            val inserted = mutableListOf<ProductInfoDomain>()
-            coEvery { productRepository.insertProduct(capture(inserted)) } returns Unit
+            val productForStorage = productWithoutImage.copy(image = "")
+            coEvery { productRepository.getAllProductsOnce() } returns emptyList()
+            coEvery { productRepository.upsertAll(listOf(productForStorage)) } returns Unit
 
             val result = useCase(listOf(productWithoutImage))
 
-            result shouldBe listOf(productWithoutImage)
-            inserted.single().image shouldBe ""
+            result shouldBe listOf(productForStorage)
             coVerify(exactly = 0) { imageRepository.saveImageFromUrl(any(), any(), any()) }
-            coVerify(exactly = 1) { productRepository.insertProduct(any()) }
+            coVerify(exactly = 1) { productRepository.getAllProductsOnce() }
+            coVerify(exactly = 1) { productRepository.upsertAll(listOf(productForStorage)) }
+            confirmVerified(productRepository, imageRepository)
+        }
+    }
+
+    test("when existing image is local path - refreshes image to avoid stale local cache") {
+        runTest {
+            val localProduct = productOne.copy(image = savedImagePath)
+            val expectedProducts = listOf(localProduct)
+            coEvery { productRepository.getAllProductsOnce() } returns listOf(localProduct)
+            coEvery {
+                imageRepository.saveImageFromUrl(
+                    imageUrl = productOne.image,
+                    fileName = "${productOne.name}.jpg",
+                    subDir = ImageSubDir.PRODUCTS.folder,
+                )
+            } returns savedImagePath
+
+            val result = useCase(listOf(productOne))
+
+            result shouldBe expectedProducts
+            coVerify(exactly = 1) {
+                imageRepository.saveImageFromUrl(
+                    imageUrl = productOne.image,
+                    fileName = "${productOne.name}.jpg",
+                    subDir = ImageSubDir.PRODUCTS.folder,
+                )
+            }
+            coVerify(exactly = 1) { productRepository.getAllProductsOnce() }
+            coVerify(exactly = 0) { productRepository.upsertAll(any()) }
+            confirmVerified(productRepository, imageRepository)
+        }
+    }
+
+    test("when existing image is same remote url - skips image download and upsert") {
+        runTest {
+            coEvery { productRepository.getAllProductsOnce() } returns listOf(productOne)
+
+            val result = useCase(listOf(productOne))
+
+            result shouldBe listOf(productOne)
+            coVerify(exactly = 0) { imageRepository.saveImageFromUrl(any(), any(), any()) }
+            coVerify(exactly = 1) { productRepository.getAllProductsOnce() }
+            coVerify(exactly = 0) { productRepository.upsertAll(any()) }
             confirmVerified(productRepository, imageRepository)
         }
     }

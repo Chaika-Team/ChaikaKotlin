@@ -17,6 +17,12 @@ interface ProductInfoDao {
     @Query("SELECT * FROM product_info")
     fun getAllProducts(): Flow<List<ProductInfo>>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM product_info LIMIT 1)")
+    suspend fun hasAnyProductsOnce(): Boolean
+
+    @Query("SELECT * FROM product_info ORDER BY id ASC")
+    suspend fun getAllProductsOnce(): List<ProductInfo>
+
     @Query(
         """
         SELECT * FROM product_info
@@ -34,6 +40,9 @@ interface ProductInfoDao {
 
     @Upsert
     suspend fun upsertProduct(product: ProductInfo)
+
+    @Upsert
+    suspend fun upsertAll(products: List<ProductInfo>)
 
     @Update
     suspend fun updateProduct(product: ProductInfo)

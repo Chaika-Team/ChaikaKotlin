@@ -1,10 +1,11 @@
 package com.chaikasoft.app.data.datasource.repo
 
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 
 interface ChaikaSoftApiServiceRepositoryInterface {
-    suspend fun fetchProducts(limit: Int, offset: Int): List<ProductInfoDomain>
+    suspend fun fetchProducts(limit: Int, offset: Int): RemoteResult<List<ProductInfoDomain>>
     suspend fun fetchTemplates(
         query: String = "",
         limit: Int = 100,
