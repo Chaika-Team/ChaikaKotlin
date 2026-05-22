@@ -1,7 +1,8 @@
 package com.chaikasoft.app.apiUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.usecases.FetchProductsFromServerUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -10,6 +11,7 @@ import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -72,14 +74,17 @@ class FetchProductsFromServerUseCaseIntegrationTest {
         )
 
         // Вызываем use case для получения товаров с сервера
-        val result: List<ProductInfoDomain> =
-            fetchProductsFromServerUseCase(limit = 100, offset = 0)
+        val result = fetchProductsFromServerUseCase(limit = 100, offset = 0)
 
         // Проверяем, что возвращается два товара
-        assertEquals("Expected 2 products", 2, result.size)
+        val products = when (result) {
+            is RemoteResult.Success -> result.data
+            is RemoteResult.Failure -> error("Expected success, got ${result.error}")
+        }
+        assertEquals("Expected 2 products", 2, products.size)
     }
 
-    @Test(expected = Exception::class)
+    @Test
     fun testServerErrorForFetchProducts() = runTest {
 
         val responseBody = """{
@@ -92,7 +97,13 @@ class FetchProductsFromServerUseCaseIntegrationTest {
                 .setHeader("Content-Type", "application/json")
                 .setBody(responseBody)
         )
-        // Ожидается, что use case выбросит исключение при ошибке сервера
-        fetchProductsFromServerUseCase(limit = 100, offset = 0)
+        val result = fetchProductsFromServerUseCase(limit = 100, offset = 0)
+
+        val error = when (result) {
+            is RemoteResult.Failure -> result.error
+            is RemoteResult.Success -> error("Expected failure")
+        }
+        assertTrue(error is AppError.Http)
+        assertEquals(500, (error as AppError.Http).code)
     }
 }

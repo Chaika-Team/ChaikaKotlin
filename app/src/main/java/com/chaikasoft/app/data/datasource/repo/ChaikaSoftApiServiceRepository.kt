@@ -2,8 +2,10 @@ package com.chaikasoft.app.data.datasource.repo
 
 import android.util.Log
 import com.chaikasoft.app.data.datasource.apiservice.ChaikaSoftApiService
+import com.chaikasoft.app.data.datasource.common.remoteCall
 import com.chaikasoft.app.data.datasource.mappers.toDomain
 import com.chaikasoft.app.data.datasource.mappers.toDomainList
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 import javax.inject.Inject
@@ -12,9 +14,12 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
     private val apiService: ChaikaSoftApiService
 ) : ChaikaSoftApiServiceRepositoryInterface {
 
-    override suspend fun fetchProducts(limit: Int, offset: Int): List<ProductInfoDomain> {
+    override suspend fun fetchProducts(
+        limit: Int,
+        offset: Int
+    ): RemoteResult<List<ProductInfoDomain>> = remoteCall {
         val dto = apiService.getProducts(limit, offset)
-        return dto.products.map { it.toDomain() }
+        dto.products.map { it.toDomain() }
     }
 
     override suspend fun fetchTemplates(

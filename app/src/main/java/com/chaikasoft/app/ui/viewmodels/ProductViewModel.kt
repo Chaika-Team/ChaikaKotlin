@@ -6,16 +6,22 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.chaikasoft.app.domain.common.AppError
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.ProductInfoDomain
-import com.chaikasoft.app.domain.usecases.FetchAndSaveProductsUseCase
+import com.chaikasoft.app.domain.sealed.RefreshProductsResult
 import com.chaikasoft.app.domain.usecases.GetPagedProductsUseCase
+import com.chaikasoft.app.domain.usecases.RefreshProductsOnLaunchUseCase
 import com.chaikasoft.app.ui.dto.Product
+import com.chaikasoft.app.ui.mappers.AppErrorUiMapper
+import com.chaikasoft.app.ui.mappers.UiError
 import com.chaikasoft.app.ui.mappers.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +38,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val getPagedProductsUseCase: GetPagedProductsUseCase,
-    private val fetchAndSaveProductsUseCase: FetchAndSaveProductsUseCase
+    private val refreshProductsOnLaunchUseCase: RefreshProductsOnLaunchUseCase
 ) : ViewModel() {
 
     private val _isSyncing = MutableStateFlow(false)
@@ -41,8 +47,11 @@ class ProductViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _syncError = MutableSharedFlow<String>()
-    val syncError: Flow<String> = _syncError
+    private val _syncError = MutableSharedFlow<UiError>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val syncError: Flow<UiError> = _syncError
 
     private val cartItemsFlow = MutableStateFlow<List<CartItemDomain>>(emptyList())
 
@@ -111,12 +120,34 @@ class ProductViewModel @Inject constructor(
         syncJob = viewModelScope.launch {
             _isSyncing.value = true
             try {
-                Log.d("ProductViewModel", "Background sync started")
-                fetchAndSaveProductsUseCase()
-                Log.d("ProductViewModel", "Background sync completed")
+                when (val result = refreshProductsOnLaunchUseCase()) {
+                    RefreshProductsResult.SkippedFreshCache -> {
+                        Log.i(TAG, "Products refresh skipped: fresh cache")
+                    }
+
+                    is RefreshProductsResult.Success -> {
+                        Log.i(TAG, "Products refresh success: count=${result.productCount}")
+                    }
+
+                    is RefreshProductsResult.RemoteFailure -> {
+                        Log.w(TAG, "Products refresh remote failure: ${result.error}")
+                        _syncError.emit(AppErrorUiMapper.map(result.error))
+                    }
+
+                    is RefreshProductsResult.LocalFailure -> {
+                        Log.e(
+                            TAG,
+                            "Products refresh local failure: ${result.cause.message}",
+                            result.cause
+                        )
+                        _syncError.emit(AppErrorUiMapper.map(AppError.Unknown(result.cause)))
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                Log.e("ProductViewModel", "Error in background sync: ${e.message}", e)
-                _syncError.emit("Ошибка синхронизации: ${e.localizedMessage}")
+                Log.e(TAG, "Unexpected products refresh failure: ${e.message}", e)
+                _syncError.emit(AppErrorUiMapper.map(AppError.Unknown(e)))
             } finally {
                 _isSyncing.value = false
             }
@@ -126,5 +157,9 @@ class ProductViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         syncJob?.cancel()
+    }
+
+    private companion object {
+        const val TAG = "ProductViewModel"
     }
 }

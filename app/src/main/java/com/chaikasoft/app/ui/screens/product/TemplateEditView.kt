@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -66,6 +67,7 @@ fun TemplateEditView(
     val cartItems by fillViewModel.items.collectAsStateWithLifecycle()
     val isSyncing by productViewModel.isSyncing.collectAsStateWithLifecycle()
     val searchQuery by productViewModel.searchQuery.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     var showNoConductorError by remember { mutableStateOf(false) }
 
@@ -74,7 +76,7 @@ fun TemplateEditView(
     // Ошибки синхронизации
     LaunchedEffect(Unit) {
         productViewModel.syncError.collectLatest { error ->
-            snackbarHostState.showSnackbar(error)
+            snackbarHostState.showSnackbar(context.getString(error.messageRes))
         }
     }
 

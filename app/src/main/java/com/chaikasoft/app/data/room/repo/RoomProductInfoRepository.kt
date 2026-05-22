@@ -24,6 +24,10 @@ class RoomProductInfoRepository @Inject constructor(private val productInfoDao: 
         productInfoDao.upsertProduct(product.toEntity())
     }
 
+    override suspend fun upsertAll(products: List<ProductInfoDomain>) {
+        productInfoDao.upsertAll(products.map { it.toEntity() })
+    }
+
     override suspend fun updateProduct(product: ProductInfoDomain) {
         productInfoDao.updateProduct(product.toEntity())
     }
@@ -31,6 +35,11 @@ class RoomProductInfoRepository @Inject constructor(private val productInfoDao: 
     override suspend fun deleteProduct(product: ProductInfoDomain) {
         productInfoDao.deleteProduct(product.toEntity())
     }
+
+    override suspend fun hasAnyProductsOnce(): Boolean = productInfoDao.hasAnyProductsOnce()
+
+    override suspend fun getAllProductsOnce(): List<ProductInfoDomain> =
+        productInfoDao.getAllProductsOnce().map { it.toDomain() }
 
     override fun getPagedProducts(
         query: String?,

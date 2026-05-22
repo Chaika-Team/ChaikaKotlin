@@ -6,10 +6,15 @@ import com.chaikasoft.app.data.datasource.repo.ChaikaSoftApiServiceRepositoryInt
 import com.chaikasoft.app.data.local.ImageSubDir
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomSyncMetaRepositoryInterface
+import com.chaikasoft.app.data.room.sync.SyncDataset
 import com.chaikasoft.app.di.IoDispatcher
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.sealed.RefreshProductsResult
 import com.chaikasoft.app.util.normalizedRemoteImageUrlOrNull
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -56,8 +61,55 @@ class DeleteProductUseCase @Inject constructor(
 class FetchProductsFromServerUseCase @Inject constructor(
     private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
-    suspend operator fun invoke(limit: Int = 100, offset: Int = 0): List<ProductInfoDomain> =
-        repository.fetchProducts(limit, offset)
+    suspend operator fun invoke(
+        limit: Int = 100,
+        offset: Int = 0
+    ): RemoteResult<List<ProductInfoDomain>> = repository.fetchProducts(limit, offset)
+}
+
+class RefreshProductsOnLaunchUseCase @Inject constructor(
+    private val fetchProductsFromServerUseCase: FetchProductsFromServerUseCase,
+    private val productInfoRepository: RoomProductInfoRepositoryInterface,
+    private val syncMetaRepo: RoomSyncMetaRepositoryInterface,
+    private val saveProductsLocallyUseCase: SaveProductsLocallyUseCase,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) {
+    suspend operator fun invoke(limit: Int = 100, offset: Int = 0): RefreshProductsResult =
+        withContext(ioDispatcher) {
+            if (!shouldRefreshProducts()) {
+                return@withContext RefreshProductsResult.SkippedFreshCache
+            }
+
+            when (val remote = fetchProductsFromServerUseCase(limit, offset)) {
+                is RemoteResult.Failure -> RefreshProductsResult.RemoteFailure(remote.error)
+                is RemoteResult.Success -> saveProductsIfChanged(remote.data)
+            }
+        }
+
+    private suspend fun shouldRefreshProducts(): Boolean {
+        val hasAnyProducts = productInfoRepository.hasAnyProductsOnce()
+        if (!hasAnyProducts) return true
+
+        val lastSuccessfulSyncAt =
+            syncMetaRepo.getLastSuccessfulSyncAt(SyncDataset.PRODUCTS.key) ?: return true
+
+        return System.currentTimeMillis() - lastSuccessfulSyncAt >= SyncDataset.PRODUCTS.ttlMs
+    }
+
+    private suspend fun saveProductsIfChanged(
+        remoteProducts: List<ProductInfoDomain>
+    ): RefreshProductsResult = try {
+        saveProductsLocallyUseCase(remoteProducts)
+        syncMetaRepo.setLastSuccessfulSyncAt(
+            datasetKey = SyncDataset.PRODUCTS.key,
+            timestampMillis = System.currentTimeMillis()
+        )
+        RefreshProductsResult.Success(productCount = remoteProducts.size)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        RefreshProductsResult.LocalFailure(e)
+    }
 }
 
 /**
@@ -75,38 +127,43 @@ class SaveProductsLocallyUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(products: List<ProductInfoDomain>): List<ProductInfoDomain> =
         withContext(ioDispatcher) {
-            var missingImageCount = 0
-            var savedLocallyCount = 0
+            val localProducts = productInfoRepository.getAllProductsOnce()
+            val localProductsById = localProducts.associateBy { it.id }
+            val productsForLocalStorage = products.map { product ->
+                product.withLocalImage(localProductsById[product.id])
+            }
 
-            products.forEach { product ->
-                val remoteImageUrl = product.image.normalizedRemoteImageUrlOrNull()
-                if (remoteImageUrl == null) {
-                    missingImageCount++
-                }
-
-                val imageToStore = if (remoteImageUrl != null) {
-                    val imagePath = localImageRepository.saveImageFromUrl(
-                        imageUrl = remoteImageUrl,
-                        fileName = "${product.name}.jpg",
-                        subDir = ImageSubDir.PRODUCTS.folder
-                    )
-                    if (imagePath != null) {
-                        savedLocallyCount++
-                    }
-                    imagePath ?: remoteImageUrl
-                } else {
-                    ""
-                }
-
-                productInfoRepository.insertProduct(product.copy(image = imageToStore))
+            val shouldUpsert =
+                productsForLocalStorage.sortedBy { it.id } != localProducts.sortedBy { it.id }
+            if (shouldUpsert) {
+                productInfoRepository.upsertAll(productsForLocalStorage)
             }
 
             Log.i(
                 PRODUCT_IMAGE_SYNC_LOG_TAG,
-                "Products image sync summary: total=${products.size}, missingFromApi=$missingImageCount, savedLocally=$savedLocallyCount"
+                "Products local save summary: total=${products.size}, upserted=$shouldUpsert"
             )
-            products
+            productsForLocalStorage
         }
+
+    private suspend fun ProductInfoDomain.withLocalImage(
+        existingProduct: ProductInfoDomain?
+    ): ProductInfoDomain {
+        val remoteImageUrl = image.normalizedRemoteImageUrlOrNull() ?: return copy(image = "")
+        val existingImage = existingProduct?.image?.takeIf { it.isNotBlank() }
+        val existingRemoteImageUrl = existingImage?.normalizedRemoteImageUrlOrNull()
+
+        if (existingImage != null && existingRemoteImageUrl == remoteImageUrl) {
+            return copy(image = existingImage)
+        }
+
+        val imagePath = localImageRepository.saveImageFromUrl(
+            imageUrl = remoteImageUrl,
+            fileName = "$name.jpg",
+            subDir = ImageSubDir.PRODUCTS.folder
+        )
+        return copy(image = imagePath ?: remoteImageUrl)
+    }
 }
 
 /**
@@ -119,10 +176,18 @@ class FetchAndSaveProductsUseCase @Inject constructor(
     private val fetchProductsFromServerUseCase: FetchProductsFromServerUseCase,
     private val saveProductsLocallyUseCase: SaveProductsLocallyUseCase
 ) {
-    suspend operator fun invoke(limit: Int = 100, offset: Int = 0): List<ProductInfoDomain> {
-        val products = fetchProductsFromServerUseCase(limit, offset)
-        return saveProductsLocallyUseCase(products)
-    }
+    suspend operator fun invoke(limit: Int = 100, offset: Int = 0): RefreshProductsResult =
+        when (val remote = fetchProductsFromServerUseCase(limit, offset)) {
+            is RemoteResult.Failure -> RefreshProductsResult.RemoteFailure(remote.error)
+            is RemoteResult.Success -> try {
+                saveProductsLocallyUseCase(remote.data)
+                RefreshProductsResult.Success(productCount = remote.data.size)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                RefreshProductsResult.LocalFailure(e)
+            }
+        }
 }
 
 private const val PRODUCT_IMAGE_SYNC_LOG_TAG = "ProductImageSync"

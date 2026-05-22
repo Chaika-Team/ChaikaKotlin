@@ -38,8 +38,11 @@ class FakeChaikaTripperRepository @Inject constructor() : ChaikaTripperRepositor
 
 @Singleton
 class FakeChaikaSoftApiServiceRepository @Inject constructor() : ChaikaSoftApiServiceRepositoryInterface {
-    override suspend fun fetchProducts(limit: Int, offset: Int): List<ProductInfoDomain> {
-        return E2EFixtures.products.drop(offset).take(limit)
+    override suspend fun fetchProducts(
+        limit: Int,
+        offset: Int,
+    ): RemoteResult<List<ProductInfoDomain>> {
+        return RemoteResult.Success(E2EFixtures.products.drop(offset).take(limit))
     }
 
     override suspend fun fetchTemplates(

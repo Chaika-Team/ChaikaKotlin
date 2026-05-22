@@ -7,11 +7,14 @@ import com.chaikasoft.app.data.datasource.dto.TemplateContentDto
 import com.chaikasoft.app.data.datasource.dto.TemplateDetailResponseDto
 import com.chaikasoft.app.data.datasource.dto.TemplateDto
 import com.chaikasoft.app.data.datasource.dto.TemplateListResponseDto
+import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.RemoteResult
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.io.IOException
 import kotlinx.coroutines.test.runTest
 
 class ChaikaSoftApiServiceRepositoryTest : FunSpec({
@@ -49,10 +52,11 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
             val result = repository.fetchProducts(limit = 50, offset = 100)
 
-            result.size shouldBe 1
-            result.first().id shouldBe 1
-            result.first().price shouldBe 1230
-            result.first().image shouldBe "from-api"
+            result as RemoteResult.Success
+            result.data.size shouldBe 1
+            result.data.first().id shouldBe 1
+            result.data.first().price shouldBe 1230
+            result.data.first().image shouldBe "from-api"
             coVerify(exactly = 1) { api.getProducts(limit = 50, offset = 100) }
         }
     }
@@ -82,7 +86,19 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
             val result = repository.fetchProducts(limit = 10, offset = 0)
 
-            result.first().image shouldBe ""
+            result as RemoteResult.Success
+            result.data.first().image shouldBe ""
+            coVerify(exactly = 1) { api.getProducts(limit = 10, offset = 0) }
+        }
+    }
+
+    test("fetchProducts network error returns RemoteResult.Failure(Network)") {
+        runTest {
+            coEvery { api.getProducts(limit = 10, offset = 0) } throws IOException("network")
+
+            val result = repository.fetchProducts(limit = 10, offset = 0)
+
+            result shouldBe RemoteResult.Failure(AppError.Network)
             coVerify(exactly = 1) { api.getProducts(limit = 10, offset = 0) }
         }
     }

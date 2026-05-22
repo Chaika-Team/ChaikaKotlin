@@ -1,6 +1,9 @@
 package com.chaikasoft.app.domain.usecases.productInfoUseCases
 
+import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.ProductInfoDomain
+import com.chaikasoft.app.domain.sealed.RefreshProductsResult
 import com.chaikasoft.app.domain.usecases.FetchAndSaveProductsUseCase
 import com.chaikasoft.app.domain.usecases.FetchProductsFromServerUseCase
 import com.chaikasoft.app.domain.usecases.SaveProductsLocallyUseCase
@@ -11,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 
 class FetchAndSaveProductsUseCaseTest : FunSpec({
@@ -56,12 +60,13 @@ class FetchAndSaveProductsUseCaseTest : FunSpec({
             val offset = 5
             val savedProducts = products.map { it.copy(image = "files/products/${it.name}.jpg") }
 
-            coEvery { fetchProductsFromServerUseCase(limit, offset) } returns products
+            coEvery { fetchProductsFromServerUseCase(limit, offset) } returns
+                RemoteResult.Success(products)
             coEvery { saveProductsLocallyUseCase(products) } returns savedProducts
 
             val result = useCase(limit, offset)
 
-            result shouldBe savedProducts
+            result shouldBe RefreshProductsResult.Success(productCount = products.size)
             coVerify(exactly = 1) { fetchProductsFromServerUseCase(limit, offset) }
             coVerify(exactly = 1) { saveProductsLocallyUseCase(products) }
             confirmVerified(fetchProductsFromServerUseCase, saveProductsLocallyUseCase)
@@ -80,16 +85,18 @@ class FetchAndSaveProductsUseCaseTest : FunSpec({
      *       2) save не вызывается.
      *   - Цель: избежать побочных эффектов при падении fetch.
      */
-    test("when fetch fails - rethrows and skips save") {
+    test("when fetch fails - returns RemoteFailure and skips save") {
         runTest {
             val limit = 10
             val offset = 5
-            val error = IllegalStateException("boom")
+            val error = AppError.Network
 
-            coEvery { fetchProductsFromServerUseCase(limit, offset) } throws error
+            coEvery { fetchProductsFromServerUseCase(limit, offset) } returns
+                RemoteResult.Failure(error)
 
-            shouldThrow<IllegalStateException> { useCase(limit, offset) }
+            val result = useCase(limit, offset)
 
+            result shouldBe RefreshProductsResult.RemoteFailure(error)
             coVerify(exactly = 1) { fetchProductsFromServerUseCase(limit, offset) }
             coVerify(exactly = 0) { saveProductsLocallyUseCase(any()) }
             confirmVerified(fetchProductsFromServerUseCase, saveProductsLocallyUseCase)
@@ -106,16 +113,36 @@ class FetchAndSaveProductsUseCaseTest : FunSpec({
      *   - Ожидаемое поведение: исключение пробрасывается после попытки save.
      *   - Цель: убедиться, что ошибки save не проглатываются.
      */
-    test("when save fails - rethrows") {
+    test("when save fails - returns LocalFailure") {
         runTest {
             val limit = 10
             val offset = 5
             val error = IllegalStateException("boom")
 
-            coEvery { fetchProductsFromServerUseCase(limit, offset) } returns products
+            coEvery { fetchProductsFromServerUseCase(limit, offset) } returns
+                RemoteResult.Success(products)
             coEvery { saveProductsLocallyUseCase(products) } throws error
 
-            shouldThrow<IllegalStateException> { useCase(limit, offset) }
+            val result = useCase(limit, offset)
+
+            result shouldBe RefreshProductsResult.LocalFailure(error)
+            coVerify(exactly = 1) { fetchProductsFromServerUseCase(limit, offset) }
+            coVerify(exactly = 1) { saveProductsLocallyUseCase(products) }
+            confirmVerified(fetchProductsFromServerUseCase, saveProductsLocallyUseCase)
+        }
+    }
+
+    test("when save is cancelled - rethrows CancellationException") {
+        runTest {
+            val limit = 10
+            val offset = 5
+            val error = CancellationException("cancelled")
+
+            coEvery { fetchProductsFromServerUseCase(limit, offset) } returns
+                RemoteResult.Success(products)
+            coEvery { saveProductsLocallyUseCase(products) } throws error
+
+            shouldThrow<CancellationException> { useCase(limit, offset) }
 
             coVerify(exactly = 1) { fetchProductsFromServerUseCase(limit, offset) }
             coVerify(exactly = 1) { saveProductsLocallyUseCase(products) }
