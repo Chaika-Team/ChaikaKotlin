@@ -3,6 +3,9 @@ package com.chaikasoft.app.domain.sealed
 import com.chaikasoft.app.domain.common.AppError
 
 sealed interface RefreshProductsResult {
+    /** Product refresh skipped because there is an active shift. */
+    data object SkippedActiveShift : RefreshProductsResult
+
     /** Product refresh skipped because local cache is still fresh by TTL. */
     data object SkippedFreshCache : RefreshProductsResult
 

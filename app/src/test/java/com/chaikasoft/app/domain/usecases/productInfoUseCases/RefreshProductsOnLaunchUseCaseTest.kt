@@ -7,6 +7,7 @@ import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.sealed.RefreshProductsResult
 import com.chaikasoft.app.domain.usecases.FetchProductsFromServerUseCase
+import com.chaikasoft.app.domain.usecases.HasActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.RefreshProductsOnLaunchUseCase
 import com.chaikasoft.app.domain.usecases.SaveProductsLocallyUseCase
 import io.kotest.assertions.throwables.shouldThrow
@@ -27,6 +28,7 @@ class RefreshProductsOnLaunchUseCaseTest : FunSpec({
     lateinit var productRepository: RoomProductInfoRepositoryInterface
     lateinit var syncMetaRepository: RoomSyncMetaRepositoryInterface
     lateinit var saveProductsLocallyUseCase: SaveProductsLocallyUseCase
+    lateinit var hasActiveShift: HasActiveShiftUseCase
     lateinit var useCase: RefreshProductsOnLaunchUseCase
 
     val product = ProductInfoDomain(
@@ -43,14 +45,33 @@ class RefreshProductsOnLaunchUseCaseTest : FunSpec({
         productRepository = mockk()
         syncMetaRepository = mockk()
         saveProductsLocallyUseCase = mockk()
+        hasActiveShift = mockk()
+        coEvery { hasActiveShift() } returns false
 
         useCase = RefreshProductsOnLaunchUseCase(
             fetchProductsFromServerUseCase = fetchProductsFromServerUseCase,
             productInfoRepository = productRepository,
             syncMetaRepo = syncMetaRepository,
             saveProductsLocallyUseCase = saveProductsLocallyUseCase,
+            hasActiveShift = hasActiveShift,
             ioDispatcher = UnconfinedTestDispatcher(),
         )
+    }
+
+    test("when active shift exists - returns SkippedActiveShift") {
+        runTest {
+            coEvery { hasActiveShift() } returns true
+
+            val result = useCase()
+
+            result shouldBe RefreshProductsResult.SkippedActiveShift
+            coVerify(exactly = 1) { hasActiveShift() }
+            coVerify(exactly = 0) { productRepository.hasAnyProductsOnce() }
+            coVerify(exactly = 0) { syncMetaRepository.getLastSuccessfulSyncAt(any()) }
+            coVerify(exactly = 0) { fetchProductsFromServerUseCase(any(), any()) }
+            coVerify(exactly = 0) { saveProductsLocallyUseCase(any()) }
+            coVerify(exactly = 0) { syncMetaRepository.setLastSuccessfulSyncAt(any(), any()) }
+        }
     }
 
     test("when local products are empty - refreshes and stores sync timestamp") {

@@ -22,14 +22,20 @@ class DeterministicAuthSessionBootstrap @Inject constructor(
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : AuthSessionBootstrap {
     override suspend fun bootstrapIfNeeded() = withContext(ioDispatcher) {
+        val now = System.currentTimeMillis()
+
         tokenManager.saveToken(E2EFixtures.AUTH_TOKEN)
         conductorRepository.deleteAllConductors()
         conductorRepository.insertConductor(E2EFixtures.conductor)
         stationRepository.upsertAll(E2EFixtures.stations)
         syncMetaRepository.setLastSuccessfulSyncAt(
             datasetKey = SyncDataset.STATIONS.key,
-            timestampMillis = System.currentTimeMillis()
+            timestampMillis = now
         )
         E2EFixtures.products.forEach { productRepository.insertProduct(it) }
+        syncMetaRepository.setLastSuccessfulSyncAt(
+            datasetKey = SyncDataset.PRODUCTS.key,
+            timestampMillis = now
+        )
     }
 }

@@ -1,7 +1,7 @@
 package com.chaikasoft.app.e2e.config
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.chaikasoft.app.startup.TripGateStartupMode
+import com.chaikasoft.app.startup.PostAuthStartupMode
 
 enum class AuthBootstrapMode {
     DISABLED,
@@ -11,7 +11,7 @@ enum class AuthBootstrapMode {
 object E2ETestArguments {
     private const val AUTH_MODE_ARG = "e2e.authMode"
     private const val ENV_MODE_ARG = "e2e.env"
-    private const val TRIP_GATE_MODE_ARG = "e2e.tripGateMode"
+    private const val POST_AUTH_STARTUP_MODE_ARG = "e2e.postAuthStartupMode"
 
     fun authMode(): AuthBootstrapMode {
         val mode = InstrumentationRegistry.getArguments()
@@ -32,24 +32,24 @@ object E2ETestArguments {
             ?: false
     }
 
-    fun tripGateMode(): TripGateStartupMode {
+    fun postAuthStartupMode(): PostAuthStartupMode {
         val mode = InstrumentationRegistry.getArguments()
-            .getString(TRIP_GATE_MODE_ARG)
+            .getString(POST_AUTH_STARTUP_MODE_ARG)
             ?.lowercase()
             ?.trim()
 
         if (mode.isNullOrEmpty()) {
             return if (isEnvMode()) {
-                TripGateStartupMode.NORMAL
+                PostAuthStartupMode.NORMAL
             } else {
-                TripGateStartupMode.FAKE_SUCCESS
+                PostAuthStartupMode.FAKE_SUCCESS
             }
         }
 
         return when (mode) {
-            "normal" -> TripGateStartupMode.NORMAL
-            "disabled" -> TripGateStartupMode.DISABLED
-            else -> TripGateStartupMode.FAKE_SUCCESS
+            "normal" -> PostAuthStartupMode.NORMAL
+            "disabled" -> PostAuthStartupMode.DISABLED
+            else -> PostAuthStartupMode.FAKE_SUCCESS
         }
     }
 }
