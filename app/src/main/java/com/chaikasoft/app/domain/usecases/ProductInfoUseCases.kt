@@ -67,15 +67,26 @@ class FetchProductsFromServerUseCase @Inject constructor(
     ): RemoteResult<List<ProductInfoDomain>> = repository.fetchProducts(limit, offset)
 }
 
+/**
+ * Объединённый use case для получения товаров с сервера и их сохранения локально.
+ *
+ * Сначала получает список товаров с сервера с помощью [FetchProductsFromServerUseCase],
+ * а затем сохраняет их локально через [SaveProductsLocallyUseCase].
+ */
 class RefreshProductsOnLaunchUseCase @Inject constructor(
     private val fetchProductsFromServerUseCase: FetchProductsFromServerUseCase,
     private val productInfoRepository: RoomProductInfoRepositoryInterface,
     private val syncMetaRepo: RoomSyncMetaRepositoryInterface,
     private val saveProductsLocallyUseCase: SaveProductsLocallyUseCase,
+    private val hasActiveShift: HasActiveShiftUseCase,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(limit: Int = 100, offset: Int = 0): RefreshProductsResult =
         withContext(ioDispatcher) {
+            if (hasActiveShift()) {
+                return@withContext RefreshProductsResult.SkippedActiveShift
+            }
+
             if (!shouldRefreshProducts()) {
                 return@withContext RefreshProductsResult.SkippedFreshCache
             }
@@ -164,30 +175,6 @@ class SaveProductsLocallyUseCase @Inject constructor(
         )
         return copy(image = imagePath ?: remoteImageUrl)
     }
-}
-
-/**
- * Объединённый use case для получения товаров с сервера и их сохранения локально.
- *
- * Сначала получает список товаров с сервера с помощью [FetchProductsFromServerUseCase],
- * а затем сохраняет их локально через [SaveProductsLocallyUseCase].
- */
-class FetchAndSaveProductsUseCase @Inject constructor(
-    private val fetchProductsFromServerUseCase: FetchProductsFromServerUseCase,
-    private val saveProductsLocallyUseCase: SaveProductsLocallyUseCase
-) {
-    suspend operator fun invoke(limit: Int = 100, offset: Int = 0): RefreshProductsResult =
-        when (val remote = fetchProductsFromServerUseCase(limit, offset)) {
-            is RemoteResult.Failure -> RefreshProductsResult.RemoteFailure(remote.error)
-            is RemoteResult.Success -> try {
-                saveProductsLocallyUseCase(remote.data)
-                RefreshProductsResult.Success(productCount = remote.data.size)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                RefreshProductsResult.LocalFailure(e)
-            }
-        }
 }
 
 private const val PRODUCT_IMAGE_SYNC_LOG_TAG = "ProductImageSync"

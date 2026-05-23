@@ -3,7 +3,7 @@ package com.chaikasoft.app.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chaikasoft.app.startup.TripGateStartupSeam
+import com.chaikasoft.app.startup.PostAuthStartupSeam
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -13,16 +13,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class TripGateViewModel @Inject constructor(private val tripGateStartupSeam: TripGateStartupSeam) :
-    ViewModel() {
+class PostAuthGateViewModel @Inject constructor(
+    private val postAuthStartupSeam: PostAuthStartupSeam
+) : ViewModel() {
 
-    sealed interface TripGateUiState {
-        data object Loading : TripGateUiState
-        data class Ready(val hadRefreshFailure: Boolean) : TripGateUiState
+    sealed interface PostAuthGateUiState {
+        data object Loading : PostAuthGateUiState
+        data class Ready(val hadRefreshFailure: Boolean) : PostAuthGateUiState
     }
 
-    private val _uiState = MutableStateFlow<TripGateUiState>(TripGateUiState.Loading)
-    val uiState: StateFlow<TripGateUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<PostAuthGateUiState>(PostAuthGateUiState.Loading)
+    val uiState: StateFlow<PostAuthGateUiState> = _uiState.asStateFlow()
 
     private var started = false
 
@@ -32,19 +33,19 @@ class TripGateViewModel @Inject constructor(private val tripGateStartupSeam: Tri
 
         viewModelScope.launch {
             val hadRefreshFailure = try {
-                tripGateStartupSeam.prepareForTripEntry().hadRefreshFailure
+                postAuthStartupSeam.prepareForAuthenticatedApp().hadRefreshFailure
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e(TAG, "Stations refresh crashed unexpectedly", e)
+                Log.e(TAG, "Post-auth startup crashed unexpectedly", e)
                 true
             }
 
-            _uiState.value = TripGateUiState.Ready(hadRefreshFailure = hadRefreshFailure)
+            _uiState.value = PostAuthGateUiState.Ready(hadRefreshFailure = hadRefreshFailure)
         }
     }
 
     private companion object {
-        const val TAG = "TripGateViewModel"
+        const val TAG = "PostAuthGateViewModel"
     }
 }

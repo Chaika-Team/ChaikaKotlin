@@ -45,6 +45,7 @@ import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
 import com.chaikasoft.app.ui.viewmodels.OperationViewModel
 import com.chaikasoft.app.ui.viewmodels.PackageViewModel
+import com.chaikasoft.app.ui.viewmodels.PostAuthGateViewModel
 import com.chaikasoft.app.ui.viewmodels.ProductGateViewModel
 import com.chaikasoft.app.ui.viewmodels.ProductViewModel
 import com.chaikasoft.app.ui.viewmodels.ReplenishItemsViewModel
@@ -52,7 +53,6 @@ import com.chaikasoft.app.ui.viewmodels.ReplenishViewModel
 import com.chaikasoft.app.ui.viewmodels.SaleViewModel
 import com.chaikasoft.app.ui.viewmodels.StatisticsViewModel
 import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
-import com.chaikasoft.app.ui.viewmodels.TripGateViewModel
 import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
@@ -122,7 +122,7 @@ fun NavGraph(
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Routes.TRIP_GRAPH)
                 }
-                val gateVm = hiltViewModel<TripGateViewModel>(parentEntry)
+                val gateVm = hiltViewModel<PostAuthGateViewModel>(parentEntry)
                 val gateState by gateVm.uiState.collectAsStateWithLifecycle()
 
                 LaunchedEffect(Unit) {
@@ -130,7 +130,7 @@ fun NavGraph(
                 }
 
                 LaunchedEffect(gateState) {
-                    if (gateState is TripGateViewModel.TripGateUiState.Ready) {
+                    if (gateState is PostAuthGateViewModel.PostAuthGateUiState.Ready) {
                         navController.navigate(Routes.TRIP_MAIN) {
                             popUpTo(Routes.TRIP_GATE) { inclusive = true }
                             launchSingleTop = true
@@ -140,8 +140,8 @@ fun NavGraph(
 
                 val currentGateState = gateState
                 val stateTag = when (currentGateState) {
-                    TripGateViewModel.TripGateUiState.Loading -> "tripGateStateLoading"
-                    is TripGateViewModel.TripGateUiState.Ready -> {
+                    PostAuthGateViewModel.PostAuthGateUiState.Loading -> "tripGateStateLoading"
+                    is PostAuthGateViewModel.PostAuthGateUiState.Ready -> {
                         if (currentGateState.hadRefreshFailure) {
                             "tripGateStateReadyWithRefreshFailure"
                         } else {

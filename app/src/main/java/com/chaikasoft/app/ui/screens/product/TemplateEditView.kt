@@ -18,22 +18,17 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,7 +49,6 @@ import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
 import com.chaikasoft.app.ui.viewmodels.ProductViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TemplateEditView(
@@ -65,36 +59,17 @@ fun TemplateEditView(
 ) {
     val pagingItems = productViewModel.productsFlow.collectAsLazyPagingItems()
     val cartItems by fillViewModel.items.collectAsStateWithLifecycle()
-    val isSyncing by productViewModel.isSyncing.collectAsStateWithLifecycle()
     val searchQuery by productViewModel.searchQuery.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
     var showNoConductorError by remember { mutableStateOf(false) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    // Ошибки синхронизации
-    LaunchedEffect(Unit) {
-        productViewModel.syncError.collectLatest { error ->
-            snackbarHostState.showSnackbar(context.getString(error.messageRes))
-        }
-    }
-
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (isSyncing) {
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = productViewModel::onSearchChange,
