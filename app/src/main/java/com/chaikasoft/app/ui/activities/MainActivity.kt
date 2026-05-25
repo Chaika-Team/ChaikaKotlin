@@ -10,14 +10,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chaikasoft.app.ui.components.bottombar.BottomBar
+import com.chaikasoft.app.ui.components.bottombar.NavigationBlockedBottomSheet
 import com.chaikasoft.app.ui.components.topbar.MenuItem
 import com.chaikasoft.app.ui.components.topbar.TopBar
 import com.chaikasoft.app.ui.navigation.NavGraph
@@ -25,6 +30,7 @@ import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.navigation.Screen
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.viewmodels.AuthViewModel
+import com.chaikasoft.app.ui.viewmodels.MainNavigationViewModel
 import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,16 +43,23 @@ class MainActivity : ComponentActivity() {
             ChaikaTheme {
                 val authViewModel: AuthViewModel = hiltViewModel()
                 val tripViewModel: TripViewModel = hiltViewModel()
+                val mainNavigationViewModel: MainNavigationViewModel = hiltViewModel()
+                val hasActiveShift by
+                    mainNavigationViewModel.hasActiveShift.collectAsStateWithLifecycle()
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val currentScreen = Screen.fromRoute(currentRoute)
+                var showBlockedNavigationSheet by remember { mutableStateOf(false) }
 
                 // Управление ориентацией экрана в зависимости от текущего маршрута
                 LaunchedEffect(currentRoute) {
                     requestedOrientation = when (currentRoute) {
                         Routes.STATISTICS -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
                         else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    }
+                    if (currentRoute == Routes.TRIP_MAIN) {
+                        mainNavigationViewModel.refreshAuthenticatedAppSilently()
                     }
                 }
 
@@ -79,7 +92,11 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         BottomBar(
                             navController = navController,
-                            currentRoute = currentRoute
+                            currentRoute = currentRoute,
+                            hasActiveShift = hasActiveShift,
+                            onBlockedNavigation = {
+                                showBlockedNavigationSheet = true
+                            }
                         )
                     }
                 ) { paddingValues ->
@@ -91,10 +108,17 @@ class MainActivity : ComponentActivity() {
                         NavGraph(
                             navController = navController,
                             authViewModel = authViewModel,
-                            tripViewModel = tripViewModel
+                            tripViewModel = tripViewModel,
+                            hasActiveShift = hasActiveShift,
+                            currentRoute = currentRoute
                         )
                     }
                 }
+
+                NavigationBlockedBottomSheet(
+                    visible = showBlockedNavigationSheet,
+                    onDismiss = { showBlockedNavigationSheet = false }
+                )
             }
         }
     }

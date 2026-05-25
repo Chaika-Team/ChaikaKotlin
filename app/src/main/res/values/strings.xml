@@ -232,6 +232,8 @@
     <string name="logout_ok">OK</string>
     <string name="active_shift_title">Поездка в процессе</string>
     <string name="active_shift_message">Для выхода завершите поездку</string>
+    <string name="navigation_requires_active_shift_title">Сначала начните поездку</string>
+    <string name="navigation_requires_active_shift_message">Этот раздел доступен только во время активной поездки</string>
 
     <!-- Operation types -->
     <string name="op_type_add">Добавление</string>

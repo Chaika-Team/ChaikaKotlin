@@ -14,12 +14,30 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.navigation.NavigationGuards
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.BarDimens
 
 @Composable
-fun BottomBar(navController: NavController, currentRoute: String?) {
+fun BottomBar(
+    navController: NavController,
+    currentRoute: String?,
+    hasActiveShift: Boolean,
+    onBlockedNavigation: () -> Unit
+) {
     if (currentRoute == null || currentRoute in Routes.routesWithoutBottomBar) return
+
+    fun navigateToMainGraph(route: String, popUpToRoute: String = route) {
+        if (NavigationGuards.isProtectedBottomGraph(route) && !hasActiveShift) {
+            onBlockedNavigation()
+            return
+        }
+
+        navController.navigate(route) {
+            popUpTo(popUpToRoute) { inclusive = route == popUpToRoute }
+            launchSingleTop = true
+        }
+    }
 
     BottomBarBackground(
         modifier = Modifier.shadow(
@@ -45,10 +63,10 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
             selected = Routes.mainRoutes[Routes.TRIP]?.contains(currentRoute) == true,
             tag = "bottomBarTrip",
             onClick = {
-                navController.navigate(Routes.TRIP_GRAPH) {
-                    popUpTo(Routes.TRIP_GRAPH) { inclusive = true }
-                    launchSingleTop = true
-                }
+                navigateToMainGraph(
+                    route = Routes.TRIP_MAIN,
+                    popUpToRoute = Routes.TRIP_GRAPH
+                )
             }
         )
         BottomBarIcon(
@@ -56,10 +74,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
             selected = Routes.mainRoutes[Routes.PRODUCT]?.contains(currentRoute) == true,
             tag = "bottomBarProduct",
             onClick = {
-                navController.navigate(Routes.PRODUCT_GRAPH) {
-                    popUpTo(Routes.PRODUCT_GRAPH) { inclusive = true }
-                    launchSingleTop = true
-                }
+                navigateToMainGraph(Routes.PRODUCT_GRAPH)
             }
         )
         BottomBarIcon(
@@ -67,10 +82,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
             selected = Routes.mainRoutes[Routes.STATISTICS]?.contains(currentRoute) == true,
             tag = "bottomBarStatistics",
             onClick = {
-                navController.navigate(Routes.STATISTICS_GRAPH) {
-                    popUpTo(Routes.STATISTICS_GRAPH) { inclusive = true }
-                    launchSingleTop = true
-                }
+                navigateToMainGraph(Routes.STATISTICS_GRAPH)
             }
         )
         BottomBarIcon(
@@ -78,10 +90,7 @@ fun BottomBar(navController: NavController, currentRoute: String?) {
             selected = Routes.mainRoutes[Routes.OPERATION]?.contains(currentRoute) == true,
             tag = "bottomBarOperation",
             onClick = {
-                navController.navigate(Routes.OPERATION_GRAPH) {
-                    popUpTo(Routes.OPERATION_GRAPH) { inclusive = true }
-                    launchSingleTop = true
-                }
+                navigateToMainGraph(Routes.OPERATION_GRAPH)
             }
         )
         BottomBarIcon(
