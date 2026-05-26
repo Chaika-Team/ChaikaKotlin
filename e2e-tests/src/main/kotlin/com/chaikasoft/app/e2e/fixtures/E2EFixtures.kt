@@ -4,6 +4,7 @@ import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.models.TemplateContentDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
+import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 
@@ -65,5 +66,10 @@ object E2EFixtures {
             from = stations.first(),
             to = stations[2],
         ),
+    )
+
+    val activeCarriage = CarriageDomain(
+        carNumber = "01",
+        classType = "E2E",
     )
 }

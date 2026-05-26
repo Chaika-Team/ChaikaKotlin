@@ -27,7 +27,7 @@ fun BottomBarIcon(
         onClick = onClick,
         modifier = Modifier
             .then(if (tag != null) Modifier.testTag(tag) else Modifier)
-            .size(BarDimens.IconSize)
+            .size(BarDimens.IconTouchTargetSize)
             .clip(RoundedCornerShape(BarDimens.CornerShape)),
         colors = IconButtonDefaults.iconButtonColors(
             contentColor = iconColor

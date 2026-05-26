@@ -59,7 +59,9 @@ import com.chaikasoft.app.ui.viewmodels.TripViewModel
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    hasActiveShift: Boolean,
+    currentRoute: String?
 ) {
     // 1) Слушаем единое состояние авторизации
     val ui by authViewModel.uiState.collectAsStateWithLifecycle()
@@ -87,6 +89,24 @@ fun NavGraph(
                     launchSingleTop = true
                 }
             }
+        }
+    }
+
+    LaunchedEffect(ui.state, hasActiveShift, currentRoute) {
+        if (ui.state != AuthState.Authenticated) {
+            return@LaunchedEffect
+        }
+
+        if (hasActiveShift || !NavigationGuards.requiresActiveShift(currentRoute)) {
+            return@LaunchedEffect
+        }
+
+        val protectedGraph = NavigationGuards.protectedGraphForRoute(currentRoute)
+        navController.navigate(Routes.TRIP_MAIN) {
+            if (protectedGraph != null) {
+                popUpTo(protectedGraph) { inclusive = true }
+            }
+            launchSingleTop = true
         }
     }
 

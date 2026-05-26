@@ -7,10 +7,14 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.LargeTest
+import com.chaikasoft.app.domain.usecases.StartShiftUseCase
+import com.chaikasoft.app.e2e.fixtures.E2EFixtures
 import com.chaikasoft.app.e2e.rules.FailureDiagnosticsRule
 import com.chaikasoft.app.ui.activities.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -30,6 +34,9 @@ class HermeticSmokeE2ETest {
 
     @get:Rule(order = 2)
     val diagnosticsRule = FailureDiagnosticsRule()
+
+    @Inject
+    lateinit var startShiftUseCase: StartShiftUseCase
 
     @Before
     fun setUp() {
@@ -54,8 +61,33 @@ class HermeticSmokeE2ETest {
     }
 
     @Test
-    fun bottomBar_canNavigateToAllMainSections() {
+    fun bottomBar_blocksProtectedSectionsWithoutActiveShift() {
         waitForTag("tripMainScreen")
+
+        assertProtectedSectionBlocked(
+            bottomBarTag = "bottomBarProduct",
+            protectedScreenTags = arrayOf("productEntryScreen", "productPackageScreen"),
+        )
+        assertProtectedSectionBlocked(
+            bottomBarTag = "bottomBarStatistics",
+            protectedScreenTags = arrayOf("statisticsScreen"),
+        )
+        assertProtectedSectionBlocked(
+            bottomBarTag = "bottomBarOperation",
+            protectedScreenTags = arrayOf("operationScreen"),
+        )
+
+        composeRule.onNodeWithTag("bottomBarProfile").performClick()
+        waitForTag("profileScreen")
+
+        composeRule.onNodeWithTag("bottomBarTrip").performClick()
+        waitForTag("tripMainScreen")
+    }
+
+    @Test
+    fun bottomBar_allowsProtectedSectionsWithActiveShift() {
+        waitForTag("tripMainScreen")
+        startActiveShift()
 
         composeRule.onNodeWithTag("bottomBarProduct").performClick()
         waitForAnyTag("productEntryScreen", "productPackageScreen")
@@ -76,6 +108,8 @@ class HermeticSmokeE2ETest {
     @Test
     fun productEntry_hasPrimaryCtaTag() {
         waitForTag("bottomBarProduct")
+        startActiveShift()
+
         composeRule.onNodeWithTag("bottomBarProduct").performClick()
 
         composeRule.waitUntil(timeoutMillis = 10_000L) {
@@ -110,5 +144,39 @@ class HermeticSmokeE2ETest {
                 composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
             }
         }
+    }
+
+    private fun waitForTagGone(tag: String, timeoutMillis: Long = 10_000L) {
+        composeRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isEmpty()
+        }
+    }
+
+    private fun assertProtectedSectionBlocked(
+        bottomBarTag: String,
+        protectedScreenTags: Array<String>,
+    ) {
+        composeRule.onNodeWithTag(bottomBarTag).performClick()
+        waitForTag("navigationBlockedBottomSheet")
+        protectedScreenTags.forEach { tag ->
+            assertTagDoesNotExist(tag)
+        }
+        composeRule.onNodeWithTag("navigationBlockedOkButton").performClick()
+        waitForTagGone("navigationBlockedBottomSheet")
+        waitForTag("tripMainScreen")
+    }
+
+    private fun assertTagDoesNotExist(tag: String) {
+        check(composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isEmpty()) {
+            "Expected no nodes with tag $tag"
+        }
+    }
+
+    private fun startActiveShift() = runBlocking {
+        startShiftUseCase(
+            trip = E2EFixtures.trips.first(),
+            activeCarriage = E2EFixtures.activeCarriage,
+        )
+        composeRule.waitForIdle()
     }
 }
