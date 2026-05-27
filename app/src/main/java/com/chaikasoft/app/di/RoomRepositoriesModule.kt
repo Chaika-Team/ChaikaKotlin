@@ -1,5 +1,6 @@
 package com.chaikasoft.app.di
 
+import com.chaikasoft.app.data.room.AppDatabase
 import com.chaikasoft.app.data.room.dao.CartItemDao
 import com.chaikasoft.app.data.room.dao.CartOperationDao
 import com.chaikasoft.app.data.room.dao.ConductorDao
@@ -25,10 +26,13 @@ import com.chaikasoft.app.data.room.repo.RoomProductInfoRepository
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomReportRepository
 import com.chaikasoft.app.data.room.repo.RoomReportRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomShiftReportRepository
+import com.chaikasoft.app.data.room.repo.RoomShiftReportRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepository
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomSyncMetaRepository
 import com.chaikasoft.app.data.room.repo.RoomSyncMetaRepositoryInterface
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,9 +58,10 @@ object RoomRepositoriesModule {
     @Provides
     @Singleton
     fun provideRoomCartRepository(
+        db: AppDatabase,
         cartItemDao: CartItemDao,
         cartOperationDao: CartOperationDao
-    ): RoomCartRepositoryInterface = RoomCartRepository(cartItemDao, cartOperationDao)
+    ): RoomCartRepositoryInterface = RoomCartRepository(db, cartItemDao, cartOperationDao)
 
     @Provides
     @Singleton
@@ -76,6 +81,24 @@ object RoomRepositoriesModule {
         conductorTripShiftDao: ConductorTripShiftDao
     ): RoomConductorTripShiftRepositoryInterface =
         RoomConductorTripShiftRepository(conductorTripShiftDao)
+
+    @Provides
+    @Singleton
+    fun provideRoomShiftReportRepository(
+        db: AppDatabase,
+        conductorTripShiftDao: ConductorTripShiftDao,
+        cartOperationDao: CartOperationDao,
+        cartItemDao: CartItemDao,
+        productInfoDao: ProductInfoDao,
+        moshi: Moshi
+    ): RoomShiftReportRepositoryInterface = RoomShiftReportRepository(
+        db = db,
+        conductorTripShiftDao = conductorTripShiftDao,
+        cartOperationDao = cartOperationDao,
+        cartItemDao = cartItemDao,
+        productInfoDao = productInfoDao,
+        moshi = moshi
+    )
 
     @Provides
     @Singleton

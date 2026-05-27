@@ -1,4 +1,3 @@
-// File: com.chaikasoft.app/data/room/repository/RoomConductorTripShiftRepository.kt
 package com.chaikasoft.app.data.room.repo
 
 import android.util.Log
@@ -15,19 +14,16 @@ import kotlinx.coroutines.flow.map
 class RoomConductorTripShiftRepository @Inject constructor(private val dao: ConductorTripShiftDao) :
     RoomConductorTripShiftRepositoryInterface {
 
-    override suspend fun insertOrUpdate(shift: ConductorTripShiftDomain) {
-        val entity = shift.toEntity()
-        val rowId = dao.insertIgnore(entity)
-        if (rowId == -1L) {
-            // конфликт по PK (uuid уже существует) -> обычный update
-            dao.update(entity)
-        }
-    }
-
+    /**
+     * Создаёт новую ACTIVE-смену.
+     *
+     * Конфликт уникальности активной смены превращается в false, чтобы доменный слой
+     * не работал с SQLite-исключением как с обычным пользовательским сценарием.
+     */
     override suspend fun tryStartNewShift(shift: ConductorTripShiftDomain): Boolean {
         val entity = shift.toEntity()
         return try {
-            dao.insertNew(entity) // ABORT при конфликте с уникальным индексом
+            dao.insertNew(entity)
             true
         } catch (e: android.database.sqlite.SQLiteConstraintException) {
             Log.w(
@@ -56,9 +52,6 @@ class RoomConductorTripShiftRepository @Inject constructor(private val dao: Cond
 
     override fun observeActiveShift(): Flow<ConductorTripShiftDomain?> =
         dao.getActiveShiftWithStationsFlow(TripShiftStatusDomain.ACTIVE.code).map { it?.toDomain() }
-
-    override fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>> =
-        dao.getAllWithStations().map { list -> list.map { it.toDomain() } }
 
     override fun observeShiftHistory(): Flow<List<ConductorTripShiftDomain>> =
         dao.getHistoryWithStations().map { list -> list.map { it.toDomain() } }

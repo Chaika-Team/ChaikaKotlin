@@ -5,12 +5,12 @@ import androidx.paging.PagingData
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
-import com.chaikasoft.app.domain.models.report.CartOperationReport
+import com.chaikasoft.app.domain.models.report.CartOperationReportHeader
 import kotlinx.coroutines.flow.Flow
 
 @Suppress("FunctionInterface")
 interface RoomCartOperationRepositoryInterface {
-    fun getCartOperationReportsWithIds(): Flow<List<Pair<Int, CartOperationReport>>>
+    fun getCartOperationReportHeadersWithIds(): Flow<List<Pair<Int, CartOperationReportHeader>>>
 
     // Пагинация «шапок» операций
     fun getPagedOperationSummaries(config: PagingConfig): Flow<PagingData<OperationSummaryDomain>>

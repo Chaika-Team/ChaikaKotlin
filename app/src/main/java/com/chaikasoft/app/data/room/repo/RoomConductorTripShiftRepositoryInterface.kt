@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.Flow
 interface RoomConductorTripShiftRepositoryInterface {
 
     /** Вставить новую смену или обновить существующую */
-    suspend fun insertOrUpdate(shift: ConductorTripShiftDomain)
-
     /** Попытаться создать новую ACTIVE-смену. Возвращает false, если активная уже есть. */
     suspend fun tryStartNewShift(shift: ConductorTripShiftDomain): Boolean
 
@@ -38,8 +36,6 @@ interface RoomConductorTripShiftRepositoryInterface {
     fun observeActiveShift(): Flow<ConductorTripShiftDomain?>
 
     /** Наблюдать за всеми сменами проводника */
-    fun observeAllShifts(): Flow<List<ConductorTripShiftDomain>>
-
     fun observeShiftHistory(): Flow<List<ConductorTripShiftDomain>>
 
     /** Получить пару "статус смены и отчёт" */

@@ -60,8 +60,8 @@ class GetPagedOperationSummariesByTypeUseCase @Inject constructor(
         repo.getPagedOperationSummariesByType(type, pageSize)
 }
 
-/** Очистить все операции (и тем самым обнулить «пакет»). */
-class ClearOperationsAndPackageUseCase @Inject constructor(
+/** Очистить все сохранённые cart_operations; cart_items удаляются каскадно через Room FK. */
+class ClearCartOperationsUseCase @Inject constructor(
     private val cartOpsRepo: RoomCartOperationRepositoryInterface
 ) {
     suspend operator fun invoke() {

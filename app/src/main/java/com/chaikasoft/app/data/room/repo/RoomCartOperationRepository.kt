@@ -12,7 +12,7 @@ import com.chaikasoft.app.data.room.mappers.toReportPair
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
-import com.chaikasoft.app.domain.models.report.CartOperationReport
+import com.chaikasoft.app.domain.models.report.CartOperationReportHeader
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,7 +21,8 @@ class RoomCartOperationRepository @Inject constructor(
     private val cartOperationDao: CartOperationDao
 ) : RoomCartOperationRepositoryInterface {
 
-    override fun getCartOperationReportsWithIds(): Flow<List<Pair<Int, CartOperationReport>>> {
+    override fun getCartOperationReportHeadersWithIds():
+        Flow<List<Pair<Int, CartOperationReportHeader>>> {
         return cartOperationDao
             .getOperationsWithConductorForReport()
             .map { rows -> rows.map { it.toReportPair() } } // <- маппер
