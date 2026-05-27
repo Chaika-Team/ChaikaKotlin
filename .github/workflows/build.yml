@@ -17,10 +17,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 20
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: 20
+          java-version: 17
           distribution: 'zulu'
 
       - name: Cache SonarQube packages
@@ -51,12 +51,19 @@ jobs:
           path: '**/build/reports/ktlint/'
           retention-days: 5
 
-      - name: Build and run unit tests
+      - name: Build and run unit tests (Kotest via JUnit Platform)
         env:
           STAGE_CHAIKA_SOFT_URL: ${{ secrets.STAGE_CHAIKA_SOFT_URL }}
           STAGE_ZITADEL_TOKEN: ${{ secrets.STAGE_ZITADEL_TOKEN }}
           STAGE_ZITADEL_URL: ${{ secrets.STAGE_ZITADEL_URL }}
-        run: ./gradlew clean buildStage testStage jacocoTestReportStage
+        run: ./gradlew clean :app:buildStage :app:koverXmlReportStage :app:koverHtmlReportStage --console=plain
+
+      - name: Run Android lint
+        run: ./gradlew :app:lintStage --console=plain
+
+      - name: Static check by Detekt
+        run: ./gradlew :app:detekt --console=plain
+        continue-on-error: true
 
       # - name: Enable KVM
       #   run: |
@@ -71,25 +78,16 @@ jobs:
       #     script: ./gradlew :app:connectedAndroidTest -i
 
       - name: Run SonarQube scan
-        uses: sonarsource/sonarqube-scan-action@master
+        run: ./gradlew sonar -Dsonar.host.url="${SONAR_HOST_URL}" --console=plain
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.sources=app/src/main
-            -Dsonar.tests=app/src/test
-            -Dsonar.projectKey=ChaikaKotlin
-            -Dsonar.junit.reportPaths=app/build/test-results/
-            -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacoco.xml
-            -Dsonar.exclusions=**/*.mock.kt,**/generated/**,**/res/**
-
-      - name: Static check by Detekt
-        run: ./gradlew detekt
-        continue-on-error: true
 
       - name: SonarQube QualityGate
         uses: SonarSource/sonarqube-quality-gate-action@v1
+        with:
+          scanMetadataReportFile: build/sonar/report-task.txt
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
