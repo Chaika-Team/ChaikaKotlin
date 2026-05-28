@@ -3,7 +3,6 @@ package com.chaikasoft.app.di
 import android.content.Context
 import com.chaikasoft.app.data.local.LocalImageRepository
 import com.chaikasoft.app.data.local.LocalImageRepositoryInterface
-import com.chaikasoft.app.data.local.LocalTripReportRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,10 +22,4 @@ object FileRepositoriesModule {
         @IoDispatcher ioDispatcher: CoroutineDispatcher
     ): LocalImageRepositoryInterface =
         LocalImageRepository(context = context, ioDispatcher = ioDispatcher)
-
-    @Provides
-    @Singleton
-    fun provideLocalTripReportRepository(
-        @ApplicationContext context: Context
-    ): LocalTripReportRepository = LocalTripReportRepository(context)
 }

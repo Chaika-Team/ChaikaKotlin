@@ -12,7 +12,6 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,28 +28,6 @@ class RoomConductorTripShiftRepositoryTest : FunSpec({
         repository = RoomConductorTripShiftRepository(dao)
     }
 
-    /**
-     * Test design: decision table.
-     * insertOrUpdate should choose update only for insert conflict (-1 rowId).
-     */
-    test("insertOrUpdate calls update only when insertIgnore returns -1") {
-        runTest {
-            val shift = sampleDomainShift("uuid-1")
-
-            coEvery { dao.insertIgnore(any()) } returns -1L
-            repository.insertOrUpdate(shift)
-            coVerify(exactly = 1) { dao.update(any()) }
-
-            coEvery { dao.insertIgnore(any()) } returns 1L
-            repository.insertOrUpdate(shift)
-            coVerify(exactly = 1) { dao.update(any()) }
-        }
-    }
-
-    /**
-     * Test design: boundary values.
-     * Constraint conflict in tryStartNewShift must be converted to false.
-     */
     test("tryStartNewShift returns false on SQLiteConstraintException and true on success") {
         runTest {
             val shift = sampleDomainShift("uuid-2")
@@ -63,10 +40,6 @@ class RoomConductorTripShiftRepositoryTest : FunSpec({
         }
     }
 
-    /**
-     * Test design: error guessing.
-     * Missing shift by uuid is a hard invariant violation and must throw.
-     */
     test("getStatusAndReport throws when shift is missing") {
         runTest {
             coEvery { dao.getByUuid("missing") } returns null
@@ -77,10 +50,6 @@ class RoomConductorTripShiftRepositoryTest : FunSpec({
         }
     }
 
-    /**
-     * Test design: equivalence classes.
-     * observeActiveShift should map relation model into domain model.
-     */
     test("observeActiveShift maps dao flow to domain flow") {
         runTest {
             val relation = sampleRelationShift("uuid-3", TripShiftStatusDomain.ACTIVE)
@@ -133,4 +102,3 @@ class RoomConductorTripShiftRepositoryTest : FunSpec({
         )
     }
 }
-

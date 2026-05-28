@@ -5,35 +5,22 @@ import com.chaikasoft.app.data.datasource.repo.ChaikaSoftReportsRepositoryInterf
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomShiftReportRepositoryInterface
 import com.chaikasoft.app.domain.models.report.CartIdReport
 import com.chaikasoft.app.domain.models.report.CartReport
-import com.chaikasoft.app.domain.models.report.ShiftReportReport
-import com.chaikasoft.app.domain.models.report.TripIdReport
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.domain.sealed.SendReportResult
 import com.chaikasoft.app.domain.sealed.UploadResult
-import com.squareup.moshi.Moshi
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 private const val SEND_TAG = "SHIFT-REPORT"
 
-/**
- * Возвращает поток со всеми сменами проводника.
- */
-class GetAllShiftsUseCase @Inject constructor(
-    private val repository: RoomConductorTripShiftRepositoryInterface
-) {
-    operator fun invoke(): Flow<List<ConductorTripShiftDomain>> = repository.observeAllShifts()
-}
-
-/**
- * Возвращает поток со всеми сменами кроме активной. Использовать для истории.
- */
+/** Возвращает поток завершённых смен для истории, исключая текущую ACTIVE-смену. */
 class GetShiftHistoryUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface
 ) {
@@ -110,55 +97,22 @@ class CompleteShiftAndSendUseCase @Inject constructor(
 }
 
 /**
- * Генерирует JSON-отчёт по смене и сохраняет его в поле `report` таблицы `conductor_trip_shifts`.
+ * Атомарно генерирует JSON-отчёт по смене, сохраняет его в `conductor_trip_shifts.report`,
+ * переводит смену в FINISHED и очищает операции через data layer.
  */
 class GenerateShiftReportUseCase @Inject constructor(
-    private val shiftRepo: RoomConductorTripShiftRepositoryInterface,
-    private val getCartReports: GetCartReportsUseCase,
-    moshi: Moshi,
-    private val clearOpsAndPackage: ClearOperationsAndPackageUseCase
+    private val shiftReportRepo: RoomShiftReportRepositoryInterface
 ) {
-    private val jsonAdapter = moshi.adapter(ShiftReportReport::class.java)
-
-    suspend operator fun invoke(uuid: String): String {
-        val shift = shiftRepo.getShiftByUuid(uuid)
-            ?: throw IllegalStateException("Shift with uuid=$uuid not found")
-
-        // Защита от перегенерации/перезаписи отчёта и от очистки операций не в том состоянии.
-        check(shift.status == TripShiftStatusDomain.ACTIVE) {
-            "Shift uuid=$uuid is not ACTIVE (status=${shift.status})"
-        }
-
-        // 1) Собираем CartReport'ы из текущих операций (пока они ещё в БД)
-        val carts = getCartReports()
-        // 2) Формируем итоговый отчёт
-        val report = ShiftReportReport(
-            tripId = TripIdReport(shift.trip.trainNumber, shift.trip.departure),
-            endTime = shift.trip.arrival,
-            carriageId = shift.activeCarriage
-                ?.carNumber?.toIntOrNull()
-                ?: throw IllegalStateException("Active carriage not set"),
-            carts = carts
-        )
-        // 3) Фиксируем в БД: статус FINISHED + сам JSON
-        val json = jsonAdapter.toJson(report)
-        shiftRepo.updateStatusAndReport(
-            uuid = uuid,
-            newStatus = TripShiftStatusDomain.FINISHED.code,
-            reportJson = json,
-            updatedAt = System.currentTimeMillis()
-        )
-        // 4) Сразу же очищаем операции → «пакет» пустой
-        clearOpsAndPackage()
-        return json
-    }
+    suspend operator fun invoke(uuid: String): String = shiftReportRepo.finishShiftWithReport(uuid)
 }
 
 /**
- * вспомогательный юзкейс сборки отчёта:
- * 1) берёт из CartOperationRepository пары (opId, CartOperationReport);
- * 2) для каждого opId запрашивает товары из CartItemRepository;
- * 3) маппит всё в List<CartReport>.
+ * Собирает список операций корзины для JSON-отчёта смены.
+ *
+ * Алгоритм:
+ * 1) берёт из CartOperationRepository пары (opId, CartOperationReportHeader);
+ * 2) для каждого opId загружает товарные строки из CartItemRepository;
+ * 3) собирает финальный List<CartReport>, который уже сериализуется внутри ShiftReportReport.
  */
 class GetCartReportsUseCase @Inject constructor(
     private val cartOpRepo: RoomCartOperationRepositoryInterface,
@@ -167,11 +121,11 @@ class GetCartReportsUseCase @Inject constructor(
     suspend operator fun invoke(): List<CartReport> {
         // 1) операции
         val ops = cartOpRepo
-            .getCartOperationReportsWithIds()
+            .getCartOperationReportHeadersWithIds()
             .first()
 
         // 2) маппим каждую
-        return ops.map { (opId, opReport) ->
+        return ops.map { (opId, opHeader) ->
             // 2.1) товары
             val items = cartItemRepo
                 .getCartItemReportsByOperationId(opId)
@@ -180,10 +134,10 @@ class GetCartReportsUseCase @Inject constructor(
             // 2.2) финальный CartReport
             CartReport(
                 cartId = CartIdReport(
-                    employeeId = opReport.employeeID,
-                    operationTime = opReport.operationTime
+                    employeeId = opHeader.cartId.employeeId,
+                    operationTime = opHeader.cartId.operationTime
                 ),
-                operationType = opReport.operationType,
+                operationType = opHeader.operationType,
                 items = items
             )
         }

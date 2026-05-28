@@ -17,6 +17,10 @@ interface CartItemDao {
     @Query("SELECT * FROM cart_items WHERE cart_operation_id = :cartOperationId")
     fun getCartItemsByCartOpId(cartOperationId: Int): Flow<List<CartItem>>
 
+    /** One-shot snapshot of operation items for transactional report generation. */
+    @Query("SELECT * FROM cart_items WHERE cart_operation_id = :cartOperationId ORDER BY id ASC")
+    suspend fun getCartItemsByCartOpIdOnce(cartOperationId: Int): List<CartItem>
+
     @Query("SELECT * FROM cart_items")
     fun getAllCartItems(): Flow<List<CartItem>>
 

@@ -65,6 +65,17 @@ interface CartOperationDao {
     )
     fun getOperationsWithConductorForReport(): Flow<List<CartOperationWithConductor>>
 
+    /** One-shot snapshot of operation headers for transactional report generation. */
+    @Transaction
+    @Query(
+        """
+        SELECT *
+        FROM cart_operations
+        ORDER BY operation_time ASC, id ASC
+        """
+    )
+    suspend fun getOperationsWithConductorForReportOnce(): List<CartOperationWithConductor>
+
     /** Одноразовый счётчик по типу операции */
     @Query("SELECT COUNT(*) FROM cart_operations WHERE operation_type = :type")
     suspend fun countByType(type: Int): Int

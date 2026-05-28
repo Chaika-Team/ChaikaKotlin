@@ -47,7 +47,7 @@ class RoomCartOperationRepositoryTest : FunSpec({
      * Test design: equivalence classes.
      * Report flow should map relation rows into (id, reportHeader) pairs.
      */
-    test("getCartOperationReportsWithIds maps relations to report pairs") {
+    test("getCartOperationReportHeadersWithIds maps relations to report pairs") {
         runTest {
             every { dao.getOperationsWithConductorForReport() } returns flowOf(
                 listOf(
@@ -70,11 +70,12 @@ class RoomCartOperationRepositoryTest : FunSpec({
                 ),
             )
 
-            val pairs = repository.getCartOperationReportsWithIds().single()
+            val pairs = repository.getCartOperationReportHeadersWithIds().single()
 
             pairs.size shouldBe 1
             pairs.first().first shouldBe 11
-            pairs.first().second.employeeID shouldBe "EMP-3"
+            pairs.first().second.cartId.employeeId shouldBe "EMP-3"
+            pairs.first().second.cartId.operationTime shouldBe "2026-03-09T10:00:00Z"
             pairs.first().second.operationType shouldBe OperationTypeDomain.ADD.ordinal
         }
     }

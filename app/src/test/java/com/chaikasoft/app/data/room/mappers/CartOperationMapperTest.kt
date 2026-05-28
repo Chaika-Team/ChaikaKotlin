@@ -34,9 +34,9 @@ class CartOperationMapperTest : FunSpec({
 
     /**
      * Test design: error guessing.
-     * Fallback employeeId in report header protects us when relation conductor is absent.
+     * Report header must use external employeeID, not internal Room conductor id.
      */
-    test("toReportHeader uses relation employeeId and falls back to conductor id") {
+    test("toReportHeader uses relation employeeId") {
         val operation = CartOperation(
             id = 15,
             operationType = OperationTypeDomain.SOLD_CASH.ordinal,
@@ -55,10 +55,25 @@ class CartOperationMapperTest : FunSpec({
                 image = "img",
             ),
         )
-        withConductor.toReportHeader().employeeID shouldBe "EMP-777"
+        withConductor.toReportHeader().cartId.employeeId shouldBe "EMP-777"
+    }
+
+    /**
+     * Test design: error guessing.
+     * Missing conductor relation is invalid report state and must not leak internal PK as employeeID.
+     */
+    test("toReportHeader throws when conductor relation is missing") {
+        val operation = CartOperation(
+            id = 15,
+            operationType = OperationTypeDomain.SOLD_CASH.ordinal,
+            operationTime = "2026-03-09T10:00:00Z",
+            conductorId = 321,
+        )
 
         val withoutConductor = CartOperationWithConductor(operation = operation, conductor = null)
-        withoutConductor.toReportHeader().employeeID shouldBe "321"
+        shouldThrow<IllegalStateException> {
+            withoutConductor.toReportHeader()
+        }.message shouldBe "Conductor not found for operationId=15, conductorId=321"
     }
 
     /**
@@ -73,15 +88,22 @@ class CartOperationMapperTest : FunSpec({
                 operationTime = "2026-03-09T10:30:00Z",
                 conductorId = 11,
             ),
-            conductor = null,
+            conductor = Conductor(
+                id = 11,
+                name = "Ivan",
+                familyName = "Petrov",
+                givenName = "Ivanovich",
+                employeeID = "EMP-11",
+                image = "img",
+            ),
         )
 
         val pair = relation.toReportPair()
 
         pair.first shouldBe 42
         pair.second.operationType shouldBe OperationTypeDomain.REPLENISH.ordinal
-        pair.second.employeeID shouldBe "11"
-        pair.second.items shouldBe emptyList()
+        pair.second.cartId.employeeId shouldBe "EMP-11"
+        pair.second.cartId.operationTime shouldBe "2026-03-09T10:30:00Z"
     }
 
     /**
