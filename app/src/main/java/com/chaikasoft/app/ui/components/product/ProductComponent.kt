@@ -22,7 +22,8 @@ fun ProductComponent(
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit,
     showQuantityBadge: Boolean = false,
-    quantityToShow: Int
+    quantityToShow: Int,
+    isSoldOut: Boolean = false
 ) {
     val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
     Column(
@@ -37,7 +38,8 @@ fun ProductComponent(
             onQuantityIncrease = onQuantityIncrease,
             onQuantityDecrease = onQuantityDecrease,
             showQuantityBadge = showQuantityBadge,
-            quantityToShow = quantityToShow
+            quantityToShow = quantityToShow,
+            isSoldOut = isSoldOut
         )
     }
 }

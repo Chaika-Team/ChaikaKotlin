@@ -1,6 +1,7 @@
 package com.chaikasoft.app.ui.viewmodels
 
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.PackageItemDomain
 import com.chaikasoft.app.domain.usecases.GetAvailableQuantityUseCase
 import com.chaikasoft.app.domain.usecases.GetPackageItemUseCase
 import com.chaikasoft.app.ui.cartItem
@@ -15,6 +16,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -27,7 +29,7 @@ class PackageViewModelTest : FunSpec({
 
     lateinit var getPackageItems: GetPackageItemUseCase
     lateinit var getAvailableQuantity: GetAvailableQuantityUseCase
-    lateinit var packageFlow: MutableStateFlow<List<com.chaikasoft.app.domain.models.PackageItemDomain>>
+    lateinit var packageFlow: MutableStateFlow<List<PackageItemDomain>>
     lateinit var cartFlow: MutableStateFlow<List<CartItemDomain>>
     lateinit var vm: PackageViewModel
 
@@ -64,6 +66,25 @@ class PackageViewModelTest : FunSpec({
             vm.productsFlow.value.first { it.id == 1 }.isInCart shouldBe true
             vm.productsFlow.value.first { it.id == 1 }.quantity shouldBe 2
             vm.productsFlow.value.first { it.id == 2 }.isInCart shouldBe false
+            vm.productsFlow.value.first { it.id == 2 }.quantity shouldBe 0
+        }
+    }
+
+    test("loadProducts exposes loading until first package emission") {
+        runTest {
+            val pendingPackageFlow = MutableSharedFlow<List<PackageItemDomain>>()
+            every { getPackageItems() } returns pendingPackageFlow
+
+            vm.loadProducts(cartFlow)
+            advanceUntilIdle()
+
+            vm.isLoading.value shouldBe true
+
+            pendingPackageFlow.emit(listOf(packageItem(product = productInfo(id = 1))))
+            advanceUntilIdle()
+
+            vm.isLoading.value shouldBe false
+            vm.productsFlow.value shouldHaveSize 1
         }
     }
 
@@ -122,7 +143,7 @@ class PackageViewModelTest : FunSpec({
 
             vm.productsFlow.value shouldBe emptyList()
             vm.productQuantities.value shouldBe emptyMap()
+            vm.isLoading.value shouldBe false
         }
     }
 })
-

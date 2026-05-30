@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,7 +36,8 @@ fun ProductItem(
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit,
     showQuantityBadge: Boolean = false,
-    quantityToShow: Int
+    quantityToShow: Int,
+    isSoldOut: Boolean = false
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -73,10 +75,13 @@ fun ProductItem(
         ) {
             ProductImage(
                 imageUrl = product.image,
-                contentDescription = "Изображение продукта: ${product.name}"
+                contentDescription = stringResource(
+                    id = R.string.product_image_content_description,
+                    product.name
+                )
             )
 
-            if (showQuantityBadge && quantityToShow > 0) {
+            if (showQuantityBadge) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -103,6 +108,7 @@ fun ProductItem(
             onAddToCart = onAddToCart,
             onQuantityIncrease = onQuantityIncrease,
             onQuantityDecrease = onQuantityDecrease,
+            isSoldOut = isSoldOut,
             modifier = Modifier.constrainAs(content) {
                 top.linkTo(image.bottom)
                 bottom.linkTo(back.bottom)
