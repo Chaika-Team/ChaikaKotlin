@@ -34,8 +34,10 @@ sealed class Screen(
     object Replenish : Screen(Routes.PRODUCT_REPLENISH, R.string.product_replenish)
 
     object Statistics : Screen(Routes.STATISTICS, R.string.statistics_title, showBackButton = false)
+    object HistoricalStatistics : Screen(Routes.HISTORY_STATISTICS, R.string.statistics_title)
 
     object Operation : Screen(Routes.OPERATION, R.string.operations_title, showBackButton = false)
+    object HistoricalOperation : Screen(Routes.HISTORY_OPERATIONS, R.string.operations_title)
 
     object Profile : Screen(Routes.PROFILE, R.string.profile_title, showBackButton = false)
     object ProfilePersonalData : Screen(
@@ -56,30 +58,35 @@ sealed class Screen(
     )
 
     companion object {
-        fun fromRoute(route: String?): Screen = when (route) {
-            Routes.TRIP -> Trip
-            Routes.TRIP_MAIN -> MainTrip
-            Routes.TRIP_AUTONOMOUS -> AutonomousTrip
-            Routes.TRIP_BY_NUMBER -> FindTripByNumber
-            Routes.TRIP_SELECT_CARRIAGE -> SelectCarriage
-            Routes.PRODUCT -> Product
-            Routes.PRODUCT_ENTRY -> ProductEntry
-            Routes.PRODUCT_CART -> Cart
-            Routes.PRODUCT_PACKAGE -> Package
-            Routes.PRODUCT_REPLENISH -> Replenish
-            Routes.OPERATION -> Operation
-            Routes.PROFILE -> Profile
-            Routes.PROFILE_PERSONAL_DATA -> ProfilePersonalData
-            Routes.PROFILE_SETTINGS -> ProfileSettings
-            Routes.PROFILE_FAQS -> ProfileFaqs
-            Routes.PROFILE_FEEDBACK -> ProfileFeedback
-            Routes.PROFILE_ABOUT -> ProfileAbout
-            Routes.TEMPLATE_SEARCH -> TemplateSearch
-            Routes.TEMPLATE_DETAIL -> TemplateDetail
-            Routes.TEMPLATE_EDIT -> TemplateEdit
-            Routes.TEMPLATE_CONFIRM -> TemplateConfirm
-            Routes.STATISTICS -> Statistics
-            else -> Trip
+        private val screensByRoute = mapOf(
+            Routes.TRIP to Trip,
+            Routes.TRIP_MAIN to MainTrip,
+            Routes.TRIP_AUTONOMOUS to AutonomousTrip,
+            Routes.TRIP_BY_NUMBER to FindTripByNumber,
+            Routes.TRIP_SELECT_CARRIAGE to SelectCarriage,
+            Routes.PRODUCT to Product,
+            Routes.PRODUCT_ENTRY to ProductEntry,
+            Routes.PRODUCT_CART to Cart,
+            Routes.PRODUCT_PACKAGE to Package,
+            Routes.PRODUCT_REPLENISH to Replenish,
+            Routes.OPERATION to Operation,
+            Routes.PROFILE to Profile,
+            Routes.PROFILE_PERSONAL_DATA to ProfilePersonalData,
+            Routes.PROFILE_SETTINGS to ProfileSettings,
+            Routes.PROFILE_FAQS to ProfileFaqs,
+            Routes.PROFILE_FEEDBACK to ProfileFeedback,
+            Routes.PROFILE_ABOUT to ProfileAbout,
+            Routes.TEMPLATE_SEARCH to TemplateSearch,
+            Routes.TEMPLATE_DETAIL to TemplateDetail,
+            Routes.TEMPLATE_EDIT to TemplateEdit,
+            Routes.TEMPLATE_CONFIRM to TemplateConfirm,
+            Routes.STATISTICS to Statistics
+        )
+
+        fun fromRoute(route: String?): Screen = when {
+            Routes.isHistoricalStatisticsRoute(route) -> HistoricalStatistics
+            Routes.isHistoricalOperationsRoute(route) -> HistoricalOperation
+            else -> route?.let(screensByRoute::get) ?: Trip
         }
     }
 }

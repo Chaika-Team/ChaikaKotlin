@@ -40,6 +40,11 @@ class NavigationGuardsTest : FunSpec({
             Routes.TRIP_AUTONOMOUS,
             Routes.TRIP_BY_NUMBER,
             Routes.TRIP_SELECT_CARRIAGE,
+            Routes.HISTORY_GRAPH,
+            Routes.HISTORY_STATISTICS,
+            Routes.HISTORY_OPERATIONS,
+            Routes.historyStatistics("shift-uuid"),
+            Routes.historyOperations("shift-uuid"),
             Routes.PROFILE,
             Routes.PROFILE_GRAPH,
             Routes.PROFILE_PERSONAL_DATA,
@@ -67,5 +72,23 @@ class NavigationGuardsTest : FunSpec({
         NavigationGuards.protectedGraphForRoute(Routes.OPERATION) shouldBe
             Routes.OPERATION_GRAPH
         NavigationGuards.protectedGraphForRoute(Routes.TRIP_MAIN) shouldBe null
+    }
+
+    test("Screen.fromRoute recognizes historical dynamic routes") {
+        Screen.fromRoute(Routes.HISTORY_STATISTICS) shouldBe Screen.HistoricalStatistics
+        Screen.fromRoute(Routes.HISTORY_OPERATIONS) shouldBe Screen.HistoricalOperation
+        Screen.fromRoute(Routes.historyStatistics("shift-uuid")) shouldBe
+            Screen.HistoricalStatistics
+        Screen.fromRoute(Routes.historyOperations("shift-uuid")) shouldBe
+            Screen.HistoricalOperation
+    }
+
+    test("Screen.fromRoute recognizes exact routes and falls back to trip") {
+        Screen.fromRoute(Routes.TRIP_MAIN) shouldBe Screen.MainTrip
+        Screen.fromRoute(Routes.PRODUCT_CART) shouldBe Screen.Cart
+        Screen.fromRoute(Routes.STATISTICS) shouldBe Screen.Statistics
+        Screen.fromRoute(Routes.PROFILE_SETTINGS) shouldBe Screen.ProfileSettings
+        Screen.fromRoute("unknown-route") shouldBe Screen.Trip
+        Screen.fromRoute(null) shouldBe Screen.Trip
     }
 })

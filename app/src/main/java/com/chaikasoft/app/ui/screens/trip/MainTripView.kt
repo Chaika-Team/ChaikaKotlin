@@ -63,7 +63,7 @@ fun MainTripView(viewModel: TripViewModel, navController: NavController) {
                         viewModel.requestRetrySend(shiftRecord.trip.uuid)
                     },
                     onNavigate = {
-                        // No-op for now.
+                        navController.navigate(Routes.historyStatistics(shiftRecord.trip.uuid))
                     }
                 )
             }

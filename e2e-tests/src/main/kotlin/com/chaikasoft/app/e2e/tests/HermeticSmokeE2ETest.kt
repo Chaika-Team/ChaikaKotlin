@@ -3,14 +3,32 @@
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.LargeTest
+import com.chaikasoft.app.R
+import com.chaikasoft.app.data.room.AppDatabase
+import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
+import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
+import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.models.report.CartIdReport
+import com.chaikasoft.app.domain.models.report.CartItemReport
+import com.chaikasoft.app.domain.models.report.CartReport
+import com.chaikasoft.app.domain.models.report.ShiftReportReport
+import com.chaikasoft.app.domain.models.report.TripIdReport
+import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
+import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.e2e.fixtures.E2EFixtures
 import com.chaikasoft.app.e2e.rules.FailureDiagnosticsRule
 import com.chaikasoft.app.ui.activities.MainActivity
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
@@ -24,6 +42,9 @@ import org.junit.Test
 class HermeticSmokeE2ETest {
     private companion object {
         const val SAVELOVSKAYA_CODE = "2001002"
+        const val HISTORICAL_SHIFT_UUID = "trip-e2e-history-report"
+        const val UNKNOWN_PRODUCT_ID = 404
+        const val UNKNOWN_CONDUCTOR_EMPLOYEE_ID = "E2E-404"
     }
 
     @get:Rule(order = 0)
@@ -37,6 +58,24 @@ class HermeticSmokeE2ETest {
 
     @Inject
     lateinit var startShiftUseCase: StartShiftUseCase
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var stationRepository: RoomStationRepositoryInterface
+
+    @Inject
+    lateinit var productInfoRepository: RoomProductInfoRepositoryInterface
+
+    @Inject
+    lateinit var conductorRepository: RoomConductorRepositoryInterface
+
+    @Inject
+    lateinit var shiftRepository: RoomConductorTripShiftRepositoryInterface
+
+    @Inject
+    lateinit var moshi: Moshi
 
     @Before
     fun setUp() {
@@ -132,6 +171,48 @@ class HermeticSmokeE2ETest {
         composeRule.onNodeWithTag("loginButton").assertIsDisplayed()
     }
 
+    @Test
+    fun historicalTrip_opensReadOnlyStatisticsAndOperationsFromSavedReport() {
+        waitForTag("tripMainScreen")
+        seedHistoricalFinishedShift()
+
+        val historyCardTag = "historyRecordCard_$HISTORICAL_SHIFT_UUID"
+        val retryButtonTag = "historyRetrySend_$HISTORICAL_SHIFT_UUID"
+        val unknownProductName = composeRule.activity.getString(
+            R.string.historical_unknown_product_name,
+            UNKNOWN_PRODUCT_ID
+        )
+        val unknownConductorName = composeRule.activity.getString(
+            R.string.historical_unknown_conductor_name,
+            UNKNOWN_CONDUCTOR_EMPLOYEE_ID
+        )
+
+        waitForTag(historyCardTag)
+        composeRule.onNodeWithTag(retryButtonTag, useUnmergedTree = true).assertIsDisplayed()
+
+        composeRule.onNodeWithTag(historyCardTag, useUnmergedTree = true).performClick()
+        waitForTag("statisticsScreen")
+        composeRule.onNodeWithTag("historicalBottomBarStatistics").assertIsDisplayed()
+        composeRule.onNodeWithTag("historicalBottomBarOperation").assertIsDisplayed()
+        assertTagDoesNotExist("bottomBarProduct")
+        waitForText(unknownProductName)
+
+        composeRule.onNodeWithTag("historicalBottomBarOperation").performClick()
+        waitForTag("historicalOperationScreen")
+        waitForText(unknownProductName)
+        waitForText(unknownConductorName)
+
+        composeRule.onNodeWithTag("historicalBottomBarStatistics").performClick()
+        waitForTag("statisticsScreen")
+        composeRule.onNodeWithTag("historicalBottomBarOperation").performClick()
+        waitForTag("historicalOperationScreen")
+
+        composeRule.onNodeWithContentDescription(
+            composeRule.activity.getString(R.string.btn_back)
+        ).performClick()
+        waitForTag("tripMainScreen")
+    }
+
     private fun waitForTag(tag: String, timeoutMillis: Long = 10_000L) {
         composeRule.waitUntil(timeoutMillis = timeoutMillis) {
             composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
@@ -149,6 +230,12 @@ class HermeticSmokeE2ETest {
     private fun waitForTagGone(tag: String, timeoutMillis: Long = 10_000L) {
         composeRule.waitUntil(timeoutMillis = timeoutMillis) {
             composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isEmpty()
+        }
+    }
+
+    private fun waitForText(text: String, timeoutMillis: Long = 10_000L) {
+        composeRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeRule.onAllNodesWithText(text, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
         }
     }
 
@@ -178,5 +265,71 @@ class HermeticSmokeE2ETest {
             activeCarriage = E2EFixtures.activeCarriage,
         )
         composeRule.waitForIdle()
+    }
+
+    private fun seedHistoricalFinishedShift() = runBlocking {
+        db.clearAllTables()
+        stationRepository.upsertAll(E2EFixtures.stations)
+        productInfoRepository.upsertAll(E2EFixtures.products)
+        conductorRepository.insertConductor(E2EFixtures.conductor)
+
+        val trip = E2EFixtures.trips.first().copy(
+            uuid = HISTORICAL_SHIFT_UUID,
+            trainNumber = "099A",
+        )
+        val shiftCreated = shiftRepository.tryStartNewShift(
+            ConductorTripShiftDomain(
+                trip = trip,
+                activeCarriage = E2EFixtures.activeCarriage,
+                status = TripShiftStatusDomain.ACTIVE
+            )
+        )
+        check(shiftCreated) { "Expected historical shift seed to create a fresh active shift" }
+
+        shiftRepository.updateStatusAndReport(
+            uuid = HISTORICAL_SHIFT_UUID,
+            newStatus = TripShiftStatusDomain.FINISHED.code,
+            reportJson = buildHistoricalReportJson(trip),
+            updatedAt = System.currentTimeMillis()
+        )
+        composeRule.waitForIdle()
+    }
+
+    private fun buildHistoricalReportJson(trip: TripDomain): String {
+        val report = ShiftReportReport(
+            tripId = TripIdReport(
+                routeId = trip.trainNumber,
+                startTime = trip.departure
+            ),
+            endTime = trip.arrival,
+            carriageId = E2EFixtures.activeCarriage.carNumber.toInt(),
+            carts = listOf(
+                CartReport(
+                    cartId = CartIdReport(
+                        employeeId = E2EFixtures.conductor.employeeID,
+                        operationTime = "2026-04-11T09:00:00+03:00"
+                    ),
+                    operationType = OperationTypeDomain.SOLD_CASH.ordinal,
+                    items = listOf(
+                        CartItemReport(productId = 1, quantity = -2, price = 15000)
+                    )
+                ),
+                CartReport(
+                    cartId = CartIdReport(
+                        employeeId = UNKNOWN_CONDUCTOR_EMPLOYEE_ID,
+                        operationTime = "2026-04-11T09:10:00+03:00"
+                    ),
+                    operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                    items = listOf(
+                        CartItemReport(
+                            productId = UNKNOWN_PRODUCT_ID,
+                            quantity = -1,
+                            price = 9900
+                        )
+                    )
+                )
+            )
+        )
+        return moshi.adapter(ShiftReportReport::class.java).toJson(report)
     }
 }

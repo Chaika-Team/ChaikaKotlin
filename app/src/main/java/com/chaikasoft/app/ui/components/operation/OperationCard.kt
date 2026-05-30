@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
@@ -51,6 +52,11 @@ fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel
     val itemsFlow = remember(summary.id) { viewModel.getItems(summary.id) }
     val cart by itemsFlow.collectAsStateWithLifecycle(initialValue = null)
 
+    OperationCard(summary = summary, cart = cart)
+}
+
+@Composable
+fun OperationCard(summary: OperationSummaryDomain, cart: CartDomain?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,8 +137,12 @@ fun OperationCard(summary: OperationSummaryDomain, viewModel: OperationViewModel
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                val conductorName = listOf(
+                    summary.conductor.name,
+                    summary.conductor.familyName
+                ).filter { it.isNotBlank() }.joinToString(" ")
                 Text(
-                    text = "${summary.conductor.name} ${summary.conductor.familyName}",
+                    text = conductorName,
                     fontSize = OperationDimens.FooterFontSize,
                     color = MaterialTheme.colorScheme.secondary
                 )

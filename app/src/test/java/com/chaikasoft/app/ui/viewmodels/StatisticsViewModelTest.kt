@@ -57,14 +57,14 @@ class StatisticsViewModelTest : FunSpec({
         }
     }
 
-    test("refreshCartChecks updates cashChecksCount using SOLD_CART type") {
+    test("refreshCashlessChecks updates cashlessChecksCount using SOLD_CART type") {
         runTest {
             coEvery { getOperationCountByType(OperationTypeDomain.SOLD_CART) } returns 12
 
-            vm.refreshCartChecks()
+            vm.refreshCashlessChecks()
             advanceUntilIdle()
 
-            vm.cashChecksCount.value shouldBe 12
+            vm.cashlessChecksCount.value shouldBe 12
             coVerify(exactly = 1) { getOperationCountByType(OperationTypeDomain.SOLD_CART) }
         }
     }

@@ -32,13 +32,13 @@ class StatisticsViewModel @Inject constructor(
             .map { list -> list.sumOf { it.productPrice * it.soldCashQuantity } }
             .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
-    private val _cashChecksCount = MutableStateFlow(0)
-    val cashChecksCount: StateFlow<Int> = _cashChecksCount.asStateFlow()
+    private val _cashlessChecksCount = MutableStateFlow(0)
+    val cashlessChecksCount: StateFlow<Int> = _cashlessChecksCount.asStateFlow()
 
     /** Вызывать при старте экрана и, при желании, при расширении шторки */
-    fun refreshCartChecks() {
+    fun refreshCashlessChecks() {
         viewModelScope.launch {
-            _cashChecksCount.value = getOperationCountByType(OperationTypeDomain.SOLD_CART)
+            _cashlessChecksCount.value = getOperationCountByType(OperationTypeDomain.SOLD_CART)
         }
     }
 }

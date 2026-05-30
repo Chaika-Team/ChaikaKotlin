@@ -9,11 +9,13 @@ import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.sealed.RefreshStationsResult
 import com.chaikasoft.app.domain.usecases.HasActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.RefreshStationsOnLaunchUseCase
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -142,6 +144,25 @@ class RefreshStationsOnLaunchUseCaseTest : FunSpec({
             val result = useCase()
 
             result shouldBe RefreshStationsResult.LocalFailure(boom)
+            coVerify(exactly = 1) { localRepo.upsertAll(stations) }
+            coVerify(exactly = 0) { syncMetaRepo.setLastSuccessfulSyncAt(any(), any()) }
+        }
+    }
+
+    test("when local upsert is cancelled - rethrows CancellationException") {
+        runTest {
+            val stations = listOf(mockk<StationDomain>())
+            val error = CancellationException("cancelled")
+            coEvery { hasActiveShift() } returns false
+            coEvery { localRepo.hasAnyStationsOnce() } returns false
+            coEvery { remoteRepo.fetchAllStations(limit = 100_000) } returns
+                RemoteResult.Success(stations)
+            coEvery { localRepo.upsertAll(stations) } throws error
+
+            shouldThrow<CancellationException> {
+                useCase()
+            }
+
             coVerify(exactly = 1) { localRepo.upsertAll(stations) }
             coVerify(exactly = 0) { syncMetaRepo.setLastSuccessfulSyncAt(any(), any()) }
         }
