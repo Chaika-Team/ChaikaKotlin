@@ -26,7 +26,8 @@ fun TopBar(
     navController: NavController,
     currentRoute: String?,
     menuItems: List<MenuItem> = emptyList(),
-    onMenuItemClick: (MenuItem) -> Unit = {}
+    onMenuItemClick: (MenuItem) -> Unit = {},
+    onBackClick: (() -> Unit)? = null
 ) {
     if (currentRoute != null && currentRoute in Routes.routesWithoutTopBar) return
 
@@ -37,7 +38,7 @@ fun TopBar(
         navigationIcon = {
             if (currentScreen?.showBackButton == true) {
                 CircleBackButton(
-                    onClick = { navController.navigateUp() },
+                    onClick = { onBackClick?.invoke() ?: navController.navigateUp() },
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                 )
             }

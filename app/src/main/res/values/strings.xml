@@ -221,7 +221,7 @@
     <string name="template_check_contents">Вы уверены?\nПожалуйста, проверьте содержимое пакета</string>
     <string name="template_cancel">ОТМЕНА</string>
     <string name="error_no_conductor">Ошибка: проводник не выбран</string>
-    
+
     <string name="empty_product_list">No products available</string>
     <string name="error_loading_products">Failed to load products</string>
     <string name="retry">ПОВТОРИТЬ</string>
@@ -255,6 +255,10 @@
     <!-- Units & formats -->
     <string name="op_quantity_suffix">шт</string>
     <string name="statistics_title">Статистика</string>
+    <string name="cashless_checks">Чеков (безнал.)</string>
+    <string name="cash_revenue_total">Итог</string>
+    <string name="historical_unknown_product_name">Товар #%1$d</string>
+    <string name="historical_unknown_conductor_name">Проводник #%1$s</string>
 
     <!-- Finish trip an send report -->
     <string name="trip_finish_title">Завершение поездки</string>

@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -91,8 +92,26 @@ fun StatisticsScreen(
 ) {
     val reports by viewModel.reports.collectAsStateWithLifecycle()
     val cashRevenue by viewModel.cashRevenue.collectAsStateWithLifecycle()
-    val cashChecks by viewModel.cashChecksCount.collectAsStateWithLifecycle()
+    val cashlessChecks by viewModel.cashlessChecksCount.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) { viewModel.refreshCashlessChecks() }
+
+    StatisticsContent(
+        modifier = modifier,
+        reports = reports,
+        cashRevenue = cashRevenue,
+        cashlessChecks = cashlessChecks
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun StatisticsContent(
+    modifier: Modifier = Modifier,
+    reports: List<FastReportDomain>,
+    cashRevenue: Int,
+    cashlessChecks: Int
+) {
     val columnWidths = rememberColumnWidths()
     val configuration = LocalConfiguration.current
     val isLandscape =
@@ -100,8 +119,6 @@ fun StatisticsScreen(
 
     val sharedHScroll = rememberScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()
-
-    LaunchedEffect(Unit) { viewModel.refreshCartChecks() }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -121,7 +138,7 @@ fun StatisticsScreen(
 
             CashSummarySheet(
                 cashRevenue = cashRevenue,
-                checks = cashChecks,
+                cashlessChecks = cashlessChecks,
                 showChecks = show,
                 showLabels = show,
                 bottomPadding = if (show) 56.dp else 0.dp
@@ -147,10 +164,10 @@ fun StatisticsScreen(
                     )
                 }
             }
-            items(
+            itemsIndexed(
                 items = reports,
-                key = { it.productName }
-            ) { report ->
+                key = { index, report -> "${report.productName}_${report.productPrice}_$index" }
+            ) { _, report ->
                 TableRow(
                     report = report,
                     scrollState = sharedHScroll,
@@ -165,7 +182,7 @@ fun StatisticsScreen(
 @Composable
 private fun CashSummarySheet(
     cashRevenue: Int,
-    checks: Int,
+    cashlessChecks: Int,
     showChecks: Boolean,
     showLabels: Boolean,
     bottomPadding: Dp
@@ -213,8 +230,11 @@ private fun CashSummarySheet(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Чеков (нал.)", style = MaterialTheme.typography.bodyMedium)
-                Text(checks.toString(), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    stringResource(R.string.cashless_checks),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(cashlessChecks.toString(), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -244,14 +264,14 @@ private fun TableHeader(scrollState: ScrollState, widths: ColumnWidths, isLandsc
             HeaderIconCell(R.drawable.ic_rub, widths.price)
             HeaderIconCell(R.drawable.ic_add, widths.qty)
             HeaderIconCell(R.drawable.ic_replenish, widths.qty)
-            HeaderIconCell(R.drawable.ic_card, widths.qty)
             HeaderIconCell(R.drawable.ic_cash, widths.qty)
+            HeaderIconCell(R.drawable.ic_card, widths.qty)
             Box(
                 modifier = Modifier.width(widths.revenue),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = "Итог",
+                    text = stringResource(R.string.cash_revenue_total),
                     color = Color.Black,
                     maxLines = 1,
                     style = TableText,

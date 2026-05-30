@@ -11,6 +11,7 @@ import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.sealed.RefreshStationsResult
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -37,6 +38,10 @@ class RefreshStationsOnLaunchUseCase @Inject constructor(
         private const val ALL_STATIONS_LIMIT = 100_000
     }
 
+    /**
+     * Converts any non-cancellation local persistence failure into the refresh boundary result.
+     */
+    @Suppress("TooGenericExceptionCaught")
     suspend operator fun invoke(): RefreshStationsResult = withContext(ioDispatcher) {
         if (hasActiveShift()) return@withContext RefreshStationsResult.SkippedActiveShift
 
@@ -58,6 +63,8 @@ class RefreshStationsOnLaunchUseCase @Inject constructor(
                         timestampMillis = System.currentTimeMillis()
                     )
                     RefreshStationsResult.Success(stationCount = remote.data.size)
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
                 } catch (e: Exception) {
                     RefreshStationsResult.LocalFailure(e)
                 }

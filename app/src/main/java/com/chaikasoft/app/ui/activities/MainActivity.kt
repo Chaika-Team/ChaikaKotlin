@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chaikasoft.app.ui.components.bottombar.BottomBar
+import com.chaikasoft.app.ui.components.bottombar.HistoricalTripBottomBar
 import com.chaikasoft.app.ui.components.bottombar.NavigationBlockedBottomSheet
 import com.chaikasoft.app.ui.components.topbar.MenuItem
 import com.chaikasoft.app.ui.components.topbar.TopBar
@@ -49,13 +50,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
+                val historicalShiftUuid =
+                    navBackStackEntry?.arguments?.getString(Routes.ARG_SHIFT_UUID)
                 val currentScreen = Screen.fromRoute(currentRoute)
                 var showBlockedNavigationSheet by remember { mutableStateOf(false) }
 
                 // Управление ориентацией экрана в зависимости от текущего маршрута
                 LaunchedEffect(currentRoute) {
-                    requestedOrientation = when (currentRoute) {
-                        Routes.STATISTICS -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                    requestedOrientation = when {
+                        currentRoute == Routes.STATISTICS ||
+                            Routes.isHistoricalStatisticsRoute(currentRoute) ->
+                            ActivityInfo.SCREEN_ORIENTATION_SENSOR
                         else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                     }
                     if (currentRoute == Routes.TRIP_MAIN) {
@@ -76,6 +81,11 @@ class MainActivity : ComponentActivity() {
                             currentRoute = currentRoute,
                             navController = navController,
                             menuItems = if (currentScreen.showMenuIcon) menuItems else emptyList(),
+                            onBackClick = if (Routes.isHistoricalRoute(currentRoute)) {
+                                { navController.popBackStack(Routes.TRIP_MAIN, inclusive = false) }
+                            } else {
+                                null
+                            },
                             onMenuItemClick = { item ->
                                 when (item) {
                                     MenuItem.REFILL -> navController.navigate(
@@ -90,14 +100,22 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        BottomBar(
-                            navController = navController,
-                            currentRoute = currentRoute,
-                            hasActiveShift = hasActiveShift,
-                            onBlockedNavigation = {
-                                showBlockedNavigationSheet = true
-                            }
-                        )
+                        if (Routes.isHistoricalRoute(currentRoute) && historicalShiftUuid != null) {
+                            HistoricalTripBottomBar(
+                                navController = navController,
+                                currentRoute = currentRoute,
+                                shiftUuid = historicalShiftUuid
+                            )
+                        } else {
+                            BottomBar(
+                                navController = navController,
+                                currentRoute = currentRoute,
+                                hasActiveShift = hasActiveShift,
+                                onBlockedNavigation = {
+                                    showBlockedNavigationSheet = true
+                                }
+                            )
+                        }
                     }
                 ) { paddingValues ->
                     Box(

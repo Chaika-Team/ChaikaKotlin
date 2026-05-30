@@ -14,6 +14,10 @@ object Routes {
     const val TRIP_BY_STATION = "trip/graph/by_station"
     const val TRIP_SELECT_CARRIAGE = "trip/graph/select_carriage"
     const val TRIP_GRAPH = "trip/graph"
+    const val ARG_SHIFT_UUID = "shiftUuid"
+    const val HISTORY_GRAPH = "trip/graph/history/{$ARG_SHIFT_UUID}"
+    const val HISTORY_STATISTICS = "trip/graph/history/{$ARG_SHIFT_UUID}/statistics"
+    const val HISTORY_OPERATIONS = "trip/graph/history/{$ARG_SHIFT_UUID}/operations"
     const val PRODUCT = "product"
     const val PRODUCT_GRAPH = "product/graph"
     const val PRODUCT_GATE = "product/graph/gate"
@@ -44,7 +48,8 @@ object Routes {
         TEMPLATE_SEARCH, TEMPLATE_DETAIL, TEMPLATE_EDIT,
         TEMPLATE_CONFIRM, PRODUCT_REPLENISH, TRIP_AUTONOMOUS,
         TRIP_AUTONOMOUS, TRIP_BY_STATION, TRIP_BY_NUMBER,
-        TRIP_GATE, TRIP_SELECT_CARRIAGE
+        TRIP_GATE, TRIP_SELECT_CARRIAGE,
+        HISTORY_GRAPH, HISTORY_STATISTICS, HISTORY_OPERATIONS
     )
 
     val routesWithoutTopBar = setOf(
@@ -62,7 +67,10 @@ object Routes {
             TRIP_BY_NUMBER,
             TRIP_BY_STATION,
             TRIP_SELECT_CARRIAGE,
-            TRIP_AUTONOMOUS
+            TRIP_AUTONOMOUS,
+            HISTORY_GRAPH,
+            HISTORY_STATISTICS,
+            HISTORY_OPERATIONS
         ),
         PRODUCT to listOf(
             PRODUCT_GATE,
@@ -92,4 +100,23 @@ object Routes {
             TEMPLATE_CONFIRM
         )
     )
+
+    fun historyGraph(shiftUuid: String): String = "trip/graph/history/$shiftUuid"
+
+    fun historyStatistics(shiftUuid: String): String = "trip/graph/history/$shiftUuid/statistics"
+
+    fun historyOperations(shiftUuid: String): String = "trip/graph/history/$shiftUuid/operations"
+
+    fun isHistoricalGraphRoute(route: String?): Boolean =
+        route == HISTORY_GRAPH || route?.matches(Regex("trip/graph/history/[^/]+")) == true
+
+    fun isHistoricalStatisticsRoute(route: String?): Boolean = route == HISTORY_STATISTICS ||
+        route?.matches(Regex("trip/graph/history/[^/]+/statistics")) == true
+
+    fun isHistoricalOperationsRoute(route: String?): Boolean = route == HISTORY_OPERATIONS ||
+        route?.matches(Regex("trip/graph/history/[^/]+/operations")) == true
+
+    fun isHistoricalRoute(route: String?): Boolean = isHistoricalGraphRoute(route) ||
+        isHistoricalStatisticsRoute(route) ||
+        isHistoricalOperationsRoute(route)
 }

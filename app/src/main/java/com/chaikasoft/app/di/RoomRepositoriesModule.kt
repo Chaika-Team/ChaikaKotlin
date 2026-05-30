@@ -1,15 +1,5 @@
 package com.chaikasoft.app.di
 
-import com.chaikasoft.app.data.room.AppDatabase
-import com.chaikasoft.app.data.room.dao.CartItemDao
-import com.chaikasoft.app.data.room.dao.CartOperationDao
-import com.chaikasoft.app.data.room.dao.ConductorDao
-import com.chaikasoft.app.data.room.dao.ConductorTripShiftDao
-import com.chaikasoft.app.data.room.dao.FastReportViewDao
-import com.chaikasoft.app.data.room.dao.PackageItemViewDao
-import com.chaikasoft.app.data.room.dao.ProductInfoDao
-import com.chaikasoft.app.data.room.dao.StationDao
-import com.chaikasoft.app.data.room.dao.SyncMetaDao
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepository
 import com.chaikasoft.app.data.room.repo.RoomCartItemRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartOperationRepository
@@ -32,95 +22,73 @@ import com.chaikasoft.app.data.room.repo.RoomStationRepository
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomSyncMetaRepository
 import com.chaikasoft.app.data.room.repo.RoomSyncMetaRepositoryInterface
-import com.squareup.moshi.Moshi
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RoomRepositoriesModule {
-    @Provides
+@Suppress("TooManyFunctions")
+interface RoomRepositoriesModule {
+    @Binds
     @Singleton
-    fun provideRoomCartOperationRepository(
-        cartOperationDao: CartOperationDao
-    ): RoomCartOperationRepositoryInterface = RoomCartOperationRepository(cartOperationDao)
+    fun bindRoomCartOperationRepository(
+        repository: RoomCartOperationRepository
+    ): RoomCartOperationRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomCartItemRepository(
-        cartItemDao: CartItemDao,
-        productInfoDao: ProductInfoDao
-    ): RoomCartItemRepositoryInterface = RoomCartItemRepository(cartItemDao, productInfoDao)
+    fun bindRoomCartItemRepository(
+        repository: RoomCartItemRepository
+    ): RoomCartItemRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomCartRepository(
-        db: AppDatabase,
-        cartItemDao: CartItemDao,
-        cartOperationDao: CartOperationDao
-    ): RoomCartRepositoryInterface = RoomCartRepository(db, cartItemDao, cartOperationDao)
+    fun bindRoomCartRepository(repository: RoomCartRepository): RoomCartRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomConductorRepository(
-        conductorDao: ConductorDao
-    ): RoomConductorRepositoryInterface = RoomConductorRepository(conductorDao)
+    fun bindRoomConductorRepository(
+        repository: RoomConductorRepository
+    ): RoomConductorRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomProductInfoRepository(
-        productInfoDao: ProductInfoDao
-    ): RoomProductInfoRepositoryInterface = RoomProductInfoRepository(productInfoDao)
+    fun bindRoomProductInfoRepository(
+        repository: RoomProductInfoRepository
+    ): RoomProductInfoRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomConductorTripShiftRepository(
-        conductorTripShiftDao: ConductorTripShiftDao
-    ): RoomConductorTripShiftRepositoryInterface =
-        RoomConductorTripShiftRepository(conductorTripShiftDao)
+    fun bindRoomConductorTripShiftRepository(
+        repository: RoomConductorTripShiftRepository
+    ): RoomConductorTripShiftRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomShiftReportRepository(
-        db: AppDatabase,
-        conductorTripShiftDao: ConductorTripShiftDao,
-        cartOperationDao: CartOperationDao,
-        cartItemDao: CartItemDao,
-        productInfoDao: ProductInfoDao,
-        moshi: Moshi
-    ): RoomShiftReportRepositoryInterface = RoomShiftReportRepository(
-        db = db,
-        conductorTripShiftDao = conductorTripShiftDao,
-        cartOperationDao = cartOperationDao,
-        cartItemDao = cartItemDao,
-        productInfoDao = productInfoDao,
-        moshi = moshi
-    )
+    fun bindRoomShiftReportRepository(
+        repository: RoomShiftReportRepository
+    ): RoomShiftReportRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomPackageItemRepository(
-        packageItemViewDao: PackageItemViewDao,
-        productInfoDao: ProductInfoDao
-    ): RoomPackageItemRepositoryInterface =
-        RoomPackageItemRepository(packageItemViewDao, productInfoDao)
+    fun bindRoomPackageItemRepository(
+        repository: RoomPackageItemRepository
+    ): RoomPackageItemRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomStationRepository(dao: StationDao): RoomStationRepositoryInterface =
-        RoomStationRepository(dao)
+    fun bindRoomStationRepository(repository: RoomStationRepository): RoomStationRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomSyncMetaRepository(dao: SyncMetaDao): RoomSyncMetaRepositoryInterface =
-        RoomSyncMetaRepository(dao)
+    fun bindRoomSyncMetaRepository(
+        repository: RoomSyncMetaRepository
+    ): RoomSyncMetaRepositoryInterface
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoomReportRepository(
-        fastReportViewDao: FastReportViewDao
-    ): RoomReportRepositoryInterface = RoomReportRepository(fastReportViewDao)
+    fun bindRoomReportRepository(repository: RoomReportRepository): RoomReportRepositoryInterface
 }

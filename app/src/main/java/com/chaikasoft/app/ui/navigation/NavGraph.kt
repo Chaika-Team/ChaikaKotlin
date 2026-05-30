@@ -12,10 +12,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.chaikasoft.app.ui.screens.auth.LoginScreen
+import com.chaikasoft.app.ui.screens.operation.HistoricalOperationScreen
 import com.chaikasoft.app.ui.screens.operation.OperationScreen
 import com.chaikasoft.app.ui.screens.product.ProductCartView
 import com.chaikasoft.app.ui.screens.product.ProductEntryView
@@ -31,6 +34,7 @@ import com.chaikasoft.app.ui.screens.profile.FeedbackView
 import com.chaikasoft.app.ui.screens.profile.MainProfileView
 import com.chaikasoft.app.ui.screens.profile.PersonalDataView
 import com.chaikasoft.app.ui.screens.profile.SettingsView
+import com.chaikasoft.app.ui.screens.statistics.HistoricalStatisticsScreen
 import com.chaikasoft.app.ui.screens.statistics.StatisticsScreen
 import com.chaikasoft.app.ui.screens.trip.AutonomousTripScreen
 import com.chaikasoft.app.ui.screens.trip.FindByNumberView
@@ -43,6 +47,7 @@ import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 import com.chaikasoft.app.ui.viewmodels.AutonomousViewModel
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
+import com.chaikasoft.app.ui.viewmodels.HistoricalTripViewModel
 import com.chaikasoft.app.ui.viewmodels.OperationViewModel
 import com.chaikasoft.app.ui.viewmodels.PackageViewModel
 import com.chaikasoft.app.ui.viewmodels.PostAuthGateViewModel
@@ -215,6 +220,42 @@ fun NavGraph(
                     viewModel = tripViewModel,
                     navController = navController
                 )
+            }
+
+            navigation(
+                startDestination = Routes.HISTORY_STATISTICS,
+                route = Routes.HISTORY_GRAPH,
+                arguments = listOf(
+                    navArgument(Routes.ARG_SHIFT_UUID) { type = NavType.StringType }
+                )
+            ) {
+                composable(
+                    route = Routes.HISTORY_STATISTICS,
+                    arguments = listOf(
+                        navArgument(Routes.ARG_SHIFT_UUID) { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry(Routes.HISTORY_GRAPH)
+                    }
+                    val historicalTripViewModel =
+                        hiltViewModel<HistoricalTripViewModel>(parentEntry)
+                    HistoricalStatisticsScreen(viewModel = historicalTripViewModel)
+                }
+
+                composable(
+                    route = Routes.HISTORY_OPERATIONS,
+                    arguments = listOf(
+                        navArgument(Routes.ARG_SHIFT_UUID) { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry(Routes.HISTORY_GRAPH)
+                    }
+                    val historicalTripViewModel =
+                        hiltViewModel<HistoricalTripViewModel>(parentEntry)
+                    HistoricalOperationScreen(viewModel = historicalTripViewModel)
+                }
             }
         }
 

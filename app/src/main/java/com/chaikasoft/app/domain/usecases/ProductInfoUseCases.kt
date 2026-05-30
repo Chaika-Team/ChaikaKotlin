@@ -107,6 +107,10 @@ class RefreshProductsOnLaunchUseCase @Inject constructor(
         return System.currentTimeMillis() - lastSuccessfulSyncAt >= SyncDataset.PRODUCTS.ttlMs
     }
 
+    /**
+     * Converts any non-cancellation local persistence failure into the refresh boundary result.
+     */
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun saveProductsIfChanged(
         remoteProducts: List<ProductInfoDomain>
     ): RefreshProductsResult = try {

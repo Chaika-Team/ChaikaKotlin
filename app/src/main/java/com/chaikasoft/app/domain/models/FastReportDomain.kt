@@ -11,6 +11,7 @@ package com.chaikasoft.app.domain.models
  * @param soldCashQuantity Количество проданных за наличные единиц.
  * @param soldCartQuantity Количество проданных по карте единиц.
  * @param revenue Выручка от продаж за наличные (цена * soldCashQuantity).
+ * @param productId Идентификатор товара, если отчётному экрану нужен fallback для имени.
  */
 data class FastReportDomain(
     val productName: String,
@@ -19,5 +20,6 @@ data class FastReportDomain(
     val replenishedQuantity: Int,
     val soldCashQuantity: Int,
     val soldCartQuantity: Int,
-    val revenue: Int
+    val revenue: Int,
+    val productId: Int? = null
 )
