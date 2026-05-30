@@ -32,9 +32,11 @@ import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
 fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
-    val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
+    val selectedTrip by viewModel.selectedTripForCreation.collectAsStateWithLifecycle()
     val carriageNumber by viewModel.carriageNumber.collectAsStateWithLifecycle()
     val isCarriageInputValid by viewModel.isCarriageInputValid.collectAsStateWithLifecycle()
+    val startShiftErrorMessageRes by
+        viewModel.startShiftErrorMessageRes.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
         when {
@@ -84,6 +86,15 @@ fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
                             disabledIndicatorColor = Color.Transparent
                         )
                     )
+
+                    startShiftErrorMessageRes?.let { messageRes ->
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(messageRes),
+                            color = colorScheme.error,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
                 }
 
                 ButtonSurface(

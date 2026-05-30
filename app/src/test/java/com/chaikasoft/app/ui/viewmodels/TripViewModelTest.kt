@@ -2,12 +2,16 @@ package com.chaikasoft.app.ui.viewmodels
 
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.sealed.SearchTripsResult
 import com.chaikasoft.app.domain.sealed.SendReportResult
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
+import com.chaikasoft.app.domain.usecases.DeleteActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
 import com.chaikasoft.app.domain.usecases.GetShiftHistoryUseCase
+import com.chaikasoft.app.domain.usecases.HasAnyPackageItemsOnceUseCase
 import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
 import com.chaikasoft.app.domain.usecases.SendShiftReportUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
@@ -21,8 +25,10 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -39,8 +45,11 @@ class TripViewModelTest : FunSpec({
     lateinit var startShift: StartShiftUseCase
     lateinit var getActiveShift: GetActiveShiftUseCase
     lateinit var completeShift: CompleteShiftAndSendUseCase
+    lateinit var deleteActiveShift: DeleteActiveShiftUseCase
+    lateinit var hasAnyPackageItems: HasAnyPackageItemsOnceUseCase
     lateinit var getShiftHistory: GetShiftHistoryUseCase
     lateinit var sendShiftReport: SendShiftReportUseCase
+    lateinit var activeShift: MutableStateFlow<ConductorTripShiftDomain?>
     lateinit var vm: TripViewModel
 
     beforeTest {
@@ -51,14 +60,19 @@ class TripViewModelTest : FunSpec({
         startShift = mockk()
         getActiveShift = mockk()
         completeShift = mockk()
+        deleteActiveShift = mockk()
+        hasAnyPackageItems = mockk()
         getShiftHistory = mockk()
         sendShiftReport = mockk()
+        activeShift = MutableStateFlow(null)
 
         every { getStations(any(), any()) } returns emptyFlow()
         coEvery { searchTrips(any(), any(), any()) } returns SearchTripsResult.Success(emptyList())
-        coEvery { startShift(any(), any()) } returns true
-        every { getActiveShift() } returns flowOf(null)
+        coEvery { startShift(any(), any()) } returns StartShiftResult.Started
+        every { getActiveShift() } returns activeShift
         coEvery { completeShift(any()) } returns SendReportResult.Success
+        coEvery { deleteActiveShift(any(), any()) } returns Unit
+        coEvery { hasAnyPackageItems() } returns false
         every { getShiftHistory() } returns flowOf(emptyList())
         coEvery { sendShiftReport(any()) } returns SendReportResult.Success
 
@@ -68,6 +82,8 @@ class TripViewModelTest : FunSpec({
             startShift,
             getActiveShift,
             completeShift,
+            deleteActiveShift,
+            hasAnyPackageItems,
             getShiftHistory,
             sendShiftReport
         )
@@ -100,7 +116,64 @@ class TripViewModelTest : FunSpec({
 
             callbackCalled shouldBe true
             coVerify(exactly = 1) { startShift(selectedTrip, any()) }
-            vm.selectedTripRecord.value shouldBe null
+            vm.selectedTripForCreation.value shouldBe null
+            vm.activeTripRecord.value shouldBe null
+        }
+    }
+
+    test("confirmCarriageInput navigates to existing active shift when start reports conflict") {
+        runTest {
+            val existingTrip = trip(uuid = "already-active")
+            activeShift.value = shift(trip = existingTrip)
+            coEvery {
+                startShift(any(), any())
+            } returns StartShiftResult.ActiveShiftAlreadyExists
+            vm.selectTrip(trip(uuid = "new-selection"))
+            vm.onCarriageNumberChanged("05")
+            var callbackCalled = false
+
+            vm.confirmCarriageInput { callbackCalled = true }
+            advanceUntilIdle()
+
+            callbackCalled shouldBe true
+            vm.selectedTripForCreation.value shouldBe null
+            vm.activeTripRecord.value shouldBe existingTrip
+        }
+    }
+
+    test("confirmCarriageInput keeps form open when trip was already registered") {
+        runTest {
+            val selectedTrip = trip(uuid = "already-registered")
+            coEvery { startShift(any(), any()) } returns StartShiftResult.TripAlreadyRegistered
+            vm.selectTrip(selectedTrip)
+            vm.onCarriageNumberChanged("05")
+            var callbackCalled = false
+
+            vm.confirmCarriageInput { callbackCalled = true }
+            advanceUntilIdle()
+
+            callbackCalled shouldBe false
+            vm.selectedTripForCreation.value shouldBe selectedTrip
+            vm.carriageNumber.value shouldBe "5"
+            vm.startShiftErrorMessageRes.value shouldBe R.string.trip_already_registered
+        }
+    }
+
+    test("confirmCarriageInput keeps creation state when start throws") {
+        runTest {
+            val selectedTrip = trip(uuid = "u-1")
+            coEvery { startShift(any(), any()) } throws IllegalArgumentException("invalid shift")
+            vm.selectTrip(selectedTrip)
+            vm.onCarriageNumberChanged("05")
+            var callbackCalled = false
+
+            vm.confirmCarriageInput { callbackCalled = true }
+            advanceUntilIdle()
+
+            callbackCalled shouldBe false
+            vm.selectedTripForCreation.value shouldBe selectedTrip
+            vm.activeTripRecord.value shouldBe null
+            vm.startShiftErrorMessageRes.value shouldBe R.string.start_shift_failed
         }
     }
 
@@ -149,7 +222,7 @@ class TripViewModelTest : FunSpec({
 
     test("finishCurrentTrip maps SendReportResult to dialog message") {
         runTest {
-            vm.selectTrip(trip(uuid = "u-finish"))
+            activeShift.value = shift(trip = trip(uuid = "u-finish"))
             coEvery { completeShift("u-finish") } returns SendReportResult.AlreadySent
 
             vm.finishCurrentTrip()
@@ -159,24 +232,80 @@ class TripViewModelTest : FunSpec({
         }
     }
 
-    test("checkActiveShift updates selected trip and shift status") {
+    test("active trip follows Room flow without manual refresh") {
         runTest {
-            val activeShift = shift(trip = trip(uuid = "active"))
-            every { getActiveShift() } returns flowOf(activeShift)
+            vm.activeTripRecord.value shouldBe null
 
-            vm = TripViewModel(
-                searchTrips,
-                getStations,
-                startShift,
-                getActiveShift,
-                completeShift,
-                getShiftHistory,
-                sendShiftReport
-            )
-            vm.checkActiveShift()
+            activeShift.value = shift(trip = trip(uuid = "active"))
+            vm.activeTripRecord.value?.uuid shouldBe "active"
+
+            activeShift.value = null
+            vm.activeTripRecord.value shouldBe null
+        }
+    }
+
+    test("empty active shift does not clear trip selected for creation") {
+        runTest {
+            val selectedTrip = trip(uuid = "selected")
+
+            vm.selectTrip(selectedTrip)
+
+            vm.selectedTripForCreation.value shouldBe selectedTrip
+            vm.activeTripRecord.value shouldBe null
+        }
+    }
+
+    test("finishCurrentTrip ignores repeated click and keeps card until Room emits null") {
+        runTest {
+            val finishResult = CompletableDeferred<SendReportResult>()
+            activeShift.value = shift(trip = trip(uuid = "u-finish"))
+            coEvery { completeShift("u-finish") } coAnswers { finishResult.await() }
+
+            vm.finishCurrentTrip()
+            vm.finishCurrentTrip()
+
+            vm.isFinishingTrip.value shouldBe true
+            vm.activeTripRecord.value?.uuid shouldBe "u-finish"
+            coVerify(exactly = 1) { completeShift("u-finish") }
+
+            activeShift.value = null
+            finishResult.complete(SendReportResult.Success)
             advanceUntilIdle()
 
-            vm.selectedTripRecord.value?.uuid shouldBe "active"
+            vm.isFinishingTrip.value shouldBe false
+            vm.activeTripRecord.value shouldBe null
+        }
+    }
+
+    test("delete request is ignored while trip is finishing") {
+        runTest {
+            val finishResult = CompletableDeferred<SendReportResult>()
+            activeShift.value = shift(trip = trip(uuid = "u-finish"))
+            coEvery { completeShift("u-finish") } coAnswers { finishResult.await() }
+
+            vm.finishCurrentTrip()
+            vm.requestDeleteCurrentTrip()
+
+            vm.deleteTripDialog.value shouldBe null
+            coVerify(exactly = 0) { hasAnyPackageItems() }
+
+            finishResult.complete(SendReportResult.Success)
+            advanceUntilIdle()
+        }
+    }
+
+    test("finish request is ignored while delete dialog is open") {
+        runTest {
+            activeShift.value = shift(trip = trip(uuid = "u-delete"))
+            coEvery { hasAnyPackageItems() } returns true
+
+            vm.requestDeleteCurrentTrip()
+            advanceUntilIdle()
+            vm.finishCurrentTrip()
+
+            vm.deleteTripDialog.value?.hasPackageItems shouldBe true
+            vm.isFinishingTrip.value shouldBe false
+            coVerify(exactly = 0) { completeShift(any()) }
         }
     }
 
@@ -218,6 +347,8 @@ class TripViewModelTest : FunSpec({
                 startShift,
                 getActiveShift,
                 completeShift,
+                deleteActiveShift,
+                hasAnyPackageItems,
                 getShiftHistory,
                 sendShiftReport
             )
@@ -244,6 +375,92 @@ class TripViewModelTest : FunSpec({
 
             vm.dismissRetryResult()
             vm.retryResult.value shouldBe null
+        }
+    }
+
+    test("delete dialog shows package and preserves it by default") {
+        runTest {
+            activeShift.value = shift(trip = trip(uuid = "u-delete"))
+            coEvery { hasAnyPackageItems() } returns true
+
+            vm.requestDeleteCurrentTrip()
+            advanceUntilIdle()
+
+            vm.deleteTripDialog.value?.hasPackageItems shouldBe true
+            vm.deleteTripDialog.value?.preservePackage shouldBe true
+        }
+    }
+
+    test("delete dialog can be dismissed while package inspection is pending") {
+        runTest {
+            val packageInspection = CompletableDeferred<Boolean>()
+            activeShift.value = shift(trip = trip(uuid = "u-delete"))
+            coEvery { hasAnyPackageItems() } coAnswers { packageInspection.await() }
+
+            vm.requestDeleteCurrentTrip()
+
+            vm.deleteTripDialog.value?.hasPackageItems shouldBe null
+            vm.deleteTripDialog.value?.isDeleting shouldBe false
+
+            vm.dismissDeleteTripDialog()
+            packageInspection.complete(true)
+            advanceUntilIdle()
+
+            vm.deleteTripDialog.value shouldBe null
+        }
+    }
+
+    test("delete current trip clears operations for empty package and resets selected trip") {
+        runTest {
+            activeShift.value = shift(trip = trip(uuid = "u-delete"))
+            coEvery { hasAnyPackageItems() } returns false
+            coEvery {
+                deleteActiveShift("u-delete", preservePackage = false)
+            } coAnswers {
+                activeShift.value = null
+            }
+
+            vm.requestDeleteCurrentTrip()
+            advanceUntilIdle()
+            vm.confirmDeleteCurrentTrip()
+            advanceUntilIdle()
+
+            coVerify(exactly = 1) { deleteActiveShift("u-delete", preservePackage = false) }
+            vm.activeTripRecord.value shouldBe null
+            vm.deleteTripDialog.value shouldBe null
+        }
+    }
+
+    test("delete current trip clears operations when package preservation is disabled") {
+        runTest {
+            activeShift.value = shift(trip = trip(uuid = "u-delete"))
+            coEvery { hasAnyPackageItems() } returns true
+
+            vm.requestDeleteCurrentTrip()
+            advanceUntilIdle()
+            vm.onPreservePackageChanged(false)
+            vm.confirmDeleteCurrentTrip()
+            advanceUntilIdle()
+
+            coVerify(exactly = 1) { deleteActiveShift("u-delete", preservePackage = false) }
+        }
+    }
+
+    test("delete failure keeps dialog open with error") {
+        runTest {
+            activeShift.value = shift(trip = trip(uuid = "u-delete"))
+            coEvery { hasAnyPackageItems() } returns true
+            coEvery {
+                deleteActiveShift("u-delete", preservePackage = true)
+            } throws IllegalStateException("delete failed")
+
+            vm.requestDeleteCurrentTrip()
+            advanceUntilIdle()
+            vm.confirmDeleteCurrentTrip()
+            advanceUntilIdle()
+
+            vm.activeTripRecord.value?.uuid shouldBe "u-delete"
+            vm.deleteTripDialog.value?.errorMessageRes shouldBe R.string.trip_delete_failure
         }
     }
 })

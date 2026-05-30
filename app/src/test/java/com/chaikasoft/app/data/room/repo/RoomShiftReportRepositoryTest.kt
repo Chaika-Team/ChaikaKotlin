@@ -18,6 +18,9 @@ import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.squareup.moshi.Moshi
 import io.mockk.coEvery
 import io.mockk.spyk
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -81,6 +84,32 @@ class RoomShiftReportRepositoryTest {
         assertEquals(100, parsed?.carts?.first()?.items?.first()?.productId)
         assertEquals(-2, parsed?.carts?.first()?.items?.first()?.quantity)
         assertEquals(150, parsed?.carts?.first()?.items?.first()?.price)
+    }
+
+    @Test
+    fun finishShiftWithReport_emitsNoActiveShiftAndFinishedHistory() = runTest {
+        seedActiveShift()
+        seedOperationWithItem(productId = 100, impact = -2)
+        val repository = createRepository()
+        val dao = db.conductorTripShiftDao()
+        val activeAfterFinish = async(start = CoroutineStart.UNDISPATCHED) {
+            dao.getActiveShiftWithStationsFlow(TripShiftStatusDomain.ACTIVE.code)
+                .drop(1)
+                .first()
+        }
+        val historyAfterFinish = async(start = CoroutineStart.UNDISPATCHED) {
+            dao.getHistoryWithStations()
+                .drop(1)
+                .first()
+        }
+
+        repository.finishShiftWithReport(UUID)
+
+        assertNull(activeAfterFinish.await())
+        val history = historyAfterFinish.await()
+        assertEquals(1, history.size)
+        assertEquals(UUID, history.single().shift.uuid)
+        assertEquals(TripShiftStatusDomain.FINISHED.code, history.single().shift.status)
     }
 
     /**

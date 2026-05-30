@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.dp
 
 object TripDimens {
     val CardWidth = 327.dp
-    val RecordCardHeight = 100.dp
+    val RecordCardHeight = 123.dp
     val FoundTripCardHeight = 85.dp
     val TimeDetailsWidth = 279.dp
     val TimeDateDetailsHeight = 41.dp
@@ -13,6 +13,14 @@ object TripDimens {
     val SideRectWidth = 24.dp
     val CornerRadius = 16.dp
     val IconSize = 24.dp
+    val CurrentTripCardHeight = 161.dp
+    val CurrentTripHeaderHeight = 48.dp
+    val CurrentTripContentPadding = 4.dp
+    val CurrentTripHeaderSpacing = 4.dp
+    val CurrentTripButtonSpacing = 8.dp
+    val HistoryRecordHeaderHeight = 48.dp
+    val HistoryRecordContentPadding = 4.dp
+    val HistoryRecordHeaderSpacing = 4.dp
     val NewTripButtonHeight = 129.dp
     val NewTripButtonWidth = 327.dp
     val SearchCardHeight = 270.dp

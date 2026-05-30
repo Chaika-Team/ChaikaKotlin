@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { ev ->
@@ -50,7 +51,8 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
                     }
                 }
 
-                is AutonomousViewModel.Event.Info -> snackbarHostState.showSnackbar(ev.message)
+                is AutonomousViewModel.Event.Info ->
+                    snackbarHostState.showSnackbar(context.getString(ev.messageRes))
             }
         }
     }
@@ -148,12 +150,12 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
 
 @Composable
 private fun FocusHighlightField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
     imeAction: ImeAction = ImeAction.Done,
     onDone: () -> Unit = {},
-    modifier: Modifier = Modifier,
     isError: Boolean = false,
     onFocusChangedState: (Boolean) -> Unit = {}
 ) {
