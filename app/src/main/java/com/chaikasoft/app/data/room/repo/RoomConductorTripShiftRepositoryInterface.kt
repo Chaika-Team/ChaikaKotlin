@@ -2,6 +2,7 @@ package com.chaikasoft.app.data.room.repo
 
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -9,12 +10,14 @@ import kotlinx.coroutines.flow.Flow
  */
 interface RoomConductorTripShiftRepositoryInterface {
 
-    /** Вставить новую смену или обновить существующую */
-    /** Попытаться создать новую ACTIVE-смену. Возвращает false, если активная уже есть. */
-    suspend fun tryStartNewShift(shift: ConductorTripShiftDomain): Boolean
+    /** Попытаться создать новую ACTIVE-смену и вернуть типизированный результат. */
+    suspend fun tryStartNewShift(shift: ConductorTripShiftDomain): StartShiftResult
 
     /** Получить поездку по UUID */
     suspend fun getShiftByUuid(uuid: String): ConductorTripShiftDomain?
+
+    /** Удалить активную смену и при необходимости очистить операции текущего Пакета. */
+    suspend fun deleteActiveShift(uuid: String, clearOperations: Boolean)
 
     /**
      * Обновить статус и при необходимости отчёт

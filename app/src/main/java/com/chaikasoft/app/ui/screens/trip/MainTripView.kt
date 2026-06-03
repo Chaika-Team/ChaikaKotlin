@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.CurrentTripCard
+import com.chaikasoft.app.ui.components.trip.DeleteTripConfirmBottomSheet
 import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
 import com.chaikasoft.app.ui.components.trip.HistoryRecordCard
 import com.chaikasoft.app.ui.components.trip.HistoryToNowDivider
@@ -29,11 +30,11 @@ import com.chaikasoft.app.ui.viewmodels.TripViewModel
 @Composable
 fun MainTripView(viewModel: TripViewModel, navController: NavController) {
     val history by viewModel.shiftHistory.collectAsStateWithLifecycle()
-    val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
+    val activeTrip by viewModel.activeTripRecord.collectAsStateWithLifecycle()
+    val isFinishingTrip by viewModel.isFinishingTrip.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadHistory()
-        viewModel.checkActiveShift()
     }
 
     DisposableEffect(Unit) {
@@ -71,10 +72,12 @@ fun MainTripView(viewModel: TripViewModel, navController: NavController) {
 
         HistoryToNowDivider()
 
-        if (selectedTrip != null) {
+        if (activeTrip != null) {
             CurrentTripCard(
-                tripRecord = selectedTrip!!,
+                tripRecord = activeTrip!!,
+                isFinishing = isFinishingTrip,
                 onClick = { viewModel.finishCurrentTrip() },
+                onDeleteClick = { viewModel.requestDeleteCurrentTrip() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 16.dp)
@@ -92,6 +95,8 @@ fun MainTripView(viewModel: TripViewModel, navController: NavController) {
             tripViewModel = viewModel,
             onDismissWithLogout = { }
         )
+
+        DeleteTripConfirmBottomSheet(tripViewModel = viewModel)
 
         // Retry confirmation dialog.
         RetrySendConfirmBottomSheet(tripViewModel = viewModel)

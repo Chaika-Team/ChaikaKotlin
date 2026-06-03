@@ -1,12 +1,15 @@
 package com.chaikasoft.app.ui.viewmodels
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.ui.helpers.OfflineTripBuildHelper
@@ -17,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -104,7 +108,7 @@ class AutonomousViewModel @Inject constructor(
 
     sealed interface Event {
         data class ShiftStarted(val trip: TripDomain, val carriage: CarriageDomain) : Event
-        data class Info(val message: String) : Event
+        data class Info(@StringRes val messageRes: Int) : Event
     }
 
     private val _events = MutableSharedFlow<Event>()
@@ -164,6 +168,7 @@ class AutonomousViewModel @Inject constructor(
 
     fun onCarriageClassTypeChange(value: String) = update { copy(carriageClassType = value) }
 
+    @Suppress("TooGenericExceptionCaught")
     fun submit(zone: ZoneId = ZoneId.systemDefault()) {
         val current = _state.value
         val input = Input(
@@ -188,17 +193,26 @@ class AutonomousViewModel @Inject constructor(
 
                 is BuildResult.Failure -> {
                     update { copy(isSubmitting = false, lastMessage = result.cause.message) }
-                    _events.emit(Event.Info(result.cause.message ?: "Не удалось собрать поездку"))
+                    _events.emit(Event.Info(R.string.start_shift_failed))
                 }
 
                 is BuildResult.Success -> {
                     val (trip, carriage) = result.output
-                    val started = runCatching { startShift(trip, carriage) }.getOrElse { false }
+                    val startResult = try {
+                        startShift(trip, carriage)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        null
+                    }
                     update { copy(isSubmitting = false) }
-                    if (started) {
-                        _events.emit(Event.ShiftStarted(trip, carriage))
-                    } else {
-                        _events.emit(Event.Info("Уже есть активная смена"))
+                    when (startResult) {
+                        StartShiftResult.Started -> _events.emit(Event.ShiftStarted(trip, carriage))
+                        StartShiftResult.ActiveShiftAlreadyExists ->
+                            _events.emit(Event.Info(R.string.active_shift_already_exists))
+                        StartShiftResult.TripAlreadyRegistered ->
+                            _events.emit(Event.Info(R.string.trip_already_registered))
+                        null -> _events.emit(Event.Info(R.string.start_shift_failed))
                     }
                 }
             }

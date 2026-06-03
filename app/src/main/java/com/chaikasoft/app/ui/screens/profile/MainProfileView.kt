@@ -44,7 +44,7 @@ fun MainProfileView(
     val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
     val conductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
 
-    val selectedTripRecord by tripViewModel.selectedTripRecord.collectAsStateWithLifecycle(
+    val activeTripRecord by tripViewModel.activeTripRecord.collectAsStateWithLifecycle(
         initialValue = null
     )
 
@@ -81,7 +81,7 @@ fun MainProfileView(
                 ) {
                     item {
                         UserInfoSection(conductor = conductor) {
-                            if (selectedTripRecord != null) {
+                            if (activeTripRecord != null) {
                                 showFinishTripConfirmSheet = true
                             } else {
                                 showLogoutConfirmSheet = true
