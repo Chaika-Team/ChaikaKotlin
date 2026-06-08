@@ -48,11 +48,11 @@ class FetchConductorByTokenUseCaseIntegrationTest {
         // Подготавливаем корректный JSON-ответ, который соответствует ConductorDto
         val responseBody = """
             {
-              "name": "John",
               "family_name": "Doe",
               "given_name": "John",
-              "nickname": "12345",
-              "image": "https://example.com/johndoe.jpg"
+              "middle_name": "Michael",
+              "preferred_username": "12345",
+              "picture": "https://example.com/johndoe.jpg"
             }
         """.trimIndent()
         TestServerHolder.testMockServer.server.enqueue(
@@ -66,7 +66,7 @@ class FetchConductorByTokenUseCaseIntegrationTest {
         val result: ConductorDomain = fetchConductorByTokenUseCase("dummyToken")
         assertEquals("John", result.name)
         assertEquals("Doe", result.familyName)
-        assertEquals("John", result.givenName)
+        assertEquals("Michael", result.givenName)
         assertEquals("12345", result.employeeID)
         assertEquals("https://example.com/johndoe.jpg", result.image)
     }
