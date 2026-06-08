@@ -66,7 +66,10 @@ fun NavGraph(
     authViewModel: AuthViewModel,
     tripViewModel: TripViewModel,
     hasActiveShift: Boolean,
-    currentRoute: String?
+    currentRoute: String?,
+    openFinishTripConfirmOnTripMain: Boolean,
+    onFinishTripConfirmConsumed: () -> Unit,
+    onNavigateToTripCompletion: () -> Unit
 ) {
     // 1) Слушаем единое состояние авторизации
     val ui by authViewModel.uiState.collectAsStateWithLifecycle()
@@ -193,7 +196,9 @@ fun NavGraph(
             composable(Routes.TRIP_MAIN) {
                 MainTripView(
                     viewModel = tripViewModel,
-                    navController = navController
+                    navController = navController,
+                    openFinishTripConfirm = openFinishTripConfirmOnTripMain,
+                    onFinishTripConfirmConsumed = onFinishTripConfirmConsumed
                 )
             }
 
@@ -463,7 +468,8 @@ fun NavGraph(
                     conductorViewModel = conductorViewModel,
                     authViewModel = authViewModel,
                     navController = navController,
-                    tripViewModel = tripViewModel
+                    hasActiveShift = hasActiveShift,
+                    onNavigateToTripCompletion = onNavigateToTripCompletion
                 )
             }
             composable(Routes.PROFILE_PERSONAL_DATA) { backStackEntry ->

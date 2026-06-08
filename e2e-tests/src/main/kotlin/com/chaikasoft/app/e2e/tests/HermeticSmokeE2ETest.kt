@@ -172,6 +172,28 @@ class HermeticSmokeE2ETest {
     }
 
     @Test
+    fun logoutWithActiveShift_routesToProtectedFinishTripDialog() {
+        waitForTag("tripMainScreen")
+        startActiveShift()
+
+        composeRule.onNodeWithTag("bottomBarProfile").performClick()
+        waitForTag("profileScreen")
+
+        composeRule.onNodeWithTag("profileLogoutButton").performClick()
+        waitForTag("profileActiveTripGoToTripButton")
+        assertTagDoesNotExist("profileLogoutConfirmButton")
+
+        composeRule.onNodeWithTag("profileActiveTripGoToTripButton").performClick()
+
+        waitForTag("tripMainScreen")
+        waitForTag("finishTripConfirmBottomSheet")
+        composeRule.onNodeWithTag("finishTripConfirmCheckbox", useUnmergedTree = true)
+            .assertIsDisplayed()
+        composeRule.onNodeWithTag("finishTripConfirmButton", useUnmergedTree = true)
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun historicalTrip_opensReadOnlyStatisticsAndOperationsFromSavedReport() {
         waitForTag("tripMainScreen")
         seedHistoricalFinishedShift()
