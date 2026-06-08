@@ -202,6 +202,7 @@
     <string name="cart_fab_content_description">Перейти в корзину</string>
     <string name="cart_fab_price_format">%1$s</string>
 
+    <string name="product_image_content_description">Изображение продукта: %1$s</string>
     <string name="cart_payment_title">К ОПЛАТЕ</string>
     <string name="cart_payment_conductor">ПРОВОДНИК</string>
     <string name="cart_payment_select_conductor">Выберите проводника</string>
@@ -210,6 +211,8 @@
 
     <string name="cart_product_available">Доступно: %1$d</string>
     <string name="cart_product_add_to_cart">Добавить в корзину</string>
+    <string name="cart_product_increase_quantity">Увеличить количество</string>
+    <string name="cart_product_decrease_quantity">Уменьшить количество</string>
     <string name="cart_product_remove_from_cart">Удалить из корзины</string>
     <string name="cart_product_remove_from_package">Удалить из пакета</string>
     <string name="cart_empty">Корзина пуста</string>
@@ -250,6 +253,7 @@
     <!-- Operation Result -->
     <string name="sell_title">Операция</string>
     <string name="sell_success">Операция зарегистрирована</string>
+    <string name="sold_out_products_message">Закончились товары: %1$s</string>
     <string name="sell_empty_cart">Корзина пуста</string>
     <string name="sell_failure">Что-то пошло не так, попробуйте повторить операцию</string>
 
@@ -309,4 +313,3 @@
 
 
 </resources>
-

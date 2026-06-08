@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,9 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.theme.ProductDimens.PaddingL
 import com.chaikasoft.app.ui.theme.ProductDimens.QuantitySelectorHeight
@@ -38,7 +39,8 @@ fun ProductContent(
     modifier: Modifier = Modifier,
     onAddToCart: () -> Unit,
     onQuantityIncrease: () -> Unit,
-    onQuantityDecrease: () -> Unit
+    onQuantityDecrease: () -> Unit,
+    isSoldOut: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -57,7 +59,8 @@ fun ProductContent(
             NotInCartContent(
                 price = product.price,
                 description = product.description,
-                onAddToCart = onAddToCart
+                onAddToCart = onAddToCart,
+                isSoldOut = isSoldOut
             )
         }
         AnimatedVisibility(visible = product.isInCart) {
@@ -71,9 +74,13 @@ fun ProductContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotInCartContent(price: Int, description: String, onAddToCart: () -> Unit) {
+private fun NotInCartContent(
+    price: Int,
+    description: String,
+    onAddToCart: () -> Unit,
+    isSoldOut: Boolean
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -103,13 +110,18 @@ private fun NotInCartContent(price: Int, description: String, onAddToCart: () ->
             modifier = Modifier.size(QuantitySelectorHeight),
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary),
+            enabled = !isSoldOut,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
             onClick = onAddToCart
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Add to cart",
-                tint = Color.White,
+                contentDescription = stringResource(id = R.string.cart_product_add_to_cart),
                 modifier = Modifier.fillMaxSize(0.75F)
             )
         }

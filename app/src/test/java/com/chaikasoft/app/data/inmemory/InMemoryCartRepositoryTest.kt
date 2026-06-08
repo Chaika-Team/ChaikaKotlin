@@ -185,8 +185,8 @@ class InMemoryCartRepositoryTest : FunSpec({
      * Техника тест-дизайна: #2 Граничные значения.
      *
      * Описание:
-     *   - При newQuantity < 1 элемент удаляется из корзины.
-     *   - По текущему контракту метода результат при newQuantity=0 — false.
+     *   - При newQuantity = 0 элемент удаляется из корзины.
+     *   - Результат отражает успешность удаления.
      */
     test("updateItemQuantity with zero quantity removes item from cart") {
         runTest {
@@ -196,9 +196,25 @@ class InMemoryCartRepositoryTest : FunSpec({
                 itemId = tea.id,
                 newQuantity = 0,
                 availableQuantity = 10,
-            ) shouldBe false
+            ) shouldBe true
 
             repository.getCartItems().first() shouldBe emptyList()
+        }
+    }
+
+    test("updateItemQuantity with negative quantity keeps item in cart") {
+        runTest {
+            repository.addItemToCart(CartItemDomain(product = tea, quantity = 2))
+
+            repository.updateItemQuantity(
+                itemId = tea.id,
+                newQuantity = -1,
+                availableQuantity = 10,
+            ) shouldBe false
+
+            repository.getCartItems().first() shouldBe listOf(
+                CartItemDomain(product = tea, quantity = 2),
+            )
         }
     }
 

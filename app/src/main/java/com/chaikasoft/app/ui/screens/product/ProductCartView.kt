@@ -4,13 +4,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +45,8 @@ fun ProductCartView(
     val cartItems by saleViewModel.items.collectAsStateWithLifecycle()
     val conductors by conductorViewModel.allConductors.collectAsStateWithLifecycle()
     val currentConductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
+    val stockLimitNotice by saleViewModel.stockLimitNotice.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var selectedConductor by remember(conductors, currentConductor) {
         mutableStateOf(
@@ -51,61 +58,89 @@ fun ProductCartView(
 
     val totalCost = cartItems.sumOf { it.product.price * it.quantity }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag("productCartScreen")
-    ) {
-        Box(modifier = Modifier.weight(1f)) {
-            if (cartItems.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        stringResource(id = R.string.cart_empty),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(1),
-                    contentPadding = PaddingValues(ProductDimens.CartPadding)
-                ) {
-                    items(cartItems, key = { it.product.id }) { product ->
-                        CartProductItem(
-                            product = product.toUiModel(),
-                            onAddToCart = { },
-                            onQuantityIncrease = {
-                                saleViewModel.onQuantityChange(
-                                    product.product.id,
-                                    product.quantity + 1
-                                )
-                            },
-                            onQuantityDecrease = {
-                                saleViewModel.onQuantityChange(
-                                    product.product.id,
-                                    product.quantity - 1
-                                )
-                            },
-                            onRemove = { saleViewModel.onRemove(product.product.id) }
+    StockLimitNoticeEffect(
+        stockLimitNotice = stockLimitNotice,
+        snackbarHostState = snackbarHostState,
+        onShown = saleViewModel::dismissStockLimitNotice
+    )
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .testTag("productCartScreen")
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                if (cartItems.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            stringResource(id = R.string.cart_empty),
+                            style = MaterialTheme.typography.bodyLarge
                         )
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(1),
+                        contentPadding = PaddingValues(ProductDimens.CartPadding)
+                    ) {
+                        items(cartItems, key = { it.product.id }) { product ->
+                            CartProductItem(
+                                product = product.toUiModel(),
+                                onAddToCart = { },
+                                onQuantityIncrease = {
+                                    saleViewModel.onQuantityChange(
+                                        product.product.id,
+                                        product.quantity + 1
+                                    )
+                                },
+                                onQuantityDecrease = {
+                                    saleViewModel.onQuantityChange(
+                                        product.product.id,
+                                        product.quantity - 1
+                                    )
+                                },
+                                onRemove = { saleViewModel.onRemove(product.product.id) }
+                            )
+                        }
                     }
                 }
             }
+            CartPaymentArea(
+                totalCost = totalCost,
+                conductors = conductors,
+                selectedConductor = selectedConductor,
+                onConductorSelected = { selectedConductor = it },
+                onPayCash = {
+                    selectedConductor?.id?.let { saleViewModel.onSellCash(it) }
+                },
+                onPayCard = {
+                    selectedConductor?.id?.let { saleViewModel.onSellCard(it) }
+                }
+            )
         }
-        CartPaymentArea(
-            totalCost = totalCost,
-            conductors = conductors,
-            selectedConductor = selectedConductor,
-            onConductorSelected = { selectedConductor = it },
-            onPayCash = {
-                selectedConductor?.id?.let { saleViewModel.onSellCash(it) }
-            },
-            onPayCard = {
-                selectedConductor?.id?.let { saleViewModel.onSellCard(it) }
-            }
-        )
     }
     SellResultBottomSheet(
         viewModel = saleViewModel,
         onClick = { navController.navigateUp() }
     )
+}
+
+@Composable
+private fun StockLimitNoticeEffect(
+    stockLimitNotice: SaleViewModel.StockLimitNotice?,
+    snackbarHostState: SnackbarHostState,
+    onShown: () -> Unit
+) {
+    val message = stockLimitNotice?.let { stringResource(id = it.messageRes) }
+    LaunchedEffect(stockLimitNotice?.id) {
+        val snackbarMessage = message ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(
+            message = snackbarMessage,
+            withDismissAction = true
+        )
+        onShown()
+    }
 }

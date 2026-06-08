@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.chaikasoft.app.R
 import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.sealed.AddItemToCartWithLimitResult
 import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import com.chaikasoft.app.domain.usecases.AddItemToCartWithLimitUseCase
 import com.chaikasoft.app.domain.usecases.CreateCartUseCase
+import com.chaikasoft.app.domain.usecases.GetAvailableQuantityUseCase
 import com.chaikasoft.app.domain.usecases.GetCartItemsUseCase
 import com.chaikasoft.app.domain.usecases.RemoveItemFromCartUseCase
 import com.chaikasoft.app.domain.usecases.SoldCardOpUseCase
@@ -17,6 +19,7 @@ import com.chaikasoft.app.domain.usecases.SoldCashOpUseCase
 import com.chaikasoft.app.domain.usecases.UpdateQuantityWithLimitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,20 +34,39 @@ class SaleViewModel @Inject constructor(
     private val addItemToCartWithLimitUseCase: AddItemToCartWithLimitUseCase,
     private val removeItemFromCart: RemoveItemFromCartUseCase,
     private val updateQuantityWithLimit: UpdateQuantityWithLimitUseCase,
+    private val getAvailableQuantity: GetAvailableQuantityUseCase,
     private val soldCashOp: SoldCashOpUseCase,
     private val soldCardOp: SoldCardOpUseCase
 ) : ViewModel() {
 
     /** Собственная in‑memory корзина для продаж */
     private val cart: InMemoryCartRepositoryInterface = createCart()
+    private var nextSoldOutNoticeId = 0L
+    private var nextStockLimitNoticeId = 0L
 
     data class SellResultDialog(@StringRes val messageRes: Int)
+    data class SoldOutNotice(val id: Long, val productNames: List<String>)
+    data class StockLimitNotice(val id: Long, @StringRes val messageRes: Int)
 
     private val _sellResultDialog = MutableStateFlow<SellResultDialog?>(null)
     val sellResultDialog = _sellResultDialog.asStateFlow()
 
+    private val _soldOutNotice = MutableStateFlow<SoldOutNotice?>(null)
+    val soldOutNotice = _soldOutNotice.asStateFlow()
+
+    private val _stockLimitNotice = MutableStateFlow<StockLimitNotice?>(null)
+    val stockLimitNotice = _stockLimitNotice.asStateFlow()
+
     fun dismissSellResultDialog() {
         _sellResultDialog.value = null
+    }
+
+    fun dismissSoldOutNotice() {
+        _soldOutNotice.value = null
+    }
+
+    fun dismissStockLimitNotice() {
+        _stockLimitNotice.value = null
     }
 
     /** Элементы корзины для UI */
@@ -55,7 +77,11 @@ class SaleViewModel @Inject constructor(
     /** добавить в корзину */
     fun onAdd(item: CartItemDomain) {
         viewModelScope.launch {
-            addItemToCartWithLimitUseCase(cart, item)
+            when (addItemToCartWithLimitUseCase(cart, item)) {
+                AddItemToCartWithLimitResult.OutOfStock -> showStockLimitNotice()
+                AddItemToCartWithLimitResult.Added,
+                AddItemToCartWithLimitResult.AlreadyInCart -> Unit
+            }
         }
     }
 
@@ -67,40 +93,35 @@ class SaleViewModel @Inject constructor(
     /** Поменялось количество в диалоге — с учётом остатка */
     fun onQuantityChange(itemId: Int, newQuantity: Int) = viewModelScope.launch {
         val success = updateQuantityWithLimit(cart, itemId, newQuantity)
-        if (!success) {
-            // CHK-206
+        if (!success && newQuantity > 0) {
+            showStockLimitNotice()
         }
     }
 
     /** Продать наличными */
     fun onSellCash(conductorId: Int) = viewModelScope.launch {
-        try {
-            when (soldCashOp(cart, conductorId)) {
-                is SaveOperationResult.Success ->
-                    _sellResultDialog.value = SellResultDialog(
-                        messageRes = R.string.sell_success
-                    )
-
-                is SaveOperationResult.EmptyCart ->
-                    _sellResultDialog.value = SellResultDialog(R.string.sell_empty_cart)
-
-                is SaveOperationResult.Failure ->
-                    _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
-            }
-        } catch (e: Exception) {
-            Log.e("SaleViewModel", "onSellCash failed", e)
-            _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
-        }
+        sell(conductorId, soldCashOp::invoke, "onSellCash")
     }
 
     /** Продать по карте */
     fun onSellCard(conductorId: Int) = viewModelScope.launch {
+        sell(conductorId, soldCardOp::invoke, "onSellCard")
+    }
+
+    private suspend fun sell(
+        conductorId: Int,
+        sellOperation: suspend (InMemoryCartRepositoryInterface, Int) -> SaveOperationResult,
+        logTag: String
+    ) {
         try {
-            when (soldCardOp(cart, conductorId)) {
-                is SaveOperationResult.Success ->
+            val soldItems = items.value
+            when (sellOperation(cart, conductorId)) {
+                is SaveOperationResult.Success -> {
                     _sellResultDialog.value = SellResultDialog(
                         messageRes = R.string.sell_success
                     )
+                    updateSoldOutNotice(soldItems)
+                }
 
                 is SaveOperationResult.EmptyCart ->
                     _sellResultDialog.value = SellResultDialog(R.string.sell_empty_cart)
@@ -108,9 +129,42 @@ class SaleViewModel @Inject constructor(
                 is SaveOperationResult.Failure ->
                     _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            Log.e("SaleViewModel", "onSellCard failed", e)
+            Log.e("SaleViewModel", "$logTag failed", e)
             _sellResultDialog.value = SellResultDialog(R.string.sell_failure)
         }
+    }
+
+    private suspend fun updateSoldOutNotice(soldItems: List<CartItemDomain>) {
+        val soldOutProductNames = soldItems.mapNotNull { item ->
+            try {
+                val availableQuantity = getAvailableQuantity(item.product.id)
+                item.product.name.takeIf { availableQuantity <= 0 }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(
+                    "SaleViewModel",
+                    "Failed to check available quantity for productId=${item.product.id}",
+                    e
+                )
+                null
+            }
+        }
+        if (soldOutProductNames.isNotEmpty()) {
+            _soldOutNotice.value = SoldOutNotice(
+                id = ++nextSoldOutNoticeId,
+                productNames = soldOutProductNames
+            )
+        }
+    }
+
+    private fun showStockLimitNotice() {
+        _stockLimitNotice.value = StockLimitNotice(
+            id = ++nextStockLimitNoticeId,
+            messageRes = R.string.error_out_of_stock
+        )
     }
 }

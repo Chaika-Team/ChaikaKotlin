@@ -7,6 +7,7 @@ import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.CartOperationDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.sealed.AddItemToCartWithLimitResult
 import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -106,11 +107,15 @@ class AddItemToCartWithLimitUseCase @Inject constructor(
     suspend operator fun invoke(
         cart: InMemoryCartRepositoryInterface,
         item: CartItemDomain
-    ): Boolean {
+    ): AddItemToCartWithLimitResult {
         val available = getAvailableQuantity(item.product.id)
-        if (available <= 0) return false
+        if (available <= 0) return AddItemToCartWithLimitResult.OutOfStock
         // Репозиторий сам выставляет quantity = 1 и не добавляет дубликаты
-        return cart.addItemToCart(item)
+        return if (cart.addItemToCart(item)) {
+            AddItemToCartWithLimitResult.Added
+        } else {
+            AddItemToCartWithLimitResult.AlreadyInCart
+        }
     }
 }
 
