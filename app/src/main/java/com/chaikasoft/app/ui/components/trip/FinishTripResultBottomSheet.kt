@@ -24,31 +24,23 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinishTripResultBottomSheet(
-    tripViewModel: TripViewModel,
-    pendingLogout: Boolean = true,
-    onDismissWithLogout: () -> Unit
-) {
+fun FinishTripResultBottomSheet(tripViewModel: TripViewModel, onDismiss: () -> Unit = {}) {
     val dialogState by tripViewModel.finishTripDialog.collectAsStateWithLifecycle()
-
-    val shouldShowSheet = dialogState != null && pendingLogout
-
-    if (!shouldShowSheet) return
+    val state = dialogState ?: return
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
-    ModalBottomSheet(
-        onDismissRequest = {
-            scope.launch {
-                sheetState.hide()
-                tripViewModel.dismissFinishTripDialog()
+    fun dismiss() {
+        scope.launch {
+            sheetState.hide()
+            tripViewModel.dismissFinishTripDialog()
+            onDismiss()
+        }
+    }
 
-                if (pendingLogout) {
-                    onDismissWithLogout()
-                }
-            }
-        },
+    ModalBottomSheet(
+        onDismissRequest = { dismiss() },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface
     ) {
@@ -64,22 +56,13 @@ fun FinishTripResultBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = stringResource(dialogState!!.messageRes),
+                text = stringResource(state.messageRes),
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(Modifier.height(20.dp))
 
             Button(
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        tripViewModel.dismissFinishTripDialog()
-
-                        if (pendingLogout) {
-                            onDismissWithLogout()
-                        }
-                    }
-                },
+                onClick = { dismiss() },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge
             ) {

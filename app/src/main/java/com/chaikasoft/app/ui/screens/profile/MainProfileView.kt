@@ -26,31 +26,27 @@ import com.chaikasoft.app.ui.components.profile.ProfileMenuItemShape
 import com.chaikasoft.app.ui.components.profile.SectionSpacer
 import com.chaikasoft.app.ui.components.profile.UserHeaderSection
 import com.chaikasoft.app.ui.components.profile.UserInfoSection
-import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ProfileBackground
 import com.chaikasoft.app.ui.theme.ProfileDimens
 import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
-import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
 @Composable
 fun MainProfileView(
     conductorViewModel: ConductorViewModel,
     authViewModel: AuthViewModel,
-    tripViewModel: TripViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    hasActiveShift: Boolean,
+    onNavigateToTripCompletion: () -> Unit
 ) {
     val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
     val conductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
 
-    val selectedTripRecord by tripViewModel.selectedTripRecord.collectAsStateWithLifecycle(
-        initialValue = null
-    )
-
-    var showLogoutConfirmSheet by remember { mutableStateOf(false) }
-    var showFinishTripConfirmSheet by remember { mutableStateOf(false) }
-    var pendingLogoutAfterTripFinish by remember { mutableStateOf(false) }
+    val showLogoutConfirmSheet = remember { mutableStateOf(false) }
+    val showActiveShiftBlockerSheet = remember { mutableStateOf(false) }
+    val shouldShowActiveShiftBlockerSheet =
+        showActiveShiftBlockerSheet.value || uiState.showActiveShiftDialog
 
     Box(
         modifier = Modifier
@@ -81,10 +77,10 @@ fun MainProfileView(
                 ) {
                     item {
                         UserInfoSection(conductor = conductor) {
-                            if (selectedTripRecord != null) {
-                                showFinishTripConfirmSheet = true
+                            if (hasActiveShift) {
+                                showActiveShiftBlockerSheet.value = true
                             } else {
-                                showLogoutConfirmSheet = true
+                                showLogoutConfirmSheet.value = true
                             }
                         }
                     }
@@ -152,7 +148,7 @@ fun MainProfileView(
     }
 
     ConfirmBottomSheet(
-        visible = showLogoutConfirmSheet,
+        visible = showLogoutConfirmSheet.value,
         title = stringResource(R.string.logout_confirm_title),
         message = stringResource(R.string.logout_confirm_message),
         confirmText = stringResource(R.string.logout_confirm),
@@ -160,34 +156,25 @@ fun MainProfileView(
         confirmButtonTag = "profileLogoutConfirmButton",
         cancelButtonTag = "profileLogoutCancelButton",
         onConfirm = {
-            showLogoutConfirmSheet = false
             authViewModel.logout()
         },
-        onDismiss = { showLogoutConfirmSheet = false }
+        onDismiss = { showLogoutConfirmSheet.value = false }
     )
 
     ConfirmBottomSheet(
-        visible = showFinishTripConfirmSheet,
-        title = stringResource(R.string.active_trip_confirm_title),
-        message = stringResource(R.string.active_trip_confirm_message),
-        confirmText = stringResource(R.string.finish_trip),
+        visible = shouldShowActiveShiftBlockerSheet,
+        title = stringResource(R.string.logout_blocked_active_trip_title),
+        message = stringResource(R.string.logout_blocked_active_trip_message),
+        confirmText = stringResource(R.string.logout_blocked_active_trip_action),
         cancelText = stringResource(R.string.logout_cancel),
+        confirmButtonTag = "profileActiveTripGoToTripButton",
+        cancelButtonTag = "profileActiveTripCancelButton",
         onConfirm = {
-            tripViewModel.finishCurrentTrip()
-            showFinishTripConfirmSheet = false
-            pendingLogoutAfterTripFinish = true
+            onNavigateToTripCompletion()
         },
-        onDismiss = { showFinishTripConfirmSheet = false }
-    )
-
-    FinishTripResultBottomSheet(
-        tripViewModel = tripViewModel,
-        pendingLogout = pendingLogoutAfterTripFinish,
-        onDismissWithLogout = {
-            if (pendingLogoutAfterTripFinish) {
-                pendingLogoutAfterTripFinish = false
-                showLogoutConfirmSheet = true
-            }
+        onDismiss = {
+            showActiveShiftBlockerSheet.value = false
+            authViewModel.dismissActiveShiftDialog()
         }
     )
 }

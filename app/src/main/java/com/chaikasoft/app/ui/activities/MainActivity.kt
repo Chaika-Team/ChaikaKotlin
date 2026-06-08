@@ -54,6 +54,7 @@ class MainActivity : ComponentActivity() {
                     navBackStackEntry?.arguments?.getString(Routes.ARG_SHIFT_UUID)
                 val currentScreen = Screen.fromRoute(currentRoute)
                 var showBlockedNavigationSheet by remember { mutableStateOf(false) }
+                var openFinishTripConfirmOnTripMain by remember { mutableStateOf(false) }
 
                 // Управление ориентацией экрана в зависимости от текущего маршрута
                 LaunchedEffect(currentRoute) {
@@ -128,7 +129,18 @@ class MainActivity : ComponentActivity() {
                             authViewModel = authViewModel,
                             tripViewModel = tripViewModel,
                             hasActiveShift = hasActiveShift,
-                            currentRoute = currentRoute
+                            currentRoute = currentRoute,
+                            openFinishTripConfirmOnTripMain = openFinishTripConfirmOnTripMain,
+                            onFinishTripConfirmConsumed = {
+                                openFinishTripConfirmOnTripMain = false
+                            },
+                            onNavigateToTripCompletion = {
+                                openFinishTripConfirmOnTripMain = true
+                                navController.navigate(Routes.TRIP_MAIN) {
+                                    popUpTo(Routes.TRIP_GRAPH) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
                 }

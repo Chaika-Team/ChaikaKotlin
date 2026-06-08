@@ -262,6 +262,8 @@
 
     <!-- Finish trip an send report -->
     <string name="trip_finish_title">Завершение поездки</string>
+    <string name="trip_finish_confirm_subtitle">Завершённую поездку нельзя возобновить.</string>
+    <string name="trip_finish_confirm_checkbox">Подтверждаю завершение</string>
     <string name="trip_finish_success">Поездка завершена, отчёт отправлен</string>
     <string name="trip_finish_already_sent">Поездка завершена, отчёт уже был отправлен</string>
     <string name="trip_finish_missing_report">Ошибка отчёта</string>
@@ -292,6 +294,9 @@
     <string name="logout_confirm_message">Вы действительно хотите выйти из аккаунта?</string>
     <string name="logout_confirm">ПОТДВЕРДИТЬ</string>
     <string name="logout_cancel">ОТМЕНА</string>
+    <string name="logout_blocked_active_trip_title">Нельзя выйти из аккаунта</string>
+    <string name="logout_blocked_active_trip_message">Сначала завершите активную поездку.</string>
+    <string name="logout_blocked_active_trip_action">ПЕРЕЙТИ К ЗАВЕРШЕНИЮ</string>
 
     <string name="active_trip_confirm_title">У вас есть незавершённая поездка</string>
     <string name="active_trip_confirm_message">У вас есть незавершённая поездка. Вы хотите завершить её?</string>
