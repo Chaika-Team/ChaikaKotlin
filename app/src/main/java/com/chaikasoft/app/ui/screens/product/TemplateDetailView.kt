@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -27,12 +28,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.domain.models.TemplateContentDomain
-import com.chaikasoft.app.domain.models.TemplateDomain
+import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
+import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
+import com.chaikasoft.app.ui.components.product.ProductImage
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.navigation.Routes
@@ -57,7 +61,7 @@ fun TemplateDetailView(
         TemplateDetailUiState.Idle,
         TemplateDetailUiState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Загрузка...")
+                Text(stringResource(R.string.template_detail_loading))
             }
         }
 
@@ -80,7 +84,7 @@ fun TemplateDetailView(
 
         is TemplateDetailUiState.Content -> {
             TemplateDetailContent(
-                template = state.template,
+                detail = state.detail,
                 fillViewModel = fillViewModel,
                 navController = navController
             )
@@ -90,10 +94,13 @@ fun TemplateDetailView(
 
 @Composable
 private fun TemplateDetailContent(
-    template: TemplateDomain,
+    detail: ResolvedTemplateDetailDomain,
     fillViewModel: FillViewModel,
     navController: NavController
 ) {
+    val template = detail.template
+    val hasMissingProducts = detail.items.any { it.product == null }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -120,7 +127,9 @@ private fun TemplateDetailContent(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.apple_juice),
-                        contentDescription = "Template image",
+                        contentDescription = stringResource(
+                            R.string.template_detail_image_content_description
+                        ),
                         modifier = Modifier
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(16.dp))
@@ -161,9 +170,9 @@ private fun TemplateDetailContent(
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                 )
-                template.content.forEachIndexed { index, item ->
-                    ItemInfo(item)
-                    if (index < template.content.size - 1) {
+                detail.items.forEachIndexed { index, item ->
+                    TemplateItemInfo(item)
+                    if (index < detail.items.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -173,10 +182,19 @@ private fun TemplateDetailContent(
                         )
                     }
                 }
+                if (hasMissingProducts) {
+                    Text(
+                        text = stringResource(R.string.template_detail_missing_products),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
             }
         }
         ButtonSurface(
-            buttonText = "ПРИМЕНИТЬ",
+            buttonText = stringResource(R.string.template_detail_apply),
+            enabled = !hasMissingProducts,
             onClick = {
                 fillViewModel.onApplyTemplate(template)
                 navController.navigate(Routes.TEMPLATE_EDIT)
@@ -189,27 +207,43 @@ private fun TemplateDetailContent(
 }
 
 @Composable
-private fun ItemInfo(item: TemplateContentDomain) {
+private fun TemplateItemInfo(item: ResolvedTemplateItemDomain) {
+    val product = item.product
+    val productName = product?.name
+        ?: stringResource(R.string.template_unknown_product_name, item.productId)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        ProductImage(
+            imageUrl = product?.image.orEmpty(),
+            contentDescription = productName,
+            modifier = Modifier.size(44.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
-            text = "ProductId: ${item.productId}",
+            text = productName,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(2f)
+            color = if (product == null) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
         )
         Text(
-            text = "x${item.quantity}",
+            text = stringResource(R.string.template_item_quantity, item.quantity),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f),
-            textAlign = androidx.compose.ui.text.style.TextAlign.End
+            modifier = Modifier.padding(start = 8.dp),
+            textAlign = TextAlign.End
         )
     }
 }

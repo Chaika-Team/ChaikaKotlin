@@ -9,6 +9,8 @@ import com.chaikasoft.app.data.datasource.repo.TemplatePagingSource
 import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
+import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -68,32 +70,63 @@ class GetTemplateDetailUseCase @Inject constructor(
 }
 
 /**
+ * Use case для получения детальной информации о шаблоне с локальными данными товаров.
+ *
+ * Оркестрирует [GetTemplateDetailUseCase] и [GetProductsByIdsUseCase]: получает сырой шаблон
+ * из сервиса, затем разрешает productId из содержимого шаблона в товары из локальной базы.
+ */
+class GetResolvedTemplateDetailUseCase @Inject constructor(
+    private val getTemplateDetailUseCase: GetTemplateDetailUseCase,
+    private val getProductsByIdsUseCase: GetProductsByIdsUseCase
+) {
+    suspend operator fun invoke(templateId: Int): ResolvedTemplateDetailDomain {
+        val template = getTemplateDetailUseCase(templateId)
+        val productsById = getProductsByIdsUseCase(
+            template.content.map { it.productId }.distinct()
+        )
+
+        return ResolvedTemplateDetailDomain(
+            template = template,
+            items = template.content.map { content ->
+                ResolvedTemplateItemDomain(
+                    productId = content.productId,
+                    quantity = content.quantity,
+                    product = productsById[content.productId]
+                )
+            }
+        )
+    }
+}
+
+/**
  * Use case для применения шаблона к корзине.
  *
- * Принимает корзину и полный объект шаблона (TemplateDomain) с заполненным content,
- * преобразует содержимое шаблона в элементы корзины (CartItemDomain) и обновляет in-memory корзину.
- *
+ * Сначала проверяет, что все товары из шаблона есть в локальной базе данных, и только после
+ * этого очищает корзину и добавляет элементы шаблона. Это защищает текущую корзину от потери,
+ * если шаблон ссылается на отсутствующий товар.
  */
 class ApplyTemplateUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface
 ) {
     suspend operator fun invoke(cart: InMemoryCartRepositoryInterface, template: TemplateDomain) {
-        // 1) Очищаем корзину
-        cart.clearCart()
-
-        // 2) Для каждого элемента шаблона подгружаем продукт из БД и добавляем
-        template.content.forEach { content ->
-            val product = productInfoRepository.getProductById(content.productId)
+        // Build all cart items before clearing the cart to avoid data loss on missing products.
+        val productsById = productInfoRepository
+            .getProductsByIds(template.content.map { it.productId }.distinct())
+            .associateBy { it.id }
+        val items = template.content.map { content ->
+            val product = productsById[content.productId]
                 ?: throw IllegalArgumentException(
                     "Product with id=${content.productId} not found in local DB"
                 )
 
-            cart.addItemToCart(
-                CartItemDomain(
-                    product = product,
-                    quantity = content.quantity
-                )
+            CartItemDomain(
+                product = product,
+                quantity = content.quantity
             )
         }
+
+        cart.clearCart()
+
+        items.forEach { cart.addItemToCart(it) }
     }
 }

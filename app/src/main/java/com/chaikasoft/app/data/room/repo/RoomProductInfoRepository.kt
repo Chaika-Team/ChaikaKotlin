@@ -58,4 +58,9 @@ class RoomProductInfoRepository @Inject constructor(private val productInfoDao: 
 
     override suspend fun getProductById(productId: Int): ProductInfoDomain? =
         productInfoDao.getProductById(productId)?.toDomain()
+
+    override suspend fun getProductsByIds(productIds: Collection<Int>): List<ProductInfoDomain> {
+        if (productIds.isEmpty()) return emptyList()
+        return productInfoDao.getProductsByIds(productIds.toList()).map { it.toDomain() }
+    }
 }

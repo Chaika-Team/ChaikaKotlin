@@ -2,10 +2,12 @@ package com.chaikasoft.app.ui.viewmodels
 
 import androidx.paging.PagingData
 import app.cash.turbine.test
+import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
+import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
 import com.chaikasoft.app.domain.models.TemplateContentDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 import com.chaikasoft.app.domain.usecases.GetPagedTemplatesUseCase
-import com.chaikasoft.app.domain.usecases.GetTemplateDetailUseCase
+import com.chaikasoft.app.domain.usecases.GetResolvedTemplateDetailUseCase
 import com.chaikasoft.app.ui.state.TemplateDetailUiState
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -27,7 +29,7 @@ import kotlinx.coroutines.yield
 class TemplateViewModelTest : FunSpec({
 
     lateinit var getPagedTemplatesUseCase: GetPagedTemplatesUseCase
-    lateinit var getTemplateDetailUseCase: GetTemplateDetailUseCase
+    lateinit var getResolvedTemplateDetailUseCase: GetResolvedTemplateDetailUseCase
     lateinit var vm: TemplateViewModel
 
     val template = TemplateDomain(
@@ -36,18 +38,24 @@ class TemplateViewModelTest : FunSpec({
         description = "Template description",
         content = listOf(TemplateContentDomain(productId = 101, quantity = 2))
     )
+    val resolvedDetail = ResolvedTemplateDetailDomain(
+        template = template,
+        items = listOf(
+            ResolvedTemplateItemDomain(productId = 101, quantity = 2, product = null)
+        )
+    )
 
     beforeTest {
         Dispatchers.setMain(UnconfinedTestDispatcher())
 
         getPagedTemplatesUseCase = mockk()
-        getTemplateDetailUseCase = mockk()
+        getResolvedTemplateDetailUseCase = mockk()
 
         every { getPagedTemplatesUseCase(any(), any()) } returns flowOf(PagingData.empty())
 
         vm = TemplateViewModel(
             getPagedTemplatesUseCase = getPagedTemplatesUseCase,
-            getTemplateDetailUseCase = getTemplateDetailUseCase
+            getResolvedTemplateDetailUseCase = getResolvedTemplateDetailUseCase
         )
     }
 
@@ -57,16 +65,16 @@ class TemplateViewModelTest : FunSpec({
 
     test("loadTemplateDetail emits Loading then Content on success") {
         runTest {
-            coEvery { getTemplateDetailUseCase(42) } coAnswers {
+            coEvery { getResolvedTemplateDetailUseCase(42) } coAnswers {
                 yield()
-                template
+                resolvedDetail
             }
 
             vm.templateDetailState.test {
                 awaitItem() shouldBe TemplateDetailUiState.Idle
                 vm.loadTemplateDetail(42)
                 awaitItem() shouldBe TemplateDetailUiState.Loading
-                awaitItem() shouldBe TemplateDetailUiState.Content(template)
+                awaitItem() shouldBe TemplateDetailUiState.Content(resolvedDetail)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -74,7 +82,7 @@ class TemplateViewModelTest : FunSpec({
 
     test("loadTemplateDetail emits Error on failure") {
         runTest {
-            coEvery { getTemplateDetailUseCase(42) } coAnswers {
+            coEvery { getResolvedTemplateDetailUseCase(42) } coAnswers {
                 yield()
                 throw IllegalStateException("boom")
             }
@@ -94,11 +102,13 @@ class TemplateViewModelTest : FunSpec({
     test("retryLoadTemplateDetail retries last failed request") {
         runTest {
             var callCount = 0
-            coEvery { getTemplateDetailUseCase(42) } coAnswers {
+            coEvery { getResolvedTemplateDetailUseCase(42) } coAnswers {
                 callCount++
                 yield()
-                if (callCount == 1) throw IllegalStateException("first")
-                template
+                if (callCount == 1) {
+                    throw IllegalStateException("first")
+                }
+                resolvedDetail
             }
 
             vm.templateDetailState.test {
@@ -109,23 +119,23 @@ class TemplateViewModelTest : FunSpec({
 
                 vm.retryLoadTemplateDetail()
                 awaitItem() shouldBe TemplateDetailUiState.Loading
-                awaitItem() shouldBe TemplateDetailUiState.Content(template)
+                awaitItem() shouldBe TemplateDetailUiState.Content(resolvedDetail)
                 cancelAndIgnoreRemainingEvents()
             }
-            coVerify(exactly = 2) { getTemplateDetailUseCase(42) }
+            coVerify(exactly = 2) { getResolvedTemplateDetailUseCase(42) }
         }
     }
 
     test("loadTemplateDetail does not reload same template id when already loaded") {
         runTest {
-            coEvery { getTemplateDetailUseCase(42) } returns template
+            coEvery { getResolvedTemplateDetailUseCase(42) } returns resolvedDetail
 
             vm.loadTemplateDetail(42)
             advanceUntilIdle()
             vm.loadTemplateDetail(42)
             advanceUntilIdle()
 
-            coVerify(exactly = 1) { getTemplateDetailUseCase(42) }
+            coVerify(exactly = 1) { getResolvedTemplateDetailUseCase(42) }
         }
     }
 })

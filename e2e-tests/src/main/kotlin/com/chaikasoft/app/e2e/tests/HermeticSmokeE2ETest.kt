@@ -45,6 +45,7 @@ class HermeticSmokeE2ETest {
         const val HISTORICAL_SHIFT_UUID = "trip-e2e-history-report"
         const val UNKNOWN_PRODUCT_ID = 404
         const val UNKNOWN_CONDUCTOR_EMPLOYEE_ID = "E2E-404"
+        const val PRODUCT_NAVIGATION_ATTEMPTS = 3
     }
 
     @get:Rule(order = 0)
@@ -146,15 +147,11 @@ class HermeticSmokeE2ETest {
 
     @Test
     fun productEntry_hasPrimaryCtaTag() {
-        waitForTag("bottomBarProduct")
+        waitForTag("tripMainScreen")
         startActiveShift()
 
-        composeRule.onNodeWithTag("bottomBarProduct").performClick()
-
-        composeRule.waitUntil(timeoutMillis = 10_000L) {
-            composeRule.onAllNodesWithTag("productEntryFillPackageButton").fetchSemanticsNodes().isNotEmpty() ||
-                composeRule.onAllNodesWithTag("packageListGrid").fetchSemanticsNodes().isNotEmpty()
-        }
+        openProductSectionWithActiveShift()
+        waitForAnyTag("productEntryFillPackageButton", "productCartFab")
     }
 
     @Test
@@ -243,9 +240,7 @@ class HermeticSmokeE2ETest {
 
     private fun waitForAnyTag(vararg tags: String, timeoutMillis: Long = 10_000L) {
         composeRule.waitUntil(timeoutMillis = timeoutMillis) {
-            tags.any { tag ->
-                composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
-            }
+            hasAnyTag(*tags)
         }
     }
 
@@ -281,11 +276,45 @@ class HermeticSmokeE2ETest {
         }
     }
 
+    private fun hasAnyTag(vararg tags: String): Boolean =
+        tags.any { tag ->
+            composeRule.onAllNodesWithTag(tag, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+
+    private fun openProductSectionWithActiveShift() {
+        repeat(PRODUCT_NAVIGATION_ATTEMPTS) {
+            composeRule.onNodeWithTag("bottomBarProduct", useUnmergedTree = true).performClick()
+            waitForAnyTag(
+                "productEntryScreen",
+                "productPackageScreen",
+                "navigationBlockedBottomSheet"
+            )
+
+            if (hasAnyTag("productEntryScreen", "productPackageScreen")) return
+
+            composeRule.onNodeWithTag(
+                "navigationBlockedOkButton",
+                useUnmergedTree = true
+            ).performClick()
+            waitForTagGone("navigationBlockedBottomSheet")
+        }
+
+        check(false) {
+            "Product section remained blocked after creating an active shift"
+        }
+    }
+
     private fun startActiveShift() = runBlocking {
-        startShiftUseCase(
+        val started = startShiftUseCase(
             trip = E2EFixtures.trips.first(),
             activeCarriage = E2EFixtures.activeCarriage,
         )
+        val activeShift = shiftRepository.getActiveShift()
+        check(started || activeShift != null) {
+            "Expected an active shift to exist before opening protected sections"
+        }
         composeRule.waitForIdle()
     }
 

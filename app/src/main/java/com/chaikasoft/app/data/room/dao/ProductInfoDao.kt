@@ -35,6 +35,9 @@ interface ProductInfoDao {
     @Query("SELECT * FROM product_info WHERE id = :productId LIMIT 1")
     suspend fun getProductById(productId: Int): ProductInfo?
 
+    @Query("SELECT * FROM product_info WHERE id IN (:productIds)")
+    suspend fun getProductsByIds(productIds: List<Int>): List<ProductInfo>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProduct(product: ProductInfo)
 

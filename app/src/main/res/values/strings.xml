@@ -220,6 +220,12 @@
     <string name="template_confirm_title">Подтверждение пакета</string>
     <string name="template_check_contents">Вы уверены?\nПожалуйста, проверьте содержимое пакета</string>
     <string name="template_cancel">ОТМЕНА</string>
+    <string name="template_detail_loading">Загрузка…</string>
+    <string name="template_detail_image_content_description">Изображение шаблона</string>
+    <string name="template_detail_apply">ПРИМЕНИТЬ</string>
+    <string name="template_detail_missing_products">Некоторые товары из шаблона не найдены в локальном каталоге. Обновите каталог и попробуйте снова.</string>
+    <string name="template_unknown_product_name">Товар #%1$d</string>
+    <string name="template_item_quantity">x%1$d</string>
     <string name="error_no_conductor">Ошибка: проводник не выбран</string>
 
     <string name="empty_product_list">No products available</string>
