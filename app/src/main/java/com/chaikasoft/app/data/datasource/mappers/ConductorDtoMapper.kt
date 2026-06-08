@@ -5,14 +5,14 @@ import com.chaikasoft.app.domain.models.ConductorDomain
 
 /**
  * Преобразует ConductorDto (данные с сервера) в доменную модель ConductorDomain.
- * Здесь поле nickname маппится на employeeID, а id остаётся неустановленным,
- * поскольку сервер не передаёт его.
+ * Поля берутся из смысловых OIDC claims: given_name, family_name, middle_name,
+ * preferred_username и picture.
  */
 fun ConductorDto.toDomain(): ConductorDomain = ConductorDomain(
     id = 0, // или можно сделать id: Int? и оставить null
-    name = this.name,
+    name = this.firstName,
     familyName = this.familyName,
-    givenName = this.givenName,
-    employeeID = this.nickname,
-    image = this.image?.trim().orEmpty()
+    givenName = this.middleName?.trim().orEmpty(),
+    employeeID = this.preferredUsername,
+    image = this.picture?.trim().orEmpty()
 )

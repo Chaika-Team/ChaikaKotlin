@@ -34,11 +34,11 @@ class IAMApiServiceRepositoryTest : FunSpec({
     test("fetchUserInfo success returns mapped ConductorDomain and sends Bearer token") {
         runTest {
             val dto = ConductorDto(
-                name = "Ivan",
+                firstName = "Ivan",
                 familyName = "Petrov",
-                givenName = "Ivanovich",
-                nickname = "EMP-1",
-                image = "https://example.com/avatar.png",
+                middleName = "Ivanovich",
+                preferredUsername = "EMP-1",
+                picture = "https://example.com/avatar.png",
             )
             coEvery { api.getUserInfo("Bearer token-123") } returns dto
 

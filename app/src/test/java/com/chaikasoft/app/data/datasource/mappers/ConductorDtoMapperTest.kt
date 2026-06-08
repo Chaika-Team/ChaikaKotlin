@@ -10,17 +10,17 @@ class ConductorDtoMapperTest : FunSpec({
      * Техника тест-дизайна: #1 Классы эквивалентности
      *
      * Описание:
-     *   - Вход: DTO проводника с заполненным image и nickname.
-     *   - Ожидаемое поведение: nickname маппится в employeeID, image сохраняется как есть.
+     *   - Вход: DTO проводника с заполненным picture и preferredUsername.
+     *   - Ожидаемое поведение: OIDC claims маппятся в поля ConductorDomain по смыслу.
      *   - Цель: зафиксировать основной контракт ConductorDto -> ConductorDomain без подмены изображения.
      */
-    test("maps nickname to employeeID and keeps explicit image") {
+    test("maps oidc claims to conductor domain") {
         val dto = ConductorDto(
-            name = "Ivan",
+            firstName = "Ivan",
             familyName = "Petrov",
-            givenName = "Ivanovich",
-            nickname = "EMP-001",
-            image = "https://example.com/avatar.png",
+            middleName = "Ivanovich",
+            preferredUsername = "EMP-001",
+            picture = "https://example.com/avatar.png",
         )
 
         val domain = dto.toDomain()
@@ -43,11 +43,11 @@ class ConductorDtoMapperTest : FunSpec({
      */
     test("maps missing dto image to empty string") {
         val dto = ConductorDto(
-            name = "Ivan",
+            firstName = "Ivan",
             familyName = "Petrov",
-            givenName = "Ivanovich",
-            nickname = "EMP-001",
-            image = null,
+            middleName = "Ivanovich",
+            preferredUsername = "EMP-001",
+            picture = null,
         )
 
         val domain = dto.toDomain()
