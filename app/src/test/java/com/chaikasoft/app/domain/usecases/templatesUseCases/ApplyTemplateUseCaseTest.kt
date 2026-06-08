@@ -73,8 +73,9 @@ class ApplyTemplateUseCaseTest : FunSpec({
             val addedItems = mutableListOf<CartItemDomain>()
             justRun { cart.clearCart() }
             every { cart.addItemToCart(any()) } returns true
-            coEvery { productRepository.getProductById(productTea.id) } returns productTea
-            coEvery { productRepository.getProductById(productCoffee.id) } returns productCoffee
+            coEvery {
+                productRepository.getProductsByIds(listOf(productTea.id, productCoffee.id))
+            } returns listOf(productTea, productCoffee)
 
             useCase(cart, template)
 
@@ -88,8 +89,9 @@ class ApplyTemplateUseCaseTest : FunSpec({
                 CartItemDomain(productTea, quantity = 2),
                 CartItemDomain(productCoffee, quantity = 1)
             ).sortedBy { it.product.id }
-            coVerify(exactly = 1) { productRepository.getProductById(productTea.id) }
-            coVerify(exactly = 1) { productRepository.getProductById(productCoffee.id) }
+            coVerify(exactly = 1) {
+                productRepository.getProductsByIds(listOf(productTea.id, productCoffee.id))
+            }
             confirmVerified(cart, productRepository)
         }
     }
@@ -115,16 +117,15 @@ class ApplyTemplateUseCaseTest : FunSpec({
                     TemplateContentDomain(productId = missingId, quantity = 1)
                 )
             )
-            justRun { cart.clearCart() }
-            coEvery { productRepository.getProductById(missingId) } returns null
+            coEvery { productRepository.getProductsByIds(listOf(missingId)) } returns emptyList()
 
             shouldThrow<IllegalArgumentException> {
                 useCase(cart, template)
             }
 
-            verify(exactly = 1) { cart.clearCart() }
+            verify(exactly = 0) { cart.clearCart() }
             verify(exactly = 0) { cart.addItemToCart(any()) }
-            coVerify(exactly = 1) { productRepository.getProductById(missingId) }
+            coVerify(exactly = 1) { productRepository.getProductsByIds(listOf(missingId)) }
             confirmVerified(cart, productRepository)
         }
     }

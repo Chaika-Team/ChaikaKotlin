@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.chaikasoft.app.domain.usecases.GetPagedTemplatesUseCase
-import com.chaikasoft.app.domain.usecases.GetTemplateDetailUseCase
+import com.chaikasoft.app.domain.usecases.GetResolvedTemplateDetailUseCase
 import com.chaikasoft.app.ui.state.TemplateDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class TemplateViewModel @Inject constructor(
     getPagedTemplatesUseCase: GetPagedTemplatesUseCase,
-    private val getTemplateDetailUseCase: GetTemplateDetailUseCase
+    private val getResolvedTemplateDetailUseCase: GetResolvedTemplateDetailUseCase
 ) : ViewModel() {
     val templatesPagingFlow = getPagedTemplatesUseCase().cachedIn(viewModelScope)
 
@@ -32,7 +32,7 @@ class TemplateViewModel @Inject constructor(
     fun loadTemplateDetail(templateId: Int) {
         val currentState = _templateDetailState.value
         if (currentState is TemplateDetailUiState.Content &&
-            currentState.template.id == templateId
+            currentState.detail.template.id == templateId
         ) {
             return
         }
@@ -43,8 +43,8 @@ class TemplateViewModel @Inject constructor(
             _templateDetailState.value = TemplateDetailUiState.Loading
             try {
                 Log.i("TemplateViewModel", "Trying to find template with id: $templateId")
-                val template = getTemplateDetailUseCase(templateId)
-                _templateDetailState.value = TemplateDetailUiState.Content(template)
+                val detail = getResolvedTemplateDetailUseCase(templateId)
+                _templateDetailState.value = TemplateDetailUiState.Content(detail)
             } catch (e: Exception) {
                 Log.e("TemplateViewModel", "Failed to load template with id: $templateId", e)
                 _templateDetailState.value = TemplateDetailUiState.Error(e)

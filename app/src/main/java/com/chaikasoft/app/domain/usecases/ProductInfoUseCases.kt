@@ -21,6 +21,12 @@ import kotlinx.coroutines.withContext
 
 // Юзкейс для получения всех товаров из базы данных.
 // Используйте GetPagedProductsUseCase, чтобы улучшить оптимизацию
+/**
+ * Use case для получения всех товаров из локальной базы данных.
+ *
+ * Возвращает поток полного списка товаров. Для экранов с большими списками предпочтительнее
+ * использовать [GetPagedProductsUseCase], чтобы не загружать весь каталог одним списком.
+ */
 class GetAllProductsUseCase @Inject constructor(
     private val roomProductInfoRepositoryInterface: RoomProductInfoRepositoryInterface
 ) {
@@ -43,7 +49,27 @@ class GetPagedProductsUseCase @Inject constructor(
     ): Flow<PagingData<ProductInfoDomain>> = repository.getPagedProducts(query, pageSize)
 }
 
-// Юзкейс для удаления товара из базы данных
+// Use case for loading products from the local database by ids.
+/**
+ * Use case для получения товаров из локальной базы данных по набору идентификаторов.
+ *
+ * Возвращает найденные товары в виде Map по id, чтобы сценарии-оркестраторы могли быстро
+ * сопоставлять внешние ссылки на продукты с локальными данными.
+ */
+class GetProductsByIdsUseCase @Inject constructor(
+    private val repository: RoomProductInfoRepositoryInterface
+) {
+    suspend operator fun invoke(productIds: Collection<Int>): Map<Int, ProductInfoDomain> {
+        if (productIds.isEmpty()) return emptyMap()
+        return repository.getProductsByIds(productIds).associateBy { it.id }
+    }
+}
+
+/**
+ * Use case для удаления товара из локальной базы данных.
+ *
+ * Принимает доменную модель товара и делегирует удаление репозиторию Room.
+ */
 class DeleteProductUseCase @Inject constructor(
     private val repository: RoomProductInfoRepositoryInterface
 ) {

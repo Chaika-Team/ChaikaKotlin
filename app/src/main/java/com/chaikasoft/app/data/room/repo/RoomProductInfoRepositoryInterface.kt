@@ -17,4 +17,5 @@ interface RoomProductInfoRepositoryInterface {
         pageSize: Int = 20
     ): Flow<PagingData<ProductInfoDomain>>
     suspend fun getProductById(productId: Int): ProductInfoDomain?
+    suspend fun getProductsByIds(productIds: Collection<Int>): List<ProductInfoDomain>
 }
