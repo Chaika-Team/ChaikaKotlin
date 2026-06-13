@@ -17,7 +17,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.util.parseTripDetails
 
 @Composable
-fun TimeDetails(modifier: Modifier = Modifier, tripRecord: TripDomain) {
+internal fun TimeDetails(tripRecord: TripDomain, modifier: Modifier = Modifier) {
     val tripDetails = tripRecord.parseTripDetails()
 
     ConstraintLayout(
@@ -85,10 +85,9 @@ fun TimeDetails(modifier: Modifier = Modifier, tripRecord: TripDomain) {
 
 @Preview
 @Composable
-fun TimeDetailsPreview() {
+private fun TimeDetailsPreview() {
     ChaikaTheme {
         TimeDetails(
-            modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",
                 trainNumber = "120A",
@@ -105,7 +104,8 @@ fun TimeDetailsPreview() {
                     name = "ТПУ Черкизово",
                     city = "Москва ВК Восточный"
                 )
-            )
+            ),
+            modifier = Modifier
         )
     }
 }

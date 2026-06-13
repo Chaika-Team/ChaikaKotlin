@@ -28,12 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +38,7 @@ fun DropDownMenu(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
-    suggestionsFlow: Flow<PagingData<StationDomain>>,
+    suggestions: LazyPagingItems<StationDomain>,
     onItemSelected: (StationDomain) -> Unit,
     placeholderText: String = "",
     cornerRadius: Dp = 10.dp,
@@ -50,10 +47,9 @@ fun DropDownMenu(
     itemTestTagFactory: ((StationDomain) -> String)? = null
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val lazyItems = suggestionsFlow.collectAsLazyPagingItems()
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
-    val menuState = mapMenuState(query = query, lazyItems = lazyItems)
+    val menuState = mapMenuState(query = query, lazyItems = suggestions)
     val resolvedPlaceholder = placeholderText.ifBlank {
         stringResource(R.string.dropdown_default_placeholder)
     }
@@ -95,7 +91,7 @@ fun DropDownMenu(
         ) {
             DropDownContent(
                 state = menuState,
-                lazyItems = lazyItems,
+                lazyItems = suggestions,
                 onQueryChange = onQueryChange,
                 onItemSelected = onItemSelected,
                 onClose = { expanded = false },

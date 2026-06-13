@@ -13,23 +13,22 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RetrySendConfirmBottomSheet(tripViewModel: TripViewModel) {
-    val confirmState by tripViewModel.retryConfirm.collectAsStateWithLifecycle()
-
-    if (confirmState == null) return
-
+fun RetrySendConfirmBottomSheet(
+    visible: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (!visible) return
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
@@ -37,11 +36,12 @@ fun RetrySendConfirmBottomSheet(tripViewModel: TripViewModel) {
         onDismissRequest = {
             scope.launch {
                 sheetState.hide()
-                tripViewModel.dismissRetryConfirm()
+                onDismiss()
             }
         },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -66,7 +66,7 @@ fun RetrySendConfirmBottomSheet(tripViewModel: TripViewModel) {
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        tripViewModel.confirmRetrySend()
+                        onConfirm()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -81,7 +81,7 @@ fun RetrySendConfirmBottomSheet(tripViewModel: TripViewModel) {
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        tripViewModel.dismissRetryConfirm()
+                        onDismiss()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

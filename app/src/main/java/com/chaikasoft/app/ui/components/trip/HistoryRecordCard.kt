@@ -26,9 +26,9 @@ import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
 fun HistoryRecordCard(
-    modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     status: TripShiftStatusDomain,
+    modifier: Modifier = Modifier,
     onRetrySend: () -> Unit = {},
     onNavigate: () -> Unit = {}
 ) {

@@ -17,7 +17,7 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun FoundTripCard(modifier: Modifier = Modifier, tripRecord: TripDomain, onClick: () -> Unit) {
+fun FoundTripCard(tripRecord: TripDomain, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = modifier
@@ -53,9 +53,8 @@ fun FoundTripCard(modifier: Modifier = Modifier, tripRecord: TripDomain, onClick
 
 @Preview
 @Composable
-fun FoundPreview() {
+private fun FoundPreview() {
     FoundTripCard(
-        modifier = Modifier,
         tripRecord = TripDomain(
             uuid = "12",
             trainNumber = "120A",
@@ -73,6 +72,7 @@ fun FoundPreview() {
                 city = "Москва ВК Восточный"
             )
         ),
-        onClick = {}
+        onClick = {},
+        modifier = Modifier
     )
 }

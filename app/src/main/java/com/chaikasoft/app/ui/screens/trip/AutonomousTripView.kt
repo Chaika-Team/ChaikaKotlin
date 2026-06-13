@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.trip.DropDownMenu
 import com.chaikasoft.app.ui.navigation.Routes
@@ -36,6 +37,8 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val fromSuggestions = viewModel.fromSuggestions.collectAsLazyPagingItems()
+    val toSuggestions = viewModel.toSuggestions.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -97,7 +100,7 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
                 modifier = Modifier.padding(horizontal = 16.dp),
                 query = state.fromQuery,
                 onQueryChange = viewModel::onFromQueryChange,
-                suggestionsFlow = viewModel.fromSuggestions,
+                suggestions = fromSuggestions,
                 onItemSelected = viewModel::onSelectFrom,
                 placeholderText = "Укажите станцию отправления"
             )
@@ -108,7 +111,7 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
                 modifier = Modifier.padding(horizontal = 16.dp),
                 query = state.toQuery,
                 onQueryChange = viewModel::onToQueryChange,
-                suggestionsFlow = viewModel.toSuggestions,
+                suggestions = toSuggestions,
                 onItemSelected = viewModel::onSelectTo,
                 placeholderText = "Укажите станцию прибытия"
             )

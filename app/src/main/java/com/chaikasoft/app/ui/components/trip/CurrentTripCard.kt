@@ -17,11 +17,10 @@ import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
 fun CurrentTripCard(
-    modifier: Modifier = Modifier,
     tripRecord: TripDomain,
-    heightTotal: Dp = TripDimens.NewTripButtonHeight,
-    widthTotal: Dp = TripDimens.CardWidth,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    heightTotal: Dp = TripDimens.NewTripButtonHeight
 ) {
     Box(
         modifier = modifier
@@ -37,7 +36,6 @@ fun CurrentTripCard(
             modifier = Modifier.matchParentSize().dashedBorder(),
             tripRecord = tripRecord,
             heightTotal = heightTotal,
-            widthTotal = widthTotal,
             onClick = onClick
         )
     }
@@ -45,7 +43,7 @@ fun CurrentTripCard(
 
 @Preview
 @Composable
-fun CurrentTripCardPreview() {
+private fun CurrentTripCardPreview() {
     ChaikaTheme {
         CurrentTripCard(
             modifier = Modifier,

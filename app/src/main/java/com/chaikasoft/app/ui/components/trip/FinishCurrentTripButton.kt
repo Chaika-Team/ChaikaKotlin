@@ -3,7 +3,6 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,7 +17,7 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun FinishCurrentTripButton(
+internal fun FinishCurrentTripButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -27,7 +26,7 @@ fun FinishCurrentTripButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .width(TripDimens.FinishTripWidth)
+            .fillMaxWidth()
             .height(TripDimens.FinishTripHeight),
         shape = RoundedCornerShape(TripDimens.SearchBarCornerRadius),
         colors = ButtonDefaults.buttonColors(

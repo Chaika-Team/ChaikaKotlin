@@ -1,5 +1,6 @@
 package com.chaikasoft.app.ui.components.trip
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,23 +13,21 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RetrySendResultBottomSheet(tripViewModel: TripViewModel) {
-    val resultState by tripViewModel.retryResult.collectAsStateWithLifecycle()
-
-    if (resultState == null) return
-
+fun RetrySendResultBottomSheet(
+    @StringRes messageRes: Int?,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (messageRes == null) return
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
@@ -36,11 +35,12 @@ fun RetrySendResultBottomSheet(tripViewModel: TripViewModel) {
         onDismissRequest = {
             scope.launch {
                 sheetState.hide()
-                tripViewModel.dismissRetryResult()
+                onDismiss()
             }
         },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -54,7 +54,7 @@ fun RetrySendResultBottomSheet(tripViewModel: TripViewModel) {
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = stringResource(resultState!!.messageRes),
+                text = stringResource(messageRes),
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(Modifier.height(20.dp))
@@ -63,7 +63,7 @@ fun RetrySendResultBottomSheet(tripViewModel: TripViewModel) {
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        tripViewModel.dismissRetryResult()
+                        onDismiss()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

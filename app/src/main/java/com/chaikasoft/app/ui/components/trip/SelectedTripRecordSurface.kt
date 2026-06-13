@@ -10,9 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun SelectedTripRecordSurface(modifier: Modifier = Modifier, height: Dp, tripRecord: TripDomain) {
+fun SelectedTripRecordSurface(
+    tripRecord: TripDomain,
+    modifier: Modifier = Modifier,
+    height: Dp = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL * 2
+) {
     Box(
         modifier.fillMaxWidth().height(height),
         contentAlignment = Alignment.Center
@@ -21,8 +26,8 @@ fun SelectedTripRecordSurface(modifier: Modifier = Modifier, height: Dp, tripRec
             height = height
         )
         FoundTripContent(
-            modifier = Modifier.matchParentSize().padding(24.dp),
-            tripRecord = tripRecord
+            tripRecord = tripRecord,
+            modifier = Modifier.matchParentSize().padding(24.dp)
         )
     }
 }

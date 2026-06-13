@@ -32,7 +32,7 @@ object TripTime {
  * Текст длительности c отключённым font padding и обрезкой в 1 строку.
  */
 @Composable
-fun DurationText(text: String, modifier: Modifier = Modifier) {
+internal fun DurationText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         maxLines = 1,
@@ -52,14 +52,14 @@ fun DurationText(text: String, modifier: Modifier = Modifier) {
 
 /** Удобная перегрузка — сразу час/минуты. */
 @Composable
-fun DurationText(hours: Int, minutes: Int, modifier: Modifier = Modifier) =
+internal fun DurationText(hours: Int, minutes: Int, modifier: Modifier = Modifier) =
     DurationText("$hours ч $minutes мин", modifier)
 
 /**
  * Паддингованная «стрелка» (линия) — чтобы не дублировать .padding(...) вокруг Arrow().
  */
 @Composable
-fun ArrowPadded(
+internal fun ArrowPadded(
     modifier: Modifier = Modifier,
     horizontalPadding: Dp = TripTime.ArrowHorizontalPadding,
     bottomPadding: Dp = TripTime.ArrowBottomPadding,
@@ -79,7 +79,7 @@ fun ArrowPadded(
 
 /** Крупное «hh:mm» — единый стиль и ограничения. */
 @Composable
-fun TimeValueText(text: String, modifier: Modifier = Modifier) {
+internal fun TimeValueText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyLarge,
@@ -92,7 +92,7 @@ fun TimeValueText(text: String, modifier: Modifier = Modifier) {
 
 /** Маленький текст даты (день/месяц). */
 @Composable
-fun DayMonthText(text: String, modifier: Modifier = Modifier) {
+internal fun DayMonthText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,

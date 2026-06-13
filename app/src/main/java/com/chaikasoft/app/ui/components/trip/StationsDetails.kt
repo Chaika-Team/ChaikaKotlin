@@ -16,7 +16,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.chaikasoft.app.domain.models.trip.TripDomain
 
 @Composable
-fun StationsDetails(modifier: Modifier = Modifier, tripRecord: TripDomain) {
+internal fun StationsDetails(tripRecord: TripDomain, modifier: Modifier = Modifier) {
     val colorScheme = MaterialTheme.colorScheme
     ConstraintLayout(
         modifier = modifier

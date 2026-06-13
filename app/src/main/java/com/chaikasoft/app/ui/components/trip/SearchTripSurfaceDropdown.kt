@@ -14,12 +14,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -30,8 +29,8 @@ fun SearchTripSurfaceDropdown(
     onFromQueryChange: (String) -> Unit,
     toQuery: String,
     onToQueryChange: (String) -> Unit,
-    fromSuggestions: Flow<PagingData<StationDomain>>,
-    toSuggestions: Flow<PagingData<StationDomain>>,
+    fromSuggestions: LazyPagingItems<StationDomain>,
+    toSuggestions: LazyPagingItems<StationDomain>,
     onStartStationChange: (StationDomain?) -> Unit,
     onFinishStationChange: (StationDomain?) -> Unit,
     modifier: Modifier = Modifier,
@@ -69,7 +68,7 @@ fun SearchTripSurfaceDropdown(
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 query = fromQuery,
                 onQueryChange = onFromQueryChange,
-                suggestionsFlow = fromSuggestions,
+                suggestions = fromSuggestions,
                 onItemSelected = { station ->
                     onStartStationChange(station)
                 },
@@ -86,7 +85,7 @@ fun SearchTripSurfaceDropdown(
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 query = toQuery,
                 onQueryChange = onToQueryChange,
-                suggestionsFlow = toSuggestions,
+                suggestions = toSuggestions,
                 onItemSelected = { station ->
                     onFinishStationChange(station)
                 },

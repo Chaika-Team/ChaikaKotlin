@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.debounce
 
 @OptIn(FlowPreview::class)
 @Composable
-fun SearchTripSurface(
+internal fun SearchTripSurface(
     modifier: Modifier = Modifier,
     height: Dp = TripDimens.SearchCardHeight,
     onSearch: (date: String, startStation: String, finishStation: String) -> Unit = { _, _, _ -> },
@@ -102,6 +102,6 @@ fun SearchTripSurface(
 
 @Preview
 @Composable
-fun SearchCardPreview() {
+private fun SearchCardPreview() {
     SearchTripSurface(modifier = Modifier)
 }

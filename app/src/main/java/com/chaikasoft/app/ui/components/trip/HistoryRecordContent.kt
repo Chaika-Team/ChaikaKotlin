@@ -28,10 +28,10 @@ import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun HistoryRecordContent(
-    modifier: Modifier = Modifier,
+internal fun HistoryRecordContent(
     tripRecord: TripDomain,
-    isError: Boolean = false
+    isError: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val sideColor = if (isError) colorScheme.error else colorScheme.secondary

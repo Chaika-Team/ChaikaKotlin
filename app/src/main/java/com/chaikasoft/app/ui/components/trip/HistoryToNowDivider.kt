@@ -58,7 +58,7 @@ fun HistoryToNowDivider(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-fun HistoryToNowDividerPreview() {
+private fun HistoryToNowDividerPreview() {
     ChaikaTheme {
         HistoryToNowDivider()
     }

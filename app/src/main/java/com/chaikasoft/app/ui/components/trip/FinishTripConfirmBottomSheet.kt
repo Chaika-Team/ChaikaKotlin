@@ -31,7 +31,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinishTripConfirmBottomSheet(visible: Boolean, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+fun FinishTripConfirmBottomSheet(
+    visible: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     if (!visible) return
 
     var isConfirmed by remember { mutableStateOf(false) }
@@ -48,7 +53,8 @@ fun FinishTripConfirmBottomSheet(visible: Boolean, onConfirm: () -> Unit, onDism
     ModalBottomSheet(
         onDismissRequest = { dismiss() },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier

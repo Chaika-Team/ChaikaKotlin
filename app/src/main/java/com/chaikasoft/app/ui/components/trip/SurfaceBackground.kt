@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun SurfaceBackground(
+internal fun SurfaceBackground(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 20.dp,
     height: Dp = TripDimens.SearchCardHeight,

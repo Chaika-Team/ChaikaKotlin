@@ -25,13 +25,11 @@ import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun CurrentTripContent(
-    modifier: Modifier = Modifier,
+internal fun CurrentTripContent(
     tripRecord: TripDomain,
-    heightTotal: Dp = TripDimens.NewTripButtonHeight,
-    @Suppress("UNUSED_PARAMETER")
-    widthTotal: Dp = TripDimens.CardWidth,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    heightTotal: Dp = TripDimens.NewTripButtonHeight
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -112,10 +110,9 @@ fun CurrentTripContent(
 
 @Preview
 @Composable
-fun CurrentTripButtonPreview() {
+private fun CurrentTripButtonPreview() {
     ChaikaTheme {
         CurrentTripContent(
-            modifier = Modifier,
             tripRecord = TripDomain(
                 uuid = "12",
                 trainNumber = "120A",
@@ -133,7 +130,8 @@ fun CurrentTripButtonPreview() {
                     city = "Москва ВК Восточный"
                 )
             ),
-            onClick = { }
+            onClick = { },
+            modifier = Modifier
         )
     }
 }

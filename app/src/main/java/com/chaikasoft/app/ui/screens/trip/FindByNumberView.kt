@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.components.trip.FoundTripCard
@@ -137,6 +138,9 @@ private fun TripsSearchFilters(
     searchStartName: String?,
     searchFinishName: String?
 ) {
+    val fromSuggestions = viewModel.fromSuggestions.collectAsLazyPagingItems()
+    val toSuggestions = viewModel.toSuggestions.collectAsLazyPagingItems()
+
     SearchTripSurfaceDropdown(
         searchDateDisplay = searchDateDisplay,
         onSearchDateClick = {
@@ -160,8 +164,8 @@ private fun TripsSearchFilters(
                 viewModel.onFinishStationChanged(null)
             }
         },
-        fromSuggestions = viewModel.fromSuggestions,
-        toSuggestions = viewModel.toSuggestions,
+        fromSuggestions = fromSuggestions,
+        toSuggestions = toSuggestions,
         onStartStationChange = viewModel::onStartStationChanged,
         onFinishStationChange = viewModel::onFinishStationChanged
     )
@@ -216,7 +220,7 @@ private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit
                     .testTag("tripsRetryButton")
                     .padding(16.dp)
                     .height(46.dp)
-                    .width(200.dp),
+                    .widthIn(min = 200.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(fontSize = 18.sp, text = stringResource(R.string.retry))
@@ -235,9 +239,9 @@ private fun TripsGrid(trips: List<TripDomain>, onTripClick: (TripDomain) -> Unit
     ) {
         items(trips) { trip ->
             FoundTripCard(
-                modifier = Modifier,
                 tripRecord = trip,
-                onClick = { onTripClick(trip) }
+                onClick = { onTripClick(trip) },
+                modifier = Modifier
             )
         }
     }

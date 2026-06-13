@@ -27,7 +27,7 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
-fun NewTripButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun NewTripButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .testTag("newTripButton")
@@ -64,6 +64,6 @@ fun NewTripButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun NewTripButtonPreview() {
-    NewTripButton { }
+private fun NewTripButtonPreview() {
+    NewTripButton(onClick = { })
 }

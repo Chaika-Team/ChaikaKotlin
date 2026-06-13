@@ -39,6 +39,9 @@ fun MainTripView(
 ) {
     val history by viewModel.shiftHistory.collectAsStateWithLifecycle()
     val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
+    val finishTripDialog by viewModel.finishTripDialog.collectAsStateWithLifecycle()
+    val retryConfirm by viewModel.retryConfirm.collectAsStateWithLifecycle()
+    val retryResult by viewModel.retryResult.collectAsStateWithLifecycle()
     var showFinishTripConfirmSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -115,13 +118,21 @@ fun MainTripView(
         )
 
         FinishTripResultBottomSheet(
-            tripViewModel = viewModel
+            messageRes = finishTripDialog?.messageRes,
+            onDismiss = viewModel::dismissFinishTripDialog
         )
 
         // Retry confirmation dialog.
-        RetrySendConfirmBottomSheet(tripViewModel = viewModel)
+        RetrySendConfirmBottomSheet(
+            visible = retryConfirm != null,
+            onConfirm = viewModel::confirmRetrySend,
+            onDismiss = viewModel::dismissRetryConfirm
+        )
 
         // Retry result dialog.
-        RetrySendResultBottomSheet(tripViewModel = viewModel)
+        RetrySendResultBottomSheet(
+            messageRes = retryResult?.messageRes,
+            onDismiss = viewModel::dismissRetryResult
+        )
     }
 }
