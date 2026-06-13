@@ -9,6 +9,6 @@ fun FastReportView.toDomain(): FastReportDomain = FastReportDomain(
     addedQuantity = addedQuantity,
     replenishedQuantity = replenishedQuantity,
     soldCashQuantity = soldCashQuantity,
-    soldCartQuantity = soldCartQuantity,
+    soldCardQuantity = soldCardQuantity,
     revenue = revenue
 )

@@ -317,7 +317,7 @@ private fun TableRow(
             NumericCell(report.addedQuantity.toString(), Color.Black, widths.qty, TableText)
             NumericCell(report.replenishedQuantity.toString(), Color.Gray, widths.qty, TableText)
             NumericCell(report.soldCashQuantity.toString(), Color.Black, widths.qty, TableText)
-            NumericCell(report.soldCartQuantity.toString(), Color.Gray, widths.qty, TableText)
+            NumericCell(report.soldCardQuantity.toString(), Color.Gray, widths.qty, TableText)
             NumericCell(
                 formatNumber(report.revenue.toDouble() / 100),
                 Color.Black,

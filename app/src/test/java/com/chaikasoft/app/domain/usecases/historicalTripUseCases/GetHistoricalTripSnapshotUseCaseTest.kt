@@ -67,7 +67,7 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
                         item(2, -1, 500)
                     ),
                     cart(
-                        OperationTypeDomain.SOLD_CART,
+                        OperationTypeDomain.SOLD_CARD,
                         "999",
                         "2026-01-01T10:15:00Z",
                         item(2, -2, 500)
@@ -91,14 +91,14 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
             snapshot.statistics[0].addedQuantity shouldBe 5
             snapshot.statistics[0].replenishedQuantity shouldBe 3
             snapshot.statistics[0].soldCashQuantity shouldBe 2
-            snapshot.statistics[0].soldCartQuantity shouldBe 0
+            snapshot.statistics[0].soldCardQuantity shouldBe 0
             snapshot.statistics[0].revenue shouldBe 2000
 
             snapshot.statistics[1].productId shouldBe 2
             snapshot.statistics[1].productName shouldBe ""
             snapshot.statistics[1].productPrice shouldBe 500
             snapshot.statistics[1].soldCashQuantity shouldBe 1
-            snapshot.statistics[1].soldCartQuantity shouldBe 2
+            snapshot.statistics[1].soldCardQuantity shouldBe 2
             snapshot.statistics[1].revenue shouldBe 500
 
             snapshot.cashRevenue shouldBe 2500

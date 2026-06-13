@@ -77,7 +77,7 @@ class RoomShiftReportRepositoryTest {
         assertEquals(12, parsed?.carriageId)
         assertEquals(1, parsed?.carts?.size)
         assertEquals("EMP-7", parsed?.carts?.first()?.cartId?.employeeId)
-        assertEquals(OperationTypeDomain.SOLD_CART.ordinal, parsed?.carts?.first()?.operationType)
+        assertEquals(OperationTypeDomain.SOLD_CARD.ordinal, parsed?.carts?.first()?.operationType)
         assertEquals(100, parsed?.carts?.first()?.items?.first()?.productId)
         assertEquals(-2, parsed?.carts?.first()?.items?.first()?.quantity)
         assertEquals(150, parsed?.carts?.first()?.items?.first()?.price)
@@ -119,7 +119,7 @@ class RoomShiftReportRepositoryTest {
             CartOperationWithConductor(
                 operation = CartOperation(
                     id = operationId,
-                    operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                    operationType = OperationTypeDomain.SOLD_CARD.ordinal,
                     operationTime = "2025-01-01T02:00:00Z",
                     conductorId = 7
                 ),
@@ -227,7 +227,7 @@ class RoomShiftReportRepositoryTest {
         )
         val operationId = db.cartOperationDao().insertOperation(
             CartOperation(
-                operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                operationType = OperationTypeDomain.SOLD_CARD.ordinal,
                 operationTime = "2025-01-01T02:00:00Z",
                 conductorId = 7
             )

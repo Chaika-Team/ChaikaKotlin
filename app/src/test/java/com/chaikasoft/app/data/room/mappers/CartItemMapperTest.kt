@@ -21,7 +21,7 @@ class CartItemMapperTest : FunSpec({
         )
 
         domain.toEntity(cartOperationId = 1, operationTypeDomain = OperationTypeDomain.SOLD_CASH).impact shouldBe -3
-        domain.toEntity(cartOperationId = 1, operationTypeDomain = OperationTypeDomain.SOLD_CART).impact shouldBe -3
+        domain.toEntity(cartOperationId = 1, operationTypeDomain = OperationTypeDomain.SOLD_CARD).impact shouldBe -3
         domain.toEntity(cartOperationId = 1, operationTypeDomain = OperationTypeDomain.ADD).impact shouldBe 3
         domain.toEntity(cartOperationId = 1, operationTypeDomain = OperationTypeDomain.REPLENISH).impact shouldBe 3
     }

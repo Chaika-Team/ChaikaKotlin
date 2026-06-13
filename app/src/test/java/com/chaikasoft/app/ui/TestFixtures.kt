@@ -78,7 +78,7 @@ internal fun report(
     addedQuantity = 0,
     replenishedQuantity = 0,
     soldCashQuantity = soldCash,
-    soldCartQuantity = 0,
+    soldCardQuantity = 0,
     revenue = price * soldCash
 )
 

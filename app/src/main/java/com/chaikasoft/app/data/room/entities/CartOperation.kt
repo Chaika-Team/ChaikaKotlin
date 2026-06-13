@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
  * Сущность операции с корзиной.
  *
  * @param id Уникальный идентификатор операции.
- * @param operationType Тип операции (0 - ADD, 1 - SOLD_CASH, 2 - SOLD_CART, 3 - REPLENISH).
+ * @param operationType Тип операции (0 - ADD, 1 - SOLD_CASH, 2 - SOLD_CARD, 3 - REPLENISH).
  * @param operationTime Время выполнения операции в формате ISO 8601.
  * @param conductorId Идентификатор проводника, связанного с операцией.
  */

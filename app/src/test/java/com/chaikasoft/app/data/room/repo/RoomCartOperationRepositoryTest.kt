@@ -34,12 +34,12 @@ class RoomCartOperationRepositoryTest : FunSpec({
      */
     test("countByType delegates operation type ordinal into dao") {
         runTest {
-            coEvery { dao.countByType(OperationTypeDomain.SOLD_CART.ordinal) } returns 7
+            coEvery { dao.countByType(OperationTypeDomain.SOLD_CARD.ordinal) } returns 7
 
-            val count = repository.countByType(OperationTypeDomain.SOLD_CART)
+            val count = repository.countByType(OperationTypeDomain.SOLD_CARD)
 
             count shouldBe 7
-            coVerify(exactly = 1) { dao.countByType(OperationTypeDomain.SOLD_CART.ordinal) }
+            coVerify(exactly = 1) { dao.countByType(OperationTypeDomain.SOLD_CARD.ordinal) }
         }
     }
 
