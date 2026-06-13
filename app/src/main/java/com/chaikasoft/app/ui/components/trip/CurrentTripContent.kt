@@ -1,9 +1,9 @@
 package com.chaikasoft.app.ui.components.trip
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.chaikasoft.app.R
@@ -78,7 +78,6 @@ fun CurrentTripContent(
                 modifier = Modifier.fillMaxWidth(),
                 tripRecord = tripRecord
             )
-            Spacer(modifier = Modifier.height(TripDimens.CurrentTripButtonSpacing))
             FinishCurrentTripButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onClick,
@@ -115,19 +114,27 @@ private fun CurrentTripHeader(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        IconButton(
-            onClick = onDeleteClick,
-            enabled = deleteEnabled,
-            modifier = Modifier.testTag("currentTripDelete_$tripUuid")
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.trip_delete_action),
-                tint = MaterialTheme.colorScheme.error
-            )
-        }
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = stringResource(R.string.trip_delete_action),
+            tint = if (deleteEnabled) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ICON_ALPHA)
+            },
+            modifier = Modifier
+                .size(TripDimens.CurrentTripHeaderHeight)
+                .testTag("currentTripDelete_$tripUuid")
+                .clickable(
+                    enabled = deleteEnabled,
+                    role = Role.Button,
+                    onClick = onDeleteClick
+                )
+        )
     }
 }
+
+private const val DISABLED_ICON_ALPHA = 0.38f
 
 @Preview
 @Composable

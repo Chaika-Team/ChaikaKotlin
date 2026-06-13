@@ -1,5 +1,6 @@
 package com.chaikasoft.app.ui.components.trip
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
@@ -115,16 +116,18 @@ private fun HistoryRecordHeader(
             )
         }
         if (isError) {
-            IconButton(
-                onClick = onRetrySend,
-                modifier = Modifier.testTag("historyRetrySend_$tripUuid")
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = stringResource(R.string.retry_action),
-                    tint = colorScheme.error
-                )
-            }
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = stringResource(R.string.retry_action),
+                tint = colorScheme.error,
+                modifier = Modifier
+                    .size(TripDimens.HistoryRecordHeaderHeight)
+                    .testTag("historyRetrySend_$tripUuid")
+                    .clickable(
+                        role = Role.Button,
+                        onClick = onRetrySend
+                    )
+            )
         }
     }
 }
