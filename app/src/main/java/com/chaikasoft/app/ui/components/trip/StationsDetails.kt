@@ -3,7 +3,6 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,15 +14,13 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.chaikasoft.app.domain.models.trip.TripDomain
-import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
 fun StationsDetails(modifier: Modifier = Modifier, tripRecord: TripDomain) {
-    var colorScheme = MaterialTheme.colorScheme
+    val colorScheme = MaterialTheme.colorScheme
     ConstraintLayout(
         modifier = modifier
             .height(30.dp)
-            .width(TripDimens.TimeDetailsWidth)
     ) {
         val (startDest, endDest) = createRefs()
 

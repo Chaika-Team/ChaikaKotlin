@@ -2,8 +2,8 @@ package com.chaikasoft.app.ui.components.trip
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,7 +26,7 @@ fun CurrentTripCard(
     Box(
         modifier = modifier
             .height(heightTotal)
-            .width(widthTotal)
+            .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.medium

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +27,6 @@ fun FoundTripContent(modifier: Modifier = Modifier, tripRecord: TripDomain) {
     ConstraintLayout(
         modifier = modifier
             .height(TripDimens.FoundTripCardHeight)
-            .width(TripDimens.CardWidth)
     ) {
         val (trainId, timeDetails, stationsDetails) = createRefs()
 

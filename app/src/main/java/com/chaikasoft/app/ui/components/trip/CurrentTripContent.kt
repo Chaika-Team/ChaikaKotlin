@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ fun CurrentTripContent(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
     heightTotal: Dp = TripDimens.NewTripButtonHeight,
+    @Suppress("UNUSED_PARAMETER")
     widthTotal: Dp = TripDimens.CardWidth,
     onClick: () -> Unit
 ) {
@@ -38,7 +38,6 @@ fun CurrentTripContent(
     ConstraintLayout(
         modifier = modifier
             .height(heightTotal)
-            .width(widthTotal)
     ) {
         val (sideRect, trainId, timeDetails, stationsDetails, button) = createRefs()
 

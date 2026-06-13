@@ -13,12 +13,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
@@ -35,8 +38,11 @@ fun OperationScreen(viewModel: OperationViewModel) {
             .testTag("operationScreen")
     ) {
         items(operations.itemCount) { item ->
-            operations[item]?.let {
-                OperationCard(summary = it, viewModel = viewModel)
+            operations[item]?.let { summary ->
+                val itemsFlow = remember(summary.id) { viewModel.getItems(summary.id) }
+                val cart by itemsFlow.collectAsStateWithLifecycle(initialValue = null)
+
+                OperationCard(summary = summary, cart = cart)
             }
         }
 

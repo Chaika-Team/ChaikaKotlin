@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +39,6 @@ fun HistoryRecordContent(
     ConstraintLayout(
         modifier = modifier
             .height(TripDimens.RecordCardHeight)
-            .width(TripDimens.CardWidth)
     ) {
         val (SideRect, trainId, timeDetails, stationsDetails) = createRefs()
 
