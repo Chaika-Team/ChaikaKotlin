@@ -10,9 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-
-private val HeaderIconSize = 18.dp
+import com.chaikasoft.app.ui.theme.StatisticsDimens
 
 @Composable
 fun HeaderIconCell(@DrawableRes icon: Int, width: Dp, modifier: Modifier = Modifier) {
@@ -23,7 +21,7 @@ fun HeaderIconCell(@DrawableRes icon: Int, width: Dp, modifier: Modifier = Modif
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
-            modifier = Modifier.size(HeaderIconSize)
+            modifier = Modifier.size(StatisticsDimens.HeaderIconSize)
         )
     }
 }
