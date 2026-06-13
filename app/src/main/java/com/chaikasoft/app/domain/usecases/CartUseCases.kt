@@ -79,7 +79,7 @@ class SoldCardOpUseCase @Inject constructor(
     private val saveOp: SaveCartWithItemsAndOperationUseCase
 ) {
     suspend operator fun invoke(cart: InMemoryCartRepositoryInterface, conductorId: Int) =
-        saveOp(cart, CartOperationDomain(OperationTypeDomain.SOLD_CART, conductorId))
+        saveOp(cart, CartOperationDomain(OperationTypeDomain.SOLD_CARD, conductorId))
 }
 
 class ReplenishUseCase @Inject constructor(
@@ -139,7 +139,7 @@ class UpdateQuantityUnlimitedUseCase @Inject constructor() {
 }
 
 /**
- * Обновление количества товара с проверкой остатка (для SOLD_CASH и SOLD_CART).
+ * Обновление количества товара с проверкой остатка (для SOLD_CASH и SOLD_CARD).
  */
 class UpdateQuantityWithLimitUseCase @Inject constructor(
     private val getAvailableQuantity: GetAvailableQuantityUseCase

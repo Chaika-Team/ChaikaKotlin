@@ -44,7 +44,7 @@ class CartOperationUseCasesParameterizedTest : FunSpec({
             ),
             Case(
                 name = "SoldCardOpUseCase",
-                expectedType = OperationTypeDomain.SOLD_CART,
+                expectedType = OperationTypeDomain.SOLD_CARD,
                 invoke = { saveOp, cart, conductorId -> SoldCardOpUseCase(saveOp)(cart, conductorId) },
             ),
             Case(

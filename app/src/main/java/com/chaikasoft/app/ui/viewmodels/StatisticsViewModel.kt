@@ -38,7 +38,7 @@ class StatisticsViewModel @Inject constructor(
     /** Вызывать при старте экрана и, при желании, при расширении шторки */
     fun refreshCashlessChecks() {
         viewModelScope.launch {
-            _cashlessChecksCount.value = getOperationCountByType(OperationTypeDomain.SOLD_CART)
+            _cashlessChecksCount.value = getOperationCountByType(OperationTypeDomain.SOLD_CARD)
         }
     }
 }

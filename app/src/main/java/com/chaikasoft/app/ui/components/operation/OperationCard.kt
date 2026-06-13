@@ -115,7 +115,7 @@ fun OperationCard(summary: OperationSummaryDomain, cart: CartDomain?) {
                             ProductRow(
                                 item = cartItem,
                                 isSale = summary.type == OperationTypeDomain.SOLD_CASH ||
-                                    summary.type == OperationTypeDomain.SOLD_CART
+                                    summary.type == OperationTypeDomain.SOLD_CARD
                             )
                             // Разделитель только между строками
                             if (index < cartDomain.items.lastIndex) {
@@ -148,7 +148,7 @@ fun OperationCard(summary: OperationSummaryDomain, cart: CartDomain?) {
                 )
 
                 if (summary.type == OperationTypeDomain.SOLD_CASH ||
-                    summary.type == OperationTypeDomain.SOLD_CART
+                    summary.type == OperationTypeDomain.SOLD_CARD
                 ) {
                     Text(
                         text = formatPriceOnly(summary.totalPrice),
@@ -204,7 +204,7 @@ fun ProductRow(item: CartItemDomain, isSale: Boolean) {
 fun OperationTypeDomain.stringRes(): Int = when (this) {
     OperationTypeDomain.ADD -> R.string.op_type_add
     OperationTypeDomain.SOLD_CASH -> R.string.op_type_sold_cash
-    OperationTypeDomain.SOLD_CART -> R.string.op_type_sold_card
+    OperationTypeDomain.SOLD_CARD -> R.string.op_type_sold_card
     OperationTypeDomain.REPLENISH -> R.string.op_type_replenish
 }
 
@@ -213,5 +213,5 @@ fun OperationTypeDomain.iconRes(): Int = when (this) {
     OperationTypeDomain.ADD -> R.drawable.ic_bag
     OperationTypeDomain.REPLENISH -> R.drawable.ic_package_receive
     OperationTypeDomain.SOLD_CASH -> R.drawable.ic_cash_payment
-    OperationTypeDomain.SOLD_CART -> R.drawable.ic_credit_card
+    OperationTypeDomain.SOLD_CARD -> R.drawable.ic_credit_card
 }

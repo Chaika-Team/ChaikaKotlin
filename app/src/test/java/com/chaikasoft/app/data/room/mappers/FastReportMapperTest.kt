@@ -18,7 +18,7 @@ class FastReportMapperTest : FunSpec({
             addedQuantity = 10,
             replenishedQuantity = 3,
             soldCashQuantity = 5,
-            soldCartQuantity = 2,
+            soldCardQuantity = 2,
             revenue = 750,
         )
 
@@ -28,7 +28,7 @@ class FastReportMapperTest : FunSpec({
             addedQuantity = 10,
             replenishedQuantity = 3,
             soldCashQuantity = 5,
-            soldCartQuantity = 2,
+            soldCardQuantity = 2,
             revenue = 750,
         )
     }

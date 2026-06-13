@@ -40,7 +40,7 @@ suspend fun ShiftReportReport.toHistoricalTripSnapshot(
         statistics = statistics,
         cashRevenue = statistics.sumOf { it.revenue },
         cashlessChecksCount = carts.count {
-            it.operationType == OperationTypeDomain.SOLD_CART.ordinal
+            it.operationType == OperationTypeDomain.SOLD_CARD.ordinal
         },
         operations = operations
     )
@@ -115,7 +115,7 @@ private data class HistoricalProductAccumulator(
     var addedQuantity: Int = 0,
     var replenishedQuantity: Int = 0,
     var soldCashQuantity: Int = 0,
-    var soldCartQuantity: Int = 0,
+    var soldCardQuantity: Int = 0,
     var revenue: Int = 0
 ) {
     fun add(item: CartItemReport, operationType: OperationTypeDomain) {
@@ -127,8 +127,8 @@ private data class HistoricalProductAccumulator(
                 soldCashQuantity += soldQuantity
                 revenue += soldQuantity * item.price
             }
-            OperationTypeDomain.SOLD_CART -> {
-                soldCartQuantity += -item.quantity
+            OperationTypeDomain.SOLD_CARD -> {
+                soldCardQuantity += -item.quantity
             }
         }
     }
@@ -139,7 +139,7 @@ private data class HistoricalProductAccumulator(
         addedQuantity = addedQuantity,
         replenishedQuantity = replenishedQuantity,
         soldCashQuantity = soldCashQuantity,
-        soldCartQuantity = soldCartQuantity,
+        soldCardQuantity = soldCardQuantity,
         revenue = revenue,
         productId = productId
     )

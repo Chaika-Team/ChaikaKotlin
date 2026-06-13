@@ -370,7 +370,7 @@ class HermeticSmokeE2ETest {
                         employeeId = UNKNOWN_CONDUCTOR_EMPLOYEE_ID,
                         operationTime = "2026-04-11T09:10:00+03:00"
                     ),
-                    operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                    operationType = OperationTypeDomain.SOLD_CARD.ordinal,
                     items = listOf(
                         CartItemReport(
                             productId = UNKNOWN_PRODUCT_ID,
