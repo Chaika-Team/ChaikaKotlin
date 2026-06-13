@@ -60,14 +60,16 @@ import java.util.Locale
 private fun rememberColumnWidths(): ColumnWidths {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
-    return remember(screenWidth) {
-        if (configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+    return remember(screenWidth, isLandscape) {
+        if (isLandscape) {
             ColumnWidths(
-                name = screenWidth * 0.25f, // 25% для названия
-                price = screenWidth * 0.12f, // 12% для цены
-                qty = screenWidth * 0.08f, // 8% для каждой qty колонки
-                revenue = screenWidth * 0.15f // 15% для итога
+                name = screenWidth * 0.25f,
+                price = screenWidth * 0.12f,
+                qty = screenWidth * 0.08f,
+                revenue = screenWidth * 0.15f
             )
         } else {
             ColumnWidths(
@@ -97,20 +99,20 @@ fun StatisticsScreen(
     LaunchedEffect(Unit) { viewModel.refreshCashlessChecks() }
 
     StatisticsContent(
-        modifier = modifier,
         reports = reports,
         cashRevenue = cashRevenue,
-        cashlessChecks = cashlessChecks
+        cashlessChecks = cashlessChecks,
+        modifier = modifier
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun StatisticsContent(
-    modifier: Modifier = Modifier,
+internal fun StatisticsContent(
     reports: List<FastReportDomain>,
     cashRevenue: Int,
-    cashlessChecks: Int
+    cashlessChecks: Int,
+    modifier: Modifier = Modifier
 ) {
     val columnWidths = rememberColumnWidths()
     val configuration = LocalConfiguration.current
@@ -185,12 +187,13 @@ private fun CashSummarySheet(
     cashlessChecks: Int,
     showChecks: Boolean,
     showLabels: Boolean,
-    bottomPadding: Dp
+    bottomPadding: Dp,
+    modifier: Modifier = Modifier
 ) {
     val cashRevenueText = remember(cashRevenue) { formatPriceOnly(cashRevenue) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .padding(bottom = bottomPadding),
@@ -241,8 +244,13 @@ private fun CashSummarySheet(
 }
 
 @Composable
-private fun TableHeader(scrollState: ScrollState, widths: ColumnWidths, isLandscape: Boolean) {
-    TableLineContainer {
+private fun TableHeader(
+    scrollState: ScrollState,
+    widths: ColumnWidths,
+    isLandscape: Boolean,
+    modifier: Modifier = Modifier
+) {
+    TableLineContainer(modifier = modifier) {
         Box(
             modifier = Modifier
                 .width(widths.name)
@@ -287,9 +295,10 @@ private fun TableRow(
     report: FastReportDomain,
     scrollState: ScrollState,
     widths: ColumnWidths,
-    isLandscape: Boolean
+    isLandscape: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    TableLineContainer {
+    TableLineContainer(modifier = modifier) {
         Box(
             modifier = Modifier
                 .width(widths.name)
@@ -334,10 +343,11 @@ private fun CenterScrollArea(
     scrollState: ScrollState,
     nameWidth: Dp,
     enableScroll: Boolean,
+    modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = nameWidth)
             .clipToBounds()
@@ -363,18 +373,27 @@ private fun CenterScrollArea(
 }
 
 @Composable
-private fun TableLineContainer(content: @Composable BoxScope.() -> Unit) {
+private fun TableLineContainer(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
     ) { content() }
 }
 
 @Composable
-private fun NumericCell(text: String, color: Color, width: Dp, style: TextStyle) {
+private fun NumericCell(
+    text: String,
+    color: Color,
+    width: Dp,
+    style: TextStyle,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier.width(width),
+        modifier = modifier.width(width),
         contentAlignment = Alignment.CenterEnd
     ) {
         Text(

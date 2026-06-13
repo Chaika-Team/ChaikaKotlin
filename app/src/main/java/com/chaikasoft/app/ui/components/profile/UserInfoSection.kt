@@ -31,9 +31,13 @@ import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.theme.ProfileDimens
 
 @Composable
-fun UserInfoSection(conductor: ConductorDomain?, onClick: () -> Unit) {
+fun UserInfoSection(
+    conductor: ConductorDomain?,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .minimumInteractiveComponentSize(),
         verticalAlignment = Alignment.CenterVertically,

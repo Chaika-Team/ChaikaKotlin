@@ -21,7 +21,8 @@ import com.chaikasoft.app.ui.theme.BarDimens
 fun HistoricalTripBottomBar(
     navController: NavController,
     currentRoute: String?,
-    shiftUuid: String
+    shiftUuid: String,
+    modifier: Modifier = Modifier
 ) {
     fun navigateToHistoricalTab(route: String) {
         val alreadySelected =
@@ -60,7 +61,7 @@ fun HistoricalTripBottomBar(
     )
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(BarDimens.BarHeight),
         horizontalArrangement = Arrangement.SpaceEvenly,

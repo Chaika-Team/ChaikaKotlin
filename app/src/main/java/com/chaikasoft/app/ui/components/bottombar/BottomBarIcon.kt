@@ -18,14 +18,15 @@ fun BottomBarIcon(
     imageVector: ImageVector,
     selected: Boolean,
     onClick: () -> Unit,
-    tag: String? = null
+    tag: String? = null,
+    modifier: Modifier = Modifier
 ) {
     val colors = MaterialTheme.colorScheme
     val iconColor = if (selected) colors.primary else colors.secondary
 
     IconButton(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .then(if (tag != null) Modifier.testTag(tag) else Modifier)
             .size(BarDimens.IconTouchTargetSize)
             .clip(RoundedCornerShape(BarDimens.CornerShape)),

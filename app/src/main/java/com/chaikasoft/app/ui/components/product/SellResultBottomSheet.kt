@@ -1,5 +1,6 @@
 package com.chaikasoft.app.ui.components.product
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,21 +13,22 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.viewmodels.SaleViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SellResultBottomSheet(viewModel: SaleViewModel, onClick: () -> Unit) {
-    val state by viewModel.sellResultDialog.collectAsStateWithLifecycle()
-    if (state == null) return
+fun SellResultBottomSheet(
+    @StringRes messageRes: Int?,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (messageRes == null) return
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -35,11 +37,12 @@ fun SellResultBottomSheet(viewModel: SaleViewModel, onClick: () -> Unit) {
         onDismissRequest = {
             scope.launch {
                 sheetState.hide()
-                viewModel.dismissSellResultDialog()
+                onDismiss()
             }
         },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -52,7 +55,7 @@ fun SellResultBottomSheet(viewModel: SaleViewModel, onClick: () -> Unit) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(state!!.messageRes),
+                text = stringResource(messageRes),
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(Modifier.height(20.dp))
@@ -60,9 +63,9 @@ fun SellResultBottomSheet(viewModel: SaleViewModel, onClick: () -> Unit) {
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        viewModel.dismissSellResultDialog()
+                        onDismiss()
                     }
-                    onClick()
+                    onConfirm()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge

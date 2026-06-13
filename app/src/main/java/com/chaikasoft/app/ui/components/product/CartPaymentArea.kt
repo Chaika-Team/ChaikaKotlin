@@ -161,7 +161,7 @@ fun CartPaymentArea(
 
 @Preview(showBackground = true)
 @Composable
-fun CartPaymentAreaPreview() {
+private fun CartPaymentAreaPreview() {
     val conductors = listOf(
         ConductorDomain(1, "Иван", "Иванов", "Иванович", "EMP001", ""),
         ConductorDomain(2, "Анна", "Петрова", "Сергеевна", "EMP002", "")

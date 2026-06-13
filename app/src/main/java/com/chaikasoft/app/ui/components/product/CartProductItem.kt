@@ -243,7 +243,7 @@ private fun CartProductActionsRow(
 
 @Preview(showBackground = true)
 @Composable
-fun CartProductItemPreview() {
+private fun CartProductItemPreview() {
     ChaikaTheme {
         CartProductItem(
             product = Product(
@@ -266,7 +266,7 @@ fun CartProductItemPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun CartProductItemNotInCartPreview() {
+private fun CartProductItemNotInCartPreview() {
     ChaikaTheme {
         CartProductItem(
             product = Product(

@@ -23,7 +23,8 @@ fun BottomBar(
     navController: NavController,
     currentRoute: String?,
     hasActiveShift: Boolean,
-    onBlockedNavigation: () -> Unit
+    onBlockedNavigation: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (currentRoute == null || currentRoute in Routes.routesWithoutBottomBar) return
 
@@ -52,7 +53,7 @@ fun BottomBar(
     )
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(BarDimens.BarHeight),
         horizontalArrangement = Arrangement.SpaceEvenly,

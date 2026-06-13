@@ -22,7 +22,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationBlockedBottomSheet(visible: Boolean, onDismiss: () -> Unit) {
+fun NavigationBlockedBottomSheet(
+    visible: Boolean,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     if (!visible) return
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -38,7 +42,8 @@ fun NavigationBlockedBottomSheet(visible: Boolean, onDismiss: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = { dismiss() },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier

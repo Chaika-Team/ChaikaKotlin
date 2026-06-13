@@ -226,7 +226,7 @@ private fun StockQuantityRow(
 
 @Preview(showBackground = true)
 @Composable
-fun ReplenishProductItemQuantityPreview() {
+private fun ReplenishProductItemQuantityPreview() {
     ChaikaTheme {
         ReplenishProductItem(
             product = Product(
@@ -249,7 +249,7 @@ fun ReplenishProductItemQuantityPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun ReplenishProductItemQuantityZeroPreview() {
+private fun ReplenishProductItemQuantityZeroPreview() {
     ChaikaTheme {
         ReplenishProductItem(
             product = Product(

@@ -35,8 +35,8 @@ fun ProductItem(
     onAddToCart: () -> Unit,
     onQuantityIncrease: () -> Unit,
     onQuantityDecrease: () -> Unit,
-    showQuantityBadge: Boolean = false,
     quantityToShow: Int,
+    showQuantityBadge: Boolean = false,
     isSoldOut: Boolean = false
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -123,7 +123,7 @@ fun ProductItem(
 
 @Preview
 @Composable
-fun PreviewProductItem() {
+private fun PreviewProductItem() {
     ProductItem(
         product = Product(
             id = 1,

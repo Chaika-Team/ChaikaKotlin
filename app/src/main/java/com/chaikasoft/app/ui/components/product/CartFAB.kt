@@ -164,6 +164,6 @@ fun CartFAB(
 
 @Preview
 @Composable
-fun FabPrev() {
+private fun FabPrev() {
     CartFAB(totalPrice = "60 000", itemsCount = 1, onClick = {})
 }

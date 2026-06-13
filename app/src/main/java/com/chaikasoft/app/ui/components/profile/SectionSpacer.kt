@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import com.chaikasoft.app.ui.theme.ProfileDimens
 
 @Composable
-fun SectionSpacer() {
+fun SectionSpacer(modifier: Modifier = Modifier) {
     Spacer(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(ProfileDimens.SectionSpacerHeight)
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))

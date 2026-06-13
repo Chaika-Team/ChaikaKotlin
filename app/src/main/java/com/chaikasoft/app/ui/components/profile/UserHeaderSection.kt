@@ -31,9 +31,13 @@ import com.chaikasoft.app.ui.theme.ProfileBackground
 import com.chaikasoft.app.ui.theme.ProfileDimens
 
 @Composable
-fun UserHeaderSection(conductor: ConductorDomain?, onClick: () -> Unit) {
+fun UserHeaderSection(
+    conductor: ConductorDomain?,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(ProfileBackground)
             .padding(ProfileDimens.HeaderPadding),

@@ -16,7 +16,7 @@ object ProfileDimens {
     val MenuItemCornerRadiusBottom = 16.dp
     val MenuItemCornerRadiusSingle = 8.dp
     val MenuItemPaddingHorizontal = 20.dp
-    val MenuItemPaddingVertical = 20.dp
+    val MenuItemPaddingVertical = 10.dp
     val MenuItemIconSize = 40.dp
     val MenuItemIconInnerSize = 20.dp
     val MenuItemSpacerWidth = 16.dp

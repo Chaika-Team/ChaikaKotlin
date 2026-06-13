@@ -30,6 +30,7 @@ fun ConfirmBottomSheet(
     cancelText: String = stringResource(id = android.R.string.cancel),
     confirmButtonTag: String? = null,
     cancelButtonTag: String? = null,
+    modifier: Modifier = Modifier,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -49,7 +50,8 @@ fun ConfirmBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { dismiss() },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier

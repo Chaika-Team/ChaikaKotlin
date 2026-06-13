@@ -25,6 +25,7 @@ fun TopBar(
     currentScreen: Screen?,
     navController: NavController,
     currentRoute: String?,
+    modifier: Modifier = Modifier,
     menuItems: List<MenuItem> = emptyList(),
     onMenuItemClick: (MenuItem) -> Unit = {},
     onBackClick: (() -> Unit)? = null
@@ -34,6 +35,7 @@ fun TopBar(
     var showMenu by remember { mutableStateOf(false) }
 
     TopAppBar(
+        modifier = modifier,
         title = { Text(currentScreen?.let { stringResource(it.titleResId) } ?: "") },
         navigationIcon = {
             if (currentScreen?.showBackButton == true) {

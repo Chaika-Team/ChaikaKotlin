@@ -16,7 +16,7 @@ import kotlin.math.PI
 import kotlin.math.tan
 
 @Composable
-fun ProductBackground(
+internal fun ProductBackground(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.White,
     cornerRadius: Dp = ProductDimens.ProductCornerRadius,

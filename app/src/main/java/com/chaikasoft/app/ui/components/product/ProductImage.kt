@@ -10,7 +10,7 @@ import coil.compose.AsyncImage
 import com.chaikasoft.app.R
 
 @Composable
-fun ProductImage(imageUrl: String, modifier: Modifier = Modifier, contentDescription: String) {
+fun ProductImage(imageUrl: String, contentDescription: String, modifier: Modifier = Modifier) {
     val fallbackPainter = painterResource(id = R.drawable.placeholder_chaika)
 
     AsyncImage(

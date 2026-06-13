@@ -34,7 +34,7 @@ import com.chaikasoft.app.ui.theme.ProductDimens.QuantitySelectorHeight
 import com.chaikasoft.app.util.formatPriceOnly
 
 @Composable
-fun ProductContent(
+internal fun ProductContent(
     product: Product,
     modifier: Modifier = Modifier,
     onAddToCart: () -> Unit,

@@ -46,6 +46,7 @@ fun ProductCartView(
     val conductors by conductorViewModel.allConductors.collectAsStateWithLifecycle()
     val currentConductor by conductorViewModel.conductor.collectAsStateWithLifecycle()
     val stockLimitNotice by saleViewModel.stockLimitNotice.collectAsStateWithLifecycle()
+    val sellResultDialog by saleViewModel.sellResultDialog.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var selectedConductor by remember(conductors, currentConductor) {
@@ -123,8 +124,9 @@ fun ProductCartView(
         }
     }
     SellResultBottomSheet(
-        viewModel = saleViewModel,
-        onClick = { navController.navigateUp() }
+        messageRes = sellResultDialog?.messageRes,
+        onDismiss = saleViewModel::dismissSellResultDialog,
+        onConfirm = { navController.navigateUp() }
     )
 }
 

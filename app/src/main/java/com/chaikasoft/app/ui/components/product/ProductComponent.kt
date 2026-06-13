@@ -29,11 +29,10 @@ fun ProductComponent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom,
-        modifier = Modifier.height(height).padding(PaddingM)
+        modifier = modifier.height(height).padding(PaddingM)
     ) {
         ProductItem(
             product = product,
-            modifier = modifier,
             onAddToCart = onAddToCart,
             onQuantityIncrease = onQuantityIncrease,
             onQuantityDecrease = onQuantityDecrease,
@@ -46,7 +45,7 @@ fun ProductComponent(
 
 @Preview
 @Composable
-fun PreviewProductComponent() {
+private fun PreviewProductComponent() {
     ProductComponent(
         product = Product(
             id = 1,
