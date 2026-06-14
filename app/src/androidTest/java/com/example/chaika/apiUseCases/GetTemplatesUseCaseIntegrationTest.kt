@@ -1,6 +1,8 @@
 package com.chaikasoft.app.apiUseCases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.TemplateDomain
 import com.chaikasoft.app.domain.usecases.GetTemplatesUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -25,15 +27,12 @@ class GetTemplatesUseCaseIntegrationTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
-    // Инжектируем use case
     @Inject
     lateinit var getTemplatesUseCase: GetTemplatesUseCase
 
     @Before
     fun setUp() {
-        // Создаем новый экземпляр сервера для этого класса
         val testServer = TestMockServer().apply { start() }
-        // Записываем его в холдер, чтобы DI-модуль использовал его URL
         TestServerHolder.testMockServer = testServer
 
         hiltRule.inject()
@@ -41,7 +40,6 @@ class GetTemplatesUseCaseIntegrationTest {
 
     @After
     fun tearDown() {
-        // Завершаем работу сервера для данного класса
         TestServerHolder.testMockServer.shutdown()
     }
 
@@ -60,8 +58,12 @@ class GetTemplatesUseCaseIntegrationTest {
                 .setBody(responseBody)
         )
 
-        val result: List<TemplateDomain> =
-            getTemplatesUseCase(query = "Test", limit = 100, offset = 0)
+        val result: List<TemplateDomain> = getTemplatesUseCase(
+            query = "Test",
+            limit = 100,
+            offset = 0
+        ).successOrFail()
+
         assertEquals("Expected 2 templates for query 'Test'", 2, result.size)
     }
 
@@ -75,13 +77,17 @@ class GetTemplatesUseCaseIntegrationTest {
                 .setBody(responseBody)
         )
 
-        val result: List<TemplateDomain> =
-            getTemplatesUseCase(query = "non_existing_query", limit = 100, offset = 0)
+        val result: List<TemplateDomain> = getTemplatesUseCase(
+            query = "non_existing_query",
+            limit = 100,
+            offset = 0
+        ).successOrFail()
+
         assertTrue("Expected empty template list for query 'non_existing_query'", result.isEmpty())
     }
 
-    @Test(expected = Exception::class)
-    fun testServerErrorCausesException() = runTest {
+    @Test
+    fun testServerErrorReturnsFailure() = runTest {
         val responseBody = """{
              "error": "internal server error"
         }"""
@@ -91,6 +97,16 @@ class GetTemplatesUseCaseIntegrationTest {
                 .setHeader("Content-Type", "application/json")
                 .setBody(responseBody)
         )
-        getTemplatesUseCase(query = "", limit = 100, offset = 0)
+
+        val result = getTemplatesUseCase(query = "", limit = 100, offset = 0)
+
+        assertTrue(result is RemoteResult.Failure)
+        assertEquals(500, ((result as RemoteResult.Failure).error as AppError.Http).code)
     }
+
+    private fun <T> RemoteResult<T>.successOrFail(): T =
+        when (this) {
+            is RemoteResult.Success -> data
+            is RemoteResult.Failure -> throw AssertionError("Expected success, got $error")
+        }
 }
