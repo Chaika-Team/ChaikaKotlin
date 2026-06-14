@@ -129,8 +129,7 @@ class HermeticSmokeE2ETest {
         waitForTag("tripMainScreen")
         startActiveShift()
 
-        composeRule.onNodeWithTag("bottomBarProduct").performClick()
-        waitForAnyTag("productEntryScreen", "productPackageScreen")
+        openProductSectionWithActiveShift()
 
         composeRule.onNodeWithTag("bottomBarStatistics").performClick()
         waitForTag("statisticsScreen")
