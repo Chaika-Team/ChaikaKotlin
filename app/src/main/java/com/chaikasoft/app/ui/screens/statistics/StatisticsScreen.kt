@@ -1,90 +1,28 @@
 package com.chaikasoft.app.ui.screens.statistics
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.FastReportDomain
-import com.chaikasoft.app.ui.components.statistics.HeaderIconCell
 import com.chaikasoft.app.ui.viewmodels.StatisticsViewModel
-import com.chaikasoft.app.util.formatPriceOnly
-import java.text.NumberFormat
-import java.util.Locale
-
-@Composable
-private fun rememberColumnWidths(): ColumnWidths {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val isLandscape =
-        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
-
-    return remember(screenWidth, isLandscape) {
-        if (isLandscape) {
-            ColumnWidths(
-                name = screenWidth * 0.25f,
-                price = screenWidth * 0.12f,
-                qty = screenWidth * 0.08f,
-                revenue = screenWidth * 0.15f
-            )
-        } else {
-            ColumnWidths(
-                name = 120.dp,
-                price = 50.dp,
-                qty = 32.dp,
-                revenue = 62.dp
-            )
-        }
-    }
-}
-
-private data class ColumnWidths(val name: Dp, val price: Dp, val qty: Dp, val revenue: Dp)
-
-private val TableText = TextStyle(fontSize = 12.sp)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -119,7 +57,7 @@ internal fun StatisticsContent(
     val isLandscape =
         configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
-    val sharedHScroll = rememberScrollState()
+    val sharedHScroll = rememberStatisticsTableScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
     BottomSheetScaffold(
@@ -179,236 +117,4 @@ internal fun StatisticsContent(
             }
         }
     }
-}
-
-@Composable
-private fun CashSummarySheet(
-    cashRevenue: Int,
-    cashlessChecks: Int,
-    showChecks: Boolean,
-    showLabels: Boolean,
-    bottomPadding: Dp,
-    modifier: Modifier = Modifier
-) {
-    val cashRevenueText = remember(cashRevenue) { formatPriceOnly(cashRevenue) }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .padding(bottom = bottomPadding),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 40.dp)
-        ) {
-            if (showLabels) {
-                Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_cash),
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Наличные", style = MaterialTheme.typography.titleMedium)
-                }
-            }
-
-            Text(
-                text = cashRevenueText,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
-
-        if (showChecks) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    stringResource(R.string.cashless_checks),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(cashlessChecks.toString(), style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-    }
-}
-
-@Composable
-private fun TableHeader(
-    scrollState: ScrollState,
-    widths: ColumnWidths,
-    isLandscape: Boolean,
-    modifier: Modifier = Modifier
-) {
-    TableLineContainer(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .width(widths.name)
-                .align(Alignment.CenterStart)
-        ) {
-            Text(
-                text = "Товары",
-                color = Color.Black,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = TableText
-            )
-        }
-        CenterScrollArea(
-            scrollState = scrollState,
-            nameWidth = widths.name,
-            enableScroll = !isLandscape // В landscape отключаем скролл
-        ) {
-            HeaderIconCell(R.drawable.ic_rub, widths.price)
-            HeaderIconCell(R.drawable.ic_add, widths.qty)
-            HeaderIconCell(R.drawable.ic_replenish, widths.qty)
-            HeaderIconCell(R.drawable.ic_cash, widths.qty)
-            HeaderIconCell(R.drawable.ic_card, widths.qty)
-            Box(
-                modifier = Modifier.width(widths.revenue),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    text = stringResource(R.string.cash_revenue_total),
-                    color = Color.Black,
-                    maxLines = 1,
-                    style = TableText,
-                    textAlign = TextAlign.End
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun TableRow(
-    report: FastReportDomain,
-    scrollState: ScrollState,
-    widths: ColumnWidths,
-    isLandscape: Boolean,
-    modifier: Modifier = Modifier
-) {
-    TableLineContainer(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .width(widths.name)
-                .align(Alignment.CenterStart)
-        ) {
-            Text(
-                text = report.productName,
-                color = Color.Black,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = TableText
-            )
-        }
-        CenterScrollArea(
-            scrollState = scrollState,
-            nameWidth = widths.name,
-            enableScroll = !isLandscape
-        ) {
-            NumericCell(
-                formatNumber(report.productPrice.toDouble() / 100),
-                Color.Gray,
-                widths.price,
-                TableText
-            )
-            NumericCell(report.addedQuantity.toString(), Color.Black, widths.qty, TableText)
-            NumericCell(report.replenishedQuantity.toString(), Color.Gray, widths.qty, TableText)
-            NumericCell(report.soldCashQuantity.toString(), Color.Black, widths.qty, TableText)
-            NumericCell(report.soldCartQuantity.toString(), Color.Gray, widths.qty, TableText)
-            NumericCell(
-                formatNumber(report.revenue.toDouble() / 100),
-                Color.Black,
-                widths.revenue,
-                TableText
-            )
-        }
-    }
-}
-
-/** Центр с горизонтальным скроллом */
-@Composable
-private fun CenterScrollArea(
-    scrollState: ScrollState,
-    nameWidth: Dp,
-    enableScroll: Boolean,
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = nameWidth)
-            .clipToBounds()
-    ) {
-        Row(
-            modifier = Modifier
-                .then(
-                    if (enableScroll) {
-                        Modifier.horizontalScroll(scrollState).wrapContentWidth()
-                    } else {
-                        Modifier.fillMaxWidth()
-                    }
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = if (enableScroll) {
-                Arrangement.Start
-            } else {
-                Arrangement.SpaceBetween
-            },
-            content = content
-        )
-    }
-}
-
-@Composable
-private fun TableLineContainer(
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp)
-    ) { content() }
-}
-
-@Composable
-private fun NumericCell(
-    text: String,
-    color: Color,
-    width: Dp,
-    style: TextStyle,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.width(width),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Text(
-            text = text,
-            color = color,
-            maxLines = 1,
-            overflow = TextOverflow.Clip,
-            style = style
-        )
-    }
-}
-
-private fun formatNumber(number: Number): String {
-    val nf = NumberFormat.getNumberInstance(Locale.getDefault())
-    nf.maximumFractionDigits = 2
-    nf.minimumFractionDigits = if (number is Int) 2 else 0
-    return nf.format(number)
 }

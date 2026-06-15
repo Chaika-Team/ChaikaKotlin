@@ -80,7 +80,8 @@ fun TemplateConfirmView(
             } else {
                 FinalPackageList(
                     cartItems = cartItems,
-                    fillViewModel = fillViewModel
+                    onQuantityChange = fillViewModel::onQuantityChange,
+                    onRemove = fillViewModel::onRemove
                 )
             }
         }
@@ -88,7 +89,11 @@ fun TemplateConfirmView(
 }
 
 @Composable
-fun FinalPackageList(cartItems: List<CartItemDomain>, fillViewModel: FillViewModel) {
+private fun FinalPackageList(
+    cartItems: List<CartItemDomain>,
+    onQuantityChange: (productId: Int, quantity: Int) -> Unit,
+    onRemove: (productId: Int) -> Unit
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(ProductDimens.CartPadding)
@@ -98,18 +103,18 @@ fun FinalPackageList(cartItems: List<CartItemDomain>, fillViewModel: FillViewMod
                 product = product.toUiModel(),
                 onAddToCart = { },
                 onQuantityIncrease = {
-                    fillViewModel.onQuantityChange(
+                    onQuantityChange(
                         product.product.id,
                         product.quantity + 1
                     )
                 },
                 onQuantityDecrease = {
-                    fillViewModel.onQuantityChange(
+                    onQuantityChange(
                         product.product.id,
                         product.quantity - 1
                     )
                 },
-                onRemove = { fillViewModel.onRemove(product.product.id) }
+                onRemove = { onRemove(product.product.id) }
             )
         }
     }

@@ -15,23 +15,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
     currentScreen: Screen?,
-    navController: NavController,
-    currentRoute: String?,
     modifier: Modifier = Modifier,
     menuItems: List<MenuItem> = emptyList(),
     onMenuItemClick: (MenuItem) -> Unit = {},
-    onBackClick: (() -> Unit)? = null
+    onBackClick: () -> Unit = {}
 ) {
-    if (currentRoute != null && currentRoute in Routes.routesWithoutTopBar) return
-
     var showMenu by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -40,7 +34,7 @@ fun TopBar(
         navigationIcon = {
             if (currentScreen?.showBackButton == true) {
                 CircleBackButton(
-                    onClick = { onBackClick?.invoke() ?: navController.navigateUp() },
+                    onClick = onBackClick,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                 )
             }

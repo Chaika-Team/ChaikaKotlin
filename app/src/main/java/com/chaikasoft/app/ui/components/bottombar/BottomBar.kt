@@ -12,34 +12,23 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.navigation.NavigationGuards
-import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.BarDimens
+
+enum class BottomBarTab {
+    TRIP,
+    PRODUCT,
+    STATISTICS,
+    OPERATION,
+    PROFILE
+}
 
 @Composable
 fun BottomBar(
-    navController: NavController,
-    currentRoute: String?,
-    hasActiveShift: Boolean,
-    onBlockedNavigation: () -> Unit,
+    selectedTab: BottomBarTab?,
+    onTabClick: (BottomBarTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (currentRoute == null || currentRoute in Routes.routesWithoutBottomBar) return
-
-    fun navigateToMainGraph(route: String, popUpToRoute: String = route) {
-        if (NavigationGuards.isProtectedBottomGraph(route) && !hasActiveShift) {
-            onBlockedNavigation()
-            return
-        }
-
-        navController.navigate(route) {
-            popUpTo(popUpToRoute) { inclusive = route == popUpToRoute }
-            launchSingleTop = true
-        }
-    }
-
     BottomBarBackground(
         modifier = Modifier.shadow(
             elevation = 10.dp,
@@ -61,49 +50,33 @@ fun BottomBar(
     ) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_train),
-            selected = Routes.mainRoutes[Routes.TRIP]?.contains(currentRoute) == true,
+            selected = selectedTab == BottomBarTab.TRIP,
             tag = "bottomBarTrip",
-            onClick = {
-                navigateToMainGraph(
-                    route = Routes.TRIP_MAIN,
-                    popUpToRoute = Routes.TRIP_GRAPH
-                )
-            }
+            onClick = { onTabClick(BottomBarTab.TRIP) }
         )
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_bag),
-            selected = Routes.mainRoutes[Routes.PRODUCT]?.contains(currentRoute) == true,
+            selected = selectedTab == BottomBarTab.PRODUCT,
             tag = "bottomBarProduct",
-            onClick = {
-                navigateToMainGraph(Routes.PRODUCT_GRAPH)
-            }
+            onClick = { onTabClick(BottomBarTab.PRODUCT) }
         )
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_statistics),
-            selected = Routes.mainRoutes[Routes.STATISTICS]?.contains(currentRoute) == true,
+            selected = selectedTab == BottomBarTab.STATISTICS,
             tag = "bottomBarStatistics",
-            onClick = {
-                navigateToMainGraph(Routes.STATISTICS_GRAPH)
-            }
+            onClick = { onTabClick(BottomBarTab.STATISTICS) }
         )
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_time),
-            selected = Routes.mainRoutes[Routes.OPERATION]?.contains(currentRoute) == true,
+            selected = selectedTab == BottomBarTab.OPERATION,
             tag = "bottomBarOperation",
-            onClick = {
-                navigateToMainGraph(Routes.OPERATION_GRAPH)
-            }
+            onClick = { onTabClick(BottomBarTab.OPERATION) }
         )
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_profile_bar),
-            selected = Routes.mainRoutes[Routes.PROFILE]?.contains(currentRoute) == true,
+            selected = selectedTab == BottomBarTab.PROFILE,
             tag = "bottomBarProfile",
-            onClick = {
-                navController.navigate(Routes.PROFILE) {
-                    popUpTo(Routes.PROFILE_GRAPH) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
+            onClick = { onTabClick(BottomBarTab.PROFILE) }
         )
     }
 }

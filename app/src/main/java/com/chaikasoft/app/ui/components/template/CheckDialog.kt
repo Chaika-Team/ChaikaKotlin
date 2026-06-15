@@ -26,10 +26,16 @@ import com.chaikasoft.app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckDialog(text: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+fun CheckDialog(
+    text: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier

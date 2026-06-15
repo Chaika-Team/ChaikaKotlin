@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
 import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
+import com.chaikasoft.app.domain.models.TemplateDomain
 import com.chaikasoft.app.ui.components.product.ProductImage
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.trip.dashedBorder
@@ -85,8 +86,10 @@ fun TemplateDetailView(
         is TemplateDetailUiState.Content -> {
             TemplateDetailContent(
                 detail = state.detail,
-                fillViewModel = fillViewModel,
-                navController = navController
+                onApplyTemplate = { template ->
+                    fillViewModel.onApplyTemplate(template)
+                    navController.navigate(Routes.TEMPLATE_EDIT)
+                }
             )
         }
     }
@@ -95,8 +98,7 @@ fun TemplateDetailView(
 @Composable
 private fun TemplateDetailContent(
     detail: ResolvedTemplateDetailDomain,
-    fillViewModel: FillViewModel,
-    navController: NavController
+    onApplyTemplate: (TemplateDomain) -> Unit
 ) {
     val template = detail.template
     val hasMissingProducts = detail.items.any { it.product == null }
@@ -196,8 +198,7 @@ private fun TemplateDetailContent(
             buttonText = stringResource(R.string.template_detail_apply),
             enabled = !hasMissingProducts,
             onClick = {
-                fillViewModel.onApplyTemplate(template)
-                navController.navigate(Routes.TEMPLATE_EDIT)
+                onApplyTemplate(template)
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)

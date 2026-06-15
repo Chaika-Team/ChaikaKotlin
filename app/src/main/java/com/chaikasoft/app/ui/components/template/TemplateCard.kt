@@ -152,7 +152,7 @@ fun TemplateCard(template: TemplateDomain, modifier: Modifier = Modifier, onClic
 
 @Composable
 @Preview
-fun TemplateCardPreview() {
+private fun TemplateCardPreview() {
     ChaikaTheme {
         TemplateCard(
             template = TemplateDomain(

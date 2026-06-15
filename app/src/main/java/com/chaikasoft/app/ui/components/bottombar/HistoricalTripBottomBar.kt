@@ -12,42 +12,20 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.BarDimens
+
+enum class HistoricalTripBottomBarTab {
+    STATISTICS,
+    OPERATIONS
+}
 
 @Composable
 fun HistoricalTripBottomBar(
-    navController: NavController,
-    currentRoute: String?,
-    shiftUuid: String,
+    selectedTab: HistoricalTripBottomBarTab?,
+    onTabClick: (HistoricalTripBottomBarTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    fun navigateToHistoricalTab(route: String) {
-        val alreadySelected =
-            (
-                Routes.isHistoricalStatisticsRoute(currentRoute) &&
-                    Routes.isHistoricalStatisticsRoute(route)
-                ) ||
-                (
-                    Routes.isHistoricalOperationsRoute(currentRoute) &&
-                        Routes.isHistoricalOperationsRoute(route)
-                    )
-        if (alreadySelected) {
-            return
-        }
-
-        navController.navigate(route) {
-            popUpTo(Routes.HISTORY_GRAPH) {
-                inclusive = false
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-
     BottomBarBackground(
         modifier = Modifier.shadow(
             elevation = 10.dp,
@@ -69,15 +47,15 @@ fun HistoricalTripBottomBar(
     ) {
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_statistics),
-            selected = Routes.isHistoricalStatisticsRoute(currentRoute),
+            selected = selectedTab == HistoricalTripBottomBarTab.STATISTICS,
             tag = "historicalBottomBarStatistics",
-            onClick = { navigateToHistoricalTab(Routes.historyStatistics(shiftUuid)) }
+            onClick = { onTabClick(HistoricalTripBottomBarTab.STATISTICS) }
         )
         BottomBarIcon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_time),
-            selected = Routes.isHistoricalOperationsRoute(currentRoute),
+            selected = selectedTab == HistoricalTripBottomBarTab.OPERATIONS,
             tag = "historicalBottomBarOperation",
-            onClick = { navigateToHistoricalTab(Routes.historyOperations(shiftUuid)) }
+            onClick = { onTabClick(HistoricalTripBottomBarTab.OPERATIONS) }
         )
     }
 }
