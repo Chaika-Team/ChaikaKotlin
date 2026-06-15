@@ -75,7 +75,7 @@ fun TemplateDetailView(
                     if (state.retryable) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Button(onClick = viewModel::retryLoadTemplateDetail) {
-                            Text(stringResource(R.string.retry))
+                            Text(stringResource(R.string.retry_button))
                         }
                     }
                 }

@@ -8,9 +8,9 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/** Форматирует ZonedDateTime как `dd MMM HH:mm` (напр. "04 окт 13:45") */
+/** Форматирует ZonedDateTime как `dd MMM HH:mm` с текущей локалью приложения. */
 fun ZonedDateTime.formatRuShort(): String {
-    val formatter = DateTimeFormatter.ofPattern("dd MMM HH:mm", Locale.forLanguageTag("ru"))
+    val formatter = DateTimeFormatter.ofPattern("dd MMM HH:mm", Locale.getDefault())
     return this.format(formatter)
 }
 

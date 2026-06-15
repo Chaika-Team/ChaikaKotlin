@@ -106,7 +106,7 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
 
             snapshot.operations shouldHaveSize 4
             snapshot.operations[0].summary.id shouldBe 1
-            snapshot.operations[0].summary.type shouldBe OperationTypeDomain.SOLD_CART
+            snapshot.operations[0].summary.type shouldBe OperationTypeDomain.SOLD_CARD
             snapshot.operations[0].summary.timeIso shouldBe "2026-01-01T10:15:00Z"
             snapshot.operations[0].summary.conductor.name shouldBe ""
             snapshot.operations[0].summary.conductor.familyName shouldBe ""

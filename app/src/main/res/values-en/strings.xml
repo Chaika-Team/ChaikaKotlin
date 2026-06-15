@@ -1,0 +1,315 @@
+<resources>
+    <string name="app_name">Chaika</string>
+    <string name="hint_product_search">Search by name</string>
+
+    <string name="search">Search</string>
+    <string name="product_search">Product</string>
+    <string name="profile_icon">Profile</string>
+
+    <string name="add_trip">Add trip</string>
+    <string name="edit_text_trip_search">Add trip</string>
+    <string name="edit_text_trip_hint_dialog">Enter a name</string>
+    <string name="create">Add</string>
+    <string name="rename">Edit</string>
+    <string name="history">History</string>
+    <string name="now">Now</string>
+    <string name="today">Today</string>
+    <string name="no_trip_history">No trip history</string>
+    <string name="no_selected_trip_error">Failed to load the selected route</string>
+    <string name="carriage_class">Class</string>
+    <string name="finish_trip">FINISH TRIP</string>
+    <string name="trip_delete_action">Delete trip</string>
+    <string name="trip_delete_title">Delete trip</string>
+    <string name="trip_delete_subtitle">Are you sure you want to delete this trip?</string>
+    <string name="trip_delete_preserve_package">Keep package</string>
+    <string name="trip_delete_package_cleared">The current package will be cleared</string>
+    <string name="trip_delete_package_restored">The current package will be restored when a new trip is created</string>
+    <string name="trip_delete_confirm">DELETE TRIP</string>
+    <string name="trip_delete_failure">Could not delete the trip. Try again</string>
+    <string name="retry_action">Retry</string>
+    <string name="loading_error_message">Loading error: %1$s</string>
+    <string name="empty_carriages_message">No carriages available</string>
+    <string name="train_ic">Train icon</string>
+    <string name="templates">Templates</string>
+    <string name="edit">Edit</string>
+    <string name="check">Check</string>
+
+    <string name="enter_carriage_data">Enter the carriage number</string>
+    <string name="carriage_number">Carriage number</string>
+
+    <string name="offline_trip_title">Offline trip</string>
+    <string name="train_number_label">Train number</string>
+    <string name="from_station_header">Departure station</string>
+    <string name="to_station_header">Arrival station</string>
+    <string name="station_name_label">Name</string>
+    <string name="station_city_label">City/region</string>
+    <string name="pick_departure">Select departure</string>
+    <string name="pick_arrival">Select arrival</string>
+    <string name="carriage_header">Carriage</string>
+    <string name="carriage_number_label">Carriage No. (required)</string>
+    <string name="carriage_class_label_optional">Class (optional)</string>
+    <string name="carriage_class_unknown">Not specified</string>
+    <string name="start_shift_btn">Start shift</string>
+    <string name="start_shift_success">Shift started</string>
+    <string name="start_shift_failed">Failed to start shift</string>
+    <string name="active_shift_already_exists">There is already an active shift</string>
+    <string name="trip_already_registered">The trip has already been registered</string>
+
+    <string name="err_train_number_empty">Enter the train number</string>
+    <string name="err_from_name_empty">Enter the departure station (name)</string>
+    <string name="err_from_city_empty">Enter the departure station (city)</string>
+    <string name="err_to_name_empty">Enter the arrival station (name)</string>
+    <string name="err_to_city_empty">Enter the arrival station (city)</string>
+    <string name="err_departure_missing">Enter departure date/time</string>
+    <string name="err_arrival_missing">Enter arrival date/time</string>
+    <string name="err_arrival_not_after_departure">Arrival must be later than departure</string>
+    <string name="err_carriage_number_empty">Enter the carriage number</string>
+
+    <string name="report_sent_success">Report sent</string>
+    <string name="report_already_sent">Report has already been sent</string>
+    <string name="no_report_found">Report is missing and must be generated</string>
+    <string name="report_send_failed_retry">Could not send the report, try again later</string>
+    <string name="report_send_failed_permanent">Server-side sending error</string>
+
+    <string name="enter_trip_name">Enter trip name</string>
+    <string name="trip_added">Trip added</string>
+    <string name="error_performing_operation">Error while performing the operation: %1$s</string>
+    <string name="error">Error: </string>
+
+    <string name="employee_id">Employee No. %1$s</string>
+    <string name="product_price">Price: %1$.2f</string>
+
+    <string name="add_title">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="btn_back">Back</string>
+
+    <string name="trip_title">Trips</string>
+    <string name="new_trip_title">New trip</string>
+    <string name="products_title">Products</string>
+    <string name="product_entry_title">Add products</string>
+    <string name="product_list_title">Product list</string>
+    <string name="product_replenish">Restock</string>
+    <string name="cart_title">Cart</string>
+    <string name="package_title">Package</string>
+    <string name="operations_title">Operations</string>
+    <string name="profile_title">Profile</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="profile_personal_data">Personal data</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_faqs">FAQs</string>
+    <string name="profile_feedback">Feedback</string>
+    <string name="profile_about">About</string>
+    <string name="profile_add_user">Add user</string>
+    <string name="profile_user_avatar">User avatar</string>
+    <string name="profile_navigate">Navigation</string>
+    <string name="profile_logout">Log out</string>
+    <string name="profile_family_name">Last name</string>
+    <string name="profile_first_name">First name</string>
+    <string name="profile_middle_name">Middle name</string>
+    <string name="profile_employee_id">Employee number</string>
+    <string name="profile_photo">Photo</string>
+    <string name="profile_default_first_and_family_name">First name Last name</string>
+    <string name="profile_menu_item_icon_description">Profile menu item icon</string>
+
+    <string name="login_button">Sign in</string>
+    <string name="login_ok">OK</string>
+    <string name="login_error_title">Sign-in error</string>
+
+    <string name="about_app_version">Version 1.0.0</string>
+    <string name="about_description_title">Description</string>
+    <string name="about_description_text">Chaika is a mobile application for railway conductors. The app helps manage trips, track goods, and provides a convenient interface for work on the road.</string>
+    <string name="about_features_title">Main features</string>
+    <string name="about_feature_trips">Trip and route management</string>
+    <string name="about_feature_products">Product catalog with prices</string>
+    <string name="about_feature_cart">Shopping cart</string>
+    <string name="about_feature_profile">Personal profile</string>
+    <string name="about_feature_auth">Secure authentication</string>
+    <string name="about_development_title">Development</string>
+    <string name="about_copyright">© 2025 ChaikaSoft\nAll rights reserved</string>
+
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_enable">Enable notifications</string>
+    <string name="settings_notifications_description">Receive notifications about new trips</string>
+    <string name="settings_sound_title">Sound notifications</string>
+    <string name="settings_sound_description">Play a sound for notifications</string>
+    <string name="settings_vibration_title">Vibration</string>
+    <string name="settings_vibration_description">Vibrate for notifications</string>
+    <string name="settings_appearance_title">Appearance</string>
+    <string name="settings_dark_theme">Dark theme</string>
+    <string name="settings_dark_theme_description">Use the dark interface theme</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_description">Choose the app interface language</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_russian">Russian</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_data_title">Data</string>
+    <string name="settings_auto_sync">Auto sync</string>
+    <string name="settings_auto_sync_description">Automatically synchronize data</string>
+    <string name="settings_clear_cache">Clear cache</string>
+
+    <string name="faqs_title">Frequently asked questions</string>
+    <string name="faqs_question_trip_add">How do I add a new trip?</string>
+    <string name="faqs_answer_trip_add">Tap \"Add trip\" on the main screen, enter the trip name, and confirm creation.</string>
+    <string name="faqs_question_trip_finish">How do I finish a trip?</string>
+    <string name="faqs_answer_trip_finish">In the \"Trips\" section, select the active trip and tap \"FINISH TRIP\". This saves all trip data.</string>
+    <string name="faqs_question_product_add">How do I add a product to the cart?</string>
+    <string name="faqs_answer_product_add">In the \"Products\" section, find the product and tap \"+\" next to it. The product is added to the cart automatically.</string>
+    <string name="faqs_question_trip_history">Where can I see trip history?</string>
+    <string name="faqs_answer_trip_history">In the \"Trips\" section, scroll down to \"History\". All completed trips are shown there.</string>
+    <string name="faqs_question_personal_data">How do I edit personal data?</string>
+    <string name="faqs_answer_personal_data">Go to \"Profile\" -> \"Personal data\". There you can view and update your data when needed.</string>
+    <string name="faqs_question_app_loading">What should I do if the app does not load?</string>
+    <string name="faqs_answer_app_loading">Check your internet connection. If the problem persists, restart the app or clear the cache in settings.</string>
+    <string name="faqs_question_logout">How do I log out?</string>
+    <string name="faqs_answer_logout">In the \"Profile\" section, tap \"Log out\" at the top of the screen. This ends the current session.</string>
+    <string name="faqs_question_offline">Is offline mode supported?</string>
+    <string name="faqs_answer_offline">Yes, the app supports offline mode. Data will be synchronized when the internet connection is restored.</string>
+    <string name="faqs_not_found_title">Did not find an answer?</string>
+    <string name="faqs_not_found_description">If you have additional questions, use the \"Feedback\" section to contact support.</string>
+    <string name="faqs_expand">Expand</string>
+    <string name="faqs_collapse">Collapse</string>
+
+    <string name="feedback_title">Feedback</string>
+    <string name="feedback_success_title">Thank you for your feedback!</string>
+    <string name="feedback_success_message">We received your message and will reply soon.</string>
+    <string name="feedback_send_another">Send another message</string>
+    <string name="feedback_experience_title">Tell us about your experience</string>
+    <string name="feedback_category">Category</string>
+    <string name="feedback_category_general">General questions</string>
+    <string name="feedback_category_support">Technical support</string>
+    <string name="feedback_category_suggestion">Improvement suggestions</string>
+    <string name="feedback_category_bug">Report a bug</string>
+    <string name="feedback_category_other">Other</string>
+    <string name="feedback_name_label">Your name</string>
+    <string name="feedback_email_label">Email</string>
+    <string name="feedback_subject_label">Message subject</string>
+    <string name="feedback_message_label">Message</string>
+    <string name="feedback_send_button">Send message</string>
+    <string name="feedback_additional_info_title">Additional information</string>
+    <string name="feedback_additional_info_text">We aim to reply to all messages within 24 hours\nFor urgent questions, use the \"FAQs\" section\nYour feedback helps us improve the app</string>
+    <string name="feedback_email_invalid">Enter a valid email address</string>
+
+    <string name="personal_data_title">Personal data</string>
+    <string name="personal_data_basic_info">Basic information</string>
+    <string name="personal_data_service_info">Service information</string>
+    <string name="personal_data_additional_info">Additional information</string>
+    <string name="personal_data_employee_id_label">Employee ID</string>
+    <string name="personal_data_photo_loaded">Loaded</string>
+    <string name="personal_data_photo_not_loaded">Not loaded</string>
+
+    <string name="navigate">Navigate</string>
+    <string name="arrow_fab_content_description">Next</string>
+    <string name="cart_fab_content_description">Go to cart</string>
+    <string name="cart_fab_price_format">%1$s</string>
+
+    <string name="product_image_content_description">Product image: %1$s</string>
+    <string name="cart_payment_title">TO PAY</string>
+    <string name="cart_payment_conductor">CONDUCTOR</string>
+    <string name="cart_payment_select_conductor">Select conductor</string>
+    <string name="cart_payment_cash">CASH</string>
+    <string name="cart_payment_card">CARD</string>
+
+    <string name="cart_product_available">Available: %1$d</string>
+    <string name="cart_product_add_to_cart">Add to cart</string>
+    <string name="cart_product_increase_quantity">Increase quantity</string>
+    <string name="cart_product_decrease_quantity">Decrease quantity</string>
+    <string name="cart_product_remove_from_cart">Remove from cart</string>
+    <string name="cart_product_remove_from_package">Remove from package</string>
+    <string name="cart_empty">Cart is empty</string>
+    <string name="cart_loading_error">An error occurred while loading data</string>
+    <string name="error_out_of_stock">No more in stock</string>
+
+    <string name="template_confirm">CONFIRM</string>
+    <string name="template_confirm_title">Package confirmation</string>
+    <string name="template_check_contents">Are you sure?\nPlease check the package contents</string>
+    <string name="template_cancel">Cancel</string>
+    <string name="template_skip">SKIP</string>
+    <string name="template_empty">No templates</string>
+    <string name="template_detail_loading">Loading…</string>
+    <string name="template_detail_image_content_description">Template image</string>
+    <string name="template_detail_apply">APPLY</string>
+    <string name="template_detail_missing_products">Some products from the template were not found in the local catalog. Update the catalog and try again.</string>
+    <string name="template_unknown_product_name">Product #%1$d</string>
+    <string name="template_item_quantity">x%1$d</string>
+    <string name="error_no_conductor">Error: conductor is not selected</string>
+
+    <string name="empty_product_list">No products available</string>
+    <string name="error_loading_products">Failed to load products</string>
+    <string name="retry_button">RETRY</string>
+    <string name="menu">Menu</string>
+    <string name="refill">Restock</string>
+    <string name="logout_error_title">Logout error</string>
+    <string name="logout_error_message">Unknown logout error. Contact support</string>
+    <string name="logout_ok">OK</string>
+    <string name="active_shift_title">Trip in progress</string>
+    <string name="active_shift_message">Finish the trip before logging out</string>
+    <string name="navigation_requires_active_shift_title">Start a trip first</string>
+    <string name="navigation_requires_active_shift_message">This section is available only during an active trip</string>
+
+    <string name="op_type_add">Addition</string>
+    <string name="op_type_sold_cash">Cash sale</string>
+    <string name="op_type_sold_card">Card sale</string>
+    <string name="op_type_replenish">Restock</string>
+
+    <string name="operation_nothing">No operations</string>
+    <string name="operation_loading_operations">Loading operations…</string>
+    <string name="operation_loading_more">Loading more…</string>
+    <string name="operation_loading_error">Loading error</string>
+
+    <string name="sell_title">Operation</string>
+    <string name="sell_success">Operation registered</string>
+    <string name="sold_out_products_message">Sold out products: %1$s</string>
+    <string name="sell_empty_cart">Cart is empty</string>
+    <string name="sell_failure">Something went wrong, try the operation again</string>
+
+    <string name="error_no_connection">No network connection</string>
+    <string name="error_unauthorized">Authorization error, try signing in again</string>
+    <string name="error_try_later">Service error, try again later</string>
+
+    <string name="op_quantity_suffix">pcs</string>
+    <string name="statistics_title">Statistics</string>
+    <string name="cashless_checks">Checks (cashless)</string>
+    <string name="cash_revenue_total">Total</string>
+    <string name="historical_unknown_product_name">Product #%1$d</string>
+    <string name="historical_unknown_conductor_name">Conductor #%1$s</string>
+
+    <string name="trip_finish_title">Finish trip</string>
+    <string name="trip_finish_confirm_subtitle">A finished trip cannot be resumed.</string>
+    <string name="trip_finish_confirm_checkbox">I confirm finishing the trip</string>
+    <string name="trip_finish_success">Trip finished, report sent</string>
+    <string name="trip_finish_already_sent">Trip finished, report has already been sent</string>
+    <string name="trip_finish_missing_report">Report error</string>
+    <string name="trip_finish_temp_failure">Service error, try sending later</string>
+    <string name="trip_finish_perm_failure">Service error, we are working on this problem</string>
+    <string name="trip_finish_result_title">Trip finish result</string>
+
+    <string name="retry_send_title">Send report?</string>
+    <string name="retry_send_subtitle">The report for this trip was not sent automatically</string>
+    <string name="retry_send_confirm">Confirm</string>
+    <string name="retry_send_cancel">Cancel</string>
+
+    <string name="dropdown_default_placeholder">Select…</string>
+    <string name="dropdown_min_chars_hint">Enter at least 2 characters</string>
+    <string name="dropdown_searching">Searching…</string>
+    <string name="dropdown_error_loading">Loading error</string>
+    <string name="dropdown_nothing_found">Nothing found</string>
+    <string name="dropdown_loading_more">Loading more…</string>
+
+    <string name="trip_search_date_placeholder">Departure date</string>
+    <string name="trip_search_from_placeholder">Departure station</string>
+    <string name="trip_search_to_placeholder">Arrival station</string>
+    <string name="trip_search_empty">No trips with these stations on the selected day</string>
+
+    <string name="logout_confirm_title">Do you want to log out?</string>
+    <string name="logout_confirm_message">Are you sure you want to log out?</string>
+    <string name="logout_confirm">CONFIRM</string>
+    <string name="logout_cancel">Cancel</string>
+    <string name="logout_blocked_active_trip_title">Cannot log out</string>
+    <string name="logout_blocked_active_trip_message">Finish the active trip first.</string>
+    <string name="logout_blocked_active_trip_action">GO TO FINISH</string>
+
+    <string name="active_trip_confirm_title">You have an unfinished trip</string>
+    <string name="active_trip_confirm_message">You have an unfinished trip. Do you want to finish it?</string>
+</resources>
