@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("androidx.room")
     id("io.gitlab.arturbosch.detekt")
     id("org.jetbrains.kotlinx.kover")
     id("de.mannodermaus.android-junit5") version "1.12.0.0"
@@ -96,6 +97,10 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
+
     packaging {
         resources {
             excludes += setOf("META-INF/LICENSE.md")
@@ -105,6 +110,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 tasks.withType<Test> {
@@ -252,6 +261,7 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.room:room-paging:$roomVersion")
+    androidTestImplementation("androidx.room:room-testing:$roomVersion")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")

@@ -33,8 +33,8 @@ import com.chaikasoft.app.data.room.entities.SyncMeta
         SyncMeta::class
     ],
     views = [PackageItemView::class, FastReportView::class, OperationInfoView::class],
-    version = 1, // Увеличить версию, если используем миграции
-    exportSchema = false
+    version = 1,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
