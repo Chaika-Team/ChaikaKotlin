@@ -49,18 +49,28 @@ class FakeChaikaSoftApiServiceRepository @Inject constructor() : ChaikaSoftApiSe
         query: String,
         limit: Int,
         offset: Int,
-    ): List<TemplateDomain> {
-        return E2EFixtures.templates
+    ): RemoteResult<List<TemplateDomain>> {
+        val templates = E2EFixtures.templates
             .filter { template ->
                 query.isBlank() || template.templateName.contains(query, ignoreCase = true)
             }
             .drop(offset)
             .take(limit)
+        return RemoteResult.Success(templates)
     }
 
-    override suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain {
-        return E2EFixtures.templates.firstOrNull { it.id == templateId }
-            ?: error("Template with id=$templateId not found")
+    override suspend fun fetchTemplateDetail(templateId: Int): RemoteResult<TemplateDomain> {
+        val template = E2EFixtures.templates.firstOrNull { it.id == templateId }
+        return if (template != null) {
+            RemoteResult.Success(template)
+        } else {
+            RemoteResult.Failure(
+                AppError.Http(
+                    code = 404,
+                    body = "Template with id=$templateId not found"
+                )
+            )
+        }
     }
 }
 

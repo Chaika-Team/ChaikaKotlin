@@ -66,17 +66,17 @@ fun TemplateDetailView(
         }
 
         is TemplateDetailUiState.Error -> {
-            val errorMessage = state.cause.localizedMessage?.takeIf { it.isNotBlank() }
-                ?: stringResource(R.string.error_try_later)
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = errorMessage,
+                        text = stringResource(state.messageRes),
                         color = MaterialTheme.colorScheme.error
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Button(onClick = viewModel::retryLoadTemplateDetail) {
-                        Text(stringResource(R.string.retry))
+                    if (state.retryable) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(onClick = viewModel::retryLoadTemplateDetail) {
+                            Text(stringResource(R.string.retry))
+                        }
                     }
                 }
             }

@@ -26,7 +26,7 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
         query: String,
         limit: Int,
         offset: Int
-    ): List<TemplateDomain> {
+    ): RemoteResult<List<TemplateDomain>> = remoteCall {
         val body = apiService.getTemplates(query, limit, offset)
         Log.d("ChaikaSoftApiServiceRepo", "Templates count: ${body.templates.size}")
         body.templates.forEachIndexed { i, t ->
@@ -35,11 +35,12 @@ class ChaikaSoftApiServiceRepository @Inject constructor(
                 "Template[$i]: id=${t.id}, name=${t.templateName}, contentSize=${t.content.size}"
             )
         }
-        return body.templates.toDomainList()
+        body.templates.toDomainList()
     }
 
-    override suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain {
-        val body = apiService.getTemplateDetail(templateId)
-        return body.template.toDomain()
-    }
+    override suspend fun fetchTemplateDetail(templateId: Int): RemoteResult<TemplateDomain> =
+        remoteCall {
+            val body = apiService.getTemplateDetail(templateId)
+            body.template.toDomain()
+        }
 }

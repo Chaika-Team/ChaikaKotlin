@@ -127,9 +127,22 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
             val result = repository.fetchTemplates(query = "cof", limit = 20, offset = 40)
 
-            result.size shouldBe 1
-            result.first().id shouldBe 5
-            result.first().content.first().productId shouldBe 10
+            result as RemoteResult.Success
+            result.data.size shouldBe 1
+            result.data.first().id shouldBe 5
+            result.data.first().content.first().productId shouldBe 10
+            coVerify(exactly = 1) { api.getTemplates(query = "cof", limit = 20, offset = 40) }
+        }
+    }
+
+    test("fetchTemplates network error returns RemoteResult.Failure(Network)") {
+        runTest {
+            coEvery { api.getTemplates(query = "cof", limit = 20, offset = 40) } throws
+                IOException("network")
+
+            val result = repository.fetchTemplates(query = "cof", limit = 20, offset = 40)
+
+            result shouldBe RemoteResult.Failure(AppError.Network)
             coVerify(exactly = 1) { api.getTemplates(query = "cof", limit = 20, offset = 40) }
         }
     }
@@ -156,8 +169,20 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
             val result = repository.fetchTemplateDetail(templateId = 777)
 
-            result.id shouldBe 777
-            result.templateName shouldBe "Detail"
+            result as RemoteResult.Success
+            result.data.id shouldBe 777
+            result.data.templateName shouldBe "Detail"
+            coVerify(exactly = 1) { api.getTemplateDetail(templateId = 777) }
+        }
+    }
+
+    test("fetchTemplateDetail network error returns RemoteResult.Failure(Network)") {
+        runTest {
+            coEvery { api.getTemplateDetail(templateId = 777) } throws IOException("network")
+
+            val result = repository.fetchTemplateDetail(templateId = 777)
+
+            result shouldBe RemoteResult.Failure(AppError.Network)
             coVerify(exactly = 1) { api.getTemplateDetail(templateId = 777) }
         }
     }

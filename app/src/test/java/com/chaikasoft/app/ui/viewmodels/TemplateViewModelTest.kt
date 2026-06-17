@@ -2,6 +2,9 @@ package com.chaikasoft.app.ui.viewmodels
 
 import androidx.paging.PagingData
 import app.cash.turbine.test
+import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
 import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
 import com.chaikasoft.app.domain.models.TemplateContentDomain
@@ -67,7 +70,7 @@ class TemplateViewModelTest : FunSpec({
         runTest {
             coEvery { getResolvedTemplateDetailUseCase(42) } coAnswers {
                 yield()
-                resolvedDetail
+                RemoteResult.Success(resolvedDetail)
             }
 
             vm.templateDetailState.test {
@@ -80,20 +83,21 @@ class TemplateViewModelTest : FunSpec({
         }
     }
 
-    test("loadTemplateDetail emits Error on failure") {
+    test("loadTemplateDetail emits Error on remote failure") {
         runTest {
             coEvery { getResolvedTemplateDetailUseCase(42) } coAnswers {
                 yield()
-                throw IllegalStateException("boom")
+                RemoteResult.Failure(AppError.Network)
             }
 
             vm.templateDetailState.test {
                 awaitItem() shouldBe TemplateDetailUiState.Idle
                 vm.loadTemplateDetail(42)
                 awaitItem() shouldBe TemplateDetailUiState.Loading
-                val errorState = awaitItem()
-                (errorState is TemplateDetailUiState.Error) shouldBe true
-                (errorState as TemplateDetailUiState.Error).cause.message shouldBe "boom"
+                awaitItem() shouldBe TemplateDetailUiState.Error(
+                    messageRes = R.string.error_no_connection,
+                    retryable = true
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -106,9 +110,10 @@ class TemplateViewModelTest : FunSpec({
                 callCount++
                 yield()
                 if (callCount == 1) {
-                    throw IllegalStateException("first")
+                    RemoteResult.Failure(AppError.Network)
+                } else {
+                    RemoteResult.Success(resolvedDetail)
                 }
-                resolvedDetail
             }
 
             vm.templateDetailState.test {
@@ -128,7 +133,8 @@ class TemplateViewModelTest : FunSpec({
 
     test("loadTemplateDetail does not reload same template id when already loaded") {
         runTest {
-            coEvery { getResolvedTemplateDetailUseCase(42) } returns resolvedDetail
+            coEvery { getResolvedTemplateDetailUseCase(42) } returns
+                RemoteResult.Success(resolvedDetail)
 
             vm.loadTemplateDetail(42)
             advanceUntilIdle()
