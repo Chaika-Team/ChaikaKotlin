@@ -2,6 +2,7 @@ package com.chaikasoft.app.ui.components.operation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,11 +29,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartDomain
@@ -104,11 +110,17 @@ fun OperationCard(summary: OperationSummaryDomain, cart: CartDomain?) {
 
             // --- Список товаров ---
             cart?.let { cartDomain ->
+                val itemsScrollState = rememberScrollState()
+                val itemsNestedScrollConnection = rememberItemsNestedScrollConnection(
+                    scrollState = itemsScrollState
+                )
+
                 Box(
                     modifier = Modifier
                         .weight(1f, fill = false)
                         .heightIn(max = OperationDimens.ItemsMaxHeight) // оставляем место под футер
-                        .verticalScroll(rememberScrollState())
+                        .nestedScroll(itemsNestedScrollConnection)
+                        .verticalScroll(itemsScrollState)
                 ) {
                     Column {
                         cartDomain.items.forEachIndexed { index, cartItem ->
@@ -160,6 +172,48 @@ fun OperationCard(summary: OperationSummaryDomain, cart: CartDomain?) {
             }
         }
     }
+}
+
+@Composable
+private fun rememberItemsNestedScrollConnection(scrollState: ScrollState): NestedScrollConnection =
+    remember(scrollState) {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset = if (source.consumesItemsScrollOverflow() && scrollState.maxValue > 0) {
+                Offset(x = 0f, y = available.y)
+            } else {
+                Offset.Zero
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity =
+                if (scrollState.shouldConsumeOutgoingFling(available.y)) {
+                    Velocity(x = 0f, y = available.y)
+                } else {
+                    Velocity.Zero
+                }
+
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity =
+                if (scrollState.maxValue > 0) {
+                    Velocity(x = 0f, y = available.y)
+                } else {
+                    Velocity.Zero
+                }
+        }
+    }
+
+private fun NestedScrollSource.consumesItemsScrollOverflow(): Boolean =
+    this == NestedScrollSource.UserInput || this == NestedScrollSource.SideEffect
+
+private fun ScrollState.shouldConsumeOutgoingFling(velocityY: Float): Boolean {
+    if (maxValue <= 0) return false
+
+    val flingPastTop = value <= 0 && velocityY > 0f
+    val flingPastBottom = value >= maxValue && velocityY < 0f
+
+    return flingPastTop || flingPastBottom
 }
 
 @Composable

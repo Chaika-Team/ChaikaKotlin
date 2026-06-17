@@ -106,13 +106,15 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
 
             snapshot.operations shouldHaveSize 4
             snapshot.operations[0].summary.id shouldBe 1
-            snapshot.operations[0].summary.type shouldBe OperationTypeDomain.ADD
-            snapshot.operations[0].summary.timeIso shouldBe "2026-01-01T10:00:00Z"
-            snapshot.operations[0].cart.items.single().product.name shouldBe "Tea"
-            snapshot.operations[0].cart.items.single().product.price shouldBe 1000
-            snapshot.operations[2].summary.totalPrice shouldBe 2500
-            snapshot.operations[3].summary.conductor.name shouldBe ""
-            snapshot.operations[3].summary.conductor.familyName shouldBe ""
+            snapshot.operations[0].summary.type shouldBe OperationTypeDomain.SOLD_CART
+            snapshot.operations[0].summary.timeIso shouldBe "2026-01-01T10:15:00Z"
+            snapshot.operations[0].summary.conductor.name shouldBe ""
+            snapshot.operations[0].summary.conductor.familyName shouldBe ""
+            snapshot.operations[1].summary.totalPrice shouldBe 2500
+            snapshot.operations[3].summary.type shouldBe OperationTypeDomain.ADD
+            snapshot.operations[3].summary.timeIso shouldBe "2026-01-01T10:00:00Z"
+            snapshot.operations[3].cart.items.single().product.name shouldBe "Tea"
+            snapshot.operations[3].cart.items.single().product.price shouldBe 1000
         }
     }
 
