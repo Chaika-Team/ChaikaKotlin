@@ -1,6 +1,7 @@
 package com.chaikasoft.app.data.room.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -14,6 +15,9 @@ interface ConductorTripShiftDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertNew(shift: ConductorTripShift)
+
+    @Delete
+    suspend fun deleteShift(shift: ConductorTripShift): Int
 
     @Query("SELECT * FROM conductor_trip_shifts WHERE uuid = :uuid")
     suspend fun getByUuid(uuid: String): ConductorTripShift?

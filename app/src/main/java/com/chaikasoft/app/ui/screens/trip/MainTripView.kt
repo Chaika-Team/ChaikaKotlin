@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.components.trip.CurrentTripCard
+import com.chaikasoft.app.ui.components.trip.DeleteTripConfirmBottomSheet
 import com.chaikasoft.app.ui.components.trip.FinishTripConfirmBottomSheet
 import com.chaikasoft.app.ui.components.trip.FinishTripResultBottomSheet
 import com.chaikasoft.app.ui.components.trip.HistoryRecordCard
@@ -38,20 +39,20 @@ fun MainTripView(
     onFinishTripConfirmConsumed: () -> Unit = {}
 ) {
     val history by viewModel.shiftHistory.collectAsStateWithLifecycle()
-    val selectedTrip by viewModel.selectedTripRecord.collectAsStateWithLifecycle()
+    val activeTrip by viewModel.activeTripRecord.collectAsStateWithLifecycle()
+    val isFinishingTrip by viewModel.isFinishingTrip.collectAsStateWithLifecycle()
     var showFinishTripConfirmSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadHistory()
-        viewModel.checkActiveShift()
     }
 
     DisposableEffect(Unit) {
         onDispose { viewModel.stopHistoryObserving() }
     }
 
-    LaunchedEffect(openFinishTripConfirm, selectedTrip) {
-        if (openFinishTripConfirm && selectedTrip != null) {
+    LaunchedEffect(openFinishTripConfirm, activeTrip) {
+        if (openFinishTripConfirm && activeTrip != null) {
             showFinishTripConfirmSheet = true
             onFinishTripConfirmConsumed()
         }
@@ -88,10 +89,12 @@ fun MainTripView(
 
         HistoryToNowDivider()
 
-        if (selectedTrip != null) {
+        if (activeTrip != null) {
             CurrentTripCard(
-                tripRecord = selectedTrip!!,
+                tripRecord = activeTrip!!,
+                isFinishing = isFinishingTrip,
                 onClick = { showFinishTripConfirmSheet = true },
+                onDeleteClick = { viewModel.requestDeleteCurrentTrip() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, end = 24.dp, top = 6.dp, bottom = 16.dp)
@@ -117,6 +120,8 @@ fun MainTripView(
         FinishTripResultBottomSheet(
             tripViewModel = viewModel
         )
+
+        DeleteTripConfirmBottomSheet(tripViewModel = viewModel)
 
         // Retry confirmation dialog.
         RetrySendConfirmBottomSheet(tripViewModel = viewModel)

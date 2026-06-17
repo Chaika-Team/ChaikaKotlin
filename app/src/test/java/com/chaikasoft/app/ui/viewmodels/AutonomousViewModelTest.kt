@@ -2,7 +2,9 @@ package com.chaikasoft.app.ui.viewmodels
 
 import androidx.paging.PagingData
 import app.cash.turbine.test
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.StationDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.ui.helpers.OfflineTripBuildHelper
@@ -37,7 +39,7 @@ class AutonomousViewModelTest : FunSpec({
         every {
             getPagedStationSuggestions(any(), any())
         } returns flowOf(PagingData.empty<StationDomain>())
-        coEvery { startShift(any(), any()) } returns true
+        coEvery { startShift(any(), any()) } returns StartShiftResult.Started
 
         vm = AutonomousViewModel(getPagedStationSuggestions, startShift)
     }
@@ -68,7 +70,7 @@ class AutonomousViewModelTest : FunSpec({
     test("submit valid input emits ShiftStarted when startShift succeeds") {
         runTest {
             fillValidForm()
-            coEvery { startShift(any(), any()) } returns true
+            coEvery { startShift(any(), any()) } returns StartShiftResult.Started
 
             vm.events.test {
                 vm.submit()
@@ -79,16 +81,34 @@ class AutonomousViewModelTest : FunSpec({
         }
     }
 
-    test("submit valid input emits Info when startShift returns false") {
+    test("submit valid input emits Info when active shift already exists") {
         runTest {
             fillValidForm()
-            coEvery { startShift(any(), any()) } returns false
+            coEvery {
+                startShift(any(), any())
+            } returns StartShiftResult.ActiveShiftAlreadyExists
 
             vm.events.test {
                 vm.submit()
                 advanceUntilIdle()
                 val event = awaitItem()
-                event shouldBe AutonomousViewModel.Event.Info("Уже есть активная смена")
+                event shouldBe AutonomousViewModel.Event.Info(R.string.active_shift_already_exists)
+            }
+        }
+    }
+
+    test("submit valid input emits Info when trip was already registered") {
+        runTest {
+            fillValidForm()
+            coEvery {
+                startShift(any(), any())
+            } returns StartShiftResult.TripAlreadyRegistered
+
+            vm.events.test {
+                vm.submit()
+                advanceUntilIdle()
+                val event = awaitItem()
+                event shouldBe AutonomousViewModel.Event.Info(R.string.trip_already_registered)
             }
         }
     }

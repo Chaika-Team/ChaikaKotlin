@@ -18,6 +18,14 @@
     <string name="no_selected_trip_error">Ошибка загрузки выбранного маршрута</string>
     <string name="carriage_class">Класс</string>
     <string name="finish_trip">ЗАВЕРШИТЬ</string>
+    <string name="trip_delete_action">Удалить поездку</string>
+    <string name="trip_delete_title">Удаление поездки</string>
+    <string name="trip_delete_subtitle">Вы уверены, что хотите удалить поездку?</string>
+    <string name="trip_delete_preserve_package">Сохранить пакет</string>
+    <string name="trip_delete_package_cleared">Текущий Пакет будет очищен</string>
+    <string name="trip_delete_package_restored">Текущий Пакет будет восстановлен при создании новой поездки</string>
+    <string name="trip_delete_confirm">УДАЛИТЬ ПОЕЗДКУ</string>
+    <string name="trip_delete_failure">Не удалось удалить поездку. Попробуйте ещё раз</string>
     <string name="retry_action">Повторить</string>
     <string name="loading_error_message">Ошибка загрузки: %1$s</string>
     <string name="empty_carriages_message">Нет доступных вагонов</string>
@@ -45,6 +53,8 @@
     <string name="start_shift_btn">Начать смену</string>
     <string name="start_shift_success">Смена начата</string>
     <string name="start_shift_failed">Не удалось начать смену</string>
+    <string name="active_shift_already_exists">Уже есть активная смена</string>
+    <string name="trip_already_registered">Поездка уже была зарегистрирована</string>
 
     <!-- Ошибки валидации -->
     <string name="err_train_number_empty">Укажите номер поезда</string>
