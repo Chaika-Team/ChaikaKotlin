@@ -19,9 +19,11 @@ import com.chaikasoft.app.ui.theme.TripDimens
 fun CurrentTripCard(
     modifier: Modifier = Modifier,
     tripRecord: TripDomain,
-    heightTotal: Dp = TripDimens.NewTripButtonHeight,
+    heightTotal: Dp = TripDimens.CurrentTripCardHeight,
     widthTotal: Dp = TripDimens.CardWidth,
-    onClick: () -> Unit
+    isFinishing: Boolean = false,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -38,7 +40,9 @@ fun CurrentTripCard(
             tripRecord = tripRecord,
             heightTotal = heightTotal,
             widthTotal = widthTotal,
-            onClick = onClick
+            isFinishing = isFinishing,
+            onClick = onClick,
+            onDeleteClick = onDeleteClick
         )
     }
 }
@@ -66,7 +70,8 @@ fun CurrentTripCardPreview() {
                     city = "Москва ВК Восточный"
                 )
             ),
-            onClick = { }
+            onClick = { },
+            onDeleteClick = { }
         )
     }
 }

@@ -13,6 +13,7 @@ import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.chaikasoft.app.domain.sealed.SendReportResult
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.sealed.UploadResult
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -48,17 +49,20 @@ class HasActiveShiftUseCase @Inject constructor(
 
 /**
  * Пытается создать новую смену (ACTIVE) из переданных TripDomain и CarriageDomain.
- * Если в базе уже есть активная смена, ничего не делает и возвращает false.
- * Иначе создаёт новую смену со статусом ACTIVE и возвращает true.
+ * Если в базе уже есть активная смена, ничего не делает и возвращает типизированный конфликт.
+ * Иначе создаёт новую смену со статусом ACTIVE и возвращает результат репозитория.
  */
 class StartShiftUseCase @Inject constructor(
     private val repository: RoomConductorTripShiftRepositoryInterface,
     private val hasActiveShift: HasActiveShiftUseCase
 ) {
-    suspend operator fun invoke(trip: TripDomain, activeCarriage: CarriageDomain?): Boolean {
+    suspend operator fun invoke(
+        trip: TripDomain,
+        activeCarriage: CarriageDomain?
+    ): StartShiftResult {
         // не допускаем более одной активной смены
         // Быстрый путь, чтобы не ловить exception в обычном сценарии
-        if (hasActiveShift()) return false
+        if (hasActiveShift()) return StartShiftResult.ActiveShiftAlreadyExists
 
         val newShift = ConductorTripShiftDomain(
             trip = trip,
@@ -66,6 +70,18 @@ class StartShiftUseCase @Inject constructor(
             status = TripShiftStatusDomain.ACTIVE
         )
         return repository.tryStartNewShift(newShift)
+    }
+}
+
+/** Удаляет активную смену без формирования и отправки отчёта. */
+class DeleteActiveShiftUseCase @Inject constructor(
+    private val repository: RoomConductorTripShiftRepositoryInterface
+) {
+    suspend operator fun invoke(uuid: String, preservePackage: Boolean) {
+        repository.deleteActiveShift(
+            uuid = uuid,
+            clearOperations = !preservePackage
+        )
     }
 }
 

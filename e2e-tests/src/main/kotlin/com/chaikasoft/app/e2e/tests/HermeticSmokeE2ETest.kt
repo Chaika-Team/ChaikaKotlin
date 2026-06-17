@@ -1,6 +1,7 @@
 ﻿package com.chaikasoft.app.e2e.tests
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -11,6 +12,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.LargeTest
 import com.chaikasoft.app.R
 import com.chaikasoft.app.data.room.AppDatabase
+import com.chaikasoft.app.data.room.entities.CartItem
+import com.chaikasoft.app.data.room.entities.CartOperation
 import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
@@ -24,6 +27,7 @@ import com.chaikasoft.app.domain.models.report.TripIdReport
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.e2e.fixtures.E2EFixtures
 import com.chaikasoft.app.e2e.rules.FailureDiagnosticsRule
@@ -33,6 +37,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -152,6 +157,52 @@ class HermeticSmokeE2ETest {
 
         openProductSectionWithActiveShift()
         waitForAnyTag("productEntryFillPackageButton", "productCartFab")
+    }
+
+    @Test
+    fun activeTrip_canBeDeletedWhilePreservingPackage() {
+        waitForTag("tripMainScreen")
+        startActiveShift()
+        seedPackageOperation()
+
+        val deleteButtonTag = "currentTripDelete_${E2EFixtures.trips.first().uuid}"
+        waitForTag(deleteButtonTag)
+        composeRule.onNodeWithTag(deleteButtonTag, useUnmergedTree = true).performClick()
+
+        waitForTag("deleteTripBottomSheet")
+        waitForTag("deleteTripPreservePackageCheckbox")
+        composeRule.onNodeWithTag("deleteTripPreservePackageCheckbox", useUnmergedTree = true)
+            .assertIsOn()
+        composeRule.onNodeWithTag("deleteTripConfirmButton").performClick()
+
+        waitForTag("newTripButton")
+        runBlocking {
+            check(db.conductorTripShiftDao().getByUuid(E2EFixtures.trips.first().uuid) == null)
+            check(db.cartOperationDao().getAllOperations().first().size == 1)
+            check(db.cartItemDao().getAllCartItems().first().size == 1)
+        }
+    }
+
+    @Test
+    fun activeTrip_finishingMovesCardToHistory() {
+        waitForTag("tripMainScreen")
+        startActiveShift()
+
+        waitForTag("currentTripFinishButton")
+        composeRule.onNodeWithTag("currentTripFinishButton").performClick()
+
+        waitForTag("finishTripConfirmBottomSheet")
+        composeRule.onNodeWithTag("finishTripConfirmCheckbox", useUnmergedTree = true)
+            .performClick()
+        composeRule.onNodeWithTag("finishTripConfirmButton", useUnmergedTree = true)
+            .performClick()
+
+        waitForTag("newTripButton")
+        waitForTag("historyRecordCard_${E2EFixtures.trips.first().uuid}")
+        runBlocking {
+            val savedShift = db.conductorTripShiftDao().getByUuid(E2EFixtures.trips.first().uuid)
+            check(savedShift?.status == TripShiftStatusDomain.SENT.code)
+        }
     }
 
     @Test
@@ -306,15 +357,43 @@ class HermeticSmokeE2ETest {
         }
     }
 
-    private fun startActiveShift() = runBlocking {
-        val started = startShiftUseCase(
-            trip = E2EFixtures.trips.first(),
-            activeCarriage = E2EFixtures.activeCarriage,
-        )
-        val activeShift = shiftRepository.getActiveShift()
-        check(started || activeShift != null) {
-            "Expected an active shift to exist before opening protected sections"
+    private fun startActiveShift() {
+        val result = runBlocking {
+            startShiftUseCase(
+                trip = E2EFixtures.trips.first(),
+                activeCarriage = E2EFixtures.activeCarriage,
+            )
         }
+        val activeShift = runBlocking { shiftRepository.getActiveShift() }
+
+        check(result == StartShiftResult.Started || activeShift != null) {
+            "Expected an active shift to exist before opening protected sections, got $result"
+        }
+
+        composeRule.waitForIdle()
+        waitForTag("currentTripFinishButton")
+    }
+
+    private fun seedPackageOperation() = runBlocking {
+        val conductor = db.conductorDao()
+            .getConductorByEmployeeID(E2EFixtures.conductor.employeeID)
+            ?: error("Expected authenticated conductor")
+        val product = db.productInfoDao().getProductById(E2EFixtures.products.first().id)
+            ?: error("Expected refreshed product")
+        val operationId = db.cartOperationDao().insertOperation(
+            CartOperation(
+                operationType = OperationTypeDomain.ADD.ordinal,
+                operationTime = "2026-04-11T08:30:00+03:00",
+                conductorId = conductor.id
+            )
+        ).toInt()
+        db.cartItemDao().insertCartItem(
+            CartItem(
+                cartOperationId = operationId,
+                productId = product.id,
+                impact = 2
+            )
+        )
         composeRule.waitForIdle()
     }
 
@@ -335,7 +414,9 @@ class HermeticSmokeE2ETest {
                 status = TripShiftStatusDomain.ACTIVE
             )
         )
-        check(shiftCreated) { "Expected historical shift seed to create a fresh active shift" }
+        check(shiftCreated == StartShiftResult.Started) {
+            "Expected historical shift seed to create a fresh active shift"
+        }
 
         shiftRepository.updateStatusAndReport(
             uuid = HISTORICAL_SHIFT_UUID,

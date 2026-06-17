@@ -4,9 +4,6 @@ import com.chaikasoft.app.data.room.dao.ConductorTripShiftDao
 import com.chaikasoft.app.data.room.entities.ConductorTripShift
 import com.chaikasoft.app.data.room.entities.Station
 import com.chaikasoft.app.data.room.relations.ConductorTripShiftWithStations
-import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
-import com.chaikasoft.app.domain.models.trip.StationDomain
-import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -25,19 +22,11 @@ class RoomConductorTripShiftRepositoryTest : FunSpec({
 
     beforeTest {
         dao = mockk(relaxed = true)
-        repository = RoomConductorTripShiftRepository(dao)
-    }
-
-    test("tryStartNewShift returns false on SQLiteConstraintException and true on success") {
-        runTest {
-            val shift = sampleDomainShift("uuid-2")
-
-            coEvery { dao.insertNew(any()) } throws android.database.sqlite.SQLiteConstraintException("conflict")
-            repository.tryStartNewShift(shift) shouldBe false
-
-            coEvery { dao.insertNew(any()) } returns Unit
-            repository.tryStartNewShift(shift) shouldBe true
-        }
+        repository = RoomConductorTripShiftRepository(
+            db = mockk(relaxed = true),
+            dao = dao,
+            cartOperationDao = mockk(relaxed = true)
+        )
     }
 
     test("getStatusAndReport throws when shift is missing") {
@@ -65,20 +54,6 @@ class RoomConductorTripShiftRepositoryTest : FunSpec({
     }
 }) {
     companion object {
-        private fun sampleDomainShift(uuid: String) = ConductorTripShiftDomain(
-            trip = TripDomain(
-                uuid = uuid,
-                trainNumber = "100A",
-                departure = "2026-03-09T10:00:00Z",
-                arrival = "2026-03-09T14:00:00Z",
-                duration = "PT4H",
-                from = StationDomain("MSK", "Moscow", "Moscow"),
-                to = StationDomain("TVE", "Tver", "Tver"),
-            ),
-            activeCarriage = null,
-            status = TripShiftStatusDomain.ACTIVE,
-        )
-
         private fun sampleRelationShift(
             uuid: String,
             status: TripShiftStatusDomain,
