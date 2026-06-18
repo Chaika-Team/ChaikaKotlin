@@ -1,5 +1,6 @@
 package com.chaikasoft.app.domain.usecases
 
+import android.database.sqlite.SQLiteException
 import com.chaikasoft.app.data.inmemory.CartRepositoryFactoryInterface
 import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomCartRepositoryInterface
@@ -10,6 +11,7 @@ import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.domain.sealed.AddItemToCartWithLimitResult
 import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -53,8 +55,12 @@ class SaveCartWithItemsAndOperationUseCase @Inject constructor(
             // 4) Чистим in-memory корзину
             cart.clearCart()
             SaveOperationResult.Success(opId)
-        } catch (t: Throwable) {
-            SaveOperationResult.Failure(t.message)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: SQLiteException) {
+            SaveOperationResult.Failure(e.message)
+        } catch (e: IllegalStateException) {
+            SaveOperationResult.Failure(e.message)
         }
     }
 }

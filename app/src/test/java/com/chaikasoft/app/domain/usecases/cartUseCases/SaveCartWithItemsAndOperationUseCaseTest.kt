@@ -9,6 +9,7 @@ import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.sealed.SaveOperationResult
 import com.chaikasoft.app.domain.usecases.SaveCartWithItemsAndOperationUseCase
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
@@ -20,6 +21,7 @@ import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 
@@ -136,6 +138,25 @@ class SaveCartWithItemsAndOperationUseCaseTest : FunSpec({
 
             result shouldBe SaveOperationResult.Failure("boom")
 
+            verify(exactly = 1) { cart.getCartItems() }
+            coVerify(exactly = 1) { repository.saveCartWithItemsAndOperation(any(), any()) }
+            verify(exactly = 0) { cart.clearCart() }
+            confirmVerified(cart, repository)
+        }
+    }
+
+    test("when repo is cancelled - rethrows CancellationException and does not clear cart") {
+        runTest {
+            val items = listOf(item)
+            val error = CancellationException("cancelled")
+            every { cart.getCartItems() } returns flowOf(items)
+            coEvery { repository.saveCartWithItemsAndOperation(any(), any()) } throws error
+
+            val thrown = shouldThrow<CancellationException> {
+                useCase(cart, operation)
+            }
+
+            thrown shouldBe error
             verify(exactly = 1) { cart.getCartItems() }
             coVerify(exactly = 1) { repository.saveCartWithItemsAndOperation(any(), any()) }
             verify(exactly = 0) { cart.clearCart() }
