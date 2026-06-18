@@ -92,12 +92,14 @@ fun MainProfileView(
                             icon = ImageVector.vectorResource(R.drawable.ic_personal_data),
                             text = stringResource(R.string.profile_personal_data),
                             onClick = { navController.navigate(Routes.PROFILE_PERSONAL_DATA) },
+                            modifier = Modifier.testTag("profilePersonalDataMenuItem"),
                             shape = ProfileMenuItemShape.Top
                         )
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_settings),
                             text = stringResource(R.string.profile_settings),
                             onClick = { navController.navigate(Routes.PROFILE_SETTINGS) },
+                            modifier = Modifier.testTag("profileSettingsMenuItem"),
                             shape = ProfileMenuItemShape.Bottom
                         )
                     }
@@ -109,18 +111,21 @@ fun MainProfileView(
                             icon = ImageVector.vectorResource(R.drawable.ic_faqs),
                             text = stringResource(R.string.profile_faqs),
                             onClick = { navController.navigate(Routes.PROFILE_FAQS) },
+                            modifier = Modifier.testTag("profileFaqsMenuItem"),
                             shape = ProfileMenuItemShape.Top
                         )
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_feedback),
                             text = stringResource(R.string.profile_feedback),
                             onClick = { navController.navigate(Routes.PROFILE_FEEDBACK) },
+                            modifier = Modifier.testTag("profileFeedbackMenuItem"),
                             shape = ProfileMenuItemShape.Middle
                         )
                         ProfileMenuItem(
                             icon = ImageVector.vectorResource(R.drawable.ic_info),
                             text = stringResource(R.string.profile_about),
                             onClick = { navController.navigate(Routes.PROFILE_ABOUT) },
+                            modifier = Modifier.testTag("profileAboutMenuItem"),
                             shape = ProfileMenuItemShape.Bottom
                         )
                     }

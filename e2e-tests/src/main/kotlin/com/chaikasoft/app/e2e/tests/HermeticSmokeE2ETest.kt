@@ -1,29 +1,38 @@
 ﻿package com.chaikasoft.app.e2e.tests
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.LargeTest
 import com.chaikasoft.app.R
 import com.chaikasoft.app.data.room.AppDatabase
+import com.chaikasoft.app.data.room.entities.CartItem
+import com.chaikasoft.app.data.room.entities.CartOperation
 import com.chaikasoft.app.data.room.repo.RoomConductorRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomConductorTripShiftRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomStationRepositoryInterface
+import com.chaikasoft.app.data.settings.LanguageRepositoryInterface
+import com.chaikasoft.app.data.settings.SettingsRepositoryInterface
 import com.chaikasoft.app.domain.models.OperationTypeDomain
 import com.chaikasoft.app.domain.models.report.CartIdReport
 import com.chaikasoft.app.domain.models.report.CartItemReport
 import com.chaikasoft.app.domain.models.report.CartReport
 import com.chaikasoft.app.domain.models.report.ShiftReportReport
 import com.chaikasoft.app.domain.models.report.TripIdReport
+import com.chaikasoft.app.domain.models.settings.AppLanguage
 import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import com.chaikasoft.app.e2e.fixtures.E2EFixtures
 import com.chaikasoft.app.e2e.rules.FailureDiagnosticsRule
@@ -33,6 +42,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,7 +55,7 @@ class HermeticSmokeE2ETest {
         const val HISTORICAL_SHIFT_UUID = "trip-e2e-history-report"
         const val UNKNOWN_PRODUCT_ID = 404
         const val UNKNOWN_CONDUCTOR_EMPLOYEE_ID = "E2E-404"
-        const val PRODUCT_NAVIGATION_ATTEMPTS = 3
+        const val PROTECTED_NAVIGATION_ATTEMPTS = 3
     }
 
     @get:Rule(order = 0)
@@ -77,6 +87,12 @@ class HermeticSmokeE2ETest {
 
     @Inject
     lateinit var moshi: Moshi
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepositoryInterface
+
+    @Inject
+    lateinit var languageRepository: LanguageRepositoryInterface
 
     @Before
     fun setUp() {
@@ -129,14 +145,20 @@ class HermeticSmokeE2ETest {
         waitForTag("tripMainScreen")
         startActiveShift()
 
-        composeRule.onNodeWithTag("bottomBarProduct").performClick()
-        waitForAnyTag("productEntryScreen", "productPackageScreen")
+        openProtectedBottomBarSection(
+            bottomBarTag = "bottomBarProduct",
+            targetScreenTags = arrayOf("productEntryScreen", "productPackageScreen")
+        )
 
-        composeRule.onNodeWithTag("bottomBarStatistics").performClick()
-        waitForTag("statisticsScreen")
+        openProtectedBottomBarSection(
+            bottomBarTag = "bottomBarStatistics",
+            targetScreenTags = arrayOf("statisticsScreen")
+        )
 
-        composeRule.onNodeWithTag("bottomBarOperation").performClick()
-        waitForTag("operationScreen")
+        openProtectedBottomBarSection(
+            bottomBarTag = "bottomBarOperation",
+            targetScreenTags = arrayOf("operationScreen")
+        )
 
         composeRule.onNodeWithTag("bottomBarProfile").performClick()
         waitForTag("profileScreen")
@@ -150,8 +172,56 @@ class HermeticSmokeE2ETest {
         waitForTag("tripMainScreen")
         startActiveShift()
 
-        openProductSectionWithActiveShift()
-        waitForAnyTag("productEntryFillPackageButton", "productCartFab")
+        openProtectedBottomBarSection(
+            bottomBarTag = "bottomBarProduct",
+            targetScreenTags = arrayOf("productEntryScreen", "productPackageScreen")
+        )
+    }
+
+    @Test
+    fun activeTrip_canBeDeletedWhilePreservingPackage() {
+        waitForTag("tripMainScreen")
+        startActiveShift()
+        seedPackageOperation()
+
+        val deleteButtonTag = "currentTripDelete_${E2EFixtures.trips.first().uuid}"
+        waitForTag(deleteButtonTag)
+        composeRule.onNodeWithTag(deleteButtonTag, useUnmergedTree = true).performClick()
+
+        waitForTag("deleteTripBottomSheet")
+        waitForTag("deleteTripPreservePackageCheckbox")
+        composeRule.onNodeWithTag("deleteTripPreservePackageCheckbox", useUnmergedTree = true)
+            .assertIsOn()
+        composeRule.onNodeWithTag("deleteTripConfirmButton").performClick()
+
+        waitForTag("newTripButton")
+        runBlocking {
+            check(db.conductorTripShiftDao().getByUuid(E2EFixtures.trips.first().uuid) == null)
+            check(db.cartOperationDao().getAllOperations().first().size == 1)
+            check(db.cartItemDao().getAllCartItems().first().size == 1)
+        }
+    }
+
+    @Test
+    fun activeTrip_finishingMovesCardToHistory() {
+        waitForTag("tripMainScreen")
+        startActiveShift()
+
+        waitForTag("currentTripFinishButton")
+        composeRule.onNodeWithTag("currentTripFinishButton").performClick()
+
+        waitForTag("finishTripConfirmBottomSheet")
+        composeRule.onNodeWithTag("finishTripConfirmCheckbox", useUnmergedTree = true)
+            .performClick()
+        composeRule.onNodeWithTag("finishTripConfirmButton", useUnmergedTree = true)
+            .performClick()
+
+        waitForTag("newTripButton")
+        waitForTag("historyRecordCard_${E2EFixtures.trips.first().uuid}")
+        runBlocking {
+            val savedShift = db.conductorTripShiftDao().getByUuid(E2EFixtures.trips.first().uuid)
+            check(savedShift?.status == TripShiftStatusDomain.SENT.code)
+        }
     }
 
     @Test
@@ -188,6 +258,42 @@ class HermeticSmokeE2ETest {
             .assertIsDisplayed()
         composeRule.onNodeWithTag("finishTripConfirmButton", useUnmergedTree = true)
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun settings_languageChangeKeepsSettingsScreenAndPersistedToggle() {
+        runBlocking {
+            settingsRepository.setAutoSyncEnabled(true)
+        }
+        composeRule.runOnUiThread {
+            languageRepository.setLanguage(AppLanguage.RU)
+        }
+
+        waitForTag("bottomBarProfile")
+        composeRule.onNodeWithTag("bottomBarProfile").performClick()
+        waitForTag("profileScreen")
+
+        composeRule.onNodeWithTag("profileSettingsMenuItem", useUnmergedTree = true)
+            .performClick()
+        waitForTag("settingsScreen")
+
+        composeRule.onNodeWithTag("settingsAutoSyncSwitch", useUnmergedTree = true)
+            .performScrollTo()
+            .assertIsOn()
+            .performClick()
+        waitForSwitchOff("settingsAutoSyncSwitch")
+
+        composeRule.onNodeWithTag("settingsLanguageDropdown", useUnmergedTree = true)
+            .performScrollTo()
+            .performClick()
+        waitForTag("settingsLanguageOption_EN")
+        composeRule.onNodeWithTag("settingsLanguageOption_EN", useUnmergedTree = true)
+            .performClick()
+
+        waitForTag("settingsScreen", timeoutMillis = 15_000L)
+        waitForText("Language", timeoutMillis = 15_000L)
+        waitForSwitchOff("settingsAutoSyncSwitch")
+        assertTagDoesNotExist("tripMainScreen")
     }
 
     @Test
@@ -256,6 +362,15 @@ class HermeticSmokeE2ETest {
         }
     }
 
+    private fun waitForSwitchOff(tag: String, timeoutMillis: Long = 10_000L) {
+        composeRule.waitUntil(timeoutMillis = timeoutMillis) {
+            runCatching {
+                composeRule.onNodeWithTag(tag, useUnmergedTree = true).assertIsOff()
+                true
+            }.getOrDefault(false)
+        }
+    }
+
     private fun assertProtectedSectionBlocked(
         bottomBarTag: String,
         protectedScreenTags: Array<String>,
@@ -283,16 +398,17 @@ class HermeticSmokeE2ETest {
                 .isNotEmpty()
         }
 
-    private fun openProductSectionWithActiveShift() {
-        repeat(PRODUCT_NAVIGATION_ATTEMPTS) {
-            composeRule.onNodeWithTag("bottomBarProduct", useUnmergedTree = true).performClick()
+    private fun openProtectedBottomBarSection(
+        bottomBarTag: String,
+        targetScreenTags: Array<String>,
+    ) {
+        repeat(PROTECTED_NAVIGATION_ATTEMPTS) {
+            composeRule.onNodeWithTag(bottomBarTag, useUnmergedTree = true).performClick()
             waitForAnyTag(
-                "productEntryScreen",
-                "productPackageScreen",
-                "navigationBlockedBottomSheet"
+                *(targetScreenTags + "navigationBlockedBottomSheet")
             )
 
-            if (hasAnyTag("productEntryScreen", "productPackageScreen")) return
+            if (hasAnyTag(*targetScreenTags)) return
 
             composeRule.onNodeWithTag(
                 "navigationBlockedOkButton",
@@ -302,19 +418,47 @@ class HermeticSmokeE2ETest {
         }
 
         check(false) {
-            "Product section remained blocked after creating an active shift"
+            "$bottomBarTag remained blocked after creating an active shift"
         }
     }
 
-    private fun startActiveShift() = runBlocking {
-        val started = startShiftUseCase(
-            trip = E2EFixtures.trips.first(),
-            activeCarriage = E2EFixtures.activeCarriage,
-        )
-        val activeShift = shiftRepository.getActiveShift()
-        check(started || activeShift != null) {
-            "Expected an active shift to exist before opening protected sections"
+    private fun startActiveShift() {
+        val result = runBlocking {
+            startShiftUseCase(
+                trip = E2EFixtures.trips.first(),
+                activeCarriage = E2EFixtures.activeCarriage,
+            )
         }
+        val activeShift = runBlocking { shiftRepository.getActiveShift() }
+
+        check(result == StartShiftResult.Started || activeShift != null) {
+            "Expected an active shift to exist before opening protected sections, got $result"
+        }
+
+        composeRule.waitForIdle()
+        waitForTag("currentTripFinishButton")
+    }
+
+    private fun seedPackageOperation() = runBlocking {
+        val conductor = db.conductorDao()
+            .getConductorByEmployeeID(E2EFixtures.conductor.employeeID)
+            ?: error("Expected authenticated conductor")
+        val product = db.productInfoDao().getProductById(E2EFixtures.products.first().id)
+            ?: error("Expected refreshed product")
+        val operationId = db.cartOperationDao().insertOperation(
+            CartOperation(
+                operationType = OperationTypeDomain.ADD.ordinal,
+                operationTime = "2026-04-11T08:30:00+03:00",
+                conductorId = conductor.id
+            )
+        ).toInt()
+        db.cartItemDao().insertCartItem(
+            CartItem(
+                cartOperationId = operationId,
+                productId = product.id,
+                impact = 2
+            )
+        )
         composeRule.waitForIdle()
     }
 
@@ -335,7 +479,9 @@ class HermeticSmokeE2ETest {
                 status = TripShiftStatusDomain.ACTIVE
             )
         )
-        check(shiftCreated) { "Expected historical shift seed to create a fresh active shift" }
+        check(shiftCreated == StartShiftResult.Started) {
+            "Expected historical shift seed to create a fresh active shift"
+        }
 
         shiftRepository.updateStatusAndReport(
             uuid = HISTORICAL_SHIFT_UUID,
@@ -370,7 +516,7 @@ class HermeticSmokeE2ETest {
                         employeeId = UNKNOWN_CONDUCTOR_EMPLOYEE_ID,
                         operationTime = "2026-04-11T09:10:00+03:00"
                     ),
-                    operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                    operationType = OperationTypeDomain.SOLD_CARD.ordinal,
                     items = listOf(
                         CartItemReport(
                             productId = UNKNOWN_PRODUCT_ID,

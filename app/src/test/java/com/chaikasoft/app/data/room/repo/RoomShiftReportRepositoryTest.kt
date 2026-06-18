@@ -18,6 +18,9 @@ import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
 import com.squareup.moshi.Moshi
 import io.mockk.coEvery
 import io.mockk.spyk
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -77,10 +80,36 @@ class RoomShiftReportRepositoryTest {
         assertEquals(12, parsed?.carriageId)
         assertEquals(1, parsed?.carts?.size)
         assertEquals("EMP-7", parsed?.carts?.first()?.cartId?.employeeId)
-        assertEquals(OperationTypeDomain.SOLD_CART.ordinal, parsed?.carts?.first()?.operationType)
+        assertEquals(OperationTypeDomain.SOLD_CARD.ordinal, parsed?.carts?.first()?.operationType)
         assertEquals(100, parsed?.carts?.first()?.items?.first()?.productId)
         assertEquals(-2, parsed?.carts?.first()?.items?.first()?.quantity)
         assertEquals(150, parsed?.carts?.first()?.items?.first()?.price)
+    }
+
+    @Test
+    fun finishShiftWithReport_emitsNoActiveShiftAndFinishedHistory() = runTest {
+        seedActiveShift()
+        seedOperationWithItem(productId = 100, impact = -2)
+        val repository = createRepository()
+        val dao = db.conductorTripShiftDao()
+        val activeAfterFinish = async(start = CoroutineStart.UNDISPATCHED) {
+            dao.getActiveShiftWithStationsFlow(TripShiftStatusDomain.ACTIVE.code)
+                .drop(1)
+                .first()
+        }
+        val historyAfterFinish = async(start = CoroutineStart.UNDISPATCHED) {
+            dao.getHistoryWithStations()
+                .drop(1)
+                .first()
+        }
+
+        repository.finishShiftWithReport(UUID)
+
+        assertNull(activeAfterFinish.await())
+        val history = historyAfterFinish.await()
+        assertEquals(1, history.size)
+        assertEquals(UUID, history.single().shift.uuid)
+        assertEquals(TripShiftStatusDomain.FINISHED.code, history.single().shift.status)
     }
 
     /**
@@ -119,7 +148,7 @@ class RoomShiftReportRepositoryTest {
             CartOperationWithConductor(
                 operation = CartOperation(
                     id = operationId,
-                    operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                    operationType = OperationTypeDomain.SOLD_CARD.ordinal,
                     operationTime = "2025-01-01T02:00:00Z",
                     conductorId = 7
                 ),
@@ -227,7 +256,7 @@ class RoomShiftReportRepositoryTest {
         )
         val operationId = db.cartOperationDao().insertOperation(
             CartOperation(
-                operationType = OperationTypeDomain.SOLD_CART.ordinal,
+                operationType = OperationTypeDomain.SOLD_CARD.ordinal,
                 operationTime = "2025-01-01T02:00:00Z",
                 conductorId = 7
             )

@@ -7,6 +7,6 @@ package com.chaikasoft.app.domain.models.report
  * которые нужны `GetCartReportsUseCase` до дозагрузки товарных строк по operation id.
  *
  * @param cartId составной идентификатор операции в контракте отчёта: проводник + время операции.
- * @param operationType тип операции: ADD, SOLD_CASH, SOLD_CART или REPLENISH в виде кода.
+ * @param operationType тип операции: ADD, SOLD_CASH, SOLD_CARD или REPLENISH в виде кода.
  */
 data class CartOperationReportHeader(val cartId: CartIdReport, val operationType: Int)

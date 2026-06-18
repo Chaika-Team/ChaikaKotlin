@@ -28,6 +28,34 @@ class NavigationGuardsTest : FunSpec({
         }
     }
 
+    test("shouldNavigateToPostAuthGate returns true only from startup and auth entry routes") {
+        val entryRoutes = listOf(
+            Routes.LOADING,
+            Routes.LOGIN,
+            Routes.AUTH_GRAPH
+        )
+
+        entryRoutes.forEach { route ->
+            NavigationGuards.shouldNavigateToPostAuthGate(route) shouldBe true
+        }
+
+        val authenticatedRoutes = listOf(
+            null,
+            Routes.TRIP_GRAPH,
+            Routes.TRIP_GATE,
+            Routes.TRIP_MAIN,
+            Routes.PRODUCT_GRAPH,
+            Routes.STATISTICS,
+            Routes.OPERATION,
+            Routes.PROFILE_GRAPH,
+            Routes.PROFILE_SETTINGS
+        )
+
+        authenticatedRoutes.forEach { route ->
+            NavigationGuards.shouldNavigateToPostAuthGate(route) shouldBe false
+        }
+    }
+
     test("requiresActiveShift returns false for trip profile auth and utility routes") {
         val publicRoutes = listOf(
             null,

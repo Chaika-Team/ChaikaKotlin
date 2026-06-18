@@ -10,6 +10,14 @@ object TripDimens {
     val SideRectWidth = 24.dp
     val CornerRadius = 16.dp
     val IconSize = 24.dp
+    val CurrentTripCardHeight = 129.dp
+    val CurrentTripHeaderHeight = 24.dp
+    val HeaderActionTouchTarget = 48.dp
+    val CurrentTripContentPadding = 4.dp
+    val CurrentTripHeaderSpacing = 4.dp
+    val HistoryRecordHeaderHeight = 24.dp
+    val HistoryRecordContentPadding = 4.dp
+    val HistoryRecordHeaderSpacing = 4.dp
     val NewTripButtonHeight = 129.dp
     val SearchCardHeight = 270.dp
     val SearchBarHeight = 52.dp

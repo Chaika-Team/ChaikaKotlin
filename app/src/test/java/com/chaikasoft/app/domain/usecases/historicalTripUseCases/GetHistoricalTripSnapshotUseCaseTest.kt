@@ -67,7 +67,7 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
                         item(2, -1, 500)
                     ),
                     cart(
-                        OperationTypeDomain.SOLD_CART,
+                        OperationTypeDomain.SOLD_CARD,
                         "999",
                         "2026-01-01T10:15:00Z",
                         item(2, -2, 500)
@@ -91,14 +91,14 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
             snapshot.statistics[0].addedQuantity shouldBe 5
             snapshot.statistics[0].replenishedQuantity shouldBe 3
             snapshot.statistics[0].soldCashQuantity shouldBe 2
-            snapshot.statistics[0].soldCartQuantity shouldBe 0
+            snapshot.statistics[0].soldCardQuantity shouldBe 0
             snapshot.statistics[0].revenue shouldBe 2000
 
             snapshot.statistics[1].productId shouldBe 2
             snapshot.statistics[1].productName shouldBe ""
             snapshot.statistics[1].productPrice shouldBe 500
             snapshot.statistics[1].soldCashQuantity shouldBe 1
-            snapshot.statistics[1].soldCartQuantity shouldBe 2
+            snapshot.statistics[1].soldCardQuantity shouldBe 2
             snapshot.statistics[1].revenue shouldBe 500
 
             snapshot.cashRevenue shouldBe 2500
@@ -106,13 +106,15 @@ class GetHistoricalTripSnapshotUseCaseTest : FunSpec({
 
             snapshot.operations shouldHaveSize 4
             snapshot.operations[0].summary.id shouldBe 1
-            snapshot.operations[0].summary.type shouldBe OperationTypeDomain.ADD
-            snapshot.operations[0].summary.timeIso shouldBe "2026-01-01T10:00:00Z"
-            snapshot.operations[0].cart.items.single().product.name shouldBe "Tea"
-            snapshot.operations[0].cart.items.single().product.price shouldBe 1000
-            snapshot.operations[2].summary.totalPrice shouldBe 2500
-            snapshot.operations[3].summary.conductor.name shouldBe ""
-            snapshot.operations[3].summary.conductor.familyName shouldBe ""
+            snapshot.operations[0].summary.type shouldBe OperationTypeDomain.SOLD_CARD
+            snapshot.operations[0].summary.timeIso shouldBe "2026-01-01T10:15:00Z"
+            snapshot.operations[0].summary.conductor.name shouldBe ""
+            snapshot.operations[0].summary.conductor.familyName shouldBe ""
+            snapshot.operations[1].summary.totalPrice shouldBe 2500
+            snapshot.operations[3].summary.type shouldBe OperationTypeDomain.ADD
+            snapshot.operations[3].summary.timeIso shouldBe "2026-01-01T10:00:00Z"
+            snapshot.operations[3].cart.items.single().product.name shouldBe "Tea"
+            snapshot.operations[3].cart.items.single().product.price shouldBe 1000
         }
     }
 

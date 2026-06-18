@@ -18,7 +18,7 @@ fun CartItemDomain.toEntity(
     // Преобразуем quantity в отрицательное значение при необходимости
     val impact =
         if (operationTypeDomain == OperationTypeDomain.SOLD_CASH ||
-            operationTypeDomain == OperationTypeDomain.SOLD_CART
+            operationTypeDomain == OperationTypeDomain.SOLD_CARD
         ) {
             -this.quantity
         } else {

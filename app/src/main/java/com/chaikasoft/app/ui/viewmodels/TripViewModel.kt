@@ -3,13 +3,17 @@ package com.chaikasoft.app.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.trip.CarriageDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.CompleteShiftAndSendUseCase
+import com.chaikasoft.app.domain.usecases.DeleteActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.GetPagedStationSuggestionsUseCase
 import com.chaikasoft.app.domain.usecases.GetShiftHistoryUseCase
+import com.chaikasoft.app.domain.usecases.HasAnyPackageItemsOnceUseCase
 import com.chaikasoft.app.domain.usecases.SearchTripsByStationsUseCase
 import com.chaikasoft.app.domain.usecases.SendShiftReportUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
@@ -21,6 +25,10 @@ import com.chaikasoft.app.ui.viewmodels.delegates.TripSearchDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -30,6 +38,8 @@ class TripViewModel @Inject constructor(
     startShiftUseCase: StartShiftUseCase,
     getActiveShiftUseCase: GetActiveShiftUseCase,
     completeShiftUseCase: CompleteShiftAndSendUseCase,
+    deleteActiveShiftUseCase: DeleteActiveShiftUseCase,
+    hasAnyPackageItemsOnceUseCase: HasAnyPackageItemsOnceUseCase,
     getShiftHistoryUseCase: GetShiftHistoryUseCase,
     sendShiftReportUseCase: SendShiftReportUseCase
 ) : ViewModel() {
@@ -44,6 +54,8 @@ class TripViewModel @Inject constructor(
         startShiftUseCase,
         getActiveShiftUseCase,
         completeShiftUseCase,
+        deleteActiveShiftUseCase,
+        hasAnyPackageItemsOnceUseCase,
         viewModelScope
     )
 
@@ -80,20 +92,30 @@ class TripViewModel @Inject constructor(
 
     /* -------- facade: shift and carriage -------- */
 
-    val selectedTripRecord = shift.selectedTrip
+    val selectedTripForCreation = shift.selectedTripForCreation
+    val activeTripRecord = shift.activeTrip
+    val isFinishingTrip = shift.isFinishing
     val finishTripDialog = shift.finishDialog
+    val deleteTripDialog = shift.deleteDialog
 
     val carriageNumber = carriageInput.number
     val isCarriageInputValid = carriageInput.isValid
+    private val _startShiftErrorMessageRes = MutableStateFlow<Int?>(null)
+    val startShiftErrorMessageRes: StateFlow<Int?> = _startShiftErrorMessageRes.asStateFlow()
 
     fun onCarriageNumberChanged(raw: String) = carriageInput.onNumberChanged(raw)
     fun dismissFinishTripDialog() = shift.dismissFinishDialog()
-    fun checkActiveShift() = shift.checkActiveShift()
     fun finishCurrentTrip() = shift.finishCurrentTrip()
+    fun requestDeleteCurrentTrip() = shift.requestDeleteCurrentTrip()
+    fun onPreservePackageChanged(preservePackage: Boolean) =
+        shift.onPreservePackageChanged(preservePackage)
+    fun confirmDeleteCurrentTrip() = shift.confirmDeleteCurrentTrip()
+    fun dismissDeleteTripDialog() = shift.dismissDeleteDialog()
 
     fun selectTrip(trip: TripDomain) {
         shift.selectTrip(trip)
         carriageInput.reset()
+        _startShiftErrorMessageRes.value = null
     }
 
     /* -------- facade: history and retry -------- */
@@ -139,24 +161,38 @@ class TripViewModel @Inject constructor(
         suggestions.onToQueryChanged(station?.name.orEmpty())
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun confirmCarriageInput(onSuccess: () -> Unit) {
-        val trip = shift.selectedTrip.value ?: return
+        val trip = shift.selectedTripForCreation.value ?: return
         val number = carriageInput.validatedNumber ?: run {
             Log.e(TAG, "Invalid carriage number: ${carriageInput.number.value}")
             return
         }
 
+        _startShiftErrorMessageRes.value = null
         viewModelScope.launch {
             try {
                 val carriage = CarriageDomain(
                     carNumber = number.toString(),
                     classType = ""
                 )
-                shift.startShift(trip, carriage)
-                shift.checkActiveShift()
-                onSuccess()
+                when (shift.startShift(trip, carriage)) {
+                    StartShiftResult.Started,
+                    StartShiftResult.ActiveShiftAlreadyExists -> {
+                        shift.clearSelectedTripForCreation()
+                        onSuccess()
+                    }
+                    StartShiftResult.TripAlreadyRegistered ->
+                        _startShiftErrorMessageRes.value = R.string.trip_already_registered
+                }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: IOException) {
                 Log.e(TAG, "Error confirming carriage input", e)
+                _startShiftErrorMessageRes.value = R.string.start_shift_failed
+            } catch (e: RuntimeException) {
+                Log.e(TAG, "Error confirming carriage input", e)
+                _startShiftErrorMessageRes.value = R.string.start_shift_failed
             }
         }
     }

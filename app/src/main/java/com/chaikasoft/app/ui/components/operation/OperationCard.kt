@@ -2,6 +2,7 @@ package com.chaikasoft.app.ui.components.operation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +25,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Velocity
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.CartItemDomain
@@ -96,18 +103,24 @@ fun OperationCard(
 
             // --- Список товаров ---
             cart?.let { cartDomain ->
+                val itemsScrollState = rememberScrollState()
+                val itemsNestedScrollConnection = rememberItemsNestedScrollConnection(
+                    scrollState = itemsScrollState
+                )
+
                 Box(
                     modifier = Modifier
                         .weight(1f, fill = false)
                         .heightIn(max = OperationDimens.ItemsMaxHeight) // оставляем место под футер
-                        .verticalScroll(rememberScrollState())
+                        .nestedScroll(itemsNestedScrollConnection)
+                        .verticalScroll(itemsScrollState)
                 ) {
                     Column {
                         cartDomain.items.forEachIndexed { index, cartItem ->
                             ProductRow(
                                 item = cartItem,
                                 isSale = summary.type == OperationTypeDomain.SOLD_CASH ||
-                                    summary.type == OperationTypeDomain.SOLD_CART
+                                    summary.type == OperationTypeDomain.SOLD_CARD
                             )
                             // Разделитель только между строками
                             if (index < cartDomain.items.lastIndex) {
@@ -140,7 +153,7 @@ fun OperationCard(
                 )
 
                 if (summary.type == OperationTypeDomain.SOLD_CASH ||
-                    summary.type == OperationTypeDomain.SOLD_CART
+                    summary.type == OperationTypeDomain.SOLD_CARD
                 ) {
                     Text(
                         text = formatPriceOnly(summary.totalPrice),
@@ -152,6 +165,48 @@ fun OperationCard(
             }
         }
     }
+}
+
+@Composable
+private fun rememberItemsNestedScrollConnection(scrollState: ScrollState): NestedScrollConnection =
+    remember(scrollState) {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset = if (source.consumesItemsScrollOverflow() && scrollState.maxValue > 0) {
+                Offset(x = 0f, y = available.y)
+            } else {
+                Offset.Zero
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity =
+                if (scrollState.shouldConsumeOutgoingFling(available.y)) {
+                    Velocity(x = 0f, y = available.y)
+                } else {
+                    Velocity.Zero
+                }
+
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity =
+                if (scrollState.maxValue > 0) {
+                    Velocity(x = 0f, y = available.y)
+                } else {
+                    Velocity.Zero
+                }
+        }
+    }
+
+private fun NestedScrollSource.consumesItemsScrollOverflow(): Boolean =
+    this == NestedScrollSource.UserInput || this == NestedScrollSource.SideEffect
+
+private fun ScrollState.shouldConsumeOutgoingFling(velocityY: Float): Boolean {
+    if (maxValue <= 0) return false
+
+    val flingPastTop = value <= 0 && velocityY > 0f
+    val flingPastBottom = value >= maxValue && velocityY < 0f
+
+    return flingPastTop || flingPastBottom
 }
 
 @Composable
@@ -196,7 +251,7 @@ private fun ProductRow(item: CartItemDomain, isSale: Boolean) {
 fun OperationTypeDomain.stringRes(): Int = when (this) {
     OperationTypeDomain.ADD -> R.string.op_type_add
     OperationTypeDomain.SOLD_CASH -> R.string.op_type_sold_cash
-    OperationTypeDomain.SOLD_CART -> R.string.op_type_sold_card
+    OperationTypeDomain.SOLD_CARD -> R.string.op_type_sold_card
     OperationTypeDomain.REPLENISH -> R.string.op_type_replenish
 }
 
@@ -205,5 +260,5 @@ fun OperationTypeDomain.iconRes(): Int = when (this) {
     OperationTypeDomain.ADD -> R.drawable.ic_bag
     OperationTypeDomain.REPLENISH -> R.drawable.ic_package_receive
     OperationTypeDomain.SOLD_CASH -> R.drawable.ic_cash_payment
-    OperationTypeDomain.SOLD_CART -> R.drawable.ic_credit_card
+    OperationTypeDomain.SOLD_CARD -> R.drawable.ic_credit_card
 }

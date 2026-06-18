@@ -1,0 +1,512 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1fb779b11926b54225e1245a6f3112d3",
+    "entities": [
+      {
+        "tableName": "product_info",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `image` TEXT NOT NULL, `price` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_product_info_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_product_info_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "conductors",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `familyName` TEXT NOT NULL, `givenName` TEXT NOT NULL, `employee_id` TEXT NOT NULL, `image` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "familyName",
+            "columnName": "familyName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "givenName",
+            "columnName": "givenName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employeeID",
+            "columnName": "employee_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "cart_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cart_operation_id` INTEGER NOT NULL, `product_id` INTEGER NOT NULL, `impact` INTEGER NOT NULL, FOREIGN KEY(`cart_operation_id`) REFERENCES `cart_operations`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`product_id`) REFERENCES `product_info`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cartOperationId",
+            "columnName": "cart_operation_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productId",
+            "columnName": "product_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "impact",
+            "columnName": "impact",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cart_items_cart_operation_id",
+            "unique": false,
+            "columnNames": [
+              "cart_operation_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_items_cart_operation_id` ON `${TABLE_NAME}` (`cart_operation_id`)"
+          },
+          {
+            "name": "index_cart_items_product_id",
+            "unique": false,
+            "columnNames": [
+              "product_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_items_product_id` ON `${TABLE_NAME}` (`product_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cart_operations",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cart_operation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "product_info",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "product_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "cart_operations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `operation_type` INTEGER NOT NULL, `operation_time` TEXT NOT NULL, `conductor_id` INTEGER NOT NULL, FOREIGN KEY(`conductor_id`) REFERENCES `conductors`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "operationType",
+            "columnName": "operation_type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "operationTime",
+            "columnName": "operation_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conductorId",
+            "columnName": "conductor_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cart_operations_conductor_id",
+            "unique": false,
+            "columnNames": [
+              "conductor_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_operations_conductor_id` ON `${TABLE_NAME}` (`conductor_id`)"
+          },
+          {
+            "name": "index_cart_operations_operation_time_id",
+            "unique": false,
+            "columnNames": [
+              "operation_time",
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_operations_operation_time_id` ON `${TABLE_NAME}` (`operation_time`, `id`)"
+          },
+          {
+            "name": "index_cart_operations_operation_type",
+            "unique": false,
+            "columnNames": [
+              "operation_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_operations_operation_type` ON `${TABLE_NAME}` (`operation_type`)"
+          },
+          {
+            "name": "index_cart_operations_operation_type_operation_time_id",
+            "unique": false,
+            "columnNames": [
+              "operation_type",
+              "operation_time",
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cart_operations_operation_type_operation_time_id` ON `${TABLE_NAME}` (`operation_type`, `operation_time`, `id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "conductors",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "conductor_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "conductor_trip_shifts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `trainNumber` TEXT NOT NULL, `departure` TEXT NOT NULL, `arrival` TEXT NOT NULL, `duration` TEXT NOT NULL, `from_code` TEXT NOT NULL, `to_code` TEXT NOT NULL, `status` INTEGER NOT NULL, `report` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `carriage_carNumber` TEXT, `carriage_classType` TEXT, PRIMARY KEY(`uuid`), FOREIGN KEY(`from_code`) REFERENCES `stations`(`code`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`to_code`) REFERENCES `stations`(`code`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
+        "fields": [
+          {
+            "fieldPath": "uuid",
+            "columnName": "uuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trainNumber",
+            "columnName": "trainNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "departure",
+            "columnName": "departure",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "arrival",
+            "columnName": "arrival",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromCode",
+            "columnName": "from_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toCode",
+            "columnName": "to_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "report",
+            "columnName": "report",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "activeCarriage.carNumber",
+            "columnName": "carriage_carNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "activeCarriage.classType",
+            "columnName": "carriage_classType",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uuid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_conductor_trip_shifts_from_code",
+            "unique": false,
+            "columnNames": [
+              "from_code"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_conductor_trip_shifts_from_code` ON `${TABLE_NAME}` (`from_code`)"
+          },
+          {
+            "name": "index_conductor_trip_shifts_to_code",
+            "unique": false,
+            "columnNames": [
+              "to_code"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_conductor_trip_shifts_to_code` ON `${TABLE_NAME}` (`to_code`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "stations",
+            "onDelete": "RESTRICT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "from_code"
+            ],
+            "referencedColumns": [
+              "code"
+            ]
+          },
+          {
+            "table": "stations",
+            "onDelete": "RESTRICT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "to_code"
+            ],
+            "referencedColumns": [
+              "code"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "stations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`code` TEXT NOT NULL, `name` TEXT NOT NULL, `city` TEXT NOT NULL, PRIMARY KEY(`code`))",
+        "fields": [
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "city",
+            "columnName": "city",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "code"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_stations_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stations_name` ON `${TABLE_NAME}` (`name`)"
+          },
+          {
+            "name": "index_stations_city",
+            "unique": false,
+            "columnNames": [
+              "city"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stations_city` ON `${TABLE_NAME}` (`city`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "sync_meta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`datasetKey` TEXT NOT NULL, `lastSuccessfulSyncAt` INTEGER NOT NULL, PRIMARY KEY(`datasetKey`))",
+        "fields": [
+          {
+            "fieldPath": "datasetKey",
+            "columnName": "datasetKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSuccessfulSyncAt",
+            "columnName": "lastSuccessfulSyncAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "datasetKey"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "package_items",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT product_id, SUM(impact) as current_quantity \n        FROM cart_items \n        GROUP BY product_id"
+      },
+      {
+        "viewName": "fast_report_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            product_info.name AS product_name,\n            product_info.price AS product_price,\n            SUM(CASE WHEN cart_operations.operation_type = 0 THEN cart_items.impact ELSE 0 END) AS added_quantity,\n            SUM(CASE WHEN cart_operations.operation_type = 3 THEN cart_items.impact ELSE 0 END) AS replenished_quantity,\n            SUM(CASE WHEN cart_operations.operation_type = 1 THEN -cart_items.impact ELSE 0 END) AS sold_cash_quantity,\n            SUM(CASE WHEN cart_operations.operation_type = 2 THEN -cart_items.impact ELSE 0 END) AS sold_card_quantity,\n            product_info.price * SUM(CASE WHEN cart_operations.operation_type = 1 THEN -cart_items.impact ELSE 0 END) AS revenue\n        FROM cart_items\n        JOIN cart_operations ON cart_operations.id = cart_items.cart_operation_id\n        JOIN product_info ON product_info.id = cart_items.product_id\n        GROUP BY product_info.id"
+      },
+      {
+        "viewName": "operation_info_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            o.id                          AS operation_id,\n            o.operation_type              AS operation_type,\n            o.operation_time              AS operation_time,\n            o.conductor_id                AS conductor_id,\n            c.name                        AS conductor_name,\n            c.familyName                  AS conductor_family_name,\n            c.givenName                   AS conductor_given_name,\n            COALESCE(COUNT(DISTINCT ci.product_id), 0)                   AS product_line_quantity,\n            COALESCE(SUM(ABS(ci.impact) * p.price), 0)                   AS total_price\n        FROM cart_operations o\n        LEFT JOIN conductors   c  ON c.id = o.conductor_id\n        LEFT JOIN cart_items   ci ON ci.cart_operation_id = o.id\n        LEFT JOIN product_info p  ON p.id = ci.product_id\n        GROUP BY o.id"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1fb779b11926b54225e1245a6f3112d3')"
+    ]
+  }
+}

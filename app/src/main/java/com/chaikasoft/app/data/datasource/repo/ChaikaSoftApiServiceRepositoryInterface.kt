@@ -10,7 +10,7 @@ interface ChaikaSoftApiServiceRepositoryInterface {
         query: String = "",
         limit: Int = 100,
         offset: Int = 0
-    ): List<TemplateDomain>
+    ): RemoteResult<List<TemplateDomain>>
 
-    suspend fun fetchTemplateDetail(templateId: Int): TemplateDomain
+    suspend fun fetchTemplateDetail(templateId: Int): RemoteResult<TemplateDomain>
 }

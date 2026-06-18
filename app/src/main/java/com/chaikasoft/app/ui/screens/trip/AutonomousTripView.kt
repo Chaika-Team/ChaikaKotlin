@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,6 +27,7 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
     val fromSuggestions = viewModel.fromSuggestions.collectAsLazyPagingItems()
     val toSuggestions = viewModel.toSuggestions.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { ev ->
@@ -39,7 +41,8 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
                     }
                 }
 
-                is AutonomousViewModel.Event.Info -> snackbarHostState.showSnackbar(ev.message)
+                is AutonomousViewModel.Event.Info ->
+                    snackbarHostState.showSnackbar(context.getString(ev.messageRes))
             }
         }
     }

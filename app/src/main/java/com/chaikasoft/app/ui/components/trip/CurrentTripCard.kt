@@ -17,10 +17,12 @@ import com.chaikasoft.app.ui.theme.TripDimens
 
 @Composable
 fun CurrentTripCard(
-    tripRecord: TripDomain,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    heightTotal: Dp = TripDimens.NewTripButtonHeight
+    tripRecord: TripDomain,
+    heightTotal: Dp = TripDimens.CurrentTripCardHeight,
+    isFinishing: Boolean = false,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -36,7 +38,9 @@ fun CurrentTripCard(
             modifier = Modifier.matchParentSize().dashedBorder(),
             tripRecord = tripRecord,
             heightTotal = heightTotal,
-            onClick = onClick
+            isFinishing = isFinishing,
+            onClick = onClick,
+            onDeleteClick = onDeleteClick
         )
     }
 }
@@ -64,7 +68,8 @@ private fun CurrentTripCardPreview() {
                     city = "Москва ВК Восточный"
                 )
             ),
-            onClick = { }
+            onClick = { },
+            onDeleteClick = { }
         )
     }
 }

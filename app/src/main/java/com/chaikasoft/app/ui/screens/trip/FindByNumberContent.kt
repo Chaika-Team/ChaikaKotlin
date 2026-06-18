@@ -134,7 +134,7 @@ private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit
                     .widthIn(min = 200.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(fontSize = 18.sp, text = stringResource(R.string.retry))
+                Text(fontSize = 18.sp, text = stringResource(R.string.retry_button))
             }
         }
     }

@@ -8,19 +8,16 @@ import com.chaikasoft.app.data.datasource.repo.ChaikaSoftApiServiceRepositoryInt
 import com.chaikasoft.app.data.datasource.repo.TemplatePagingSource
 import com.chaikasoft.app.data.inmemory.InMemoryCartRepositoryInterface
 import com.chaikasoft.app.data.room.repo.RoomProductInfoRepositoryInterface
+import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.RemoteResult
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
 import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Use case для получения списка шаблонов с поддержкой бесконечной прокрутки.
- * Использует PagingSource для динамической загрузки шаблонов по мере прокрутки.
- *
- * @param repository Репозиторий, реализующий ChaikaSoftApiServiceRepositoryInterface.
- */
 class GetPagedTemplatesUseCase @Inject constructor(
     private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
@@ -36,11 +33,6 @@ class GetPagedTemplatesUseCase @Inject constructor(
     }
 }
 
-/**
- * Use case для получения всех шаблонов без пагинации.
- *
- * Этот юзкейс напрямую вызывает метод репозитория, чтобы получить все доступные шаблоны.
- */
 class GetTemplatesUseCase @Inject constructor(
     private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
@@ -48,44 +40,34 @@ class GetTemplatesUseCase @Inject constructor(
         query: String = "",
         limit: Int = 100,
         offset: Int = 0
-    ): List<TemplateDomain> {
-        // Используем большой limit для получения всех шаблонов
-        return repository.fetchTemplates(query, limit, offset)
-    }
+    ): RemoteResult<List<TemplateDomain>> = repository.fetchTemplates(query, limit, offset)
 }
 
-/**
- * Use case для получения детальной информации о шаблоне.
- *
- * Вызывает репозиторный метод fetchTemplateDetail для получения шаблона с заполненным content,
- * что необходимо для корректного применения шаблона к корзине.
- *
- * @param repository Репозиторий, реализующий ChaikaSoftApiServiceRepositoryInterface.
- */
 class GetTemplateDetailUseCase @Inject constructor(
     private val repository: ChaikaSoftApiServiceRepositoryInterface
 ) {
-    suspend operator fun invoke(templateId: Int): TemplateDomain =
+    suspend operator fun invoke(templateId: Int): RemoteResult<TemplateDomain> =
         repository.fetchTemplateDetail(templateId)
 }
 
-/**
- * Use case для получения детальной информации о шаблоне с локальными данными товаров.
- *
- * Оркестрирует [GetTemplateDetailUseCase] и [GetProductsByIdsUseCase]: получает сырой шаблон
- * из сервиса, затем разрешает productId из содержимого шаблона в товары из локальной базы.
- */
 class GetResolvedTemplateDetailUseCase @Inject constructor(
     private val getTemplateDetailUseCase: GetTemplateDetailUseCase,
     private val getProductsByIdsUseCase: GetProductsByIdsUseCase
 ) {
-    suspend operator fun invoke(templateId: Int): ResolvedTemplateDetailDomain {
-        val template = getTemplateDetailUseCase(templateId)
+    suspend operator fun invoke(templateId: Int): RemoteResult<ResolvedTemplateDetailDomain> =
+        when (val templateResult = getTemplateDetailUseCase(templateId)) {
+            is RemoteResult.Failure -> templateResult
+            is RemoteResult.Success -> resolveProducts(templateResult.data)
+        }
+
+    private suspend fun resolveProducts(
+        template: TemplateDomain
+    ): RemoteResult<ResolvedTemplateDetailDomain> = runCatching {
         val productsById = getProductsByIdsUseCase(
             template.content.map { it.productId }.distinct()
         )
 
-        return ResolvedTemplateDetailDomain(
+        ResolvedTemplateDetailDomain(
             template = template,
             items = template.content.map { content ->
                 ResolvedTemplateItemDomain(
@@ -95,21 +77,23 @@ class GetResolvedTemplateDetailUseCase @Inject constructor(
                 )
             }
         )
+    }.fold(
+        onSuccess = { detail -> RemoteResult.Success(detail) },
+        onFailure = { error -> error.toTemplateDetailFailure() }
+    )
+
+    private fun Throwable.toTemplateDetailFailure(): RemoteResult.Failure {
+        if (this is CancellationException) throw this
+        if (this is Error) throw this
+        val exception = this as? Exception ?: Exception(this)
+        return RemoteResult.Failure(AppError.Unknown(exception))
     }
 }
 
-/**
- * Use case для применения шаблона к корзине.
- *
- * Сначала проверяет, что все товары из шаблона есть в локальной базе данных, и только после
- * этого очищает корзину и добавляет элементы шаблона. Это защищает текущую корзину от потери,
- * если шаблон ссылается на отсутствующий товар.
- */
 class ApplyTemplateUseCase @Inject constructor(
     private val productInfoRepository: RoomProductInfoRepositoryInterface
 ) {
     suspend operator fun invoke(cart: InMemoryCartRepositoryInterface, template: TemplateDomain) {
-        // Build all cart items before clearing the cart to avoid data loss on missing products.
         val productsById = productInfoRepository
             .getProductsByIds(template.content.map { it.productId }.distinct())
             .associateBy { it.id }

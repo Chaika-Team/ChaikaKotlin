@@ -12,6 +12,7 @@ import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.models.report.CartItemReport
 import com.chaikasoft.app.domain.models.report.CartReport
 import com.chaikasoft.app.domain.models.report.ShiftReportReport
+import com.chaikasoft.app.util.toZoned
 import kotlin.math.abs
 
 private const val UNKNOWN_PRODUCT_DESCRIPTION = ""
@@ -27,24 +28,39 @@ suspend fun ShiftReportReport.toHistoricalTripSnapshot(
     productsById: Map<Int, ProductInfoDomain>,
     resolveConductor: suspend (String) -> ConductorDomain
 ): HistoricalTripSnapshot {
-    val operations = carts.mapIndexed { index, cart ->
-        cart.toHistoricalOperation(
-            syntheticId = index + 1,
-            productsById = productsById,
-            resolveConductor = resolveConductor
-        )
-    }
+    val operations = carts.toNewestFirstHistoricalOperations(
+        productsById = productsById,
+        resolveConductor = resolveConductor
+    )
     val statistics = carts.toHistoricalStatistics(productsById)
 
     return HistoricalTripSnapshot(
         statistics = statistics,
         cashRevenue = statistics.sumOf { it.revenue },
         cashlessChecksCount = carts.count {
-            it.operationType == OperationTypeDomain.SOLD_CART.ordinal
+            it.operationType == OperationTypeDomain.SOLD_CARD.ordinal
         },
         operations = operations
     )
 }
+
+private suspend fun List<CartReport>.toNewestFirstHistoricalOperations(
+    productsById: Map<Int, ProductInfoDomain>,
+    resolveConductor: suspend (String) -> ConductorDomain
+): List<HistoricalOperationDomain> =
+    mapIndexed { index, cart -> IndexedCartReport(index = index, cart = cart) }
+        .sortedWith(
+            compareByDescending<IndexedCartReport> {
+                it.cart.cartId.operationTime.toZoned().toInstant()
+            }.thenByDescending { it.index }
+        )
+        .mapIndexed { index, indexedCart ->
+            indexedCart.cart.toHistoricalOperation(
+                syntheticId = index + 1,
+                productsById = productsById,
+                resolveConductor = resolveConductor
+            )
+        }
 
 private suspend fun CartReport.toHistoricalOperation(
     syntheticId: Int,
@@ -90,6 +106,8 @@ private fun List<CartReport>.toHistoricalStatistics(
     return accumulators.values.map { it.toDomain() }
 }
 
+private data class IndexedCartReport(val index: Int, val cart: CartReport)
+
 private fun Int.toHistoricalOperationType(): OperationTypeDomain =
     OperationTypeDomain.entries.getOrNull(this)
         ?: throw IllegalArgumentException("Unknown operation type $this")
@@ -115,7 +133,7 @@ private data class HistoricalProductAccumulator(
     var addedQuantity: Int = 0,
     var replenishedQuantity: Int = 0,
     var soldCashQuantity: Int = 0,
-    var soldCartQuantity: Int = 0,
+    var soldCardQuantity: Int = 0,
     var revenue: Int = 0
 ) {
     fun add(item: CartItemReport, operationType: OperationTypeDomain) {
@@ -127,8 +145,8 @@ private data class HistoricalProductAccumulator(
                 soldCashQuantity += soldQuantity
                 revenue += soldQuantity * item.price
             }
-            OperationTypeDomain.SOLD_CART -> {
-                soldCartQuantity += -item.quantity
+            OperationTypeDomain.SOLD_CARD -> {
+                soldCardQuantity += -item.quantity
             }
         }
     }
@@ -139,7 +157,7 @@ private data class HistoricalProductAccumulator(
         addedQuantity = addedQuantity,
         replenishedQuantity = replenishedQuantity,
         soldCashQuantity = soldCashQuantity,
-        soldCartQuantity = soldCartQuantity,
+        soldCardQuantity = soldCardQuantity,
         revenue = revenue,
         productId = productId
     )

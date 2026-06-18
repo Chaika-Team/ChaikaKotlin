@@ -6,6 +6,7 @@ import com.chaikasoft.app.domain.models.trip.ConductorTripShiftDomain
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.domain.models.trip.TripShiftStatusDomain
+import com.chaikasoft.app.domain.sealed.StartShiftResult
 import com.chaikasoft.app.domain.usecases.HasActiveShiftUseCase
 import com.chaikasoft.app.domain.usecases.StartShiftUseCase
 import io.kotest.core.spec.style.FunSpec
@@ -50,17 +51,17 @@ class StartShiftUseCaseTest : FunSpec({
      * Описание:
      *   - Эквивалентный класс входных данных: активная смена уже существует.
      *   - Ожидаемое поведение:
-     *       1) юзкейс возвращает false,
+     *       1) юзкейс возвращает типизированный конфликт,
      *       2) не пытается создать новую смену (tryStartNewShift не вызывается).
      *   - Цель: зафиксировать инвариант "не более одной ACTIVE-смены".
      */
-    test("when active shift already exists - returns false and does not start new shift") {
+    test("when active shift already exists - returns conflict and does not start new shift") {
         runTest {
             coEvery { hasActiveShift() } returns true
 
             val result = useCase(trip, carriage)
 
-            result shouldBe false
+            result shouldBe StartShiftResult.ActiveShiftAlreadyExists
 
             coVerify(exactly = 1) { hasActiveShift() }
             coVerify(exactly = 0) { repository.tryStartNewShift(any()) }
@@ -86,11 +87,13 @@ class StartShiftUseCaseTest : FunSpec({
         runTest {
             val shiftSlot = slot<ConductorTripShiftDomain>()
             coEvery { hasActiveShift() } returns false
-            coEvery { repository.tryStartNewShift(capture(shiftSlot)) } returns true
+            coEvery {
+                repository.tryStartNewShift(capture(shiftSlot))
+            } returns StartShiftResult.Started
 
             val result = useCase(trip, carriage)
 
-            result shouldBe true
+            result shouldBe StartShiftResult.Started
             shiftSlot.captured.trip shouldBe trip
             shiftSlot.captured.activeCarriage shouldBe carriage
             shiftSlot.captured.status shouldBe TripShiftStatusDomain.ACTIVE
@@ -118,11 +121,13 @@ class StartShiftUseCaseTest : FunSpec({
         runTest {
             val shiftSlot = slot<ConductorTripShiftDomain>()
             coEvery { hasActiveShift() } returns false
-            coEvery { repository.tryStartNewShift(capture(shiftSlot)) } returns false
+            coEvery {
+                repository.tryStartNewShift(capture(shiftSlot))
+            } returns StartShiftResult.TripAlreadyRegistered
 
             val result = useCase(trip, null)
 
-            result shouldBe false
+            result shouldBe StartShiftResult.TripAlreadyRegistered
             shiftSlot.captured.trip shouldBe trip
             shiftSlot.captured.activeCarriage shouldBe null
             shiftSlot.captured.status shouldBe TripShiftStatusDomain.ACTIVE
