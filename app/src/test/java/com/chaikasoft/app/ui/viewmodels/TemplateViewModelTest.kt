@@ -87,7 +87,7 @@ class TemplateViewModelTest : FunSpec({
         runTest {
             coEvery { getResolvedTemplateDetailUseCase(42) } coAnswers {
                 yield()
-                RemoteResult.Failure(AppError.Network)
+                RemoteResult.Failure(AppError.Network())
             }
 
             vm.templateDetailState.test {
@@ -110,7 +110,7 @@ class TemplateViewModelTest : FunSpec({
                 callCount++
                 yield()
                 if (callCount == 1) {
-                    RemoteResult.Failure(AppError.Network)
+                    RemoteResult.Failure(AppError.Network())
                 } else {
                     RemoteResult.Success(resolvedDetail)
                 }

@@ -118,7 +118,7 @@ class RefreshStationsOnLaunchUseCaseTest : FunSpec({
 
     test("when remote fails - returns RemoteFailure and does not update sync timestamp") {
         runTest {
-            val error = AppError.Network
+            val error = AppError.Network()
             coEvery { hasActiveShift() } returns false
             coEvery { localRepo.hasAnyStationsOnce() } returns false
             coEvery { remoteRepo.fetchAllStations(limit = 100_000) } returns RemoteResult.Failure(error)

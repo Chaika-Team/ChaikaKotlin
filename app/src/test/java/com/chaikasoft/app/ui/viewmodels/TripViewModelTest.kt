@@ -207,7 +207,7 @@ class TripViewModelTest : FunSpec({
     test("getTrips maps failure to Error via AppErrorUiMapper") {
         runTest {
             coEvery { searchTrips("2026-01-01", "100", "200") } returns
-                SearchTripsResult.Failure(AppError.Network)
+                SearchTripsResult.Failure(AppError.Network())
 
             vm.getTrips("2026-01-01", "100", "200")
             advanceUntilIdle()

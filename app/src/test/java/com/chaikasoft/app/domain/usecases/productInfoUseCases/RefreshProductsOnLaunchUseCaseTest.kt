@@ -136,11 +136,11 @@ class RefreshProductsOnLaunchUseCaseTest : FunSpec({
         runTest {
             coEvery { productRepository.hasAnyProductsOnce() } returns false
             coEvery { fetchProductsFromServerUseCase(100, 0) } returns
-                RemoteResult.Failure(AppError.Network)
+                RemoteResult.Failure(AppError.Network())
 
             val result = useCase()
 
-            result shouldBe RefreshProductsResult.RemoteFailure(AppError.Network)
+            result shouldBe RefreshProductsResult.RemoteFailure(AppError.Network())
             coVerify(exactly = 1) { fetchProductsFromServerUseCase(100, 0) }
             coVerify(exactly = 0) { saveProductsLocallyUseCase(any()) }
             coVerify(exactly = 0) { syncMetaRepository.setLastSuccessfulSyncAt(any(), any()) }

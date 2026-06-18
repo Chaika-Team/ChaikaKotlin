@@ -14,8 +14,8 @@ class AppErrorUiMapperTest : FunSpec({
     )
 
     val cases = listOf(
-        Case(AppError.Network, R.string.error_no_connection, true),
-        Case(AppError.Timeout, R.string.error_no_connection, true),
+        Case(AppError.Network(), R.string.error_no_connection, true),
+        Case(AppError.Timeout(), R.string.error_no_connection, true),
         Case(AppError.Unauthorized(401), R.string.error_unauthorized, false),
         Case(AppError.Http(500), R.string.error_try_later, true),
         Case(AppError.Http(400), R.string.error_try_later, false),

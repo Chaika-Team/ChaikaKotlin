@@ -81,7 +81,7 @@ class SearchTripsByStationsUseCaseTest : FunSpec({
      */
     test("when repository returns failure - returns Failure with the same error") {
         runTest {
-            val error = AppError.Network
+            val error = AppError.Network()
             coEvery { repository.searchTripsByStations(date, fromCode, toCode) } returns
                 RemoteResult.Failure(error)
 

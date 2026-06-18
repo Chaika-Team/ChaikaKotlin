@@ -1,6 +1,7 @@
 package com.chaikasoft.app.data.datasource.common
 
 import com.chaikasoft.app.domain.common.AppError
+import com.chaikasoft.app.domain.common.ErrorReporter
 import com.chaikasoft.app.domain.common.RemoteResult
 import com.google.gson.JsonParseException
 import io.kotest.assertions.throwables.shouldThrow
@@ -68,8 +69,10 @@ class RemoteCallTest : FunSpec({
             )
 
             val result = remoteCall<Unit> { throw http }
+            val error = (result as RemoteResult.Failure).error as AppError.Unauthorized
 
-            result shouldBe RemoteResult.Failure(AppError.Unauthorized(401))
+            error.code shouldBe 401
+            error.cause shouldBe http
         }
     }
 
@@ -91,8 +94,11 @@ class RemoteCallTest : FunSpec({
             )
 
             val result = remoteCall<Unit> { throw http }
+            val error = (result as RemoteResult.Failure).error as AppError.Http
 
-            result shouldBe RemoteResult.Failure(AppError.Http(code = 500, body = "server-error"))
+            error.code shouldBe 500
+            error.body shouldBe "server-error"
+            error.cause shouldBe http
         }
     }
 
@@ -101,14 +107,17 @@ class RemoteCallTest : FunSpec({
      *
      * Описание:
      *   - Вход: SocketTimeoutException как граница network-fail сценариев.
-     *   - Ожидаемое поведение: AppError.Timeout.
+     *   - Ожидаемое поведение: AppError.Timeout().
      *   - Цель: разделить timeout и остальные network ошибки.
      */
     test("when call throws SocketTimeoutException - returns Timeout") {
         runTest {
-            val result = remoteCall<Unit> { throw SocketTimeoutException("timeout") }
+            val timeout = SocketTimeoutException("timeout")
 
-            result shouldBe RemoteResult.Failure(AppError.Timeout)
+            val result = remoteCall<Unit> { throw timeout }
+            val error = (result as RemoteResult.Failure).error as AppError.Timeout
+
+            error.cause shouldBe timeout
         }
     }
 
@@ -117,14 +126,17 @@ class RemoteCallTest : FunSpec({
      *
      * Описание:
      *   - Вход: UnknownHostException (DNS/host недоступен).
-     *   - Ожидаемое поведение: AppError.Network.
+     *   - Ожидаемое поведение: AppError.Network().
      *   - Цель: зафиксировать сетевой класс ошибок на уровне доменного результата.
      */
     test("when call throws UnknownHostException - returns Network") {
         runTest {
-            val result = remoteCall<Unit> { throw UnknownHostException("dns") }
+            val dns = UnknownHostException("dns")
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            val result = remoteCall<Unit> { throw dns }
+            val error = (result as RemoteResult.Failure).error as AppError.Network
+
+            error.cause shouldBe dns
         }
     }
 
@@ -133,14 +145,17 @@ class RemoteCallTest : FunSpec({
      *
      * Описание:
      *   - Вход: IOException.
-     *   - Ожидаемое поведение: AppError.Network.
+     *   - Ожидаемое поведение: AppError.Network().
      *   - Цель: подтвердить единый маппинг IO-сбоев в сетевую ошибку.
      */
     test("when call throws IOException - returns Network") {
         runTest {
-            val result = remoteCall<Unit> { throw IOException("io") }
+            val io = IOException("io")
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            val result = remoteCall<Unit> { throw io }
+            val error = (result as RemoteResult.Failure).error as AppError.Network
+
+            error.cause shouldBe io
         }
     }
 
@@ -173,10 +188,13 @@ class RemoteCallTest : FunSpec({
     test("when call throws unknown Exception - returns Unknown") {
         runTest {
             val error = IllegalStateException("boom")
+            var recorded: Throwable? = null
+            val reporter = ErrorReporter { recorded = it }
 
-            val result = remoteCall<Unit> { throw error }
+            val result = remoteCall(errorReporter = reporter) { throw error }
 
             (result as RemoteResult.Failure).error shouldBe AppError.Unknown(error)
+            recorded shouldBe error
         }
     }
 })

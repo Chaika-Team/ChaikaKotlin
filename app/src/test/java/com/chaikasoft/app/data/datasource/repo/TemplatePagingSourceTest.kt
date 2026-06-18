@@ -63,14 +63,14 @@ class TemplatePagingSourceTest : FunSpec({
     test("load returns Error when repository returns RemoteResult.Failure") {
         runTest {
             coEvery { repository.fetchTemplates(query = "tea", limit = 2, offset = 0) } returns
-                RemoteResult.Failure(AppError.Network)
+                RemoteResult.Failure(AppError.Network())
 
             val result = source.load(
                 PagingSource.LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false),
             )
 
             val error = (result as PagingSource.LoadResult.Error).throwable as AppErrorException
-            error.error shouldBe AppError.Network
+            error.error shouldBe AppError.Network()
         }
     }
 

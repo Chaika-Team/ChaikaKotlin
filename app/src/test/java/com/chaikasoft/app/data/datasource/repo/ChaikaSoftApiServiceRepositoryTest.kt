@@ -94,11 +94,13 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
     test("fetchProducts network error returns RemoteResult.Failure(Network)") {
         runTest {
-            coEvery { api.getProducts(limit = 10, offset = 0) } throws IOException("network")
+            val network = IOException("network")
+            coEvery { api.getProducts(limit = 10, offset = 0) } throws network
 
             val result = repository.fetchProducts(limit = 10, offset = 0)
+            val error = (result as RemoteResult.Failure).error as AppError.Network
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            error.cause shouldBe network
             coVerify(exactly = 1) { api.getProducts(limit = 10, offset = 0) }
         }
     }
@@ -137,12 +139,14 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
     test("fetchTemplates network error returns RemoteResult.Failure(Network)") {
         runTest {
+            val network = IOException("network")
             coEvery { api.getTemplates(query = "cof", limit = 20, offset = 40) } throws
-                IOException("network")
+                network
 
             val result = repository.fetchTemplates(query = "cof", limit = 20, offset = 40)
+            val error = (result as RemoteResult.Failure).error as AppError.Network
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            error.cause shouldBe network
             coVerify(exactly = 1) { api.getTemplates(query = "cof", limit = 20, offset = 40) }
         }
     }
@@ -178,11 +182,13 @@ class ChaikaSoftApiServiceRepositoryTest : FunSpec({
 
     test("fetchTemplateDetail network error returns RemoteResult.Failure(Network)") {
         runTest {
-            coEvery { api.getTemplateDetail(templateId = 777) } throws IOException("network")
+            val network = IOException("network")
+            coEvery { api.getTemplateDetail(templateId = 777) } throws network
 
             val result = repository.fetchTemplateDetail(templateId = 777)
+            val error = (result as RemoteResult.Failure).error as AppError.Network
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            error.cause shouldBe network
             coVerify(exactly = 1) { api.getTemplateDetail(templateId = 777) }
         }
     }

@@ -8,6 +8,7 @@ import com.chaikasoft.app.data.datasource.repo.ChaikaSoftReportsRepository
 import com.chaikasoft.app.data.datasource.repo.ChaikaSoftReportsRepositoryInterface
 import com.chaikasoft.app.data.datasource.repo.ChaikaTripperRepository
 import com.chaikasoft.app.data.datasource.repo.ChaikaTripperRepositoryInterface
+import com.chaikasoft.app.domain.common.ErrorReporter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,14 +45,17 @@ open class ApiModule {
     @Provides
     @Singleton
     fun provideChaikaSoftApiServiceRepository(
-        @Named("ChaikaSoftApiService") service: ChaikaSoftApiService
-    ): ChaikaSoftApiServiceRepositoryInterface = ChaikaSoftApiServiceRepository(service)
+        @Named("ChaikaSoftApiService") service: ChaikaSoftApiService,
+        errorReporter: ErrorReporter
+    ): ChaikaSoftApiServiceRepositoryInterface =
+        ChaikaSoftApiServiceRepository(service, errorReporter)
 
     @Provides
     @Singleton
     fun provideChaikaRoutesAdapterRepository(
-        @Named("ChaikaSoftApiService") service: ChaikaSoftApiService
-    ): ChaikaTripperRepositoryInterface = ChaikaTripperRepository(service)
+        @Named("ChaikaSoftApiService") service: ChaikaSoftApiService,
+        errorReporter: ErrorReporter
+    ): ChaikaTripperRepositoryInterface = ChaikaTripperRepository(service, errorReporter)
 
     @Provides
     @Singleton

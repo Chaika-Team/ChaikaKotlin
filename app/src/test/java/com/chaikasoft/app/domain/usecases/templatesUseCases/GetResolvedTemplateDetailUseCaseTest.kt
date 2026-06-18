@@ -126,11 +126,11 @@ class GetResolvedTemplateDetailUseCaseTest : FunSpec({
 
     test("remote failure is returned without resolving products") {
         runTest {
-            coEvery { getTemplateDetailUseCase(4) } returns RemoteResult.Failure(AppError.Network)
+            coEvery { getTemplateDetailUseCase(4) } returns RemoteResult.Failure(AppError.Network())
 
             val result = useCase(4)
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            result shouldBe RemoteResult.Failure(AppError.Network())
             coVerify(exactly = 0) { getProductsByIdsUseCase(any()) }
         }
     }

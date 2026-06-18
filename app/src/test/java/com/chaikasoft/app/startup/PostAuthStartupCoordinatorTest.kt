@@ -60,7 +60,7 @@ class PostAuthStartupCoordinatorTest : FunSpec({
     test("prepare still refreshes products when stations fail") {
         runTest {
             coEvery { refreshStationsOnLaunchUseCase() } returns
-                RefreshStationsResult.RemoteFailure(AppError.Network)
+                RefreshStationsResult.RemoteFailure(AppError.Network())
             coEvery { refreshProductsOnLaunchUseCase() } returns
                 RefreshProductsResult.Success(productCount = 3)
 

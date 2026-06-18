@@ -60,17 +60,19 @@ class ChaikaTripperRepositoryTest : FunSpec({
      *
      * Описание:
      *   - Сценарий: сетевой сбой DNS в поиске поездок.
-     *   - Ожидаемое поведение: RemoteResult.Failure(AppError.Network).
+     *   - Ожидаемое поведение: RemoteResult.Failure(AppError.Network()).
      *   - Цель: зафиксировать преобразование сетевой ошибки в доменный результат.
      */
     test("searchTripsByStations network error returns RemoteResult.Failure(Network)") {
         runTest {
+            val dns = UnknownHostException("dns")
             coEvery { api.findTrips(fromCode = "MOW", toCode = "SPB", date = "2026-03-10") } throws
-                UnknownHostException("dns")
+                dns
 
             val result = repository.searchTripsByStations("2026-03-10", "MOW", "SPB")
+            val error = (result as RemoteResult.Failure).error as AppError.Network
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            error.cause shouldBe dns
         }
     }
 
@@ -103,16 +105,18 @@ class ChaikaTripperRepositoryTest : FunSpec({
      *
      * Описание:
      *   - Сценарий: сетевой сбой при загрузке станций.
-     *   - Ожидаемое поведение: RemoteResult.Failure(AppError.Network).
+     *   - Ожидаемое поведение: RemoteResult.Failure(AppError.Network()).
      *   - Цель: закрепить стабильный сигнал о сетевой ошибке в этой ветке.
      */
     test("fetchAllStations network error returns RemoteResult.Failure(Network)") {
         runTest {
-            coEvery { api.findStations(limit = 100, offset = 0) } throws UnknownHostException("dns")
+            val dns = UnknownHostException("dns")
+            coEvery { api.findStations(limit = 100, offset = 0) } throws dns
 
             val result = repository.fetchAllStations(limit = 100)
+            val error = (result as RemoteResult.Failure).error as AppError.Network
 
-            result shouldBe RemoteResult.Failure(AppError.Network)
+            error.cause shouldBe dns
         }
     }
 })
