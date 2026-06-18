@@ -1,6 +1,5 @@
 package com.chaikasoft.app.ui.components.template
 
-import android.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -74,7 +73,7 @@ fun TemplateCard(template: TemplateDomain, modifier: Modifier = Modifier, onClic
                     // Здесь можно использовать AsyncImage или Coil
                     // Пока просто плейсхолдер
                     Image(
-                        painter = painterResource(R.drawable.ic_menu_gallery),
+                        painter = painterResource(android.R.drawable.ic_menu_gallery),
                         contentDescription = "Template image",
                         modifier = Modifier
                             .fillMaxSize()

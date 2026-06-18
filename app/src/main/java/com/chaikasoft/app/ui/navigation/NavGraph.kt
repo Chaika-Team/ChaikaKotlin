@@ -75,7 +75,7 @@ fun NavGraph(
     val ui by authViewModel.uiState.collectAsStateWithLifecycle()
 
     // 2) При смене state — переключаем стек на нужный корневой граф
-    LaunchedEffect(ui.state) {
+    LaunchedEffect(ui.state, currentRoute) {
         when (ui.state) {
             AuthState.Checking -> {
                 navController.navigate(Routes.LOADING) {
@@ -92,9 +92,11 @@ fun NavGraph(
             }
 
             AuthState.Authenticated -> {
-                navController.navigate(Routes.TRIP_GRAPH) {
-                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                    launchSingleTop = true
+                if (NavigationGuards.shouldNavigateToPostAuthGate(currentRoute)) {
+                    navController.navigate(Routes.TRIP_GRAPH) {
+                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             }
         }

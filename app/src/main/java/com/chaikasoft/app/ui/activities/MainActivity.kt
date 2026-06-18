@@ -2,8 +2,8 @@ package com.chaikasoft.app.ui.activities
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,16 +32,20 @@ import com.chaikasoft.app.ui.navigation.Screen
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 import com.chaikasoft.app.ui.viewmodels.MainNavigationViewModel
+import com.chaikasoft.app.ui.viewmodels.SettingsViewModel
 import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ChaikaTheme {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+
+            ChaikaTheme(darkTheme = settingsUiState.settings.darkThemeEnabled) {
                 val authViewModel: AuthViewModel = hiltViewModel()
                 val tripViewModel: TripViewModel = hiltViewModel()
                 val mainNavigationViewModel: MainNavigationViewModel = hiltViewModel()

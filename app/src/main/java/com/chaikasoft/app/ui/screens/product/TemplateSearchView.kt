@@ -208,7 +208,7 @@ private fun TemplateErrorContent(
             if (uiError.retryable) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(onClick = onRetry) {
-                    Text(stringResource(R.string.retry))
+                    Text(stringResource(R.string.retry_button))
                 }
             }
         }

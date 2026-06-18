@@ -20,6 +20,10 @@ android {
         buildConfig = true
     }
 
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.chaikasoft.app"
         minSdk = 26
@@ -186,7 +190,7 @@ dependencies {
     androidTestImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.23"))
 
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
 
@@ -303,7 +307,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.paging:paging-compose:3.3.0") // or 3.2.1
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("com.google.dagger:hilt-android-compiler:2.48")

@@ -39,6 +39,7 @@ fun ProfileMenuItem(
     icon: ImageVector,
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     shape: ProfileMenuItemShape = ProfileMenuItemShape.Middle
 ) {
     val cornerShape = when (shape) {
@@ -57,7 +58,7 @@ fun ProfileMenuItem(
         ProfileMenuItemShape.Single -> RoundedCornerShape(ProfileDimens.MenuItemCornerRadiusSingle)
     }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(cornerShape)
             .background(ProfileMenuItemBackground)

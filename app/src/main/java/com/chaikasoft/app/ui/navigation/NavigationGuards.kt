@@ -4,6 +4,8 @@ object NavigationGuards {
 
     fun isProtectedBottomGraph(route: String): Boolean = route in protectedBottomGraphs
 
+    fun shouldNavigateToPostAuthGate(route: String?): Boolean = route in postAuthEntryRoutes
+
     fun requiresActiveShift(route: String?): Boolean = protectedGraphForRoute(route) != null
 
     fun protectedGraphForRoute(route: String?): String? = when {
@@ -24,5 +26,11 @@ object NavigationGuards {
         Routes.PRODUCT_GRAPH,
         Routes.STATISTICS_GRAPH,
         Routes.OPERATION_GRAPH
+    )
+
+    private val postAuthEntryRoutes = setOf(
+        Routes.LOADING,
+        Routes.LOGIN,
+        Routes.AUTH_GRAPH
     )
 }

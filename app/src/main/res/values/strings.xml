@@ -149,6 +149,11 @@
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_dark_theme">Темная тема</string>
     <string name="settings_dark_theme_description">Использовать темную тему интерфейса</string>
+    <string name="settings_language_title">Язык</string>
+    <string name="settings_language_description">Выберите язык интерфейса приложения</string>
+    <string name="settings_language_system">Как в системе</string>
+    <string name="settings_language_russian">Русский</string>
+    <string name="settings_language_english">English</string>
     <string name="settings_data_title">Данные</string>
     <string name="settings_auto_sync">Автосинхронизация</string>
     <string name="settings_auto_sync_description">Автоматически синхронизировать данные</string>
@@ -245,7 +250,7 @@
 
     <string name="empty_product_list">No products available</string>
     <string name="error_loading_products">Failed to load products</string>
-    <string name="retry">ПОВТОРИТЬ</string>
+    <string name="retry_button">ПОВТОРИТЬ</string>
     <string name="menu">Menu</string>
     <string name="refill">Добор</string>
     <string name="logout_error_title">Ошибка выхода</string>
