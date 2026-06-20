@@ -124,6 +124,38 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+detekt {
+    baseline = file("$rootDir/config/detekt/baseline.xml")
+}
+
+tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektSonar") {
+    group = "verification"
+    description =
+        "Generates a complete Detekt XML report for SonarQube without applying the baseline."
+
+    setSource(
+        files(
+            "src/main/java",
+            "src/test/java",
+            "src/main/kotlin",
+            "src/test/kotlin"
+        )
+    )
+    include("**/*.kt", "**/*.kts")
+    exclude("**/build/**")
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    ignoreFailures = true
+
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(layout.buildDirectory.file("reports/detekt/detekt-sonar.xml"))
+        html.required.set(false)
+        txt.required.set(false)
+        sarif.required.set(false)
+        md.required.set(false)
+    }
+}
+
 kover {
     reports {
         variant("stage") {

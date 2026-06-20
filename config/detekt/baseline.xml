@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>LongParameterList:NavGraph.kt$( navController: NavHostController, authViewModel: AuthViewModel, tripViewModel: TripViewModel, hasActiveShift: Boolean, currentRoute: String?, openFinishTripConfirmOnTripMain: Boolean, onFinishTripConfirmConsumed: () -&gt; Unit, onNavigateToTripCompletion: () -&gt; Unit )</ID>
+    <ID>MatchingDeclarationName:FastReportUseCases.kt$GetFastReportDataUseCase</ID>
+    <ID>MatchingDeclarationName:ProfileMenuItem.kt$ProfileMenuItemShape</ID>
+    <ID>MatchingDeclarationName:TripUseCases.kt$SearchTripsByStationsUseCase</ID>
+    <ID>MatchingDeclarationName:myApp.kt$MyApp : Application</ID>
+    <ID>PrintStackTrace:EncryptedTokenManager.kt$EncryptedTokenManager$e</ID>
+    <ID>SwallowedException:RemoteCall.kt$e: IOException</ID>
+    <ID>SwallowedException:RemoteCall.kt$e: SocketTimeoutException</ID>
+    <ID>SwallowedException:RemoteCall.kt$e: UnknownHostException</ID>
+    <ID>TooGenericExceptionCaught:AuthUseCases.kt$LogoutUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CartUseCases.kt$SaveCartWithItemsAndOperationUseCase$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ChaikaSoftReportsRepository.kt$ChaikaSoftReportsRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:EncryptedTokenManager.kt$EncryptedTokenManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:IAMApiServiceRepository.kt$IAMApiServiceRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LocalImageRepository.kt$LocalImageRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PackageViewModel.kt$PackageViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PostAuthGateViewModel.kt$PostAuthGateViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:RemoteCall.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SaleViewModel.kt$SaleViewModel$e: Exception</ID>
+    <ID>TooManyFunctions:AutonomousViewModel.kt$AutonomousViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:SaleViewModel.kt$SaleViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:TripViewModel.kt$TripViewModel : ViewModel</ID>
+  </CurrentIssues>
+</SmellBaseline>

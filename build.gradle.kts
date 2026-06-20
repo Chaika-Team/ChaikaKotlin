@@ -33,7 +33,10 @@ project(":app") {
             property("sonar.androidVariant", "stage")
             property("sonar.junit.reportPaths", "build/test-results/testStageUnitTest")
             property("sonar.androidLint.reportPaths", "build/reports/lint-results-stage.xml")
-            property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
+            property(
+                "sonar.kotlin.detekt.reportPaths",
+                "build/reports/detekt/detekt-sonar.xml"
+            )
             property(
                 "sonar.coverage.jacoco.xmlReportPaths",
                 "build/reports/kover/stage/xml/report.xml"
