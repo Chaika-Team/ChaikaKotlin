@@ -130,3 +130,5 @@ fabric.properties
 .vscode
 .env
 /docs/
+
+/AGENTS.md

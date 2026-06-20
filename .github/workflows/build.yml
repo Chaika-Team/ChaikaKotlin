@@ -2,10 +2,14 @@ name: ChaikaPipeline
 
 on:
   push:
-    branches:
-      - CHK-*
-      - CHOPS-*
-      - fix/*
+      branches:
+          - CHK-*
+          - CHOPS-*
+          - fix/*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
@@ -61,9 +65,8 @@ jobs:
       - name: Run Android lint
         run: ./gradlew :app:lintStage --console=plain
 
-      - name: Static check by Detekt
-        run: ./gradlew :app:detekt --console=plain
-        continue-on-error: true
+      - name: Generate full Detekt report for SonarQube
+        run: ./gradlew :app:detektSonar --console=plain
 
       # - name: Enable KVM
       #   run: |
@@ -91,3 +94,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Static check by Detekt
+        run: ./gradlew :app:detekt --console=plain
