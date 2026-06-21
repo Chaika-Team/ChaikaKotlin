@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -35,6 +36,7 @@ import com.chaikasoft.app.ui.components.product.ProductComponent
 import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewmodels.PackageViewModel
 import com.chaikasoft.app.ui.viewmodels.SaleViewModel
@@ -177,7 +179,9 @@ private fun ProductPackageContent(
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Adaptive(
+            minSize = ProductDimens.ProductListView.MinCellWidth
+        ),
         modifier = Modifier
             .testTag("packageListGrid")
             .fillMaxSize(),
@@ -242,4 +246,89 @@ private fun PackageProductCard(
         quantityToShow = quantityToShow,
         isSoldOut = hasKnownQuantity && quantityToShow <= 0
     )
+}
+
+@Preview(
+    name = "Product package - phone",
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 640
+)
+@Preview(
+    name = "Product package - wide",
+    showBackground = true,
+    widthDp = 512,
+    heightDp = 640
+)
+@Composable
+private fun ProductPackageViewPreview() {
+    val products = listOf(
+        Product(
+            id = 1,
+            name = "Black tea",
+            description = "Classic",
+            image = R.drawable.black_tea.toString(),
+            price = 20_000,
+            isInCart = false,
+            quantity = 0
+        ),
+        Product(
+            id = 2,
+            name = "Green tea",
+            description = "Jasmine",
+            image = R.drawable.black_tea.toString(),
+            price = 22_000,
+            isInCart = true,
+            quantity = 2
+        ),
+        Product(
+            id = 3,
+            name = "Coffee",
+            description = "Arabica",
+            image = R.drawable.black_tea.toString(),
+            price = 35_000,
+            isInCart = false,
+            quantity = 0
+        ),
+        Product(
+            id = 4,
+            name = "Water",
+            description = "Still",
+            image = R.drawable.black_tea.toString(),
+            price = 10_000,
+            isInCart = false,
+            quantity = 0
+        ),
+        Product(
+            id = 5,
+            name = "Apple juice",
+            description = "Fresh",
+            image = R.drawable.black_tea.toString(),
+            price = 18_000,
+            isInCart = false,
+            quantity = 0
+        ),
+        Product(
+            id = 6,
+            name = "Cocoa",
+            description = "Classic",
+            image = R.drawable.black_tea.toString(),
+            price = 25_000,
+            isInCart = false,
+            quantity = 0
+        )
+
+    )
+    ChaikaTheme {
+        ProductPackageContent(
+            isLoading = false,
+            packageItems = products,
+            cartItems = emptyList(),
+            productQuantities = products.associate { it.id to 5 },
+            spacerHeight = (ProductDimens.ProductCardHeight.value / 2).dp,
+            onCheckProductQuantity = {},
+            onAdd = {},
+            onQuantityChange = { _, _ -> }
+        )
+    }
 }

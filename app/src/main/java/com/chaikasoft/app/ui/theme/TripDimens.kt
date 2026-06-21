@@ -25,6 +25,5 @@ object TripDimens {
     val PaddingXL = 24.dp
     val PaddingM = 6.dp
     val CarriageCardHeight = 48.dp
-    val CarriageCardWidth = 168.dp
     val FinishTripHeight = 46.dp
 }

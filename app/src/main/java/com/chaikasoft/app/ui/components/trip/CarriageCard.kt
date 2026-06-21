@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,8 +26,7 @@ fun CarriageCard(
     modifier: Modifier,
     carriageId: Int,
     onClick: () -> Unit,
-    height: Dp = TripDimens.CarriageCardHeight,
-    width: Dp = TripDimens.CarriageCardWidth
+    height: Dp = TripDimens.CarriageCardHeight
 ) {
     Box(
         modifier = modifier
@@ -39,8 +37,7 @@ fun CarriageCard(
             )
             .background(Color.White, RoundedCornerShape(TripDimens.CornerRadius))
             .clickable(onClick = onClick)
-            .height(height)
-            .width(width),
+            .height(height),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {

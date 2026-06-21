@@ -2,11 +2,11 @@ package com.chaikasoft.app.ui.components.product
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +26,6 @@ import com.chaikasoft.app.ui.theme.ProductDimens.BackGroundHeight
 import com.chaikasoft.app.ui.theme.ProductDimens.ImageHeight
 import com.chaikasoft.app.ui.theme.ProductDimens.ImageWidth
 import com.chaikasoft.app.ui.theme.ProductDimens.ProductCardHeight
-import com.chaikasoft.app.ui.theme.ProductDimens.ProductCardWidth
 
 @Composable
 fun ProductItem(
@@ -44,7 +43,7 @@ fun ProductItem(
     ConstraintLayout(
         modifier = modifier
             .height(ProductCardHeight)
-            .width(ProductCardWidth)
+            .fillMaxWidth()
     ) {
         val (image, back, content) = createRefs()
 
@@ -60,7 +59,6 @@ fun ProductItem(
                     height = Dimension.fillToConstraints
                 }
                 .height(BackGroundHeight)
-                .width(ProductCardWidth)
         )
 
         Box(

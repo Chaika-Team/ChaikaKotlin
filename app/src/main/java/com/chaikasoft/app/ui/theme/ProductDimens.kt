@@ -4,7 +4,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 object ProductDimens {
-    val ProductCardWidth = 165.dp
     val ProductCardHeight = 215.dp
     val PaddingM = 8.dp
     val PaddingL = 12.dp
@@ -53,7 +52,7 @@ object ProductDimens {
 
     // Константы для ProductListView
     object ProductListView {
-        val GridColumns = 2
+        val MinCellWidth = 160.dp
         val GridContentPadding = 16.dp
         val FABCornerRadius = 30.dp
     }
