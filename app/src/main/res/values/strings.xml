@@ -225,6 +225,7 @@
     <string name="cart_payment_card">КАРТА</string>
 
     <string name="cart_product_available">Доступно: %1$d</string>
+    <string name="replenish_product_stock">Остаток: %1$s</string>
     <string name="cart_product_add_to_cart">Добавить в корзину</string>
     <string name="cart_product_increase_quantity">Увеличить количество</string>
     <string name="cart_product_decrease_quantity">Уменьшить количество</string>

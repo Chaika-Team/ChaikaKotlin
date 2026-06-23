@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.chaikasoft.app.R
@@ -120,7 +119,7 @@ fun CartProductItem(
             HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(top = ProductDimens.PaddingM)
                     .constrainAs(divBottom) {
                         top.linkTo(imageRef.bottom)
                         start.linkTo(parent.start)
@@ -145,6 +144,7 @@ private fun CartProductActionsRow(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .padding(end = ProductDimens.PaddingM)
             .height(ProductDimens.CartProductItem.QuantitySelectorHeight)
     ) {
         // Цена слева
@@ -184,7 +184,7 @@ private fun CartProductActionsRow(
                         height = ProductDimens.CartProductItem.QuantitySelectorHeight
                     ),
                 shape = CircleShape,
-                contentPadding = PaddingValues(0.dp),
+                contentPadding = PaddingValues(),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.primary
                 ),

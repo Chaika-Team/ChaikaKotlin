@@ -212,6 +212,7 @@
     <string name="cart_payment_card">CARD</string>
 
     <string name="cart_product_available">Available: %1$d</string>
+    <string name="replenish_product_stock">Stock: %1$s</string>
     <string name="cart_product_add_to_cart">Add to cart</string>
     <string name="cart_product_increase_quantity">Increase quantity</string>
     <string name="cart_product_decrease_quantity">Decrease quantity</string>
