@@ -119,6 +119,18 @@ modifier: Modifier = Modifier
 
 Preview держим рядом с компонентом.
 
+- Meaningful preview сохраняем в коде постоянно как пример внешнего вида и API компонента.
+- Preview-функцию держим рядом с компонентом, делаем `private` и называем по схеме `ComponentNamePreview`.
+- Для screen-level UI preview создаём для чистого `*Content`, принимающего готовый state и callbacks. Wrapper с ViewModel, DI, Flow collection и навигацией напрямую не preview-им.
+- Preview оборачиваем в `ChaikaTheme`, если компонент зависит от цветов, typography или shapes приложения.
+- Данные должны быть небольшими и детерминированными: без сети, случайных значений, текущего времени и обязательных side effects. Callbacks по умолчанию передаём пустыми.
+- Выбираем только состояния, заметно меняющие UI: content, loading, empty, error, selected/disabled, длинный текст и другие реальные граничные случаи.
+- Адаптивные компоненты проверяем минимум на compact и wide viewport. Dark theme, увеличенный font scale и другую locale добавляем там, где они действительно могут повлиять на layout.
+- Повторяющиеся наборы конфигураций объединяем через MultiPreview-аннотацию. Не создаём полный cross-product тем, размеров и состояний, если он не даёт новой информации.
+- Interactive Mode и Animation Preview используем для локального состояния и анимаций, но не ожидаем от них настоящей навигации, backend или полного runtime-окружения приложения.
+- Одноразовые и полностью дублирующие preview после работы удаляем.
+- Preview не заменяет компиляцию и проверку на реальном устройстве.
+
 Preview fake-data не надо выносить в production API без необходимости. Если fake-data становится большой или повторяется, её можно вынести в test/preview-only helper отдельным решением.
 
 ## 5. Правила размеров
@@ -177,3 +189,4 @@ Preview fake-data не надо выносить в production API без нео
   https://android.googlesource.com/platform/frameworks/support/+/androidx-main/compose/docs/compose-api-guidelines.md
 - Jetpack Compose state hoisting:  
   https://developer.android.com/develop/ui/compose/state-hoisting
+- Jetpack Compose previews: https://developer.android.com/develop/ui/compose/tooling/previews
