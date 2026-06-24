@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -27,10 +28,12 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.components.product.ReplenishProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.template.CheckDialog
+import com.chaikasoft.app.ui.dto.Product
+import com.chaikasoft.app.ui.dto.ReplenishProductUiModel
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
-import com.chaikasoft.app.ui.viewmodels.PackageViewModel
 import com.chaikasoft.app.ui.viewmodels.ReplenishItemsViewModel
 import com.chaikasoft.app.ui.viewmodels.ReplenishViewModel
 import kotlinx.coroutines.launch
@@ -40,7 +43,6 @@ fun ProductReplenishView(
     conductorViewModel: ConductorViewModel,
     replenishViewModel: ReplenishViewModel,
     replenishItemsViewModel: ReplenishItemsViewModel,
-    packageViewModel: PackageViewModel,
     navController: NavHostController
 ) {
     val conductor = conductorViewModel.conductor.collectAsStateWithLifecycle()
@@ -50,70 +52,22 @@ fun ProductReplenishView(
     val displayProducts = remember(replenishViewModel.items) {
         replenishItemsViewModel.getDisplayProducts(replenishViewModel.items)
     }.collectAsStateWithLifecycle()
-    val productQuantities by packageViewModel.productQuantities.collectAsStateWithLifecycle()
     val checkDialogText = stringResource(id = R.string.template_check_contents)
     val errorNoConductorMsg = stringResource(id = R.string.error_no_conductor)
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        modifier = Modifier
-                            .testTag("productListGrid"),
-                        contentPadding = PaddingValues(
-                            bottom = 72.dp
-                        )
-                    ) {
-                        items(
-                            count = displayProducts.value.size,
-                            key = { index -> displayProducts.value[index].id }
-                        ) { index ->
-                            displayProducts.value[index].let { product ->
-                                ReplenishProductItem(
-                                    modifier = Modifier.testTag("productCard"),
-                                    product = product,
-                                    onAddToCart = {
-                                        replenishViewModel.onAdd(product.toCartItemDomain())
-                                    },
-                                    onQuantityIncrease = {
-                                        replenishViewModel.onQuantityChange(
-                                            product.id,
-                                            product.quantity + 1
-                                        )
-                                    },
-                                    onQuantityDecrease = {
-                                        replenishViewModel.onQuantityChange(
-                                            product.id,
-                                            product.quantity - 1
-                                        )
-                                    },
-                                    onRemove = {
-                                        replenishViewModel.onRemove(product.id)
-                                    },
-                                    packageQuantity =
-                                    productQuantities[product.id] ?: product.quantity
-                                )
-                            }
-                        }
-                    }
-                }
-
-                ButtonSurface(
-                    buttonText = "ДАЛЕЕ",
-                    onClick = { showDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-        }
+        ProductReplenishContent(
+            products = displayProducts.value,
+            onAddToCart = { product ->
+                replenishViewModel.onAdd(product.toCartItemDomain())
+            },
+            onQuantityChange = replenishViewModel::onQuantityChange,
+            onRemove = replenishViewModel::onRemove,
+            onNextClick = { showDialog = true },
+            modifier = Modifier.padding(innerPadding)
+        )
 
         if (showDialog) {
             CheckDialog(
@@ -138,5 +92,95 @@ fun ProductReplenishView(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun ProductReplenishContent(
+    products: List<ReplenishProductUiModel>,
+    onAddToCart: (Product) -> Unit,
+    onQuantityChange: (productId: Int, quantity: Int) -> Unit,
+    onRemove: (productId: Int) -> Unit,
+    onNextClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                modifier = Modifier.testTag("productListGrid"),
+                contentPadding = PaddingValues(bottom = 72.dp)
+            ) {
+                items(
+                    count = products.size,
+                    key = { index -> products[index].product.id }
+                ) { index ->
+                    val item = products[index]
+                    val product = item.product
+                    ReplenishProductItem(
+                        modifier = Modifier.testTag("productCard"),
+                        product = product,
+                        onAddToCart = { onAddToCart(product) },
+                        onQuantityIncrease = {
+                            onQuantityChange(product.id, product.quantity + 1)
+                        },
+                        onQuantityDecrease = {
+                            onQuantityChange(product.id, product.quantity - 1)
+                        },
+                        onRemove = { onRemove(product.id) },
+                        packageQuantity = item.packageQuantity
+                    )
+                }
+            }
+        }
+
+        ButtonSurface(
+            buttonText = stringResource(R.string.action_next),
+            onClick = onNextClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+private fun ProductReplenishContentPreview() {
+    val products = listOf(
+        ReplenishProductUiModel(
+            product = Product(
+                id = 1,
+                name = "Яблочный сок",
+                description = "Свежий яблочный сок",
+                image = "",
+                price = 120,
+                isInCart = true,
+                quantity = 2
+            ),
+            packageQuantity = 12
+        ),
+        ReplenishProductUiModel(
+            product = Product(
+                id = 2,
+                name = "Чёрный чай",
+                description = "Ароматный чёрный чай",
+                image = "",
+                price = 85,
+                isInCart = false,
+                quantity = 0
+            ),
+            packageQuantity = 0
+        )
+    )
+
+    ChaikaTheme {
+        ProductReplenishContent(
+            products = products,
+            onAddToCart = {},
+            onQuantityChange = { _, _ -> },
+            onRemove = {},
+            onNextClick = {}
+        )
     }
 }

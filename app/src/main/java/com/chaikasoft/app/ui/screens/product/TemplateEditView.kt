@@ -30,13 +30,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
@@ -45,6 +49,7 @@ import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.mappers.toUiModel
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
@@ -65,35 +70,28 @@ fun TemplateEditView(
 
     Scaffold { innerPadding ->
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+        TemplateEditContent(
+            searchQuery = searchQuery,
+            onSearchChange = productViewModel::onSearchChange,
+            onNextClick = {
+                val conductorId = conductorViewModel.conductor.value?.id
+                if (conductorId == null) {
+                    showNoConductorError = true
+                } else {
+                    navController.navigate(Routes.TEMPLATE_CONFIRM)
+                }
+            },
+            modifier = Modifier.padding(innerPadding)
         ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = productViewModel::onSearchChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                placeholder = { Text("Поиск по названию") },
-                singleLine = true,
-                shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
-            )
-
-            ProductScreenContent(
+            ProductPagingContent(
                 pagingItems = pagingItems,
                 cartItems = cartItems,
-                fillViewModel = fillViewModel,
-                modifier = Modifier.weight(1f),
-                onNextClick = {
-                    val conductorId = conductorViewModel.conductor.value?.id
-                    if (conductorId == null) {
-                        showNoConductorError = true
-                    } else {
-                        navController.navigate(Routes.TEMPLATE_CONFIRM)
-                    }
-                }
+                onAddToCart = { product ->
+                    fillViewModel.onAdd(product.toCartItemDomain())
+                },
+                onQuantityChange = fillViewModel::onQuantityChange,
+                onRemove = fillViewModel::onRemove,
+                modifier = Modifier.fillMaxSize()
             )
         }
 
@@ -112,46 +110,33 @@ fun TemplateEditView(
 }
 
 @Composable
-private fun ProductScreenContent(
-    pagingItems: LazyPagingItems<Product>,
-    cartItems: List<CartItemDomain>,
-    fillViewModel: FillViewModel,
+private fun TemplateEditContent(
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
     onNextClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    productContent: @Composable () -> Unit
 ) {
-    val refreshState = pagingItems.loadState.refresh
-    val itemCount = pagingItems.itemCount
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            placeholder = { Text(stringResource(R.string.hint_product_search)) },
+            singleLine = true,
+            shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
+        )
 
-    Column(modifier = modifier) {
         Box(modifier = Modifier.weight(1f)) {
-            when {
-                refreshState is LoadState.Loading && itemCount == 0 -> {
-                    LoadingState()
-                }
-
-                refreshState is LoadState.Error && itemCount == 0 -> {
-                    ErrorState(
-                        error = refreshState.error,
-                        onRetry = { pagingItems.retry() }
-                    )
-                }
-
-                refreshState is LoadState.NotLoading && itemCount == 0 -> {
-                    EmptyState()
-                }
-
-                else -> {
-                    ProductList(
-                        pagingItems = pagingItems,
-                        cartItems = cartItems,
-                        fillViewModel = fillViewModel
-                    )
-                }
-            }
+            productContent()
         }
 
         ButtonSurface(
-            buttonText = "ДАЛЕЕ",
+            buttonText = stringResource(R.string.action_next),
             onClick = onNextClick,
             modifier = Modifier.fillMaxWidth()
         )
@@ -159,10 +144,54 @@ private fun ProductScreenContent(
 }
 
 @Composable
+private fun ProductPagingContent(
+    pagingItems: LazyPagingItems<Product>,
+    cartItems: List<CartItemDomain>,
+    onAddToCart: (Product) -> Unit,
+    onQuantityChange: (productId: Int, quantity: Int) -> Unit,
+    onRemove: (productId: Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val refreshState = pagingItems.loadState.refresh
+    val itemCount = pagingItems.itemCount
+
+    Box(modifier = modifier) {
+        when {
+            refreshState is LoadState.Loading && itemCount == 0 -> {
+                LoadingState()
+            }
+
+            refreshState is LoadState.Error && itemCount == 0 -> {
+                ErrorState(
+                    error = refreshState.error,
+                    onRetry = pagingItems::retry
+                )
+            }
+
+            refreshState is LoadState.NotLoading && itemCount == 0 -> {
+                EmptyState()
+            }
+
+            else -> {
+                ProductList(
+                    pagingItems = pagingItems,
+                    cartItems = cartItems,
+                    onAddToCart = onAddToCart,
+                    onQuantityChange = onQuantityChange,
+                    onRemove = onRemove
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ProductList(
     pagingItems: LazyPagingItems<Product>,
     cartItems: List<CartItemDomain>,
-    fillViewModel: FillViewModel,
+    onAddToCart: (Product) -> Unit,
+    onQuantityChange: (productId: Int, quantity: Int) -> Unit,
+    onRemove: (productId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cartMap = remember(cartItems) {
@@ -178,9 +207,7 @@ private fun ProductList(
     ) {
         items(
             count = pagingItems.itemCount,
-            key = { index ->
-                pagingItems.peek(index)?.id ?: "placeholder_$index"
-            }
+            key = pagingItems.itemKey { product -> product.id }
         ) { index ->
             val product = pagingItems[index]
             if (product != null) {
@@ -190,24 +217,20 @@ private fun ProductList(
 
                 CartProductItem(
                     product = uiProduct,
-                    onAddToCart = {
-                        fillViewModel.onAdd(product.toCartItemDomain())
-                    },
+                    onAddToCart = { onAddToCart(product) },
                     onQuantityIncrease = {
-                        fillViewModel.onQuantityChange(
+                        onQuantityChange(
                             uiProduct.id,
                             uiProduct.quantity + 1
                         )
                     },
                     onQuantityDecrease = {
-                        fillViewModel.onQuantityChange(
+                        onQuantityChange(
                             uiProduct.id,
                             uiProduct.quantity - 1
                         )
                     },
-                    onRemove = {
-                        fillViewModel.onRemove(uiProduct.id)
-                    }
+                    onRemove = { onRemove(uiProduct.id) }
                 )
             }
         }
@@ -228,13 +251,11 @@ private fun ProductList(
                 is LoadState.Error -> {
                     ErrorItem(
                         error = appendState.error,
-                        onRetry = { pagingItems.retry() }
+                        onRetry = pagingItems::retry
                     )
                 }
 
-                is LoadState.NotLoading -> {
-                    // Ничего не показываем
-                }
+                is LoadState.NotLoading -> Unit
             }
         }
     }
@@ -322,3 +343,62 @@ private fun ErrorItem(error: Throwable, onRetry: () -> Unit, modifier: Modifier 
         }
     }
 }
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+private fun TemplateEditContentPreview() {
+    val products = templatePreviewProducts()
+
+    ChaikaTheme {
+        TemplateEditContent(
+            searchQuery = "",
+            onSearchChange = {},
+            onNextClick = {}
+        ) {
+            TemplateEditPreviewProductList(products = products)
+        }
+    }
+}
+
+@Composable
+private fun TemplateEditPreviewProductList(products: List<Product>, modifier: Modifier = Modifier) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1),
+        modifier = modifier,
+        contentPadding = PaddingValues(bottom = 72.dp)
+    ) {
+        items(
+            count = products.size,
+            key = { index -> products[index].id }
+        ) { index ->
+            CartProductItem(
+                product = products[index],
+                onAddToCart = {},
+                onQuantityIncrease = {},
+                onQuantityDecrease = {},
+                onRemove = {}
+            )
+        }
+    }
+}
+
+private fun templatePreviewProducts() = listOf(
+    Product(
+        id = 1,
+        name = "Яблочный сок",
+        description = "Свежий яблочный сок",
+        image = "",
+        price = 120,
+        isInCart = true,
+        quantity = 2
+    ),
+    Product(
+        id = 2,
+        name = "Чёрный чай",
+        description = "Ароматный чёрный чай",
+        image = "",
+        price = 85,
+        isInCart = false,
+        quantity = 1
+    )
+)

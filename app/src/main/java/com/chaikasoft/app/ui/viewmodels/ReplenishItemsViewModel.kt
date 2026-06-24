@@ -6,6 +6,7 @@ import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.PackageItemDomain
 import com.chaikasoft.app.domain.usecases.GetPackageItemUseCase
 import com.chaikasoft.app.ui.dto.Product
+import com.chaikasoft.app.ui.dto.ReplenishProductUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,20 +28,20 @@ class ReplenishItemsViewModel @Inject constructor(
      * Создает поток продуктов для отображения, объединяя товары из пакета с данными корзины.
      * @param cartItems Поток элементов корзины, передаваемый из уровня экрана
      */
-    fun getDisplayProducts(cartItems: StateFlow<List<CartItemDomain>>): StateFlow<List<Product>> =
-        combine(
-            packageItems,
-            cartItems
-        ) { packageList, cartList ->
-            // Создаем мапу количеств из корзины по ID продукта
-            val cartQuantities = cartList.associate { it.product.id to it.quantity }
+    fun getDisplayProducts(
+        cartItems: StateFlow<List<CartItemDomain>>
+    ): StateFlow<List<ReplenishProductUiModel>> = combine(
+        packageItems,
+        cartItems
+    ) { packageList, cartList ->
+        val cartQuantities = cartList.associate { it.product.id to it.quantity }
 
-            // Преобразуем packageItems в Product с учетом количеств из корзины
-            packageList.map { packageItem ->
-                val cartQuantity = cartQuantities[packageItem.productInfoDomain.id] ?: 0
-                val isInCart = cartQuantity > 0
+        packageList.map { packageItem ->
+            val cartQuantity = cartQuantities[packageItem.productInfoDomain.id] ?: 0
+            val isInCart = cartQuantity > 0
 
-                Product(
+            ReplenishProductUiModel(
+                product = Product(
                     id = packageItem.productInfoDomain.id,
                     name = packageItem.productInfoDomain.name,
                     description = packageItem.productInfoDomain.description,
@@ -48,7 +49,9 @@ class ReplenishItemsViewModel @Inject constructor(
                     price = packageItem.productInfoDomain.price,
                     isInCart = isInCart,
                     quantity = cartQuantity
-                )
-            }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+                ),
+                packageQuantity = packageItem.currentQuantity
+            )
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 }
