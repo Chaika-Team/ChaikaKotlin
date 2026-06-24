@@ -45,19 +45,24 @@ class ReplenishItemsViewModelTest : FunSpec({
         runTest {
             val p1 = productInfo(id = 1, name = "Tea")
             val p2 = productInfo(id = 2, name = "Coffee")
-            packageFlow.value = listOf(packageItem(product = p1), packageItem(product = p2))
+            packageFlow.value = listOf(
+                packageItem(product = p1, quantity = 12),
+                packageItem(product = p2, quantity = 4)
+            )
             cartFlow.value = listOf(cartItem(product = p1, quantity = 3))
 
             val display = vm.getDisplayProducts(cartFlow)
             display.test {
                 val first = awaitItem()
-                val tea = first.first { it.id == 1 }
-                val coffee = first.first { it.id == 2 }
+                val tea = first.first { it.product.id == 1 }
+                val coffee = first.first { it.product.id == 2 }
 
-                tea.isInCart shouldBe true
-                tea.quantity shouldBe 3
-                coffee.isInCart shouldBe false
-                coffee.quantity shouldBe 0
+                tea.product.isInCart shouldBe true
+                tea.product.quantity shouldBe 3
+                tea.packageQuantity shouldBe 12
+                coffee.product.isInCart shouldBe false
+                coffee.product.quantity shouldBe 0
+                coffee.packageQuantity shouldBe 4
             }
         }
     }

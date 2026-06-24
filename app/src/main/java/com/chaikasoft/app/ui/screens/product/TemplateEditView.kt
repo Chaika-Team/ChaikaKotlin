@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
@@ -124,7 +126,7 @@ private fun TemplateEditContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            placeholder = { Text("Поиск по названию") },
+            placeholder = { Text(stringResource(R.string.hint_product_search)) },
             singleLine = true,
             shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
         )
@@ -134,7 +136,7 @@ private fun TemplateEditContent(
         }
 
         ButtonSurface(
-            buttonText = "ДАЛЕЕ",
+            buttonText = stringResource(R.string.action_next),
             onClick = onNextClick,
             modifier = Modifier.fillMaxWidth()
         )

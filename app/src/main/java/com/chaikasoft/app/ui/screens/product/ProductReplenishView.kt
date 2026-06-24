@@ -29,11 +29,11 @@ import com.chaikasoft.app.ui.components.product.ReplenishProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.template.CheckDialog
 import com.chaikasoft.app.ui.dto.Product
+import com.chaikasoft.app.ui.dto.ReplenishProductUiModel
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
-import com.chaikasoft.app.ui.viewmodels.PackageViewModel
 import com.chaikasoft.app.ui.viewmodels.ReplenishItemsViewModel
 import com.chaikasoft.app.ui.viewmodels.ReplenishViewModel
 import kotlinx.coroutines.launch
@@ -43,7 +43,6 @@ fun ProductReplenishView(
     conductorViewModel: ConductorViewModel,
     replenishViewModel: ReplenishViewModel,
     replenishItemsViewModel: ReplenishItemsViewModel,
-    packageViewModel: PackageViewModel,
     navController: NavHostController
 ) {
     val conductor = conductorViewModel.conductor.collectAsStateWithLifecycle()
@@ -53,7 +52,6 @@ fun ProductReplenishView(
     val displayProducts = remember(replenishViewModel.items) {
         replenishItemsViewModel.getDisplayProducts(replenishViewModel.items)
     }.collectAsStateWithLifecycle()
-    val productQuantities by packageViewModel.productQuantities.collectAsStateWithLifecycle()
     val checkDialogText = stringResource(id = R.string.template_check_contents)
     val errorNoConductorMsg = stringResource(id = R.string.error_no_conductor)
 
@@ -62,7 +60,6 @@ fun ProductReplenishView(
     ) { innerPadding ->
         ProductReplenishContent(
             products = displayProducts.value,
-            productQuantities = productQuantities,
             onAddToCart = { product ->
                 replenishViewModel.onAdd(product.toCartItemDomain())
             },
@@ -100,8 +97,7 @@ fun ProductReplenishView(
 
 @Composable
 private fun ProductReplenishContent(
-    products: List<Product>,
-    productQuantities: Map<Int, Int>,
+    products: List<ReplenishProductUiModel>,
     onAddToCart: (Product) -> Unit,
     onQuantityChange: (productId: Int, quantity: Int) -> Unit,
     onRemove: (productId: Int) -> Unit,
@@ -119,9 +115,10 @@ private fun ProductReplenishContent(
             ) {
                 items(
                     count = products.size,
-                    key = { index -> products[index].id }
+                    key = { index -> products[index].product.id }
                 ) { index ->
-                    val product = products[index]
+                    val item = products[index]
+                    val product = item.product
                     ReplenishProductItem(
                         modifier = Modifier.testTag("productCard"),
                         product = product,
@@ -133,14 +130,14 @@ private fun ProductReplenishContent(
                             onQuantityChange(product.id, product.quantity - 1)
                         },
                         onRemove = { onRemove(product.id) },
-                        packageQuantity = productQuantities[product.id] ?: product.quantity
+                        packageQuantity = item.packageQuantity
                     )
                 }
             }
         }
 
         ButtonSurface(
-            buttonText = "ДАЛЕЕ",
+            buttonText = stringResource(R.string.action_next),
             onClick = onNextClick,
             modifier = Modifier.fillMaxWidth()
         )
@@ -151,30 +148,35 @@ private fun ProductReplenishContent(
 @Composable
 private fun ProductReplenishContentPreview() {
     val products = listOf(
-        Product(
-            id = 1,
-            name = "Яблочный сок",
-            description = "Свежий яблочный сок",
-            image = "",
-            price = 120,
-            isInCart = true,
-            quantity = 2
+        ReplenishProductUiModel(
+            product = Product(
+                id = 1,
+                name = "Яблочный сок",
+                description = "Свежий яблочный сок",
+                image = "",
+                price = 120,
+                isInCart = true,
+                quantity = 2
+            ),
+            packageQuantity = 12
         ),
-        Product(
-            id = 2,
-            name = "Чёрный чай",
-            description = "Ароматный чёрный чай",
-            image = "",
-            price = 85,
-            isInCart = false,
-            quantity = 0
+        ReplenishProductUiModel(
+            product = Product(
+                id = 2,
+                name = "Чёрный чай",
+                description = "Ароматный чёрный чай",
+                image = "",
+                price = 85,
+                isInCart = false,
+                quantity = 0
+            ),
+            packageQuantity = 0
         )
     )
 
     ChaikaTheme {
         ProductReplenishContent(
             products = products,
-            productQuantities = mapOf(1 to 12, 2 to 0),
             onAddToCart = {},
             onQuantityChange = { _, _ -> },
             onRemove = {},
