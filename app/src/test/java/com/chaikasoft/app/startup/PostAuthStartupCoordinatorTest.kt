@@ -1,5 +1,6 @@
 package com.chaikasoft.app.startup
 
+import com.chaikasoft.app.diagnostics.NoOpErrorReporter
 import com.chaikasoft.app.domain.common.AppError
 import com.chaikasoft.app.domain.sealed.RefreshProductsResult
 import com.chaikasoft.app.domain.sealed.RefreshStationsResult
@@ -23,7 +24,8 @@ class PostAuthStartupCoordinatorTest : FunSpec({
         refreshProductsOnLaunchUseCase = mockk()
         coordinator = PostAuthStartupCoordinator(
             refreshStationsOnLaunchUseCase = refreshStationsOnLaunchUseCase,
-            refreshProductsOnLaunchUseCase = refreshProductsOnLaunchUseCase
+            refreshProductsOnLaunchUseCase = refreshProductsOnLaunchUseCase,
+            errorReporter = NoOpErrorReporter()
         )
     }
 

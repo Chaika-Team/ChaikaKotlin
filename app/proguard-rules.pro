@@ -3,7 +3,8 @@
 ############################################
 -keepattributes Signature,InnerClasses,EnclosingMethod,Exceptions,
 RuntimeVisibleAnnotations,RuntimeInvisibleAnnotations,
-RuntimeVisibleParameterAnnotations,RuntimeInvisibleParameterAnnotations,AnnotationDefault
+RuntimeVisibleParameterAnnotations,RuntimeInvisibleParameterAnnotations,AnnotationDefault,
+SourceFile,LineNumberTable
 
 # Kotlin metadata (нужно Moshi/Kotlin)
 -keep class kotlin.Metadata { *; }
@@ -76,3 +77,8 @@ RuntimeVisibleParameterAnnotations,RuntimeInvisibleParameterAnnotations,Annotati
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+############################################
+# Sentry references newer Android platform APIs guarded at runtime.
+############################################
+-dontwarn android.app.ApplicationStartInfo

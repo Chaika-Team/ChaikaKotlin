@@ -10,6 +10,13 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
 }
 
+fun quotedBuildConfigString(value: String): String {
+    val escaped = value
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+    return "\"$escaped\""
+}
+
 android {
     namespace = "com.chaikasoft.app"
     compileSdk = 34
@@ -45,6 +52,13 @@ android {
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
+            buildConfigField("String", "GLITCHTIP_DSN", quotedBuildConfigString(""))
+            buildConfigField("Boolean", "ERROR_REPORTING_ENABLED", "false")
+            buildConfigField(
+                "String",
+                "ERROR_REPORTING_ENVIRONMENT",
+                quotedBuildConfigString("debug")
+            )
             buildConfigField("String", "CLIENT_ID", "\"${System.getenv("REL_ZITADEL_TOKEN")}\"")
             buildConfigField(
                 "String",
@@ -58,6 +72,18 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
+            val glitchTipDsn = System.getenv("REL_GLITCHTIP_DSN").orEmpty()
+            buildConfigField("String", "GLITCHTIP_DSN", quotedBuildConfigString(glitchTipDsn))
+            buildConfigField(
+                "Boolean",
+                "ERROR_REPORTING_ENABLED",
+                glitchTipDsn.isNotBlank().toString()
+            )
+            buildConfigField(
+                "String",
+                "ERROR_REPORTING_ENVIRONMENT",
+                quotedBuildConfigString("release")
+            )
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -77,6 +103,13 @@ android {
             isDebuggable = true
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-STAGING"
+            buildConfigField("String", "GLITCHTIP_DSN", quotedBuildConfigString(""))
+            buildConfigField("Boolean", "ERROR_REPORTING_ENABLED", "false")
+            buildConfigField(
+                "String",
+                "ERROR_REPORTING_ENVIRONMENT",
+                quotedBuildConfigString("stage")
+            )
             buildConfigField("String", "CLIENT_ID", "\"${System.getenv("STAGE_ZITADEL_TOKEN")}\"")
             buildConfigField(
                 "String",
@@ -344,6 +377,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("com.google.dagger:hilt-android-compiler:2.48")
     implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.1")
+
+    implementation("io.sentry:sentry-android:8.34.0")
 }
 java {
     toolchain {

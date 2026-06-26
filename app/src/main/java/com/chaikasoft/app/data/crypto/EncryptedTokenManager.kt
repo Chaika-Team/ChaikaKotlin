@@ -4,12 +4,20 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.chaikasoft.app.diagnostics.DiagnosticArea
+import com.chaikasoft.app.diagnostics.DiagnosticEvent
+import com.chaikasoft.app.diagnostics.DiagnosticEventType
+import com.chaikasoft.app.diagnostics.DiagnosticOperation
+import com.chaikasoft.app.diagnostics.ErrorReporter
 import javax.inject.Inject
 
 /**
  * Реализация EncryptedTokenManagerInterface с использованием EncryptedSharedPreferences.
  */
-class EncryptedTokenManager @Inject constructor(context: Context) : EncryptedTokenManagerInterface {
+class EncryptedTokenManager @Inject constructor(
+    context: Context,
+    private val errorReporter: ErrorReporter
+) : EncryptedTokenManagerInterface {
 
     private val sharedPreferences: SharedPreferences
 
@@ -28,7 +36,14 @@ class EncryptedTokenManager @Inject constructor(context: Context) : EncryptedTok
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            errorReporter.recordNonFatal(
+                DiagnosticEvent(
+                    type = DiagnosticEventType.ENCRYPTED_STORAGE_RECOVERY,
+                    area = DiagnosticArea.STORAGE,
+                    operation = DiagnosticOperation.RESTORE_ENCRYPTED_STORAGE,
+                    throwable = e
+                )
+            )
             // Если произошла ошибка расшифровки, очищаем старое хранилище и пробуем создать заново
             context.getSharedPreferences("encrypted_prefs", Context.MODE_PRIVATE).edit().clear()
                 .apply()
