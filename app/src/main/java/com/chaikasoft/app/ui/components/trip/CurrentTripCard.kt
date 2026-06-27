@@ -3,7 +3,7 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,7 +26,7 @@ fun CurrentTripCard(
 ) {
     Box(
         modifier = modifier
-            .height(heightTotal)
+            .heightIn(min = heightTotal)
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.background,
@@ -35,7 +35,9 @@ fun CurrentTripCard(
             .clip(MaterialTheme.shapes.medium)
     ) {
         CurrentTripContent(
-            modifier = Modifier.matchParentSize().dashedBorder(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .dashedBorder(),
             tripRecord = tripRecord,
             heightTotal = heightTotal,
             isFinishing = isFinishing,

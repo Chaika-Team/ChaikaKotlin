@@ -1,8 +1,8 @@
 package com.chaikasoft.app.ui.components.template
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -43,7 +43,9 @@ fun ButtonSurface(
         ) {
             Button(
                 onClick = onClick,
-                modifier = Modifier.height(ProductDimens.ButtonHeightL).fillMaxWidth(),
+                modifier = Modifier
+                    .defaultMinSize(minHeight = ProductDimens.ButtonHeightL)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(ProductDimens.CornerRadiusM),
                 enabled = enabled
             ) {

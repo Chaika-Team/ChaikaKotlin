@@ -6,8 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -64,8 +63,7 @@ fun ProductReplenishView(
                     .padding(innerPadding)
             ) {
                 Box(modifier = Modifier.weight(1f)) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
+                    LazyColumn(
                         modifier = Modifier
                             .testTag("productListGrid"),
                         contentPadding = PaddingValues(

@@ -6,14 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -130,7 +130,7 @@ private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit
                 modifier = Modifier
                     .testTag("tripsRetryButton")
                     .padding(16.dp)
-                    .height(46.dp)
+                    .defaultMinSize(minHeight = 46.dp)
                     .widthIn(min = 200.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
@@ -142,13 +142,12 @@ private fun TripsError(errorState: TripsSearchUiState.Error, onRetry: () -> Unit
 
 @Composable
 private fun TripsGrid(trips: List<TripDomain>, onTripClick: (TripDomain) -> Unit) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .testTag("tripsGrid")
     ) {
-        items(trips) { trip ->
+        items(trips, key = { it.uuid }) { trip ->
             FoundTripCard(
                 tripRecord = trip,
                 onClick = { onTripClick(trip) },

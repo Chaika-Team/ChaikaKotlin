@@ -1,12 +1,16 @@
 package com.chaikasoft.app.ui.theme
 
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 object TripDimens {
     val RecordCardHeight = 100.dp
     val FoundTripCardHeight = 85.dp
     val TimeDateDetailsHeight = 41.dp
     val TimeDetailsHeight = 25.dp
+    val StationsDetailsHeight = 30.dp
+    val StationTextFontSize = 10.sp
+    val StationTextLineHeight = 12.sp
     val SideRectWidth = 24.dp
     val CornerRadius = 16.dp
     val IconSize = 24.dp

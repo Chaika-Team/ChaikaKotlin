@@ -5,13 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -81,7 +80,8 @@ fun TemplateConfirmView(
                 FinalPackageList(
                     cartItems = cartItems,
                     onQuantityChange = fillViewModel::onQuantityChange,
-                    onRemove = fillViewModel::onRemove
+                    onRemove = fillViewModel::onRemove,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -92,10 +92,11 @@ fun TemplateConfirmView(
 private fun FinalPackageList(
     cartItems: List<CartItemDomain>,
     onQuantityChange: (productId: Int, quantity: Int) -> Unit,
-    onRemove: (productId: Int) -> Unit
+    onRemove: (productId: Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
+    LazyColumn(
+        modifier = modifier,
         contentPadding = PaddingValues(ProductDimens.CartPadding)
     ) {
         items(cartItems, key = { it.product.id }) { product ->
@@ -160,7 +161,7 @@ private fun TemplateConfirmBottomBar(onBackClick: () -> Unit, onConfirmClick: ()
             Button(
                 modifier = Modifier
                     .weight(1f)
-                    .height(ProductDimens.ButtonHeightL),
+                    .defaultMinSize(minHeight = ProductDimens.ButtonHeightL),
                 onClick = onBackClick,
                 shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
             ) {
@@ -170,7 +171,7 @@ private fun TemplateConfirmBottomBar(onBackClick: () -> Unit, onConfirmClick: ()
             Button(
                 modifier = Modifier
                     .weight(1f)
-                    .height(ProductDimens.ButtonHeightL),
+                    .defaultMinSize(minHeight = ProductDimens.ButtonHeightL),
                 onClick = onConfirmClick,
                 shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
             ) {

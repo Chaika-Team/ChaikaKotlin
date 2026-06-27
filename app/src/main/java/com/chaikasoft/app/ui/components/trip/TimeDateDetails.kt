@@ -3,7 +3,7 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +21,7 @@ internal fun TimeDateDetails(tripRecord: TripDomain, modifier: Modifier = Modifi
 
     ConstraintLayout(
         modifier = modifier
-            .height(TripDimens.TimeDateDetailsHeight)
+            .heightIn(min = TripDimens.TimeDateDetailsHeight)
     ) {
         val (startTime, time, arrow, endTime) = createRefs()
 
@@ -31,7 +31,7 @@ internal fun TimeDateDetails(tripRecord: TripDomain, modifier: Modifier = Modifi
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 width = Dimension.wrapContent
-                height = Dimension.value(TripDimens.TimeDateDetailsHeight)
+                height = Dimension.wrapContent
             },
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
@@ -75,7 +75,7 @@ internal fun TimeDateDetails(tripRecord: TripDomain, modifier: Modifier = Modifi
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 width = Dimension.wrapContent
-                height = Dimension.value(TripDimens.TimeDateDetailsHeight)
+                height = Dimension.wrapContent
             },
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End

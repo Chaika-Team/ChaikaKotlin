@@ -3,10 +3,12 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -45,7 +47,8 @@ internal fun HistoryRecordContent(
 
     Row(
         modifier = modifier
-            .height(TripDimens.RecordCardHeight)
+            .height(IntrinsicSize.Min)
+            .heightIn(min = TripDimens.RecordCardHeight)
             .fillMaxWidth()
     ) {
         SideRect(
@@ -63,7 +66,7 @@ internal fun HistoryRecordContent(
                     bottom = TripDimens.HistoryRecordContentPadding
                 )
         ) {
-            Column(modifier = Modifier.fillMaxHeight()) {
+            Column {
                 HistoryRecordHeader(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -112,7 +115,7 @@ private fun HistoryRecordHeader(
     val colorScheme = MaterialTheme.colorScheme
 
     Row(
-        modifier = modifier.height(TripDimens.HistoryRecordHeaderHeight),
+        modifier = modifier.heightIn(min = TripDimens.HistoryRecordHeaderHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,7 +32,7 @@ fun HistoryRecordCard(
     Box(
         modifier = modifier
             .testTag("historyRecordCard_${tripRecord.uuid}")
-            .height(TripDimens.RecordCardHeight)
+            .heightIn(min = TripDimens.RecordCardHeight)
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.background,
@@ -45,7 +45,7 @@ fun HistoryRecordCard(
     ) {
         HistoryRecordContent(
             modifier = Modifier
-                .matchParentSize()
+                .fillMaxWidth()
                 .dashedBorder(color = borderColor),
             tripRecord = tripRecord,
             isError = isError,

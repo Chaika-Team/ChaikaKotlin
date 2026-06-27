@@ -3,8 +3,8 @@ package com.chaikasoft.app.ui.components.product
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -25,11 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.util.formatPriceOnly
 
@@ -99,7 +99,7 @@ fun CartPaymentArea(
                     onValueChange = {},
                     readOnly = true,
                     modifier = Modifier
-                        .height(ProductDimens.FieldHeight)
+                        .defaultMinSize(minHeight = ProductDimens.FieldHeight)
                         .menuAnchor()
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(ProductDimens.CornerRadiusM),
@@ -136,7 +136,9 @@ fun CartPaymentArea(
             ) {
                 Button(
                     onClick = onPayCash,
-                    modifier = Modifier.height(ProductDimens.ButtonHeightL).weight(1f),
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = ProductDimens.ButtonHeightL)
+                        .weight(1f),
                     shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
                 ) {
                     Text(
@@ -146,7 +148,9 @@ fun CartPaymentArea(
                 }
                 Button(
                     onClick = onPayCard,
-                    modifier = Modifier.height(ProductDimens.ButtonHeightL).weight(1f),
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = ProductDimens.ButtonHeightL)
+                        .weight(1f),
                     shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
                 ) {
                     Text(
@@ -159,7 +163,7 @@ fun CartPaymentArea(
     }
 }
 
-@Preview(showBackground = true)
+@PhoneScalablePreviews
 @Composable
 private fun CartPaymentAreaPreview() {
     val conductors = listOf(

@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,39 +25,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
-import com.chaikasoft.app.ui.viewmodels.TripViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteTripConfirmBottomSheet(tripViewModel: TripViewModel) {
-    val dialogState by tripViewModel.deleteTripDialog.collectAsStateWithLifecycle()
-    val dialog = dialogState ?: return
+fun DeleteTripConfirmBottomSheet(
+    hasPackageItems: Boolean?,
+    preservePackage: Boolean,
+    isDeleting: Boolean,
+    @StringRes errorMessageRes: Int?,
+    onPreservePackageChanged: (Boolean) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
     fun dismiss() {
-        if (dialog.isDeleting) return
+        if (isDeleting) return
         scope.launch {
             sheetState.hide()
-            tripViewModel.dismissDeleteTripDialog()
+            onDismiss()
         }
     }
 
     ModalBottomSheet(
         onDismissRequest = { dismiss() },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         DeleteTripConfirmContent(
-            hasPackageItems = dialog.hasPackageItems,
-            preservePackage = dialog.preservePackage,
-            isDeleting = dialog.isDeleting,
-            errorMessageRes = dialog.errorMessageRes,
-            onPreservePackageChanged = tripViewModel::onPreservePackageChanged,
-            onConfirm = tripViewModel::confirmDeleteCurrentTrip
+            hasPackageItems = hasPackageItems,
+            preservePackage = preservePackage,
+            isDeleting = isDeleting,
+            errorMessageRes = errorMessageRes,
+            onPreservePackageChanged = onPreservePackageChanged,
+            onConfirm = onConfirm
         )
     }
 }
@@ -155,6 +162,7 @@ private fun DeleteTripConfirmButton(isDeleting: Boolean, enabled: Boolean, onCli
         enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
+            .defaultMinSize(minHeight = 48.dp)
             .testTag("deleteTripConfirmButton"),
         shape = MaterialTheme.shapes.extraLarge
     ) {

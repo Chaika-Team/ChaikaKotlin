@@ -8,6 +8,8 @@
 **Актуальность:** на 25 июня 2026 года  
 **Область действия:** Kotlin + Jetpack Compose, пакеты `ui/screens`, `ui/components` и связанные UI helpers.
 
+**Дополнительный справочник:** подробные рекомендации по реализации, state, side effects, Paging, insets, accessibility, performance и testing собраны в `docs/compose-implementation-research.md`. Этот документ остаётся компактным style guide, а implementation research используется как справочник для refactor/review.
+
 ## 1. Зачем нужен стандарт
 
 Стандарт нужен, чтобы новые Compose-компоненты писались одинаково, а существующий UI можно было приводить к единому виду небольшими безопасными шагами.
