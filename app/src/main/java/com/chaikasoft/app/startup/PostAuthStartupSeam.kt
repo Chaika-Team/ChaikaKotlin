@@ -1,6 +1,11 @@
 package com.chaikasoft.app.startup
 
 import android.util.Log
+import com.chaikasoft.app.diagnostics.DiagnosticArea
+import com.chaikasoft.app.diagnostics.DiagnosticEvent
+import com.chaikasoft.app.diagnostics.DiagnosticEventType
+import com.chaikasoft.app.diagnostics.DiagnosticOperation
+import com.chaikasoft.app.diagnostics.ErrorReporter
 import com.chaikasoft.app.domain.sealed.RefreshProductsResult
 import com.chaikasoft.app.domain.sealed.RefreshStationsResult
 import com.chaikasoft.app.domain.usecases.RefreshProductsOnLaunchUseCase
@@ -28,7 +33,8 @@ class NormalPostAuthStartupSeam @Inject constructor(
 
 class PostAuthStartupCoordinator @Inject constructor(
     private val refreshStationsOnLaunchUseCase: RefreshStationsOnLaunchUseCase,
-    private val refreshProductsOnLaunchUseCase: RefreshProductsOnLaunchUseCase
+    private val refreshProductsOnLaunchUseCase: RefreshProductsOnLaunchUseCase,
+    private val errorReporter: ErrorReporter
 ) {
     suspend fun prepare(): PostAuthStartupOutcome {
         val stationsHadFailure = refreshStations()
@@ -59,6 +65,14 @@ class PostAuthStartupCoordinator @Inject constructor(
             }
             is RefreshStationsResult.LocalFailure -> {
                 Log.e(TAG, "Stations refresh local failure: ${result.cause.message}", result.cause)
+                errorReporter.recordNonFatal(
+                    DiagnosticEvent(
+                        type = DiagnosticEventType.POST_AUTH_STARTUP_LOCAL_FAILURE,
+                        area = DiagnosticArea.STARTUP,
+                        operation = DiagnosticOperation.REFRESH_STATIONS,
+                        throwable = result.cause
+                    )
+                )
                 true
             }
         }
@@ -83,6 +97,14 @@ class PostAuthStartupCoordinator @Inject constructor(
             }
             is RefreshProductsResult.LocalFailure -> {
                 Log.e(TAG, "Products refresh local failure: ${result.cause.message}", result.cause)
+                errorReporter.recordNonFatal(
+                    DiagnosticEvent(
+                        type = DiagnosticEventType.POST_AUTH_STARTUP_LOCAL_FAILURE,
+                        area = DiagnosticArea.STARTUP,
+                        operation = DiagnosticOperation.REFRESH_PRODUCTS,
+                        throwable = result.cause
+                    )
+                )
                 true
             }
         }

@@ -18,6 +18,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <meta-data
+            android:name="io.sentry.auto-init"
+            android:value="false" />
+
         <!-- Основное активити с навигационным intent‑фильтром для deep link -->
         <activity
             android:name=".ui.activities.MainActivity"
