@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +24,8 @@ import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.util.formatPrice
+
+private val RemoveButtonHorizontalSpacing = 5.dp
 
 @Composable
 fun CartProductItem(
@@ -75,7 +78,7 @@ private fun CartProductActionsRow(
             text = formatPrice(product.price, product.quantity),
             modifier = Modifier
                 .weight(1f)
-                .padding(end = ProductDimens.CartProductItem.RemoveButtonPadding),
+                .padding(end = RemoveButtonHorizontalSpacing),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground,
@@ -92,6 +95,7 @@ private fun CartProductActionsRow(
         ) {
             if (product.isInCart) {
                 ProductItemRemoveButton(
+                    modifier = Modifier.size(ProductDimens.CartProductItem.QuantitySelectorHeight),
                     onClick = onRemoveFromPackage ?: onRemove,
                     contentDescriptionRes = if (onRemoveFromPackage != null) {
                         R.string.cart_product_remove_from_package
@@ -99,7 +103,7 @@ private fun CartProductActionsRow(
                         R.string.cart_product_remove_from_cart
                     }
                 )
-                Spacer(modifier = Modifier.width(ProductDimens.CartProductItem.RemoveButtonPadding))
+                Spacer(modifier = Modifier.width(RemoveButtonHorizontalSpacing))
                 ProductItemQuantitySelector(
                     quantity = product.quantity,
                     onIncrease = onQuantityIncrease,

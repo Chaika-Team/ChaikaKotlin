@@ -16,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -39,12 +41,19 @@ internal fun ProductListItemLayout(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 4.dp)
             ) {
                 ProductImage(
                     imageUrl = product.image,
                     modifier = Modifier
                         .size(ProductDimens.CartProductItem.ImageSize)
+                        .shadow(
+                            elevation = 4.dp,
+                            shape = MaterialTheme.shapes.large,
+                            clip = false,
+                            ambientColor = Color.Black.copy(alpha = 0.7f),
+                            spotColor = Color.Black.copy(alpha = 0.7f)
+                        )
                         .padding(end = ProductDimens.PaddingM)
                         .aspectRatio(1f),
                     contentDescription = product.name
@@ -79,11 +88,6 @@ internal fun ProductListItemLayout(
                         .padding(top = 4.dp)
                 )
             }
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            )
         }
     }
 }
