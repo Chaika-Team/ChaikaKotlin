@@ -21,6 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.components.profile.FaqCard
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 
 @Composable
 fun FaqsView() {
@@ -110,3 +113,19 @@ fun FaqsView() {
 }
 
 private data class FAQ(val question: String, val answer: String)
+
+@PhoneScalablePreviews
+@Composable
+private fun FaqsViewPreview() {
+    ChaikaTheme {
+        FaqsView()
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun FaqsViewWidePreview() {
+    ChaikaTheme {
+        FaqsView()
+    }
+}

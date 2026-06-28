@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
@@ -33,7 +34,11 @@ import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.template.TemplateCard
 import com.chaikasoft.app.ui.mappers.AppErrorUiMapper
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun TemplateSearchView(
@@ -55,6 +60,30 @@ fun TemplateSearchView(
         ButtonSurface(
             buttonText = stringResource(R.string.template_skip),
             onClick = { navController.navigate(Routes.TEMPLATE_EDIT) },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun TemplateSearchPreviewContent(
+    templates: List<TemplateDomain>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
+            items(templates.size) { index ->
+                TemplateCard(template = templates[index], onClick = {})
+            }
+        }
+
+        ButtonSurface(
+            buttonText = stringResource(R.string.template_skip),
+            onClick = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -220,3 +249,54 @@ private fun Throwable.toAppError(): AppError = when (this) {
     is Exception -> AppError.Unknown(this)
     else -> AppError.Unknown(Exception(this))
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun TemplateSearchContentPreview() {
+    ChaikaTheme {
+        TemplateSearchPreviewContent(templates = previewTemplates())
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun TemplateSearchContentWidePreview() {
+    ChaikaTheme {
+        TemplateSearchPreviewContent(templates = previewTemplates())
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun TemplateSearchEmptyPreview() {
+    val pagingItems = flowOf(PagingData.empty<TemplateDomain>()).collectAsLazyPagingItems()
+    ChaikaTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            TemplateSearchContent(
+                templatesPaging = pagingItems,
+                onTemplateClick = {},
+                modifier = Modifier.weight(1f)
+            )
+            ButtonSurface(
+                buttonText = stringResource(R.string.template_skip),
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+private fun previewTemplates(): List<TemplateDomain> = listOf(
+    TemplateDomain(
+        id = 1,
+        templateName = "Утренний рейс с длинным названием",
+        description = "Базовый набор товаров для продажи утром",
+        content = emptyList()
+    ),
+    TemplateDomain(
+        id = 2,
+        templateName = "Вечерний рейс",
+        description = "Чай, вода и горячие напитки",
+        content = emptyList()
+    )
+)

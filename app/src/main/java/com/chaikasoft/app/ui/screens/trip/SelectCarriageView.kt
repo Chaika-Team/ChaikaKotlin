@@ -24,9 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.models.trip.StationDomain
+import com.chaikasoft.app.domain.models.trip.TripDomain
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.trip.SelectedTripRecordSurface
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.theme.TripDimens
 import com.chaikasoft.app.ui.viewmodels.TripViewModel
 
@@ -38,7 +43,38 @@ fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
     val startShiftErrorMessageRes by
         viewModel.startShiftErrorMessageRes.collectAsStateWithLifecycle()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    SelectCarriageContent(
+        selectedTrip = selectedTrip,
+        carriageNumber = carriageNumber,
+        isCarriageInputValid = isCarriageInputValid,
+        startShiftErrorMessageRes = startShiftErrorMessageRes,
+        onCarriageNumberChanged = viewModel::onCarriageNumberChanged,
+        onConfirm = {
+            viewModel.confirmCarriageInput(
+                onSuccess = {
+                    navController.navigate(Routes.TRIP_MAIN) {
+                        popUpTo(Routes.TRIP_GRAPH) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+    )
+}
+
+@Composable
+private fun SelectCarriageContent(
+    selectedTrip: TripDomain?,
+    carriageNumber: String,
+    isCarriageInputValid: Boolean,
+    startShiftErrorMessageRes: Int?,
+    onCarriageNumberChanged: (String) -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxSize()) {
         when {
             selectedTrip == null -> {
                 Text(
@@ -51,7 +87,7 @@ fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
                 Column(modifier = Modifier.weight(1f)) {
                     SelectedTripRecordSurface(
                         height = TripDimens.FoundTripCardHeight + TripDimens.PaddingXL * 2,
-                        tripRecord = selectedTrip!!
+                        tripRecord = selectedTrip
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -66,7 +102,7 @@ fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
 
                     TextField(
                         value = carriageNumber,
-                        onValueChange = { viewModel.onCarriageNumberChanged(it) },
+                        onValueChange = onCarriageNumberChanged,
                         label = { Text(stringResource(R.string.carriage_number)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
@@ -99,18 +135,7 @@ fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
 
                 ButtonSurface(
                     buttonText = stringResource(R.string.confirm),
-                    onClick = {
-                        viewModel.confirmCarriageInput(
-                            onSuccess = {
-                                navController.navigate(Routes.TRIP_MAIN) {
-                                    popUpTo(Routes.TRIP_GRAPH) {
-                                        inclusive = false
-                                    }
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    },
+                    onClick = onConfirm,
                     enabled = isCarriageInputValid,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -118,3 +143,43 @@ fun SelectCarriageView(viewModel: TripViewModel, navController: NavController) {
         }
     }
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun SelectCarriageContentPreview() {
+    ChaikaTheme {
+        SelectCarriageContent(
+            selectedTrip = previewSelectedTrip(),
+            carriageNumber = "12",
+            isCarriageInputValid = true,
+            startShiftErrorMessageRes = null,
+            onCarriageNumberChanged = {},
+            onConfirm = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun SelectCarriageContentWidePreview() {
+    ChaikaTheme {
+        SelectCarriageContent(
+            selectedTrip = previewSelectedTrip(),
+            carriageNumber = "12",
+            isCarriageInputValid = true,
+            startShiftErrorMessageRes = null,
+            onCarriageNumberChanged = {},
+            onConfirm = {}
+        )
+    }
+}
+
+private fun previewSelectedTrip(): TripDomain = TripDomain(
+    uuid = "preview-trip",
+    trainNumber = "120A",
+    departure = "2026-01-01T10:00:00+03:00",
+    arrival = "2026-01-01T18:45:00+03:00",
+    duration = "PT8H45M",
+    from = StationDomain("2004000", "Санкт-Петербург-Главный-Московский", "Санкт-Петербург"),
+    to = StationDomain("2000001", "Москва Восточный вокзал", "Москва")
+)

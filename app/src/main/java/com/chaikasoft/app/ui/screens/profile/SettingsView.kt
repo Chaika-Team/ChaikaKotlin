@@ -38,6 +38,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.settings.AppLanguage
+import com.chaikasoft.app.domain.models.settings.AppSettings
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.SettingsUiState
 import com.chaikasoft.app.ui.viewmodels.SettingsViewModel
 
@@ -146,6 +150,47 @@ private fun SettingsContent(
                 onCheckedChange = onAutoSyncEnabledChange
             )
         }
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun SettingsContentPreview() {
+    ChaikaTheme {
+        SettingsContent(
+            uiState = SettingsUiState(
+                settings = AppSettings(
+                    notificationsEnabled = true,
+                    soundEnabled = false,
+                    vibrationEnabled = true,
+                    darkThemeEnabled = false,
+                    autoSyncEnabled = true
+                ),
+                language = AppLanguage.RU
+            ),
+            onNotificationsEnabledChange = {},
+            onSoundEnabledChange = {},
+            onVibrationEnabledChange = {},
+            onDarkThemeEnabledChange = {},
+            onAutoSyncEnabledChange = {},
+            onLanguageChange = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun SettingsContentWidePreview() {
+    ChaikaTheme {
+        SettingsContent(
+            uiState = SettingsUiState(language = AppLanguage.SYSTEM),
+            onNotificationsEnabledChange = {},
+            onSoundEnabledChange = {},
+            onVibrationEnabledChange = {},
+            onDarkThemeEnabledChange = {},
+            onAutoSyncEnabledChange = {},
+            onLanguageChange = {}
+        )
     }
 }
 

@@ -37,11 +37,10 @@ import java.util.Locale
 internal fun rememberColumnWidths(): ColumnWidths {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val isLandscape =
-        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val useExpandedTable = configuration.isExpandedStatisticsTable()
 
-    return remember(screenWidth, isLandscape) {
-        if (isLandscape) {
+    return remember(screenWidth, useExpandedTable) {
+        if (useExpandedTable) {
             ColumnWidths(
                 name = screenWidth * 0.25f,
                 price = screenWidth * 0.12f,
@@ -234,3 +233,6 @@ private fun formatNumber(number: Number): String {
     nf.minimumFractionDigits = if (number is Int) 2 else 0
     return nf.format(number)
 }
+
+internal fun android.content.res.Configuration.isExpandedStatisticsTable(): Boolean =
+    orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE || screenWidthDp >= 600

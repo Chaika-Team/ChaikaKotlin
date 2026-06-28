@@ -57,8 +57,7 @@ internal fun StatisticsContent(
 ) {
     val columnWidths = rememberColumnWidths()
     val configuration = LocalConfiguration.current
-    val isLandscape =
-        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val useExpandedTable = configuration.isExpandedStatisticsTable()
 
     val sharedHScroll = rememberStatisticsTableScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -103,7 +102,7 @@ internal fun StatisticsContent(
                     TableHeader(
                         scrollState = sharedHScroll,
                         widths = columnWidths,
-                        isLandscape = isLandscape
+                        isLandscape = useExpandedTable
                     )
                 }
             }
@@ -115,7 +114,7 @@ internal fun StatisticsContent(
                     report = report,
                     scrollState = sharedHScroll,
                     widths = columnWidths,
-                    isLandscape = isLandscape
+                    isLandscape = useExpandedTable
                 )
             }
         }

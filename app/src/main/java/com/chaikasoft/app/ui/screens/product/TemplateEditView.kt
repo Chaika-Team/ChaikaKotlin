@@ -17,13 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.ui.components.template.CheckDialog
+import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
 import com.chaikasoft.app.ui.viewmodels.ProductViewModel
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun TemplateEditView(
@@ -85,3 +91,82 @@ fun TemplateEditView(
         }
     }
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun TemplateEditContentPreview() {
+    val pagingItems = flowOf(PagingData.from(previewTemplateEditProducts()))
+        .collectAsLazyPagingItems()
+    ChaikaTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            OutlinedTextField(
+                value = "чай",
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                placeholder = { Text("Поиск по названию") },
+                singleLine = true,
+                shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
+            )
+            ProductScreenContent(
+                pagingItems = pagingItems,
+                cartItems = emptyList(),
+                modifier = Modifier.weight(1f),
+                onAddToCart = {},
+                onQuantityChange = { _, _ -> },
+                onRemove = {},
+                onNextClick = {}
+            )
+        }
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun TemplateEditContentWidePreview() {
+    val pagingItems = flowOf(PagingData.from(previewTemplateEditProducts()))
+        .collectAsLazyPagingItems()
+    ChaikaTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            OutlinedTextField(
+                value = "чай",
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                placeholder = { Text("Поиск по названию") },
+                singleLine = true,
+                shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
+            )
+            ProductScreenContent(
+                pagingItems = pagingItems,
+                cartItems = emptyList(),
+                modifier = Modifier.weight(1f),
+                onAddToCart = {},
+                onQuantityChange = { _, _ -> },
+                onRemove = {},
+                onNextClick = {}
+            )
+        }
+    }
+}
+
+private fun previewTemplateEditProducts(): List<Product> = listOf(
+    Product(
+        id = 1,
+        name = "Чай черный крупнолистовой с очень длинным названием",
+        description = "Классический",
+        image = "",
+        price = 20_000
+    ),
+    Product(
+        id = 2,
+        name = "Вода негазированная",
+        description = "500 мл",
+        image = "",
+        price = 19_000,
+        isInCart = true,
+        quantity = 2
+    )
+)

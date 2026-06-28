@@ -27,11 +27,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.ui.components.trip.DropDownMenu
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.AutonomousViewModel
 import java.time.LocalDateTime
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 internal fun AutonomousTripContent(
@@ -199,3 +205,57 @@ private fun Label(text: String) {
         color = MaterialTheme.colorScheme.onSurface
     )
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun AutonomousTripContentPreview() {
+    val emptyStations = flowOf(PagingData.empty<StationDomain>()).collectAsLazyPagingItems()
+    ChaikaTheme {
+        AutonomousTripContent(
+            state = previewAutonomousTripState(),
+            fromSuggestions = emptyStations,
+            toSuggestions = emptyStations,
+            onTrainNumberChange = {},
+            onFromQueryChange = {},
+            onSelectFrom = {},
+            onToQueryChange = {},
+            onSelectTo = {},
+            onDepartureChange = {},
+            onArrivalChange = {},
+            onCarriageNumberChange = {},
+            onCarriageClassTypeChange = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun AutonomousTripContentWidePreview() {
+    val emptyStations = flowOf(PagingData.empty<StationDomain>()).collectAsLazyPagingItems()
+    ChaikaTheme {
+        AutonomousTripContent(
+            state = previewAutonomousTripState(),
+            fromSuggestions = emptyStations,
+            toSuggestions = emptyStations,
+            onTrainNumberChange = {},
+            onFromQueryChange = {},
+            onSelectFrom = {},
+            onToQueryChange = {},
+            onSelectTo = {},
+            onDepartureChange = {},
+            onArrivalChange = {},
+            onCarriageNumberChange = {},
+            onCarriageClassTypeChange = {}
+        )
+    }
+}
+
+private fun previewAutonomousTripState(): AutonomousViewModel.UiState = AutonomousViewModel.UiState(
+    trainNumber = "120A",
+    fromQuery = "Санкт-Петербург-Главный-Московский",
+    toQuery = "Москва Восточный вокзал",
+    departure = LocalDateTime.of(2026, 1, 1, 10, 0),
+    arrival = LocalDateTime.of(2026, 1, 1, 18, 45),
+    carriageNumber = "12",
+    carriageClassType = "Купе"
+)

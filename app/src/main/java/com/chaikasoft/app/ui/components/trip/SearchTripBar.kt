@@ -2,9 +2,8 @@ package com.chaikasoft.app.ui.components.trip
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,7 +45,7 @@ internal fun SearchTripBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = TripDimens.SearchBarHeight)
+            .defaultMinSize(minHeight = TripDimens.SearchBarHeight)
     ) {
         if (readOnly && onClick != null) {
             ReadOnlySearchTripBar(
@@ -85,7 +85,8 @@ private fun ReadOnlySearchTripBar(
     Surface(
         modifier = Modifier
             .testTagIfPresent(testTag)
-            .fillMaxSize()
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = TripDimens.SearchBarHeight)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(cornerRadius),
         color = colorScheme.surfaceVariant
@@ -121,12 +122,15 @@ private fun EditableSearchTripBar(
         onActiveChange = {},
         modifier = Modifier
             .testTagIfPresent(testTag)
-            .fillMaxSize(),
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = TripDimens.SearchBarHeight),
         placeholder = {
             Text(
                 text = placeholderText,
                 color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         },
         shape = RoundedCornerShape(cornerRadius),
@@ -145,14 +149,17 @@ private fun EditableSearchTripBar(
 private fun SearchTripBarText(text: String, color: Color) {
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = TripDimens.SearchBarHeight)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
             text = text,
             color = color,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

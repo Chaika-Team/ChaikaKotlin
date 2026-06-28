@@ -15,11 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.chaikasoft.app.domain.models.trip.StationDomain
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.AutonomousViewModel
+import java.time.LocalDateTime
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavController) {
@@ -79,6 +86,62 @@ fun AutonomousTripScreen(viewModel: AutonomousViewModel, navController: NavContr
             onArrivalChange = viewModel::onArrivalChange,
             onCarriageNumberChange = viewModel::onCarriageNumberChange,
             onCarriageClassTypeChange = viewModel::onCarriageClassTypeChange,
+            modifier = Modifier.padding(inner)
+        )
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun AutonomousTripScreenPreview() {
+    ChaikaTheme {
+        AutonomousTripPreviewScaffold()
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun AutonomousTripScreenWidePreview() {
+    ChaikaTheme {
+        AutonomousTripPreviewScaffold()
+    }
+}
+
+@Composable
+private fun AutonomousTripPreviewScaffold() {
+    val emptyStations = flowOf(PagingData.empty<StationDomain>()).collectAsLazyPagingItems()
+    val state = AutonomousViewModel.UiState(
+        trainNumber = "120A",
+        fromQuery = "Санкт-Петербург-Главный-Московский",
+        toQuery = "Москва Восточный вокзал",
+        departure = LocalDateTime.of(2026, 1, 1, 10, 0),
+        arrival = LocalDateTime.of(2026, 1, 1, 18, 45),
+        carriageNumber = "12",
+        carriageClassType = "Купе"
+    )
+
+    Scaffold(
+        bottomBar = {
+            ButtonSurface(
+                buttonText = "ЗАВЕРШИТЬ",
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) { inner ->
+        AutonomousTripContent(
+            state = state,
+            fromSuggestions = emptyStations,
+            toSuggestions = emptyStations,
+            onTrainNumberChange = {},
+            onFromQueryChange = {},
+            onSelectFrom = {},
+            onToQueryChange = {},
+            onSelectTo = {},
+            onDepartureChange = {},
+            onArrivalChange = {},
+            onCarriageNumberChange = {},
+            onCarriageClassTypeChange = {},
             modifier = Modifier.padding(inner)
         )
     }

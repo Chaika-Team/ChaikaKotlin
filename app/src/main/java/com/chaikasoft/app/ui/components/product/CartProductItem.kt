@@ -1,17 +1,18 @@
 package com.chaikasoft.app.ui.components.product
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.dto.Product
@@ -55,66 +56,48 @@ private fun CartProductActionsRow(
     onRemoveFromPackage: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = ProductDimens.CartProductItem.QuantitySelectorHeight)
     ) {
         Column(
             modifier = Modifier
-                .align(Alignment.CenterStart)
+                .weight(1f)
+                .padding(end = ProductDimens.CartProductItem.RemoveButtonPadding)
         ) {
             Text(
                 text = formatPrice(product.price, product.quantity),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = ProductDimens.CartProductItem.PriceFontSize
+                fontSize = ProductDimens.CartProductItem.PriceFontSize,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
         if (product.isInCart) {
+            ProductItemRemoveButton(
+                onClick = onRemoveFromPackage ?: onRemove,
+                contentDescriptionRes = if (onRemoveFromPackage != null) {
+                    R.string.cart_product_remove_from_package
+                } else {
+                    R.string.cart_product_remove_from_cart
+                }
+            )
+            Spacer(modifier = Modifier.width(ProductDimens.CartProductItem.RemoveButtonPadding))
             ProductItemQuantitySelector(
                 quantity = product.quantity,
                 onIncrease = onQuantityIncrease,
                 onDecrease = onQuantityDecrease,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .quantitySelectorSize()
+                modifier = Modifier.quantitySelectorSize()
             )
         } else {
             ProductItemAddButton(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .quantitySelectorSize(),
+                modifier = Modifier.quantitySelectorSize(),
                 onClick = onAddToCart,
                 contentDescriptionRes = R.string.cart_product_add_to_cart
-            )
-        }
-
-        if (product.isInCart) {
-            ProductItemRemoveButton(
-                onClick = onRemove,
-                contentDescriptionRes = R.string.cart_product_remove_from_cart,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(
-                        end =
-                        ProductDimens.CartProductItem.QuantitySelectorWidth +
-                            ProductDimens.CartProductItem.RemoveButtonPadding
-                    )
-            )
-        } else if (product.isInCart && onRemoveFromPackage != null) {
-            ProductItemRemoveButton(
-                onClick = onRemoveFromPackage,
-                contentDescriptionRes = R.string.cart_product_remove_from_package,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .offset(
-                        x =
-                        (-ProductDimens.CartProductItem.QuantitySelectorWidth) -
-                            ProductDimens.CartProductItem.RemoveButtonPadding
-                    )
             )
         }
     }

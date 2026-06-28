@@ -19,6 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,5 +127,21 @@ fun AboutView() {
                 )
             }
         }
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun AboutViewPreview() {
+    ChaikaTheme {
+        AboutView()
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun AboutViewWidePreview() {
+    ChaikaTheme {
+        AboutView()
     }
 }

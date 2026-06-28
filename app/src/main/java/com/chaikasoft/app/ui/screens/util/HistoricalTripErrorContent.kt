@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
 
 @Composable
 fun HistoricalTripErrorContent(message: String) {
@@ -28,5 +30,13 @@ fun HistoricalTripErrorContent(message: String) {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun HistoricalTripErrorContentPreview() {
+    ChaikaTheme {
+        HistoricalTripErrorContent(message = "Не удалось загрузить сохраненный отчет по поездке")
     }
 }

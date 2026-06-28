@@ -32,8 +32,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.LoginDimens
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.AuthState
+import com.chaikasoft.app.ui.viewmodels.AuthUiState
 import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -41,7 +45,6 @@ import com.chaikasoft.app.ui.viewmodels.AuthViewModel
 fun LoginScreen(viewModel: AuthViewModel) {
     val ui by viewModel.uiState.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
-    val isBusy = ui.state is AuthState.Checking
 
     val authLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -61,8 +64,30 @@ fun LoginScreen(viewModel: AuthViewModel) {
         (ctx as? Activity)?.finishAffinity()
     }
 
+    LoginContent(
+        ui = ui,
+        onLoginClick = {
+            Log.d("LoginScreen", "Login button clicked")
+            val authIntent = viewModel.startAuth()
+            authLauncher.launch(authIntent)
+        },
+        onClearError = viewModel::clearError
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun LoginContent(
+    ui: AuthUiState,
+    onLoginClick: () -> Unit,
+    onClearError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isBusy = ui.state is AuthState.Checking
+
     Column(
         modifier = Modifier
+            .then(modifier)
             .testTag("loginScreen")
             .semantics { testTagsAsResourceId = true }
             .fillMaxSize()
@@ -72,11 +97,7 @@ fun LoginScreen(viewModel: AuthViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = {
-                Log.d("LoginScreen", "Login button clicked")
-                val authIntent = viewModel.startAuth()
-                authLauncher.launch(authIntent)
-            },
+            onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("loginButton"),
@@ -115,11 +136,38 @@ fun LoginScreen(viewModel: AuthViewModel) {
                         color = MaterialTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.weight(1f)
                     )
-                    TextButton(onClick = { viewModel.clearError() }) {
+                    TextButton(onClick = onClearError) {
                         Text(stringResource(R.string.login_ok))
                     }
                 }
             }
         }
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun LoginContentPreview() {
+    ChaikaTheme {
+        LoginContent(
+            ui = AuthUiState(
+                state = AuthState.Unauthenticated,
+                errorMessage = "Не удалось завершить вход. Проверьте соединение."
+            ),
+            onLoginClick = {},
+            onClearError = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun LoginContentWidePreview() {
+    ChaikaTheme {
+        LoginContent(
+            ui = AuthUiState(state = AuthState.Checking),
+            onLoginClick = {},
+            onClearError = {}
+        )
     }
 }

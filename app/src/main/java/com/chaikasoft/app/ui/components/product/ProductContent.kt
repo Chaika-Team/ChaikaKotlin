@@ -51,7 +51,7 @@ internal fun ProductContent(
             text = product.name,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
 
@@ -83,10 +83,12 @@ private fun NotInCartContent(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
         Column(
+            modifier = Modifier
+                .weight(1F)
+                .padding(end = 8.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -95,13 +97,16 @@ private fun NotInCartContent(
                 maxLines = 1,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.primary
             )
 
             Text(
                 text = formatPriceOnly(price),
+                maxLines = 1,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.primary
             )
         }
@@ -138,8 +143,10 @@ private fun InCartContent(
     Column {
         Text(
             text = formatPriceOnly(price),
+            maxLines = 1,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
+            overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.primary
         )
 

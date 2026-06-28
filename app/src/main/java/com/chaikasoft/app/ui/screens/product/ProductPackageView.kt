@@ -175,9 +175,7 @@ private fun ProductPackageContent(
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(
-            minSize = ProductDimens.ProductListView.MinCellWidth
-        ),
+        columns = GridCells.Fixed(2),
         modifier = modifier
             .testTag("packageListGrid")
             .fillMaxSize(),

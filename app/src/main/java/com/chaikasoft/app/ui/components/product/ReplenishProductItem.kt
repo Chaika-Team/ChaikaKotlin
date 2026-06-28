@@ -1,16 +1,18 @@
 package com.chaikasoft.app.ui.components.product
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.dto.Product
@@ -53,14 +55,15 @@ private fun StockQuantityRow(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = ProductDimens.CartProductItem.QuantitySelectorHeight)
     ) {
         Column(
             modifier = Modifier
-                .align(Alignment.CenterStart)
+                .weight(1f)
+                .padding(end = ProductDimens.CartProductItem.RemoveButtonPadding)
         ) {
             val qtyText = if (quantityToShow >= 0) quantityToShow.toString() else "—"
             Text(
@@ -72,36 +75,27 @@ private fun StockQuantityRow(
                 } else {
                     MaterialTheme.colorScheme.onBackground
                 },
-                fontSize = ProductDimens.CartProductItem.PriceFontSize
+                fontSize = ProductDimens.CartProductItem.PriceFontSize,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
         if (product.isInCart) {
+            ProductItemRemoveButton(
+                onClick = onRemove,
+                contentDescriptionRes = R.string.cart_product_remove_from_cart
+            )
+            Spacer(modifier = Modifier.width(ProductDimens.CartProductItem.RemoveButtonPadding))
             ProductItemQuantitySelector(
                 quantity = product.quantity,
                 onIncrease = onQuantityIncrease,
                 onDecrease = onQuantityDecrease,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .quantitySelectorSize()
-            )
-
-            ProductItemRemoveButton(
-                onClick = onRemove,
-                contentDescriptionRes = R.string.cart_product_remove_from_cart,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(
-                        end =
-                        ProductDimens.CartProductItem.QuantitySelectorWidth +
-                            ProductDimens.CartProductItem.RemoveButtonPadding
-                    )
+                modifier = Modifier.quantitySelectorSize()
             )
         } else {
             ProductItemAddButton(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .quantitySelectorSize(),
+                modifier = Modifier.quantitySelectorSize(),
                 onClick = onAddToCart,
                 contentDescriptionRes = R.string.cart_product_add_to_cart,
                 iconScale = 0.6F

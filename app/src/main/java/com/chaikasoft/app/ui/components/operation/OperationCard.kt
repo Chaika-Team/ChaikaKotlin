@@ -113,7 +113,6 @@ fun OperationCard(
 
                 Box(
                     modifier = Modifier
-                        .weight(1f, fill = false)
                         .heightIn(max = OperationDimens.ItemsMaxHeight) // оставляем место под футер
                         .nestedScroll(itemsNestedScrollConnection)
                         .verticalScroll(itemsScrollState)
@@ -152,12 +151,16 @@ fun OperationCard(
                 Text(
                     text = conductorName,
                     fontSize = OperationDimens.FooterFontSize,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
 
                 if (summary.type == OperationTypeDomain.SOLD_CASH ||
                     summary.type == OperationTypeDomain.SOLD_CARD
                 ) {
+                    Spacer(modifier = Modifier.width(OperationDimens.QuantityGap))
                     Text(
                         text = formatPriceOnly(summary.totalPrice),
                         fontWeight = FontWeight.Bold,

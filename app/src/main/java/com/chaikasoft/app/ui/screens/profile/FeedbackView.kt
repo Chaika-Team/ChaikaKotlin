@@ -9,6 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 
 @Composable
 fun FeedbackView() {
@@ -73,4 +76,20 @@ fun FeedbackView() {
             selectedCategory = categories.first()
         }
     )
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun FeedbackViewPreview() {
+    ChaikaTheme {
+        FeedbackView()
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun FeedbackViewWidePreview() {
+    ChaikaTheme {
+        FeedbackView()
+    }
 }

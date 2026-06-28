@@ -12,6 +12,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
 
 @Composable
 fun ErrorScreen() {
@@ -25,5 +27,13 @@ fun ErrorScreen() {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun ErrorScreenPreview() {
+    ChaikaTheme {
+        ErrorScreen()
     }
 }

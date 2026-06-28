@@ -70,6 +70,7 @@ internal fun FoundTripContent(tripRecord: TripDomain, modifier: Modifier = Modif
                     start.linkTo(parent.start, margin = 4.dp)
                     top.linkTo(timeDetails.bottom)
                     end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom, margin = 4.dp)
                     width = Dimension.fillToConstraints
                 }
         )

@@ -10,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
 
 @Composable
 fun LoadingScreen() {
@@ -25,5 +27,13 @@ fun LoadingScreen() {
                 .size(48.dp)
                 .testTag("loadingIndicator")
         )
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun LoadingScreenPreview() {
+    ChaikaTheme {
+        LoadingScreen()
     }
 }
