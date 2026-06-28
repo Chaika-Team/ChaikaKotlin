@@ -1,19 +1,23 @@
 package com.chaikasoft.app.ui.components.product
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.theme.ChaikaTheme
@@ -30,19 +34,24 @@ fun CartProductItem(
     onRemoveFromPackage: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    ProductListItemLayout(
-        product = product,
-        modifier = modifier
-    ) { actionRowModifier ->
-        CartProductActionsRow(
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val useCompactActions = maxWidth < 280.dp || LocalDensity.current.fontScale >= 1.3f
+
+        ProductListItemLayout(
             product = product,
-            onQuantityIncrease = onQuantityIncrease,
-            onQuantityDecrease = onQuantityDecrease,
-            onAddToCart = onAddToCart,
-            onRemove = onRemove,
-            onRemoveFromPackage = onRemoveFromPackage,
-            modifier = actionRowModifier
-        )
+            modifier = Modifier.fillMaxWidth(),
+            actionsBelowHeader = useCompactActions
+        ) { actionRowModifier ->
+            CartProductActionsRow(
+                product = product,
+                onQuantityIncrease = onQuantityIncrease,
+                onQuantityDecrease = onQuantityDecrease,
+                onAddToCart = onAddToCart,
+                onRemove = onRemove,
+                onRemoveFromPackage = onRemoveFromPackage,
+                modifier = actionRowModifier
+            )
+        }
     }
 }
 
@@ -59,46 +68,51 @@ private fun CartProductActionsRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = ProductDimens.CartProductItem.QuantitySelectorHeight)
+            .height(ProductDimens.CartProductItem.QuantitySelectorHeight),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
+        Text(
+            text = formatPrice(product.price, product.quantity),
             modifier = Modifier
                 .weight(1f)
-                .padding(end = ProductDimens.CartProductItem.RemoveButtonPadding)
-        ) {
-            Text(
-                text = formatPrice(product.price, product.quantity),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = ProductDimens.CartProductItem.PriceFontSize,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+                .padding(end = ProductDimens.CartProductItem.RemoveButtonPadding),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = ProductDimens.CartProductItem.PriceFontSize,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
 
-        if (product.isInCart) {
-            ProductItemRemoveButton(
-                onClick = onRemoveFromPackage ?: onRemove,
-                contentDescriptionRes = if (onRemoveFromPackage != null) {
-                    R.string.cart_product_remove_from_package
-                } else {
-                    R.string.cart_product_remove_from_cart
-                }
-            )
-            Spacer(modifier = Modifier.width(ProductDimens.CartProductItem.RemoveButtonPadding))
-            ProductItemQuantitySelector(
-                quantity = product.quantity,
-                onIncrease = onQuantityIncrease,
-                onDecrease = onQuantityDecrease,
-                modifier = Modifier.quantitySelectorSize()
-            )
-        } else {
-            ProductItemAddButton(
-                modifier = Modifier.quantitySelectorSize(),
-                onClick = onAddToCart,
-                contentDescriptionRes = R.string.cart_product_add_to_cart
-            )
+        Row(
+            modifier = Modifier.heightIn(
+                min = ProductDimens.CartProductItem.QuantitySelectorHeight
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (product.isInCart) {
+                ProductItemRemoveButton(
+                    onClick = onRemoveFromPackage ?: onRemove,
+                    contentDescriptionRes = if (onRemoveFromPackage != null) {
+                        R.string.cart_product_remove_from_package
+                    } else {
+                        R.string.cart_product_remove_from_cart
+                    }
+                )
+                Spacer(modifier = Modifier.width(ProductDimens.CartProductItem.RemoveButtonPadding))
+                ProductItemQuantitySelector(
+                    quantity = product.quantity,
+                    onIncrease = onQuantityIncrease,
+                    onDecrease = onQuantityDecrease,
+                    modifier = Modifier.quantitySelectorSize()
+                )
+            } else {
+                ProductItemAddButton(
+                    modifier = Modifier.quantitySelectorSize(),
+                    onClick = onAddToCart,
+                    contentDescriptionRes = R.string.cart_product_add_to_cart
+                )
+            }
         }
     }
 }
