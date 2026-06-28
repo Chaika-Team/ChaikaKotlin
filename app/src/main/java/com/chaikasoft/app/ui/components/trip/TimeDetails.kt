@@ -3,7 +3,7 @@ package com.chaikasoft.app.ui.components.trip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +22,7 @@ internal fun TimeDetails(tripRecord: TripDomain, modifier: Modifier = Modifier) 
 
     ConstraintLayout(
         modifier = modifier
-            .height(TripDimens.TimeDetailsHeight)
+            .heightIn(min = TripDimens.TimeDetailsHeight)
     ) {
         val (startTime, time, arrow, endTime) = createRefs()
 

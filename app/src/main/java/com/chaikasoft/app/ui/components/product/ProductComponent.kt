@@ -2,7 +2,7 @@ package com.chaikasoft.app.ui.components.product
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,11 +25,13 @@ fun ProductComponent(
     quantityToShow: Int,
     isSoldOut: Boolean = false
 ) {
-    val height = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
+    val minHeight = ProductDimens.ProductCardHeight + (2 * PaddingM.value).dp
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom,
-        modifier = modifier.height(height).padding(PaddingM)
+        modifier = modifier
+            .heightIn(min = minHeight)
+            .padding(PaddingM)
     ) {
         ProductItem(
             product = product,

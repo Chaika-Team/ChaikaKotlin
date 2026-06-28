@@ -2,6 +2,7 @@ package com.chaikasoft.app.ui.components.product
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -42,7 +43,7 @@ fun ProductItem(
 
     ConstraintLayout(
         modifier = modifier
-            .height(ProductCardHeight)
+            .defaultMinSize(minHeight = ProductCardHeight)
             .fillMaxWidth()
     ) {
         val (image, back, content) = createRefs()

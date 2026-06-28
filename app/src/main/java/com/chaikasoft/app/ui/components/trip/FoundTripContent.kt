@@ -2,7 +2,7 @@ package com.chaikasoft.app.ui.components.trip
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +26,7 @@ import com.chaikasoft.app.ui.theme.TripDimens
 internal fun FoundTripContent(tripRecord: TripDomain, modifier: Modifier = Modifier) {
     ConstraintLayout(
         modifier = modifier
-            .height(TripDimens.FoundTripCardHeight)
+            .heightIn(min = TripDimens.FoundTripCardHeight)
     ) {
         val (trainId, timeDetails, stationsDetails) = createRefs()
 

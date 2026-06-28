@@ -20,6 +20,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.ui.components.profile.ConfirmBottomSheet
 import com.chaikasoft.app.ui.components.profile.ProfileMenuItem
 import com.chaikasoft.app.ui.components.profile.ProfileMenuItemShape
@@ -27,6 +28,9 @@ import com.chaikasoft.app.ui.components.profile.SectionSpacer
 import com.chaikasoft.app.ui.components.profile.UserHeaderSection
 import com.chaikasoft.app.ui.components.profile.UserInfoSection
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.theme.ProfileBackground
 import com.chaikasoft.app.ui.theme.ProfileDimens
 import com.chaikasoft.app.ui.viewmodels.AuthViewModel
@@ -48,91 +52,21 @@ fun MainProfileView(
     val shouldShowActiveShiftBlockerSheet =
         showActiveShiftBlockerSheet.value || uiState.showActiveShiftDialog
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag("profileScreen")
-            .background(ProfileBackground)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            UserHeaderSection(conductor = conductor, onClick = { /* nothing for now */ })
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(
-                            topStart = ProfileDimens.ProfileCardCornerRadius,
-                            topEnd = ProfileDimens.ProfileCardCornerRadius
-                        )
-                    )
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            vertical = ProfileDimens.ProfileContentPaddingVertical,
-                            horizontal = ProfileDimens.ProfileContentPaddingHorizontal
-                        )
-                ) {
-                    item {
-                        UserInfoSection(conductor = conductor) {
-                            if (hasActiveShift) {
-                                showActiveShiftBlockerSheet.value = true
-                            } else {
-                                showLogoutConfirmSheet.value = true
-                            }
-                        }
-                    }
-                    item {
-                        SectionSpacer()
-                    }
-                    item {
-                        ProfileMenuItem(
-                            icon = ImageVector.vectorResource(R.drawable.ic_personal_data),
-                            text = stringResource(R.string.profile_personal_data),
-                            onClick = { navController.navigate(Routes.PROFILE_PERSONAL_DATA) },
-                            modifier = Modifier.testTag("profilePersonalDataMenuItem"),
-                            shape = ProfileMenuItemShape.Top
-                        )
-                        ProfileMenuItem(
-                            icon = ImageVector.vectorResource(R.drawable.ic_settings),
-                            text = stringResource(R.string.profile_settings),
-                            onClick = { navController.navigate(Routes.PROFILE_SETTINGS) },
-                            modifier = Modifier.testTag("profileSettingsMenuItem"),
-                            shape = ProfileMenuItemShape.Bottom
-                        )
-                    }
-                    item {
-                        SectionSpacer()
-                    }
-                    item {
-                        ProfileMenuItem(
-                            icon = ImageVector.vectorResource(R.drawable.ic_faqs),
-                            text = stringResource(R.string.profile_faqs),
-                            onClick = { navController.navigate(Routes.PROFILE_FAQS) },
-                            modifier = Modifier.testTag("profileFaqsMenuItem"),
-                            shape = ProfileMenuItemShape.Top
-                        )
-                        ProfileMenuItem(
-                            icon = ImageVector.vectorResource(R.drawable.ic_feedback),
-                            text = stringResource(R.string.profile_feedback),
-                            onClick = { navController.navigate(Routes.PROFILE_FEEDBACK) },
-                            modifier = Modifier.testTag("profileFeedbackMenuItem"),
-                            shape = ProfileMenuItemShape.Middle
-                        )
-                        ProfileMenuItem(
-                            icon = ImageVector.vectorResource(R.drawable.ic_info),
-                            text = stringResource(R.string.profile_about),
-                            onClick = { navController.navigate(Routes.PROFILE_ABOUT) },
-                            modifier = Modifier.testTag("profileAboutMenuItem"),
-                            shape = ProfileMenuItemShape.Bottom
-                        )
-                    }
-                }
+    MainProfileContent(
+        conductor = conductor,
+        onLogoutClick = {
+            if (hasActiveShift) {
+                showActiveShiftBlockerSheet.value = true
+            } else {
+                showLogoutConfirmSheet.value = true
             }
-        }
-    }
+        },
+        onPersonalDataClick = { navController.navigate(Routes.PROFILE_PERSONAL_DATA) },
+        onSettingsClick = { navController.navigate(Routes.PROFILE_SETTINGS) },
+        onFaqsClick = { navController.navigate(Routes.PROFILE_FAQS) },
+        onFeedbackClick = { navController.navigate(Routes.PROFILE_FEEDBACK) },
+        onAboutClick = { navController.navigate(Routes.PROFILE_ABOUT) }
+    )
 
     if (uiState.showLogoutErrorDialog) {
         AlertDialog(
@@ -183,3 +117,136 @@ fun MainProfileView(
         }
     )
 }
+
+@Composable
+private fun MainProfileContent(
+    conductor: ConductorDomain?,
+    onLogoutClick: () -> Unit,
+    onPersonalDataClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onFaqsClick: () -> Unit,
+    onFeedbackClick: () -> Unit,
+    onAboutClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .testTag("profileScreen")
+            .background(ProfileBackground)
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            UserHeaderSection(conductor = conductor, onClick = { /* nothing for now */ })
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(
+                            topStart = ProfileDimens.ProfileCardCornerRadius,
+                            topEnd = ProfileDimens.ProfileCardCornerRadius
+                        )
+                    )
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            vertical = ProfileDimens.ProfileContentPaddingVertical,
+                            horizontal = ProfileDimens.ProfileContentPaddingHorizontal
+                        )
+                ) {
+                    item {
+                        UserInfoSection(conductor = conductor, onClick = onLogoutClick)
+                    }
+                    item {
+                        SectionSpacer()
+                    }
+                    item {
+                        ProfileMenuItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_personal_data),
+                            text = stringResource(R.string.profile_personal_data),
+                            onClick = onPersonalDataClick,
+                            modifier = Modifier.testTag("profilePersonalDataMenuItem"),
+                            shape = ProfileMenuItemShape.Top
+                        )
+                        ProfileMenuItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_settings),
+                            text = stringResource(R.string.profile_settings),
+                            onClick = onSettingsClick,
+                            modifier = Modifier.testTag("profileSettingsMenuItem"),
+                            shape = ProfileMenuItemShape.Bottom
+                        )
+                    }
+                    item {
+                        SectionSpacer()
+                    }
+                    item {
+                        ProfileMenuItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_faqs),
+                            text = stringResource(R.string.profile_faqs),
+                            onClick = onFaqsClick,
+                            modifier = Modifier.testTag("profileFaqsMenuItem"),
+                            shape = ProfileMenuItemShape.Top
+                        )
+                        ProfileMenuItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_feedback),
+                            text = stringResource(R.string.profile_feedback),
+                            onClick = onFeedbackClick,
+                            modifier = Modifier.testTag("profileFeedbackMenuItem"),
+                            shape = ProfileMenuItemShape.Middle
+                        )
+                        ProfileMenuItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_info),
+                            text = stringResource(R.string.profile_about),
+                            onClick = onAboutClick,
+                            modifier = Modifier.testTag("profileAboutMenuItem"),
+                            shape = ProfileMenuItemShape.Bottom
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun MainProfileContentPreview() {
+    ChaikaTheme {
+        MainProfileContent(
+            conductor = previewConductor(),
+            onLogoutClick = {},
+            onPersonalDataClick = {},
+            onSettingsClick = {},
+            onFaqsClick = {},
+            onFeedbackClick = {},
+            onAboutClick = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun MainProfileContentWidePreview() {
+    ChaikaTheme {
+        MainProfileContent(
+            conductor = previewConductor(),
+            onLogoutClick = {},
+            onPersonalDataClick = {},
+            onSettingsClick = {},
+            onFaqsClick = {},
+            onFeedbackClick = {},
+            onAboutClick = {}
+        )
+    }
+}
+
+private fun previewConductor(): ConductorDomain = ConductorDomain(
+    id = 1,
+    name = "Александр",
+    familyName = "Константинопольский",
+    givenName = "Владимирович",
+    employeeID = "EMP001",
+    image = ""
+)

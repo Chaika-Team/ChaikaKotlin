@@ -3,7 +3,7 @@ package com.chaikasoft.app.ui.components.product
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -58,7 +58,7 @@ private fun CartProductActionsRow(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(ProductDimens.CartProductItem.QuantitySelectorHeight)
+            .heightIn(min = ProductDimens.CartProductItem.QuantitySelectorHeight)
     ) {
         Column(
             modifier = Modifier

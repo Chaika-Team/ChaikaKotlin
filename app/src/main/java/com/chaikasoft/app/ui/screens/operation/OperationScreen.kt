@@ -25,7 +25,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.models.CartDomain
+import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.ConductorDomain
+import com.chaikasoft.app.domain.models.OperationSummaryDomain
+import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.ui.components.operation.OperationCard
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.OperationViewModel
 
 @Composable
@@ -112,5 +121,96 @@ private fun ErrorItem(message: String) {
             .fillMaxWidth()
             .padding(16.dp),
         color = MaterialTheme.colorScheme.error
+    )
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun OperationScreenContentPreview() {
+    ChaikaTheme {
+        OperationPreviewContent()
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun OperationScreenContentWidePreview() {
+    ChaikaTheme {
+        OperationPreviewContent()
+    }
+}
+
+@Composable
+private fun OperationPreviewContent(modifier: Modifier = Modifier) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .testTag("operationScreen")
+    ) {
+        items(previewOperations().size) { index ->
+            val operation = previewOperations()[index]
+            OperationCard(summary = operation.summary, cart = operation.cart)
+        }
+    }
+}
+
+private data class PreviewOperation(val summary: OperationSummaryDomain, val cart: CartDomain)
+
+private fun previewOperations(): List<PreviewOperation> {
+    val conductor = ConductorDomain(
+        id = 1,
+        name = "Александр",
+        familyName = "Константинопольский",
+        givenName = "Владимирович",
+        employeeID = "EMP001",
+        image = ""
+    )
+    val cart = CartDomain(
+        items = listOf(
+            CartItemDomain(
+                product = ProductInfoDomain(
+                    id = 1,
+                    name = "Чай черный крупнолистовой с очень длинным названием",
+                    description = "Горячий напиток",
+                    image = "",
+                    price = 20_000
+                ),
+                quantity = 2
+            ),
+            CartItemDomain(
+                product = ProductInfoDomain(
+                    id = 2,
+                    name = "Вода негазированная",
+                    description = "500 мл",
+                    image = "",
+                    price = 19_000
+                ),
+                quantity = 2
+            )
+        )
+    )
+    return listOf(
+        PreviewOperation(
+            summary = OperationSummaryDomain(
+                id = 1,
+                type = OperationTypeDomain.SOLD_CASH,
+                timeIso = "2026-06-25T12:30:00+03:00",
+                conductor = conductor,
+                productLineQuantity = 2,
+                totalPrice = 78_000
+            ),
+            cart = cart
+        ),
+        PreviewOperation(
+            summary = OperationSummaryDomain(
+                id = 2,
+                type = OperationTypeDomain.REPLENISH,
+                timeIso = "2026-06-25T14:10:00+03:00",
+                conductor = conductor,
+                productLineQuantity = 2,
+                totalPrice = 0
+            ),
+            cart = cart
+        )
     )
 }

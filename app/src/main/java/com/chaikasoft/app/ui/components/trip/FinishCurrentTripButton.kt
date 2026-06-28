@@ -1,8 +1,8 @@
 package com.chaikasoft.app.ui.components.trip
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,7 +28,7 @@ internal fun FinishCurrentTripButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(TripDimens.FinishTripHeight)
+            .defaultMinSize(minHeight = TripDimens.FinishTripHeight)
             .testTag("currentTripFinishButton"),
         shape = RoundedCornerShape(TripDimens.SearchBarCornerRadius),
         colors = ButtonDefaults.buttonColors(

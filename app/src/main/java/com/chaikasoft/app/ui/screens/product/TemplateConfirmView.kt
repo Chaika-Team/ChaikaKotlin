@@ -2,7 +2,6 @@ package com.chaikasoft.app.ui.screens.product
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
@@ -27,9 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.ui.components.product.CartProductItem
 import com.chaikasoft.app.ui.mappers.toUiModel
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
@@ -49,41 +52,60 @@ fun TemplateConfirmView(
             .map { it.product }
     }
 
+    TemplateConfirmContent(
+        cartItems = cartItems,
+        isEmpty = productsInPackage.isEmpty(),
+        onQuantityChange = fillViewModel::onQuantityChange,
+        onRemove = fillViewModel::onRemove,
+        onBackClick = { navController.popBackStack() },
+        onConfirmClick = {
+            val conductorId = conductor?.id ?: return@TemplateConfirmContent
+            fillViewModel.onAddOperation(conductorId)
+
+            navController.navigate(Routes.PRODUCT_PACKAGE) {
+                popUpTo(Routes.PRODUCT_GRAPH) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        }
+    )
+}
+
+@Composable
+private fun TemplateConfirmContent(
+    cartItems: List<CartItemDomain>,
+    isEmpty: Boolean,
+    onQuantityChange: (productId: Int, quantity: Int) -> Unit,
+    onRemove: (productId: Int) -> Unit,
+    onBackClick: () -> Unit,
+    onConfirmClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         bottomBar = {
             TemplateConfirmBottomBar(
-                onBackClick = { navController.popBackStack() },
-                onConfirmClick = {
-                    val conductorId = conductor?.id ?: return@TemplateConfirmBottomBar
-                    fillViewModel.onAddOperation(conductorId)
-
-                    navController.navigate(Routes.PRODUCT_PACKAGE) {
-                        popUpTo(Routes.PRODUCT_GRAPH) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    }
-                }
+                onBackClick = onBackClick,
+                onConfirmClick = onConfirmClick
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            if (productsInPackage.isEmpty()) {
-                EmptyPackageState(
-                    modifier = Modifier.weight(1f)
-                )
-            } else {
-                FinalPackageList(
-                    cartItems = cartItems,
-                    onQuantityChange = fillViewModel::onQuantityChange,
-                    onRemove = fillViewModel::onRemove,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+        if (isEmpty) {
+            EmptyPackageState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        } else {
+            FinalPackageList(
+                cartItems = cartItems,
+                onQuantityChange = onQuantityChange,
+                onRemove = onRemove,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
         }
     }
 }
@@ -120,6 +142,59 @@ private fun FinalPackageList(
         }
     }
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun TemplateConfirmContentPreview() {
+    ChaikaTheme {
+        TemplateConfirmContent(
+            cartItems = previewTemplateCartItems(),
+            isEmpty = false,
+            onQuantityChange = { _, _ -> },
+            onRemove = {},
+            onBackClick = {},
+            onConfirmClick = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun TemplateConfirmEmptyWidePreview() {
+    ChaikaTheme {
+        TemplateConfirmContent(
+            cartItems = emptyList(),
+            isEmpty = true,
+            onQuantityChange = { _, _ -> },
+            onRemove = {},
+            onBackClick = {},
+            onConfirmClick = {}
+        )
+    }
+}
+
+private fun previewTemplateCartItems(): List<CartItemDomain> = listOf(
+    CartItemDomain(
+        product = ProductInfoDomain(
+            id = 1,
+            name = "Чай черный крупнолистовой с очень длинным названием",
+            description = "Горячий напиток",
+            image = "",
+            price = 20_000
+        ),
+        quantity = 6
+    ),
+    CartItemDomain(
+        product = ProductInfoDomain(
+            id = 2,
+            name = "Вода негазированная",
+            description = "500 мл",
+            image = "",
+            price = 19_000
+        ),
+        quantity = 4
+    )
+)
 
 @Composable
 private fun EmptyPackageState(modifier: Modifier) {

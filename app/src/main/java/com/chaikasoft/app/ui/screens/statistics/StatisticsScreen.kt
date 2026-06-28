@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chaikasoft.app.domain.models.FastReportDomain
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.StatisticsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -118,3 +121,50 @@ internal fun StatisticsContent(
         }
     }
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun StatisticsContentPreview() {
+    ChaikaTheme {
+        StatisticsContent(
+            reports = previewReports(),
+            cashRevenue = 156_000,
+            cashlessChecks = 4
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun StatisticsContentWidePreview() {
+    ChaikaTheme {
+        StatisticsContent(
+            reports = previewReports(),
+            cashRevenue = 156_000,
+            cashlessChecks = 4
+        )
+    }
+}
+
+private fun previewReports(): List<FastReportDomain> = listOf(
+    FastReportDomain(
+        productName = "Чай черный крупнолистовой с очень длинным названием",
+        productPrice = 20_000,
+        addedQuantity = 12,
+        replenishedQuantity = 4,
+        soldCashQuantity = 3,
+        soldCardQuantity = 2,
+        revenue = 60_000,
+        productId = 1
+    ),
+    FastReportDomain(
+        productName = "Вода негазированная",
+        productPrice = 19_000,
+        addedQuantity = 8,
+        replenishedQuantity = 2,
+        soldCashQuantity = 2,
+        soldCardQuantity = 1,
+        revenue = 38_000,
+        productId = 2
+    )
+)

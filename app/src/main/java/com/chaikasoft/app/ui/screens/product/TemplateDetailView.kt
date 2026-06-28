@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,10 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chaikasoft.app.R
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.domain.models.ResolvedTemplateDetailDomain
 import com.chaikasoft.app.domain.models.ResolvedTemplateItemDomain
 import com.chaikasoft.app.domain.models.TemplateDomain
@@ -42,6 +47,9 @@ import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.trip.dashedBorder
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.state.TemplateDetailUiState
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
 import com.chaikasoft.app.ui.viewmodels.TemplateViewModel
 
@@ -98,16 +106,33 @@ fun TemplateDetailView(
 @Composable
 private fun TemplateDetailContent(
     detail: ResolvedTemplateDetailDomain,
-    onApplyTemplate: (TemplateDomain) -> Unit
+    onApplyTemplate: (TemplateDomain) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val template = detail.template
     val hasMissingProducts = detail.items.any { it.product == null }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        bottomBar = {
+            ButtonSurface(
+                buttonText = stringResource(R.string.template_detail_apply),
+                enabled = !hasMissingProducts,
+                onClick = { onApplyTemplate(template) },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(16.dp)
-                .align(Alignment.TopStart)
+                .padding(
+                    PaddingValues(
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                )
+                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 modifier = Modifier
@@ -194,16 +219,6 @@ private fun TemplateDetailContent(
                 }
             }
         }
-        ButtonSurface(
-            buttonText = stringResource(R.string.template_detail_apply),
-            enabled = !hasMissingProducts,
-            onClick = {
-                onApplyTemplate(template)
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        )
     }
 }
 
@@ -248,3 +263,63 @@ private fun TemplateItemInfo(item: ResolvedTemplateItemDomain) {
         )
     }
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun TemplateDetailContentPreview() {
+    ChaikaTheme {
+        TemplateDetailContent(
+            detail = previewTemplateDetail(hasMissingProducts = false),
+            onApplyTemplate = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun TemplateDetailContentWidePreview() {
+    ChaikaTheme {
+        TemplateDetailContent(
+            detail = previewTemplateDetail(hasMissingProducts = true),
+            onApplyTemplate = {}
+        )
+    }
+}
+
+private fun previewTemplateDetail(hasMissingProducts: Boolean): ResolvedTemplateDetailDomain =
+    ResolvedTemplateDetailDomain(
+        template = TemplateDomain(
+            id = 1,
+            templateName = "Стартовый пакет для дальнего рейса",
+            description = "Популярные позиции с длинным описанием для проверки переноса текста",
+            content = emptyList()
+        ),
+        items = listOf(
+            ResolvedTemplateItemDomain(
+                productId = 1,
+                quantity = 8,
+                product = ProductInfoDomain(
+                    id = 1,
+                    name = "Чай черный крупнолистовой с очень длинным названием",
+                    description = "Горячий напиток",
+                    image = "",
+                    price = 20_000
+                )
+            ),
+            ResolvedTemplateItemDomain(
+                productId = 2,
+                quantity = 4,
+                product = if (hasMissingProducts) {
+                    null
+                } else {
+                    ProductInfoDomain(
+                        id = 2,
+                        name = "Вода негазированная",
+                        description = "500 мл",
+                        image = "",
+                        price = 19_000
+                    )
+                }
+            )
+        )
+    )

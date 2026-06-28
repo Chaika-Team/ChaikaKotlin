@@ -2,9 +2,9 @@ package com.chaikasoft.app.ui.screens.product
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.FillViewModel
 import com.chaikasoft.app.ui.viewmodels.ProductViewModel
 
@@ -34,25 +37,32 @@ fun ProductEntryView(
         productViewModel.attachCart(fillViewModel.items)
     }
 
+    ProductEntryContent(
+        onFillPackageClick = {
+            navController.navigate(Routes.TEMPLATE_SEARCH) {
+                popUpTo(Routes.PRODUCT_ENTRY) { inclusive = false }
+            }
+        }
+    )
+}
+
+@Composable
+private fun ProductEntryContent(onFillPackageClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .testTag("productEntryScreen"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = {
-                navController.navigate(Routes.TEMPLATE_SEARCH) {
-                    popUpTo(Routes.PRODUCT_ENTRY) { inclusive = false }
-                }
-            },
+            onClick = onFillPackageClick,
             modifier = Modifier
                 .testTag("productEntryFillPackageButton")
                 .padding(16.dp)
                 .widthIn(max = 280.dp)
                 .fillMaxWidth()
-                .height(46.dp),
+                .defaultMinSize(minHeight = 46.dp),
             shape = RoundedCornerShape(10.dp)
         ) {
             Text(
@@ -60,5 +70,21 @@ fun ProductEntryView(
                 text = "ЗАПОЛНИТЬ ПАКЕТ"
             )
         }
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun ProductEntryContentPreview() {
+    ChaikaTheme {
+        ProductEntryContent(onFillPackageClick = {})
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun ProductEntryContentWidePreview() {
+    ChaikaTheme {
+        ProductEntryContent(onFillPackageClick = {})
     }
 }

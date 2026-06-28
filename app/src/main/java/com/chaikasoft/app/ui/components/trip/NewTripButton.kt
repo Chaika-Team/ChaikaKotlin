@@ -4,8 +4,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -38,7 +38,7 @@ fun NewTripButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             )
             .background(Color.White, RoundedCornerShape(TripDimens.CornerRadius))
             .clickable(onClick = onClick)
-            .height(TripDimens.NewTripButtonHeight)
+            .defaultMinSize(minHeight = TripDimens.NewTripButtonHeight)
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {

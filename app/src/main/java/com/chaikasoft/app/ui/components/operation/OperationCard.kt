@@ -41,10 +41,14 @@ import androidx.compose.ui.unit.Velocity
 import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartDomain
 import com.chaikasoft.app.domain.models.CartItemDomain
+import com.chaikasoft.app.domain.models.ConductorDomain
 import com.chaikasoft.app.domain.models.OperationSummaryDomain
 import com.chaikasoft.app.domain.models.OperationTypeDomain
+import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.ui.components.trip.dashedBorder
+import com.chaikasoft.app.ui.theme.ChaikaTheme
 import com.chaikasoft.app.ui.theme.OperationDimens
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
 import com.chaikasoft.app.util.formatPriceOnly
 import com.chaikasoft.app.util.formatRuShort
 import com.chaikasoft.app.util.toZoned
@@ -59,7 +63,6 @@ fun OperationCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(max = OperationDimens.CardMaxHeight)
             .padding(OperationDimens.CardOuterPadding)
             .background(
                 color = Color.White,
@@ -215,12 +218,13 @@ private fun ProductRow(item: CartItemDomain, isSale: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = OperationDimens.ProductRowVerticalPadding),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         // Название
         Text(
             text = item.product.name,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
             color = Color.Black
@@ -262,3 +266,55 @@ fun OperationTypeDomain.iconRes(): Int = when (this) {
     OperationTypeDomain.SOLD_CASH -> R.drawable.ic_cash_payment
     OperationTypeDomain.SOLD_CARD -> R.drawable.ic_credit_card
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun OperationCardPreview() {
+    ChaikaTheme {
+        OperationCard(
+            summary = previewOperationSummary(),
+            cart = previewOperationCart()
+        )
+    }
+}
+
+private fun previewOperationSummary(): OperationSummaryDomain = OperationSummaryDomain(
+    id = 1,
+    type = OperationTypeDomain.SOLD_CASH,
+    timeIso = "2026-06-25T12:30:00+03:00",
+    conductor = ConductorDomain(
+        id = 1,
+        name = "Александр",
+        familyName = "Константинопольский",
+        givenName = "Владимирович",
+        employeeID = "EMP001",
+        image = ""
+    ),
+    productLineQuantity = 2,
+    totalPrice = 78_000
+)
+
+private fun previewOperationCart(): CartDomain = CartDomain(
+    items = listOf(
+        CartItemDomain(
+            product = ProductInfoDomain(
+                id = 1,
+                name = "Чай черный крупнолистовой с очень длинным названием",
+                description = "Горячий напиток",
+                image = "",
+                price = 20_000
+            ),
+            quantity = 2
+        ),
+        CartItemDomain(
+            product = ProductInfoDomain(
+                id = 2,
+                name = "Вода негазированная",
+                description = "500 мл",
+                image = "",
+                price = 19_000
+            ),
+            quantity = 2
+        )
+    )
+)

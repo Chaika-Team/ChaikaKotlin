@@ -2,14 +2,11 @@ package com.chaikasoft.app.ui.screens.product
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -37,6 +33,8 @@ import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
 import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.theme.ProductDimens
 import com.chaikasoft.app.ui.viewmodels.PackageViewModel
 import com.chaikasoft.app.ui.viewmodels.SaleViewModel
@@ -55,8 +53,6 @@ fun ProductPackageView(
     val stockLimitNotice by saleViewModel.stockLimitNotice.collectAsStateWithLifecycle()
     val isLoading by packageViewModel.isLoading.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val spacerHeight = (ProductDimens.ProductCardHeight.value / 2).dp
 
     LaunchedEffect(Unit) {
         packageViewModel.loadProducts(saleViewModel.items)
@@ -93,10 +89,10 @@ fun ProductPackageView(
                 packageItems = packageItems,
                 cartItems = cartItems,
                 productQuantities = productQuantities,
-                spacerHeight = spacerHeight,
                 onCheckProductQuantity = packageViewModel::checkProductQuantity,
                 onAdd = saleViewModel::onAdd,
-                onQuantityChange = saleViewModel::onQuantityChange
+                onQuantityChange = saleViewModel::onQuantityChange,
+                modifier = Modifier.fillMaxSize()
             )
             CartFAB(
                 totalPrice = formatPriceOnly(totalPrice),
@@ -163,14 +159,14 @@ private fun ProductPackageContent(
     packageItems: List<Product>,
     cartItems: List<CartItemDomain>,
     productQuantities: Map<Int, Int>,
-    spacerHeight: androidx.compose.ui.unit.Dp,
     onCheckProductQuantity: (Int) -> Unit,
     onAdd: (CartItemDomain) -> Unit,
-    onQuantityChange: (Int, Int) -> Unit
+    onQuantityChange: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (isLoading) {
         CircularProgressIndicator(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .wrapContentSize(),
             color = MaterialTheme.colorScheme.primary
@@ -182,10 +178,15 @@ private fun ProductPackageContent(
         columns = GridCells.Adaptive(
             minSize = ProductDimens.ProductListView.MinCellWidth
         ),
-        modifier = Modifier
+        modifier = modifier
             .testTag("packageListGrid")
             .fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = ProductDimens.ProductCardHeight
+        )
     ) {
         items(packageItems, key = { it.id }) { item ->
             PackageProductCard(
@@ -196,9 +197,6 @@ private fun ProductPackageContent(
                 onAdd = onAdd,
                 onQuantityChange = onQuantityChange
             )
-        }
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
@@ -248,87 +246,93 @@ private fun PackageProductCard(
     )
 }
 
-@Preview(
-    name = "Product package - phone",
-    showBackground = true,
-    widthDp = 360,
-    heightDp = 640
-)
-@Preview(
-    name = "Product package - wide",
-    showBackground = true,
-    widthDp = 512,
-    heightDp = 640
-)
+@PhoneScalablePreviews
 @Composable
 private fun ProductPackageViewPreview() {
-    val products = listOf(
-        Product(
-            id = 1,
-            name = "Black tea",
-            description = "Classic",
-            image = R.drawable.black_tea.toString(),
-            price = 20_000,
-            isInCart = false,
-            quantity = 0
-        ),
-        Product(
-            id = 2,
-            name = "Green tea",
-            description = "Jasmine",
-            image = R.drawable.black_tea.toString(),
-            price = 22_000,
-            isInCart = true,
-            quantity = 2
-        ),
-        Product(
-            id = 3,
-            name = "Coffee",
-            description = "Arabica",
-            image = R.drawable.black_tea.toString(),
-            price = 35_000,
-            isInCart = false,
-            quantity = 0
-        ),
-        Product(
-            id = 4,
-            name = "Water",
-            description = "Still",
-            image = R.drawable.black_tea.toString(),
-            price = 10_000,
-            isInCart = false,
-            quantity = 0
-        ),
-        Product(
-            id = 5,
-            name = "Apple juice",
-            description = "Fresh",
-            image = R.drawable.black_tea.toString(),
-            price = 18_000,
-            isInCart = false,
-            quantity = 0
-        ),
-        Product(
-            id = 6,
-            name = "Cocoa",
-            description = "Classic",
-            image = R.drawable.black_tea.toString(),
-            price = 25_000,
-            isInCart = false,
-            quantity = 0
-        )
-
-    )
+    val products = previewPackageProducts()
     ChaikaTheme {
         ProductPackageContent(
             isLoading = false,
             packageItems = products,
             cartItems = emptyList(),
             productQuantities = products.associate { it.id to 5 },
-            spacerHeight = (ProductDimens.ProductCardHeight.value / 2).dp,
             onCheckProductQuantity = {},
             onAdd = {},
             onQuantityChange = { _, _ -> }
         )
     }
 }
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun ProductPackageWidePreview() {
+    val products = previewPackageProducts()
+    ChaikaTheme {
+        ProductPackageContent(
+            isLoading = false,
+            packageItems = products,
+            cartItems = emptyList(),
+            productQuantities = products.associate { it.id to 5 },
+            onCheckProductQuantity = {},
+            onAdd = {},
+            onQuantityChange = { _, _ -> }
+        )
+    }
+}
+
+private fun previewPackageProducts(): List<Product> = listOf(
+    Product(
+        id = 1,
+        name = "Black tea",
+        description = "Classic",
+        image = R.drawable.black_tea.toString(),
+        price = 20_000,
+        isInCart = false,
+        quantity = 0
+    ),
+    Product(
+        id = 2,
+        name = "Green tea",
+        description = "Jasmine",
+        image = R.drawable.black_tea.toString(),
+        price = 22_000,
+        isInCart = true,
+        quantity = 2
+    ),
+    Product(
+        id = 3,
+        name = "Coffee",
+        description = "Arabica",
+        image = R.drawable.black_tea.toString(),
+        price = 35_000,
+        isInCart = false,
+        quantity = 0
+    ),
+    Product(
+        id = 4,
+        name = "Water",
+        description = "Still",
+        image = R.drawable.black_tea.toString(),
+        price = 10_000,
+        isInCart = false,
+        quantity = 0
+    ),
+    Product(
+        id = 5,
+        name = "Apple juice",
+        description = "Fresh",
+        image = R.drawable.black_tea.toString(),
+        price = 18_000,
+        isInCart = false,
+        quantity = 0
+    ),
+    Product(
+        id = 6,
+        name = "Cocoa",
+        description = "Classic",
+        image = R.drawable.black_tea.toString(),
+        price = 25_000,
+        isInCart = false,
+        quantity = 0
+    )
+)

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +32,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.chaikasoft.app.R
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 
 @Composable
 internal fun FeedbackContent(
@@ -180,7 +184,7 @@ private fun FeedbackFormCard(
                 label = { Text(stringResource(R.string.feedback_message_label)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
+                    .heightIn(min = 120.dp),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
@@ -199,6 +203,59 @@ private fun FeedbackFormCard(
         }
     }
 }
+
+@PhoneScalablePreviews
+@Composable
+private fun FeedbackContentPreview() {
+    ChaikaTheme {
+        FeedbackContent(
+            isSubmitted = false,
+            categories = previewFeedbackCategories(),
+            selectedCategory = previewFeedbackCategories().first(),
+            name = "Александр",
+            email = "invalid-email",
+            subject = "Длинная тема обращения",
+            message = "Сообщение с несколькими строками для проверки крупного шрифта.",
+            showEmailError = true,
+            isSubmitEnabled = false,
+            onCategoryChange = {},
+            onNameChange = {},
+            onEmailChange = {},
+            onSubjectChange = {},
+            onMessageChange = {},
+            onSubmit = {},
+            onSendAnother = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun FeedbackContentSuccessWidePreview() {
+    ChaikaTheme {
+        FeedbackContent(
+            isSubmitted = true,
+            categories = previewFeedbackCategories(),
+            selectedCategory = previewFeedbackCategories().first(),
+            name = "",
+            email = "",
+            subject = "",
+            message = "",
+            showEmailError = false,
+            isSubmitEnabled = false,
+            onCategoryChange = {},
+            onNameChange = {},
+            onEmailChange = {},
+            onSubjectChange = {},
+            onMessageChange = {},
+            onSubmit = {},
+            onSendAnother = {}
+        )
+    }
+}
+
+private fun previewFeedbackCategories(): List<String> =
+    listOf("Общий вопрос", "Поддержка", "Предложение", "Ошибка")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

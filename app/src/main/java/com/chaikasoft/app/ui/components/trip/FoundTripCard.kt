@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,7 +22,7 @@ fun FoundTripCard(tripRecord: TripDomain, onClick: () -> Unit, modifier: Modifie
     val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = modifier
-            .height(TripDimens.FoundTripCardHeight)
+            .heightIn(min = TripDimens.FoundTripCardHeight)
             .fillMaxWidth()
             .background(
                 color = colorScheme.background
@@ -37,7 +38,7 @@ fun FoundTripCard(tripRecord: TripDomain, onClick: () -> Unit, modifier: Modifie
             color = colorScheme.onSurfaceVariant
         )
         FoundTripContent(
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier.fillMaxWidth(),
             tripRecord = tripRecord
         )
         HorizontalDivider(

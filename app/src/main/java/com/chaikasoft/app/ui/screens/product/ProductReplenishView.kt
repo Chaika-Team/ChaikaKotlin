@@ -26,8 +26,12 @@ import com.chaikasoft.app.R
 import com.chaikasoft.app.ui.components.product.ReplenishProductItem
 import com.chaikasoft.app.ui.components.template.ButtonSurface
 import com.chaikasoft.app.ui.components.template.CheckDialog
+import com.chaikasoft.app.ui.dto.Product
 import com.chaikasoft.app.ui.mappers.toCartItemDomain
 import com.chaikasoft.app.ui.navigation.Routes
+import com.chaikasoft.app.ui.theme.ChaikaTheme
+import com.chaikasoft.app.ui.theme.PhoneScalablePreviews
+import com.chaikasoft.app.ui.theme.PhoneWideNoBreakPreview
 import com.chaikasoft.app.ui.viewmodels.ConductorViewModel
 import com.chaikasoft.app.ui.viewmodels.PackageViewModel
 import com.chaikasoft.app.ui.viewmodels.ReplenishItemsViewModel
@@ -56,62 +60,17 @@ fun ProductReplenishView(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .testTag("productListGrid"),
-                        contentPadding = PaddingValues(
-                            bottom = 72.dp
-                        )
-                    ) {
-                        items(
-                            count = displayProducts.value.size,
-                            key = { index -> displayProducts.value[index].id }
-                        ) { index ->
-                            displayProducts.value[index].let { product ->
-                                ReplenishProductItem(
-                                    modifier = Modifier.testTag("productCard"),
-                                    product = product,
-                                    onAddToCart = {
-                                        replenishViewModel.onAdd(product.toCartItemDomain())
-                                    },
-                                    onQuantityIncrease = {
-                                        replenishViewModel.onQuantityChange(
-                                            product.id,
-                                            product.quantity + 1
-                                        )
-                                    },
-                                    onQuantityDecrease = {
-                                        replenishViewModel.onQuantityChange(
-                                            product.id,
-                                            product.quantity - 1
-                                        )
-                                    },
-                                    onRemove = {
-                                        replenishViewModel.onRemove(product.id)
-                                    },
-                                    packageQuantity =
-                                    productQuantities[product.id] ?: product.quantity
-                                )
-                            }
-                        }
-                    }
-                }
-
-                ButtonSurface(
-                    buttonText = "ДАЛЕЕ",
-                    onClick = { showDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-        }
+        ProductReplenishContent(
+            products = displayProducts.value,
+            productQuantities = productQuantities,
+            onAdd = { replenishViewModel.onAdd(it.toCartItemDomain()) },
+            onQuantityChange = replenishViewModel::onQuantityChange,
+            onRemove = replenishViewModel::onRemove,
+            onNextClick = { showDialog = true },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        )
 
         if (showDialog) {
             CheckDialog(
@@ -138,3 +97,106 @@ fun ProductReplenishView(
         }
     }
 }
+
+@Composable
+private fun ProductReplenishContent(
+    products: List<Product>,
+    productQuantities: Map<Int, Int>,
+    onAdd: (Product) -> Unit,
+    onQuantityChange: (productId: Int, quantity: Int) -> Unit,
+    onRemove: (productId: Int) -> Unit,
+    onNextClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                modifier = Modifier.testTag("productListGrid"),
+                contentPadding = PaddingValues(bottom = 72.dp)
+            ) {
+                items(
+                    count = products.size,
+                    key = { index -> products[index].id }
+                ) { index ->
+                    val product = products[index]
+                    ReplenishProductItem(
+                        modifier = Modifier.testTag("productCard"),
+                        product = product,
+                        onAddToCart = { onAdd(product) },
+                        onQuantityIncrease = {
+                            onQuantityChange(
+                                product.id,
+                                product.quantity + 1
+                            )
+                        },
+                        onQuantityDecrease = {
+                            onQuantityChange(
+                                product.id,
+                                product.quantity - 1
+                            )
+                        },
+                        onRemove = { onRemove(product.id) },
+                        packageQuantity = productQuantities[product.id] ?: product.quantity
+                    )
+                }
+            }
+        }
+
+        ButtonSurface(
+            buttonText = "ДАЛЕЕ",
+            onClick = onNextClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@PhoneScalablePreviews
+@Composable
+private fun ProductReplenishContentPreview() {
+    ChaikaTheme {
+        ProductReplenishContent(
+            products = previewReplenishProducts(),
+            productQuantities = mapOf(1 to 12, 2 to 0),
+            onAdd = {},
+            onQuantityChange = { _, _ -> },
+            onRemove = {},
+            onNextClick = {}
+        )
+    }
+}
+
+@PhoneWideNoBreakPreview
+@Composable
+private fun ProductReplenishContentWidePreview() {
+    ChaikaTheme {
+        ProductReplenishContent(
+            products = previewReplenishProducts(),
+            productQuantities = mapOf(1 to 12, 2 to 0),
+            onAdd = {},
+            onQuantityChange = { _, _ -> },
+            onRemove = {},
+            onNextClick = {}
+        )
+    }
+}
+
+private fun previewReplenishProducts(): List<Product> = listOf(
+    Product(
+        id = 1,
+        name = "Чай черный крупнолистовой с очень длинным названием",
+        description = "Горячий напиток",
+        image = "",
+        price = 20_000,
+        isInCart = true,
+        quantity = 2
+    ),
+    Product(
+        id = 2,
+        name = "Вода негазированная",
+        description = "500 мл",
+        image = "",
+        price = 19_000,
+        isInCart = false,
+        quantity = 0
+    )
+)

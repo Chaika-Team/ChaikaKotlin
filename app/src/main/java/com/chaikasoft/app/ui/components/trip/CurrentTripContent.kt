@@ -113,7 +113,7 @@ internal fun CurrentTripContent(
 @Composable
 private fun CurrentTripHeader(modifier: Modifier = Modifier, trainNumber: String) {
     Row(
-        modifier = modifier.height(TripDimens.CurrentTripHeaderHeight),
+        modifier = modifier.heightIn(min = TripDimens.CurrentTripHeaderHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
