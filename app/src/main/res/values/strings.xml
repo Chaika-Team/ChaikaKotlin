@@ -33,6 +33,8 @@
     <string name="templates">Шаблоны</string>
     <string name="edit">Редактировать</string>
     <string name="check">Проверка</string>
+    <string name="template_confirm_back">НАЗАД</string>
+    <string name="template_confirm_done">ГОТОВО</string>
 
     <string name="enter_carriage_data">Укажите номер вагона</string>
     <string name="carriage_number">Номер вагона</string>

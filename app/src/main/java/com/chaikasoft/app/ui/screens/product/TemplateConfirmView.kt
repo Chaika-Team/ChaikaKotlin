@@ -22,9 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.chaikasoft.app.R
 import com.chaikasoft.app.domain.models.CartItemDomain
 import com.chaikasoft.app.domain.models.ProductInfoDomain
 import com.chaikasoft.app.ui.components.product.CartProductItem
@@ -240,7 +242,7 @@ private fun TemplateConfirmBottomBar(onBackClick: () -> Unit, onConfirmClick: ()
                 onClick = onBackClick,
                 shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
             ) {
-                Text("НАЗАД")
+                Text(stringResource(R.string.template_confirm_back))
             }
 
             Button(
@@ -250,7 +252,7 @@ private fun TemplateConfirmBottomBar(onBackClick: () -> Unit, onConfirmClick: ()
                 onClick = onConfirmClick,
                 shape = RoundedCornerShape(ProductDimens.CornerRadiusM)
             ) {
-                Text("ПОДТВЕРДИТЬ")
+                Text(stringResource(R.string.template_confirm_done))
             }
         }
     }
